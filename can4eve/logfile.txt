@@ -1,0 +1,212 @@
+Jun 05, 2017 9:32:28 PM com.bitplan.elm327.LogImpl log
+INFORMATION: found serial port: cu.Bluetooth-Incoming-Port
+Jun 05, 2017 9:32:28 PM com.bitplan.elm327.LogImpl log
+INFORMATION: found serial port: tty.Bluetooth-Incoming-Port
+Jun 05, 2017 9:32:28 PM com.bitplan.elm327.LogImpl log
+INFORMATION: found serial port: cu.usbserial-113010822821
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: ready for reading
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: read 18 chars
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: response is: 'STN1130 v4.0.1
+>'
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION:  17 msecs - data: 'STN1130 v4.0.1
+
+
+>' ( 18)
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: read 7 chars
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: response is: 'OK
+
+>'
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION:  14 msecs - data: 'OK
+
+
+
+>' (  7)
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: read 7 chars
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: response is: 'OK
+
+>'
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION:  14 msecs - data: 'OK
+
+
+
+>' (  7)
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: read 17 chars
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: response is: 'ELM327 v1.3a
+
+>'
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION:  14 msecs - data: 'ELM327 v1.3a
+
+
+
+>' ( 17)
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: read 21 chars
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: response is: 'SCANTOOL.NET LLC
+
+>'
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION:  14 msecs - data: 'SCANTOOL.NET LLC
+
+
+
+>' ( 21)
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: read 6 chars
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: response is: '?
+
+>'
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION:  15 msecs - data: '?
+
+
+
+>' (  6)
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: read 9 chars
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: response is: '2.3V
+
+>'
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION:  14 msecs - data: '2.3V
+
+
+
+>' (  9)
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: read 20 chars
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: response is: 'OBDLink SX r4.2
+
+>'
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION:  13 msecs - data: 'OBDLink SX r4.2
+
+
+
+>' ( 20)
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: read 18 chars
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: response is: 'STN1130 v4.0.1
+>'
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION:  14 msecs - data: 'STN1130 v4.0.1
+
+
+>' ( 18)
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: read 7 chars
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: response is: 'OK
+
+>'
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION:  15 msecs - data: 'OK
+
+
+
+>' (  7)
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: read 29 chars
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: response is: 'ISO 15765-4 (CAN 11/500)
+
+>'
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION:  14 msecs - data: 'ISO 15765-4 (CAN 11/500)
+
+
+
+>' ( 29)
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: read 7 chars
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: response is: 'OK
+
+>'
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION:  15 msecs - data: 'OK
+
+
+
+>' (  7)
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: read 7 chars
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: response is: 'OK
+
+>'
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION:  14 msecs - data: 'OK
+
+
+
+>' (  7)
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: read 7 chars
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: response is: 'OK
+
+>'
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION:  14 msecs - data: 'OK
+
+
+
+>' (  7)
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: Waiting for client to connect via port  7000...
+Jun 05, 2017 9:32:30 PM com.bitplan.elm327.LogImpl log
+INFORMATION: Accepting connection via port 54032
+Jun 05, 2017 9:32:55 PM com.bitplan.elm327.LogImpl log
+INFORMATION: halting existing piper
+Jun 05, 2017 9:32:55 PM com.bitplan.elm327.LogImpl log
+INFORMATION: Accepting connection via port 53427
+Jun 05, 2017 9:32:57 PM com.bitplan.elm327.LogImpl log
+INFORMATION: piped 3 bytes to->from
+Jun 05, 2017 9:32:57 PM com.bitplan.elm327.LogImpl log
+INFORMATION: 	
+
+Jun 05, 2017 9:32:57 PM com.bitplan.elm327.LogImpl log
+INFORMATION: piped 24 bytes to->from
+Jun 05, 2017 9:32:57 PM com.bitplan.elm327.LogImpl log
+INFORMATION: ATL1
+ATE0
+ATL1
+ATE0
+
+Jun 05, 2017 9:32:57 PM com.bitplan.elm327.LogImpl log
+INFORMATION: piped 35 bytes from->to
+Jun 05, 2017 9:32:57 PM com.bitplan.elm327.LogImpl log
+INFORMATION: OK
+
+>OK
+
+>OK
+
+>OK
+
+>OK
+
+>
+Jun 05, 2017 9:32:57 PM com.bitplan.elm327.LogImpl log
+INFORMATION: piped 6 bytes to->from
+Jun 05, 2017 9:32:57 PM com.bitplan.elm327.LogImpl log
+INFORMATION: AT I
+

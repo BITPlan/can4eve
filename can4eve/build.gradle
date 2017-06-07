@@ -1,0 +1,28 @@
+apply plugin: 'java'
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    // ELM327 code
+    compile project(':elm327')
+    // https://mvnrepository.com/artifact/args4j/args4j
+    compile group: 'args4j', name: 'args4j', version: '2.33'
+
+}
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
+version = '0.0.1'
+
+//create a single Jar with all dependencies
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'caneve',
+                'Implementation-Version': version,
+                'Main-Class': 'Can4eve'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+

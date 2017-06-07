@@ -1,0 +1,5 @@
+#!/bin/bash
+# WF 2017-06-05
+../gradlew fatjar
+jar="./build/libs/can4eve-all-0.0.1.jar"
+java -jar $jar  -f -d -dv cu.usbserial-113010822821 -lf logfile.txt

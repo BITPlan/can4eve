@@ -1,0 +1,51 @@
+apply plugin: 'com.android.library'
+
+android {
+
+    group = 'com.felhr.usbserial'
+    version = '1.0.0'
+	
+    compileSdkVersion Integer.parseInt(project.ANDROID_BUILD_SDK_VERSION)
+    buildToolsVersion project.ANDROID_BUILD_TOOLS_VERSION
+
+    compileOptions {
+        encoding "UTF-8"
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    defaultConfig {
+        minSdkVersion Integer.parseInt(project.ANDROID_BUILD_MIN_SDK_VERSION)
+        targetSdkVersion Integer.parseInt(project.ANDROID_BUILD_TARGET_SDK_VERSION)
+    }
+
+	task createSourcesJar(type: Jar) {
+		println 'Creating sources JAR in ' + file(System.getenv('DROPBOX') + '/Android/CAN_Bus/')
+		from android.sourceSets.main.java.srcDirs
+		destinationDir = file(System.getenv('DROPBOX') + '/Android/CAN_Bus/')
+		classifier = 'sources'
+	}
+
+    //noinspection GroovyAssignabilityCheck
+    task deleteJar(type: org.gradle.api.tasks.Delete) {
+        delete 'eclipse_lib/usbserial.jar'
+    }
+
+    //noinspection GroovyAssignabilityCheck
+    task createJar(type: org.gradle.api.tasks.Copy) {
+        from('build/intermediates/bundles/release/')
+        into('eclipse_lib/')
+        include('classes.jar')
+        rename('classes.jar', 'usbserial.jar')
+    }
+	
+	task sourcesJar(type: Jar) {
+		from android.sourceSets.main.java.srcDirs
+		classifier = 'sources'
+	}
+	
+	assemble.dependsOn 'createSourcesJar'
+
+    createJar.dependsOn(deleteJar, build)
+    buildToolsVersion '25.0.0'
+}
