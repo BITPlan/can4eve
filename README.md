@@ -21,6 +21,14 @@ An Android version is in preparation.
 Since Apple does not support Java on the iPhone and since Microsoft does not support Java on some of its environments can4eve 
 would have to be ported to run in these environments. Currently there are no plans to work around this.
 
+## Where to find more info
+### Wiki
+http://can4eve.bitplan.com/
+
+### github repository
+* repository: https://github.com/BITPlan/can4eve
+* issues: https://github.com/BITPlan/can4eve/issues
+
 ### License
 https://www.apache.org/licenses/LICENSE-2.0
 
