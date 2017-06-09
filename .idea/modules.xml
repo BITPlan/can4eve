@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/can4eve/can4eve.iml" filepath="$PROJECT_DIR$/can4eve/can4eve.iml" />
+      <module fileurl="file://$PROJECT_DIR$/com.bitplan.obdiia.iml" filepath="$PROJECT_DIR$/com.bitplan.obdiia.iml" />
+      <module fileurl="file://$PROJECT_DIR$/elm327/elm327.iml" filepath="$PROJECT_DIR$/elm327/elm327.iml" />
+      <module fileurl="file://$PROJECT_DIR$/usbserial/usbserial.iml" filepath="$PROJECT_DIR$/usbserial/usbserial.iml" />
+    </modules>
+  </component>
+</project>

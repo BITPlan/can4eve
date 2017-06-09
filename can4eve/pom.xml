@@ -1,0 +1,34 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<groupId>com.bitplan.can4eve</groupId>
+		<artifactId>com.bitplan.can4eve</artifactId>
+		<version>0.0.1</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.bitplan.can4eve</groupId>
+	<artifactId>com.bitplan.can4eve.can4eve</artifactId>
+	<version>0.0.1</version>
+	<packaging>jar</packaging>
+	<name>Can4Eve Swing application</name>
+	<dependencies>
+		<dependency>
+			<groupId>com.bitplan.can4eve</groupId>
+			<artifactId>com.bitplan.elm327</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<sourceDirectory>src/main/java</sourceDirectory>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
