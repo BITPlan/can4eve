@@ -55,5 +55,23 @@
 	<modules>
 		<module>elm327</module>
 		<module>can4eve</module>
+		<module>obdii</module>
 	</modules>
+	<build>
+		<plugins>
+			<plugin>
+				<!-- http://code.mycila.com/license-maven-plugin/ -->
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<version>1.9.0</version>
+				<configuration>
+					<header>${project.basedir}/../etc/header.txt</header>
+					<strictCheck>true</strictCheck>
+					<includes>
+						<include>src/**/*.java</include>
+					</includes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
