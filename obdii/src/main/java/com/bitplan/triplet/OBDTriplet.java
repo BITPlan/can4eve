@@ -608,7 +608,7 @@ public class OBDTriplet extends OBDHandler {
     for (CANValue<?> canValue : canValues) {
       if (canValue.isRead()) {
         for (Pid pid : this.getElm327().getVehicleGroup().getPids()) {
-          sendCommand("STFAP " + pid.toString() + ",FFF", "OK");
+          sendCommand("STFAP " + pid.getPid().toString() + ",FFF", "OK");
         }
       }
     }

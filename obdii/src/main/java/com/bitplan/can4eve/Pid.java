@@ -91,4 +91,12 @@ public class Pid {
   public void setExamples(String examples) {
     this.examples = examples;
   }
+  
+  public String toString() {
+    String pid=this.getPid();
+    if (pid!=null)
+      return pid;
+    else 
+      return null;
+  }
 }
