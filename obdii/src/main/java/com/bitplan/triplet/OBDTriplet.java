@@ -609,11 +609,11 @@ public class OBDTriplet extends OBDHandler {
       long frameLimit) throws Exception {
     sendCommand("STFAC", "OK"); // FIXME - not understood by ELM327 v2.1 device
     Set<String> pidFilter = new HashSet<String>();
+    // VehicleGroup vg = this.getElm327().getVehicleGroup();
     for (CANValue<?> canValue : canValues) {
       if (canValue.isRead()) {
-        for (Pid pid : this.getElm327().getVehicleGroup().getPids()) {
-          pidFilter.add(pid.getPid());
-        }
+        Pid pid = canValue.canInfo.getPid();
+        pidFilter.add(pid.getPid());
       }
     }
     for (String pidId : pidFilter) {
