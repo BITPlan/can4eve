@@ -364,17 +364,18 @@ public abstract class OBDHandler implements ResponseHandler {
     if (pid.getIsoTp()==null) {
       throw new IllegalArgumentException("Pid "+pid.getName()+"("+pid.getPid()+") is not a ISO-TP frame pid it can not be read with readPid");
     }
+    String isoPid=pid.getIsoTp();
     // stop current communication
     sendCommand("", ".*", true);
     // make sure length is available
     sendCommand("AT L1", ".*");
     sendCommand("AT H1", "OK");
-    sendCommand("ATFCSH"+pid,"OK");
+    sendCommand("ATFCSH"+isoPid,"OK");
     // FIXME - this is not true for all Pids
     sendCommand("ATFCSD300000","OK");
     sendCommand("ATFCSM1","OK");
-    sendCommand("ATFCSH"+pid,"OK");
-    sendCommand("ATSH"+pid,"OK");
+    sendCommand("ATFCSH"+isoPid,"OK");
+    sendCommand("ATSH"+isoPid,"OK");
     // FIXME - this is not true for all Pids - make configurable
     // special mode 21
     sendCommand("2101","OK");
