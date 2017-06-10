@@ -27,7 +27,6 @@ import java.util.logging.Logger;
 
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 
-import com.bitplan.obdii.ErrorHandler;
 
 /**
  * base class for all PidValues

@@ -177,11 +177,12 @@ public class TestELM327 extends TestOBDII {
 
   @Test
   public void testOBDTriplet() throws Exception {
-    // PIDResponse.debug=true;
+    PIDResponse.debug=true;
     this.prepareOBDTriplet(simulated, debug);
     obdTriplet.init();
     obdTriplet.initOBD();
     int frameLimit = 1;
+    obdTriplet.readPid(display,byName("BatteryCapacity"));
     obdTriplet.monitorPid(display, byName("Range").getPid(), frameLimit);
     obdTriplet.monitorPid(display, byName("SOC").getPid(), frameLimit);
     obdTriplet.monitorPid(display, byName("Steering_Wheel").getPid(), frameLimit);
@@ -189,6 +190,7 @@ public class TestELM327 extends TestOBDII {
     obdTriplet.monitorPid(display, byName("VIN").getPid(), frameLimit * 3);
     // Thread.sleep(50000);   
     // display.waitClose();
+    assertNotNull(obdTriplet.batteryCapacity);
     assertNotNull(obdTriplet.SOC);
     assertEquals(new Double(100.0), obdTriplet.SOC.getValue(), 0.1);
     assertEquals(new Integer(721), obdTriplet.odometer.getValue());
@@ -436,7 +438,7 @@ public class TestELM327 extends TestOBDII {
     // debug = true;
     OBDTriplet lOBDTriplet = new OBDTriplet(getVehicleGroup());
     List<CANValue<?>> canValues = lOBDTriplet.getCANValues();
-    assertEquals(83, canValues.size());
+    assertEquals(85, canValues.size());
     String names = "";
     String delim = "";
     for (CANValue<?> canValue : canValues) {
@@ -448,9 +450,10 @@ public class TestELM327 extends TestOBDII {
       LOGGER.log(Level.INFO, names);
     }
     assertTrue(names.startsWith(
-        "VIN,# of Cells,Key,total km,Trip Odo,Trip Rounds,Speed,RPM,RPM Speed,Range,SOC,Climate,Vent Dir,AC Amps,AC Volts,DC Amps,DC Volts,Motor temp,Charger temp,Shifter,Steering Position,Steering Movement,Accelerator,Break Pressed,Break Pedal,Blinker Left,Blinker Right,Door Open,Parking Light,Head Light,High Beam,Cell Temperature,Cell Voltage"));
+        "VIN,# of Cells,Battery Capacity,Key,total km,Trip Odo,Trip Rounds,Speed,RPM,RPM Speed,Range,SOC,Climate,Vent Dir,AC Amps,AC Volts,DC Amps,DC Volts,Motor temp,Charger temp,Shifter,Steering Position,Steering Movement,Accelerator,Break Pressed,Break Pedal,Blinker Left,Blinker Right,Door Open,Parking Light,Head Light,High Beam,Cell Temperature,Cell Voltage"
+    ));
   }
-
+  
   @Test
   public void testPidFromPid() throws Exception {
     OBDTriplet lOBDTriplet = new OBDTriplet(getVehicleGroup());
@@ -477,7 +480,7 @@ public class TestELM327 extends TestOBDII {
     // debug=true;
     OBDTriplet lOBDTriplet = new OBDTriplet(getVehicleGroup());
     List<CANValue<?>> canValues = lOBDTriplet.getCANValues();
-    assertEquals(83, canValues.size());
+    assertEquals(85, canValues.size());
     for (CANValue<?> canValue : canValues) {
       if (debug) {
         LOGGER.log(Level.INFO, canValue.canInfo.getTitle() + ":"
@@ -485,7 +488,7 @@ public class TestELM327 extends TestOBDII {
       }
     }
     List<Pid> pids = lOBDTriplet.getElm327().getVehicleGroup().getPids();
-    assertEquals(50, pids.size());
+    assertEquals(51, pids.size());
     for (Pid pid : pids) {
       if (debug)
         LOGGER.log(Level.INFO, pid.getPid() + ":" + pid.getName());

@@ -41,12 +41,12 @@ import javax.swing.SwingUtilities;
 import com.bitplan.obdii.CANCellStatePlot;
 import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue;
+import com.bitplan.can4eve.ErrorHandler;
 import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.CANValue.*;
 import com.bitplan.obdii.CANValueDisplay;
 import com.bitplan.obdii.CANValueHistoryPlot;
-import com.bitplan.obdii.ErrorHandler;
 import com.bitplan.obdii.OBDHandler;
 import com.bitplan.obdii.PIDResponse;
 import com.bitplan.obdii.TripletDisplay;
@@ -64,6 +64,7 @@ public class OBDTriplet extends OBDHandler {
   DoubleValue accelerator;
   BooleanValue blinkerLeft;
   BooleanValue blinkerRight;
+  public DoubleValue batteryCapacity;
   BooleanValue doorOpen;
   BooleanValue parkingLight;
   BooleanValue headLight;
@@ -159,8 +160,11 @@ public class OBDTriplet extends OBDHandler {
    * @return
    */
   protected CANInfo getCanInfo(String canInfoName) {
-    CANInfo canInfo = this.getElm327().getVehicleGroup()
+    VehicleGroup vg = this.getElm327().getVehicleGroup();
+    CANInfo canInfo = vg
         .getCANInfoByName(canInfoName);
+    if (canInfo==null)
+        throw new RuntimeException("Misconfigured canValue "+canInfoName+" missing canInfo in vehicle Group "+vg.getName());
     return canInfo;
   }
 
@@ -169,6 +173,7 @@ public class OBDTriplet extends OBDHandler {
     accelerator = new DoubleValue(getCanInfo("Accelerator"));
     blinkerLeft = new BooleanValue(getCanInfo("BlinkerLeft"), "◀", "");
     blinkerRight = new BooleanValue(getCanInfo("BlinkerRight"), "▶", "");
+    batteryCapacity=new DoubleValue(getCanInfo("BatteryCapacity"));
     doorOpen = new BooleanValue(getCanInfo("DoorOpen"), "●", "");
     parkingLight = new BooleanValue(getCanInfo("ParkingLight"), "●", "");
     headLight = new BooleanValue(getCanInfo("HeadLight"), "●", "");
@@ -439,7 +444,7 @@ public class OBDTriplet extends OBDHandler {
   public List<CANValue<?>> getCANValues() {
     if (canValues == null) {
       // the top list as requested
-      CANValue<?>[] top = { this.VIN, this.cellCount, this.key, this.odometer,
+      CANValue<?>[] top = { this.VIN, this.cellCount,this.batteryCapacity, this.key, this.odometer,
           this.tripOdo, this.tripRounds, this.speed, this.rpm, this.rpmSpeed,
           this.range, this.SOC, this.climateValue, this.ventDirection,
           this.acamps, this.acvolts, this.dcamps, this.dcvolts, this.motortemp,
@@ -456,7 +461,8 @@ public class OBDTriplet extends OBDHandler {
       Map<Pid, CANValue<?>> canValueMap = new HashMap<Pid, CANValue<?>>();
       for (CANValue<?> canValue : canValues) {
         CANInfo canInfo = canValue.canInfo;
-        canValueMap.put(canInfo.getPid(), canValue);
+        Pid pid=canInfo.getPid();
+        canValueMap.put(pid, canValue);
       } // for
       // now add all raw values
       for (Pid pid : this.getElm327().getVehicleGroup().getPids()) {
@@ -613,7 +619,9 @@ public class OBDTriplet extends OBDHandler {
     for (CANValue<?> canValue : canValues) {
       if (canValue.isRead()) {
         Pid pid = canValue.canInfo.getPid();
-        pidFilter.add(pid.getPid());
+        // ignore ISO-TP based frames
+        if (!pid.isIsoTp())
+          pidFilter.add(pid.getPid());
       }
     }
     for (String pidId : pidFilter) {

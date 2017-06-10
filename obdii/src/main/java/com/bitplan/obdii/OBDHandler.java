@@ -37,6 +37,7 @@ import java.util.logging.Logger;
 
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.CANRawValue;
+import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.obdii.elm327.ELM327;
 
@@ -351,6 +352,30 @@ public abstract class OBDHandler implements ResponseHandler {
       if (display != null)
         showValues(display);
     }
+  }
+  
+  /**
+   * read the given Pid
+   * @param display
+   * @param pid
+   * @throws Exception 
+   */
+  public void readPid(CANValueDisplay display,Pid pid) throws Exception{
+    if (!pid.isIsoTp()) {
+      throw new IllegalArgumentException("Pid "+pid.getName()+"("+pid.getPid()+") is not a ISO-TP frame pid it can not be read with readPid");
+    }
+    // stop current communication
+    sendCommand("", ".*", true);
+    // make sure lenght is available
+    sendCommand("AT L1", ".*");
+    sendCommand("ATFCSH"+pid,"OK");
+    // FIXME - this is not true for all Pids
+    sendCommand("ATFCSD300000","OK");
+    sendCommand("ATFCSM1","OK");
+    sendCommand("ATFCSH"+pid,"OK");
+    sendCommand("ATSH"+pid,"OK");
+    // FIXME - this is not true for all Pids - make configurable
+    sendCommand("2101","OK");
   }
 
   /**

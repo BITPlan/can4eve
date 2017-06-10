@@ -93,6 +93,7 @@ public class ELM327SimulatorConnection extends ELM327 {
         } else if (command.equals("Z")) {
           log("Resetting OBD");
           filter = null;
+          ecu=null;
           outputWithPrompt("OK");
         } else if (command.startsWith("L")) {
           String option = command.substring(1).trim();
@@ -144,7 +145,12 @@ public class ELM327SimulatorConnection extends ELM327 {
         } else if (command.startsWith("FCSH")) {
           // ECU selection
           ecu=command.substring(4);
-          log("selected ecu="+ecu);
+          log("fcsh selected ecu="+ecu);
+          outputWithPrompt("OK");
+        } else if (command.startsWith("SH")) {
+          // ECU selection
+          ecu=command.substring(4);
+          log("sh selected ecu="+ecu);
           outputWithPrompt("OK");
         } else if (command.startsWith("CRA")) {
           filter = command.substring(3).trim();
@@ -211,7 +217,8 @@ public class ELM327SimulatorConnection extends ELM327 {
           monitor.start();
           monitors.add(monitor);
         } else if (command.equals("2101")) {
-          // TODO triplet specific
+          outputWithPrompt("OK");
+          outputWithPrompt("");
         } else if (command.equals("0100")) {
           outputWithPrompt("SEARCHING ...");
           pause(2000, 0);

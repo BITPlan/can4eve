@@ -26,6 +26,8 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
+import com.bitplan.can4eve.ErrorHandler;
+
 public abstract class Main {
   public static boolean testMode;
   protected static int exitCode;

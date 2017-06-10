@@ -1231,6 +1231,24 @@
           "maxIndex": 0
         }
       ]
+    },
+    {
+      "name": "BatteryCapacity",
+      "pid": "761",
+      "freq": -1,
+      "isoTp": true,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "BatteryCapacity",
+          "title": "Battery Capacity",
+          "description": "The remaining battery Capacity in Ah",
+          "format": "%4.1f",
+          "type": "DoubleValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
     }
   ]
 }

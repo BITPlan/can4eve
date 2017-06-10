@@ -33,6 +33,7 @@ public class CANInfo {
   String format;
   String unit;
   String type;
+
   
   int historyValuesPerMinute;
   int maxIndex;
@@ -93,4 +94,5 @@ public class CANInfo {
   public void setMaxIndex(int maxIndex) {
     this.maxIndex = maxIndex;
   }
+ 
 }

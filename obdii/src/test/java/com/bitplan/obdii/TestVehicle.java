@@ -102,13 +102,21 @@ public class TestVehicle extends TestOBDII {
     
     VehicleGroup vg=gson.fromJson(json, VehicleGroup.class);
     assertEquals(3,vg.getModels().size());
-    assertEquals(50,vg.getPids().size());
+    assertEquals(51,vg.getPids().size());
   }
   
   @Test
   public void testVehicleGroupFromClasspath() throws Exception {
     VehicleGroup vg=getVehicleGroup();
     assertEquals(3,vg.getModels().size());
-    assertEquals(50,vg.getPids().size());
+    assertEquals(51,vg.getPids().size());
+  }
+  
+  @Test
+  public void testBatteryCapacityPid() throws Exception {
+    VehicleGroup vg=getVehicleGroup();
+    CANInfo bc = vg.getCANInfoByName("BatteryCapacity");
+    assertNotNull("There should be a pid for the battery capacity",bc);
+    assertTrue("BatteryCapacity should be an ISO-TP frame based info",bc.getPid().isIsoTp());
   }
 }
