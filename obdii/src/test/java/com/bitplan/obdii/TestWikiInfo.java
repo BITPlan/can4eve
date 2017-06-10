@@ -36,6 +36,7 @@ import com.bitplan.can4eve.Pid;
 public class TestWikiInfo extends TestOBDII {
   @Test
   public void testWikiInfo() throws Exception {
+    boolean output=false;
     List<CANInfo> allcaninfos=new ArrayList<CANInfo>();
     for (Pid pid : getVehicleGroup().getPids()) {
       String freq = "";
@@ -52,6 +53,7 @@ public class TestWikiInfo extends TestOBDII {
         CANInfo canInfo = caninfos.get(i);
           description = description + String.format("%s%s",caninfos.size()>2?"\n# ":"",canInfo.getDescription());
       }
+      if (output)
       System.out.println(String.format(
           "{{PID|id=%s\n|name=%s%s\n|description=%s\n|examples=%s\n|storemode=property\n}}\n{{PID|id=%s|viewmode=masterdetail}}",
           pid.getPid(), pid.getName(), freq, description,pid.getExamples(),pid.getPid()));
@@ -61,6 +63,7 @@ public class TestWikiInfo extends TestOBDII {
       if (canInfo.getPid() != null)
         pid = canInfo.getPid().getPid();
       if (!canInfo.getName().startsWith(("Raw")))
+        if (output)
         System.out.println(String.format(
             "{{CANInfo|name=%s|description=%s|unit=%s|pid=Cantriplet/PIDs/%s|storemode=subobject}}",
             canInfo.getTitle(), canInfo.getDescription(), canInfo.getUnit(), pid));

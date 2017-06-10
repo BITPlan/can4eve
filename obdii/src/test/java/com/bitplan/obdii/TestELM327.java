@@ -393,7 +393,7 @@ public class TestELM327 extends TestOBDII {
         Thread.sleep(2000);
       obdTriplet.getElm327().setHeader(true);
       obdTriplet.getElm327().setLength(true);
-      File logCAN = new File("src/test/data/" + fileName);
+      File logCAN = new File("src/test/data/" + fileName+".zip");
       assertTrue("" + logCAN.getPath() + " should exist", logCAN.exists());
       LogReader logReader = new LogReader(logCAN, obdTriplet);
       final int updates = 300;
