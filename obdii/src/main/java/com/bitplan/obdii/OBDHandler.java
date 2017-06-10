@@ -370,15 +370,16 @@ public abstract class OBDHandler implements ResponseHandler {
     // make sure length is available
     sendCommand("AT L1", ".*");
     sendCommand("AT H1", "OK");
-    sendCommand("ATFCSH"+isoPid,"OK");
+    sendCommand("AT SP6", "OK");
+    sendCommand("AT FCSH"+isoPid,"OK");
     // FIXME - this is not true for all Pids
-    sendCommand("ATFCSD300000","OK");
-    sendCommand("ATFCSM1","OK");
-    sendCommand("ATFCSH"+isoPid,"OK");
-    sendCommand("ATSH"+isoPid,"OK");
+    sendCommand("AT FCSD300000","OK");
+    sendCommand("AT FCSM1","OK");
+    sendCommand("AT FCSH"+isoPid,"OK");
+    sendCommand("AT SH"+isoPid,"OK");
     // FIXME - this is not true for all Pids - make configurable
     // special mode 21
-    sendCommand("2101","OK");
+    sendCommand("2101",".*");
   }
 
   /**
