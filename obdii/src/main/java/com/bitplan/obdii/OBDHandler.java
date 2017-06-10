@@ -334,6 +334,8 @@ public abstract class OBDHandler implements ResponseHandler {
   public void checkPid(CANValueDisplay display, String pidId, long frameLimit)
       throws Exception {
     Pid pid=this.getElm327().getVehicleGroup().getPidById(pidId);
+    if (pid==null)
+      throw new IllegalArgumentException("unknown pid "+pidId);
     if (pid.getIsoTp()!=null) {
       this.readPid(display, pid);
       Thread.sleep(this.getElm327().getTimeout()*5);
