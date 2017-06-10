@@ -37,7 +37,7 @@ import com.bitplan.can4eve.CANInfo;
  * @author wf
  *
  */
-public class TestVehicle {
+public class TestVehicle extends TestOBDII {
   
   /**
    * convert the old enum based pids to a new gson loadable pid
@@ -96,9 +96,18 @@ public class TestVehicle {
     // new GraphAdapterBuilder().addType(Pid.class).registerOn(gsonBuilder);
     Gson gson = gsonBuilder.setPrettyPrinting().create();;
     String json=gson.toJson(vehicleGroup);
-    System.out.println(json);
+    assertNotNull(json);
+    if (debug)
+      System.out.println(json);
     
     VehicleGroup vg=gson.fromJson(json, VehicleGroup.class);
+    assertEquals(3,vg.getModels().size());
+    assertEquals(50,vg.getPids().size());
+  }
+  
+  @Test
+  public void testVehicleGroupFromClasspath() throws Exception {
+    VehicleGroup vg=getVehicleGroup();
     assertEquals(3,vg.getModels().size());
     assertEquals(50,vg.getPids().size());
   }

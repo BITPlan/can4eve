@@ -20,13 +20,12 @@
  */
 package com.bitplan.obdii;
 
-import java.io.InputStream;
-
 import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.VehicleGroup;
 
 public abstract class TestOBDII {
   static VehicleGroup vehicleGroup;
+  boolean debug=false;
   
   /**
    * get the VehicleGroup
