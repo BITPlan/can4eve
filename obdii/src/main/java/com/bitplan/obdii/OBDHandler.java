@@ -242,6 +242,7 @@ public abstract class OBDHandler implements ResponseHandler {
     String response;
     try {
       getElm327().output("\t");
+      getElm327().output("ATZ");
       getElm327().output("ATL1");
       getElm327().output("ATE0");
       getElm327().output("ATL1");
