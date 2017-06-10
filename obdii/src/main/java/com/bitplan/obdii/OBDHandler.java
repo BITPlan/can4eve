@@ -388,6 +388,7 @@ public abstract class OBDHandler implements ResponseHandler {
     sendCommand("AT L1", ".*");
     sendCommand("AT H1", "OK");
     sendCommand("AT SP6", "OK");
+    sendCommand("AT CRA " + isoPid,"OK");
     sendCommand("AT FCSH"+isoPid,"OK");
     // FIXME - this is not true for all Pids
     sendCommand("AT FCSD300000","OK");
