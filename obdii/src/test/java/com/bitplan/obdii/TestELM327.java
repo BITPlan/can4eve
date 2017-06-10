@@ -469,7 +469,7 @@ public class TestELM327 extends TestOBDII {
     }
     long done = System.nanoTime();
     long time = (done - start) / 1000000;
-    assertTrue("time should be short but is " + time, time < 25);
+    assertTrue("time should be short but is " + time, time < 30);
   }
 
   @Test
