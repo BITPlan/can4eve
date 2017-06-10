@@ -1,0 +1,1236 @@
+{
+  "name": "Triplet",
+  "description": "i-Miev,Ion and C-Zero",
+  "models": [
+    {
+      "maker": "Mitsubishi",
+      "model": "i-Miev",
+      "WIM": "JA3",
+      "picture": "https://www.mitsubishi-motors.at/uploadedImages/Contents/Models/i-MiEV_MY12/i-MiEV_MY12i-MiEV/360_View/360-view//i-MiEV_0f4aa833-ea41-40a3-aa54-c35304bce685_6dab5e75-54b2-46bc-bc2b-728bcb18e7ec_3079_01.png"
+    },
+    {
+      "maker": "Peugeot",
+      "model": "Ion",
+      "WIM": "VF3",
+      "picture": "http://media.peugeot.fr/image/63/5/voiture-electrique-peugeot-ion-design-exterieur.17635.43.jpg"
+    },
+    {
+      "maker": "Citroën",
+      "model": "C-Zero",
+      "WIM": "VF7",
+      "picture": "http://media.citroen.de/image/62/2/citroen-c-zero.14622.png"
+    }
+  ],
+  "pids": [
+    {
+      "name": "Accelerator",
+      "pid": "210",
+      "freq": 50,
+      "examples": "210 7 00 00 E9 80 80 00 00",
+      "caninfos": [
+        {
+          "name": "Raw210",
+          "title": "Raw210",
+          "description": "Raw Value 210",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        },
+        {
+          "name": "Accelerator",
+          "title": "Accelerator",
+          "description": "Accelerator Pedal",
+          "format": "%4.0f %%",
+          "type": "DoubleValue",
+          "historyValuesPerMinute": 60,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "AmpsVolts",
+      "pid": "373",
+      "freq": 100,
+      "examples": "373 8 C7 C6 7F 5E 0C C0 00 06",
+      "caninfos": [
+        {
+          "name": "Raw375",
+          "title": "Raw375",
+          "description": "Raw Value 375",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        },
+        {
+          "name": "DCAmps",
+          "title": "DC Amps",
+          "description": "Battery Power Amps",
+          "format": "%7.1f A ",
+          "type": "DoubleValue",
+          "historyValuesPerMinute": 30,
+          "maxIndex": 0
+        },
+        {
+          "name": "DCVolts",
+          "title": "DC Volts",
+          "description": "Battery Current Volts",
+          "format": "%5.1f V",
+          "type": "DoubleValue",
+          "historyValuesPerMinute": 30,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "ACAmpsVolts",
+      "pid": "389",
+      "freq": 10,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw389",
+          "title": "Raw389",
+          "description": "Raw Value 389",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        },
+        {
+          "name": "ACAmps",
+          "title": "AC Amps",
+          "description": "Charging Power Amps",
+          "format": "%7.1f A ",
+          "type": "DoubleValue",
+          "historyValuesPerMinute": 10,
+          "maxIndex": 0
+        },
+        {
+          "name": "ACVolts",
+          "title": "AC Volts",
+          "description": "Charging Current Volts",
+          "format": "%5.1f V",
+          "type": "DoubleValue",
+          "historyValuesPerMinute": 10,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "BreakPedal",
+      "pid": "208",
+      "freq": 50,
+      "examples": "208 8 00 20 60 E3 C0 00 C0 00",
+      "caninfos": [
+        {
+          "name": "Raw208",
+          "title": "Raw208",
+          "description": "Raw Value 208",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        },
+        {
+          "name": "BreakPedal",
+          "title": "Break Pedal",
+          "description": "Break Pedal Position",
+          "format": "%4.0f %%",
+          "type": "DoubleValue",
+          "historyValuesPerMinute": 60,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "BreakPressed",
+      "pid": "231",
+      "freq": 50,
+      "examples": "states:\n# off: 231 8 00 00 00 00 00 00 00 00\n#on: 231 8 00 00 00 00 02 00 00 00",
+      "caninfos": [
+        {
+          "name": "Raw231",
+          "title": "Raw231",
+          "description": "Raw Value 231",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        },
+        {
+          "name": "BreakPressed",
+          "title": "Break Pressed",
+          "description": "Break Pressed",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 60,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "CellInfo1",
+      "pid": "6E1",
+      "freq": 25,
+      "examples": "6E1 8 01 00 49 4B 01 71 01 72",
+      "caninfos": [
+        {
+          "name": "Raw6E1",
+          "title": "Raw6E1",
+          "description": "Raw Value 6E1",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        },
+        {
+          "name": "CellVoltage",
+          "title": "Cell Voltage",
+          "description": "Cell Voltage",
+          "format": "5.2f V",
+          "type": "DoubleValue",
+          "historyValuesPerMinute": 4,
+          "maxIndex": 88
+        },
+        {
+          "name": "CellTemperature",
+          "title": "Cell Temperature",
+          "description": "Cell Temperature",
+          "format": "%2d °C",
+          "type": "DoubleValue",
+          "historyValuesPerMinute": 4,
+          "maxIndex": 66
+        }
+      ]
+    },
+    {
+      "name": "CellInfo2",
+      "pid": "6E2",
+      "freq": 25,
+      "examples": "6E2 8 07 4B 4B 01 01 7F 01 80",
+      "caninfos": [
+        {
+          "name": "Raw6E2",
+          "title": "Raw6E2",
+          "description": "Raw Value 6E2",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        },
+        {
+          "name": "CellVoltage",
+          "title": "Cell Voltage",
+          "description": "Cell Voltage",
+          "format": "5.2f V",
+          "type": "DoubleValue",
+          "historyValuesPerMinute": 4,
+          "maxIndex": 88
+        },
+        {
+          "name": "CellTemperature",
+          "title": "Cell Temperature",
+          "description": "Cell Temperature",
+          "format": "%2d °C",
+          "type": "DoubleValue",
+          "historyValuesPerMinute": 4,
+          "maxIndex": 66
+        }
+      ]
+    },
+    {
+      "name": "CellInfo3",
+      "pid": "6E3",
+      "freq": 25,
+      "examples": "6E3 8 01 4A 48 00 01 7C 01 7C",
+      "caninfos": [
+        {
+          "name": "Raw6E3",
+          "title": "Raw6E3",
+          "description": "Raw Value 6E3",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        },
+        {
+          "name": "CellVoltage",
+          "title": "Cell Voltage",
+          "description": "Cell Voltage",
+          "format": "5.2f V",
+          "type": "DoubleValue",
+          "historyValuesPerMinute": 4,
+          "maxIndex": 88
+        },
+        {
+          "name": "CellTemperature",
+          "title": "Cell Temperature",
+          "description": "Cell Temperature",
+          "format": "%2d °C",
+          "type": "DoubleValue",
+          "historyValuesPerMinute": 4,
+          "maxIndex": 66
+        }
+      ]
+    },
+    {
+      "name": "CellInfo4",
+      "pid": "6E4",
+      "freq": 25,
+      "examples": "6E4 8 07 00 00 00 01 5B 01 5B",
+      "caninfos": [
+        {
+          "name": "Raw6E4",
+          "title": "Raw6E4",
+          "description": "Raw Value 6E4",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        },
+        {
+          "name": "CellVoltage",
+          "title": "Cell Voltage",
+          "description": "Cell Voltage",
+          "format": "5.2f V",
+          "type": "DoubleValue",
+          "historyValuesPerMinute": 4,
+          "maxIndex": 88
+        },
+        {
+          "name": "CellTemperature",
+          "title": "Cell Temperature",
+          "description": "Cell Temperature",
+          "format": "%2d °C",
+          "type": "DoubleValue",
+          "historyValuesPerMinute": 4,
+          "maxIndex": 66
+        }
+      ]
+    },
+    {
+      "name": "ChargerTemp",
+      "pid": "286",
+      "freq": 10,
+      "examples": "286 8 00 00 00 38 00 00 00 00",
+      "caninfos": [
+        {
+          "name": "Raw286",
+          "title": "Raw286",
+          "description": "Raw Value 286",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        },
+        {
+          "name": "ChargerTemp",
+          "title": "Charger temp",
+          "description": "Charger temperature °C",
+          "format": "%2d °C",
+          "type": "IntegerValue",
+          "historyValuesPerMinute": 2,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "Climate",
+      "pid": "3A4",
+      "freq": 10,
+      "examples": "3A4 8 09 55 96 7C 6C 84 00 60",
+      "caninfos": [
+        {
+          "name": "Raw3A4",
+          "title": "Raw3A4",
+          "description": "Raw Value 3A4",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        },
+        {
+          "name": "Climate",
+          "title": "Climate",
+          "description": "Climate and Heating settings",
+          "format": "%s",
+          "type": "ClimateValue",
+          "historyValuesPerMinute": 5,
+          "maxIndex": 0
+        },
+        {
+          "name": "VentDirection",
+          "title": "Vent Dir",
+          "description": "Ventilator direction",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 5,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "Key",
+      "pid": "101",
+      "freq": 10,
+      "examples": "states:\n# off:101 1 00\n# on:101 1 04",
+      "caninfos": [
+        {
+          "name": "Raw101",
+          "title": "Raw101",
+          "description": "Raw Value 101",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        },
+        {
+          "name": "Key",
+          "title": "Key",
+          "description": "Key state",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "Lights",
+      "pid": "424",
+      "freq": 25,
+      "examples": "424 8 87 60 0C 00 45 CB 01 FF",
+      "caninfos": [
+        {
+          "name": "Raw424",
+          "title": "Raw424",
+          "description": "Raw Value 424",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        },
+        {
+          "name": "BlinkerLeft",
+          "title": "Blinker Left",
+          "description": "Left Blinker",
+          "format": "%s",
+          "type": "BooleanValue",
+          "historyValuesPerMinute": 30,
+          "maxIndex": 0
+        },
+        {
+          "name": "BlinkerRight",
+          "title": "Blinker Right",
+          "description": "Right Blinker",
+          "format": "%s",
+          "type": "BooleanValue",
+          "historyValuesPerMinute": 30,
+          "maxIndex": 0
+        },
+        {
+          "name": "DoorOpen",
+          "title": "Door Open",
+          "description": "Door Open",
+          "format": "%s",
+          "type": "BooleanValue",
+          "historyValuesPerMinute": 30,
+          "maxIndex": 0
+        },
+        {
+          "name": "ParkingLight",
+          "title": "Parking Light",
+          "description": "Parking Light",
+          "format": "%s",
+          "type": "BooleanValue",
+          "historyValuesPerMinute": 4,
+          "maxIndex": 0
+        },
+        {
+          "name": "HeadLight",
+          "title": "Head Light",
+          "description": "Head Light",
+          "format": "%s",
+          "type": "BooleanValue",
+          "historyValuesPerMinute": 4,
+          "maxIndex": 0
+        },
+        {
+          "name": "HighBeam",
+          "title": "High Beam",
+          "description": "High Beam",
+          "format": "%s",
+          "type": "BooleanValue",
+          "historyValuesPerMinute": 4,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "MotorTemp_RPM",
+      "pid": "298",
+      "freq": 10,
+      "examples": "298 8 5E 3A 43 39 3C 00 41 E0",
+      "caninfos": [
+        {
+          "name": "Raw298",
+          "title": "Raw298",
+          "description": "Raw Value 298",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        },
+        {
+          "name": "MotorTemp",
+          "title": "Motor temp",
+          "description": "Motor temperature °C",
+          "format": "%2d °C",
+          "type": "IntegerValue",
+          "historyValuesPerMinute": 2,
+          "maxIndex": 0
+        },
+        {
+          "name": "RPM",
+          "title": "RPM",
+          "description": "Rounds per minute",
+          "format": "%4d rpm",
+          "type": "IntegerValue",
+          "historyValuesPerMinute": 20,
+          "maxIndex": 0
+        },
+        {
+          "name": "RPMSpeed",
+          "title": "RPM Speed",
+          "description": "Speed from RPM",
+          "format": "%6.3f m/r",
+          "type": "DoubleValue",
+          "historyValuesPerMinute": 20,
+          "maxIndex": 0
+        },
+        {
+          "name": "TripOdo",
+          "title": "Trip Odo",
+          "description": "Trip km",
+          "format": "%7.3f km",
+          "type": "DoubleValue",
+          "historyValuesPerMinute": 4,
+          "maxIndex": 0
+        },
+        {
+          "name": "TripRounds",
+          "title": "Trip Rounds",
+          "description": "Trip rounds",
+          "format": "%8.0f",
+          "type": "DoubleValue",
+          "historyValuesPerMinute": 60,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "Odometer_Speed",
+      "pid": "412",
+      "freq": 10,
+      "examples": "412 8 FE 71 00 0B 97 00 21 12",
+      "caninfos": [
+        {
+          "name": "Raw412",
+          "title": "Raw412",
+          "description": "Raw Value 412",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        },
+        {
+          "name": "Odometer",
+          "title": "total km",
+          "description": "total km",
+          "format": "%6d km",
+          "type": "IntegerValue",
+          "historyValuesPerMinute": 4,
+          "maxIndex": 0
+        },
+        {
+          "name": "Speed",
+          "title": "Speed",
+          "description": "Speed km/h",
+          "format": "%3d km/h",
+          "type": "IntegerValue",
+          "historyValuesPerMinute": 20,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "Range",
+      "pid": "346",
+      "freq": 50,
+      "examples": "346 8 37 31 57 20 00 00 00 3B",
+      "caninfos": [
+        {
+          "name": "Raw346",
+          "title": "Raw346",
+          "description": "Raw Value 346",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        },
+        {
+          "name": "Range",
+          "title": "Range",
+          "description": "Range km",
+          "format": "%3d km",
+          "type": "IntegerValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "SOC",
+      "pid": "374",
+      "freq": 10,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw374",
+          "title": "Raw374",
+          "description": "Raw Value 374",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        },
+        {
+          "name": "SOC",
+          "title": "SOC",
+          "description": "State of Charging %",
+          "format": "%4.1f %%",
+          "type": "DoubleValue",
+          "historyValuesPerMinute": 4,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "ShifterPosition",
+      "pid": "418",
+      "freq": 20,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw418",
+          "title": "Raw418",
+          "description": "Raw Value 418",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        },
+        {
+          "name": "ShifterPosition",
+          "title": "Shifter",
+          "description": "Shifter position",
+          "format": "%s",
+          "type": "ShifterPositionValue",
+          "historyValuesPerMinute": 60,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "Steering_Wheel",
+      "pid": "236",
+      "freq": 100,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw236",
+          "title": "Raw236",
+          "description": "Raw Value 236",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        },
+        {
+          "name": "SteeringWheelPosition",
+          "title": "Steering Position",
+          "description": "Steering Wheel position",
+          "format": "%7.1f deg",
+          "type": "DoubleValue",
+          "historyValuesPerMinute": 60,
+          "maxIndex": 0
+        },
+        {
+          "name": "SteeringWheelMovement",
+          "title": "Steering Movement",
+          "description": "Steering Wheel movement",
+          "format": "%7.1f mov",
+          "type": "DoubleValue",
+          "historyValuesPerMinute": 60,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "VIN",
+      "pid": "29A",
+      "freq": 10,
+      "examples": "3 indices:\n#29A 8 00 56 46 33 31 4E 5A 4B\n#29A 8 01 59 5A 48 55 38 30 30\n#29A 8 02 37 36 39 FF FF FF FF",
+      "caninfos": [
+        {
+          "name": "Raw29A",
+          "title": "Raw29A",
+          "description": "Raw Value 29A",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        },
+        {
+          "name": "VIN",
+          "title": "VIN",
+          "description": "Vehicle Identification number",
+          "format": "%20s",
+          "type": "VINValue",
+          "historyValuesPerMinute": 0,
+          "maxIndex": 0
+        },
+        {
+          "name": "CellCount",
+          "title": "# of Cells",
+          "description": "# of battery cells",
+          "format": "%2d",
+          "type": "IntegerValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "VIN2",
+      "pid": "6FA",
+      "freq": 10,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw6FA",
+          "title": "Raw6FA",
+          "description": "Raw Value 6FA",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        },
+        {
+          "name": "VIN2",
+          "title": "VIN2",
+          "description": "Vehicle Identification number 2",
+          "format": "%20s",
+          "type": "VINValue",
+          "historyValuesPerMinute": 0,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID1B6",
+      "pid": "1B6",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw1B6",
+          "title": "Raw1B6",
+          "description": "Raw Value 1B6",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID212",
+      "pid": "212",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw212",
+          "title": "Raw212",
+          "description": "Raw Value 212",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID285",
+      "pid": "285",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw285",
+          "title": "Raw285",
+          "description": "Raw Value 285",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID288",
+      "pid": "288",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw288",
+          "title": "Raw288",
+          "description": "Raw Value 288",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID308",
+      "pid": "308",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw308",
+          "title": "Raw308",
+          "description": "Raw Value 308",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID375",
+      "pid": "375",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw375",
+          "title": "Raw375",
+          "description": "Raw Value 375",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID384",
+      "pid": "384",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw384",
+          "title": "Raw384",
+          "description": "Raw Value 384",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID38A",
+      "pid": "38A",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw38A",
+          "title": "Raw38A",
+          "description": "Raw Value 38A",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID38D",
+      "pid": "38D",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw38D",
+          "title": "Raw38D",
+          "description": "Raw Value 38D",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID39B",
+      "pid": "39B",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw39B",
+          "title": "Raw39B",
+          "description": "Raw Value 39B",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID408",
+      "pid": "408",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw408",
+          "title": "Raw408",
+          "description": "Raw Value 408",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID564",
+      "pid": "564",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw564",
+          "title": "Raw564",
+          "description": "Raw Value 564",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID565",
+      "pid": "565",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw565",
+          "title": "Raw565",
+          "description": "Raw Value 565",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID568",
+      "pid": "568",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw568",
+          "title": "Raw568",
+          "description": "Raw Value 568",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID5A1",
+      "pid": "5A1",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw5A1",
+          "title": "Raw5A1",
+          "description": "Raw Value 5A1",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID695",
+      "pid": "695",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw695",
+          "title": "Raw695",
+          "description": "Raw Value 695",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID696",
+      "pid": "696",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw696",
+          "title": "Raw696",
+          "description": "Raw Value 696",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID697",
+      "pid": "697",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw697",
+          "title": "Raw697",
+          "description": "Raw Value 697",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID6D0",
+      "pid": "6D0",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw6D0",
+          "title": "Raw6D0",
+          "description": "Raw Value 6D0",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID6D1",
+      "pid": "6D1",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw6D1",
+          "title": "Raw6D1",
+          "description": "Raw Value 6D1",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID6D2",
+      "pid": "6D2",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw6D2",
+          "title": "Raw6D2",
+          "description": "Raw Value 6D2",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID6D3",
+      "pid": "6D3",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw6D3",
+          "title": "Raw6D3",
+          "description": "Raw Value 6D3",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID6D4",
+      "pid": "6D4",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw6D4",
+          "title": "Raw6D4",
+          "description": "Raw Value 6D4",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID6D5",
+      "pid": "6D5",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw6D5",
+          "title": "Raw6D5",
+          "description": "Raw Value 6D5",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID6D6",
+      "pid": "6D6",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw6D6",
+          "title": "Raw6D6",
+          "description": "Raw Value 6D6",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID6DA",
+      "pid": "6DA",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw6DA",
+          "title": "Raw6DA",
+          "description": "Raw Value 6DA",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID738",
+      "pid": "738",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw738",
+          "title": "Raw738",
+          "description": "Raw Value 738",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID75A",
+      "pid": "75A",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw75A",
+          "title": "Raw75A",
+          "description": "Raw Value 75A",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    },
+    {
+      "name": "PID75B",
+      "pid": "75B",
+      "freq": -1,
+      "examples": "",
+      "caninfos": [
+        {
+          "name": "Raw75B",
+          "title": "Raw75B",
+          "description": "Raw Value 75B",
+          "format": "%s",
+          "type": "StringValue",
+          "historyValuesPerMinute": 1,
+          "maxIndex": 0
+        }
+      ]
+    }
+  ]
+}
