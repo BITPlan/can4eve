@@ -41,7 +41,8 @@ public class PIDResponse {
   public static boolean debug = false;
 
   public static final Pattern PID_LINE_PATTERN = Pattern
-      .compile("([0-9A-F]{3})\\s+([0-9])\\s(([0-9A-F]{2}\\s)+)");
+      .compile("([0-9A-F]{3})\\s+([0-9]|[0-9A_F]{2})\\s(([0-9A-F]{2}\\s)+)");
+  
   // data representation
   // FIXME use byte?
   public int[] d;
@@ -67,14 +68,21 @@ public class PIDResponse {
       rawString = response;
       pidId = pmatcher.group(1);
       String lenStr = pmatcher.group(2);
-      String[] ds = pmatcher.group(3).split("\\s");
+      boolean isotp=lenStr.length()==2;
+      String data;
+      if (isotp) {
+        data=lenStr+" "+pmatcher.group(3);
+      } else {
+        data=pmatcher.group(3);
+      }
+      String[] ds=data.split("\\s");
       pidHex = hex2decimal(pidId);
       pid = elm327.getVehicleGroup().getPidById(pidId);
       if (pid == null) {
         LOGGER.log(Level.WARNING, "Unknown PID " + pidId);
       } else {
         log("pid=" + pid.toString());
-        if (elm327.isLength()) {
+        if (elm327.isLength() && !isotp) {
           len = hex2decimal(lenStr);
         } else {
           len = 8; // FIXME - what if length not set? - e.g look for next three

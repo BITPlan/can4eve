@@ -237,6 +237,8 @@ public class OBDTriplet extends OBDHandler {
    *          - the datetime of the response
    */
   public void handleResponse(PIDResponse pr, Date timeStamp) {
+    if (debug)
+      LOGGER.log(Level.INFO,"triplet handling PID Response "+pr.pidId+" ("+pr.pid.getName()+")");
     switch (pr.pid.getName()) {
     case "Accelerator":
       accelerator.setValue(pr.d[2] / 250.0 * 100, timeStamp);
@@ -249,6 +251,14 @@ public class OBDTriplet extends OBDHandler {
     case "ACAmpsVolts":
       acvolts.setValue(pr.d[1] * 1.0, timeStamp);
       acamps.setValue(pr.d[6] / 10.0, timeStamp);
+      break;
+    case "BatteryCapacity":
+      int bindex = pr.d[0];
+      if (bindex==0x24) {
+        double ah=(pr.d[3]*256+pr.d[4])/10.0;
+        // LOGGER.log(Level.INFO,String.format("Battery capacity is: %4.1f Ah", ah));
+        batteryCapacity.setValue(ah, timeStamp);
+      }
       break;
     case "BreakPedal":
       // TODO 6F FF FF FF FF FF
@@ -619,8 +629,10 @@ public class OBDTriplet extends OBDHandler {
     for (CANValue<?> canValue : canValues) {
       if (canValue.isRead()) {
         Pid pid = canValue.canInfo.getPid();
-        // ignore ISO-TP based frames
-        if (!pid.isIsoTp())
+        // handle ISO-TP based frames differently by direct reading
+        if (pid.getIsoTp()!=null)
+          this.readPid(display, pid);
+        else 
           pidFilter.add(pid.getPid());
       }
     }

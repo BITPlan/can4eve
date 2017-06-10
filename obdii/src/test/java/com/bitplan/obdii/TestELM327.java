@@ -174,10 +174,23 @@ public class TestELM327 extends TestOBDII {
     elm327.log("" + msecs + " msescs");
     assertTrue(msecs < 100);
   }
-
+  
+  @Test
+  public void testBatteryCapacity() throws Exception {
+    this.prepareOBDTriplet(simulated, debug);
+    obdTriplet.init();
+    obdTriplet.initOBD();
+    obdTriplet.setDebug(true);
+    obdTriplet.readPid(display,byName("BatteryCapacity"));
+    Thread.sleep(200);
+    assertNotNull("the battery capacity should be set",obdTriplet.batteryCapacity.getValue());
+    assertEquals(new Double(44.7),obdTriplet.batteryCapacity.getValue(),0.01);
+  }
+  
   @Test
   public void testOBDTriplet() throws Exception {
-    PIDResponse.debug=true;
+    // debug=true;
+    // PIDResponse.debug=true;
     this.prepareOBDTriplet(simulated, debug);
     obdTriplet.init();
     obdTriplet.initOBD();
@@ -188,10 +201,11 @@ public class TestELM327 extends TestOBDII {
     obdTriplet.monitorPid(display, byName("Steering_Wheel").getPid(), frameLimit);
     obdTriplet.monitorPid(display, byName("Odometer_Speed").getPid(), frameLimit);
     obdTriplet.monitorPid(display, byName("VIN").getPid(), frameLimit * 3);
-    // Thread.sleep(50000);   
-    // display.waitClose();
-    assertNotNull(obdTriplet.batteryCapacity);
+    //Thread.sleep(50000);   
+    //display.waitClose();
+    assertNotNull("the battery capacity should be set",obdTriplet.batteryCapacity.getValue());
     assertNotNull(obdTriplet.SOC);
+    assertEquals(new Double(44.8),obdTriplet.batteryCapacity.getValue(),0.1);
     assertEquals(new Double(100.0), obdTriplet.SOC.getValue(), 0.1);
     assertEquals(new Integer(721), obdTriplet.odometer.getValue());
     assertEquals(new Double(-9.5),obdTriplet.steeringWheelPosition.getValue(),0.01);

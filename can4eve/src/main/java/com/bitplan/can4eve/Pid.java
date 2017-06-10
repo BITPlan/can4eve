@@ -43,7 +43,7 @@ public class Pid {
   String pid; // hexadecimal code for the PID 
   int freq; // frequency of transmission on bus per second
   String examples;
-  boolean isoTp; // this is an ISO-TP frame based Pid
+  String isoTp; // this is an ISO-TP frame based Pid
   List<CANInfo> caninfos=new ArrayList<CANInfo>();
 
   public void addCANInfo(CANInfo caninfo) {
@@ -93,10 +93,10 @@ public class Pid {
     this.examples = examples;
   }
   
-  public boolean isIsoTp() {
+  public String getIsoTp() {
     return isoTp;
   }
-  public void setIsoTp(boolean isoTp) {
+  public void setIsoTp(String isoTp) {
     this.isoTp = isoTp;
   }
   

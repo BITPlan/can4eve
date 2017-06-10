@@ -361,13 +361,14 @@ public abstract class OBDHandler implements ResponseHandler {
    * @throws Exception 
    */
   public void readPid(CANValueDisplay display,Pid pid) throws Exception{
-    if (!pid.isIsoTp()) {
+    if (pid.getIsoTp()==null) {
       throw new IllegalArgumentException("Pid "+pid.getName()+"("+pid.getPid()+") is not a ISO-TP frame pid it can not be read with readPid");
     }
     // stop current communication
     sendCommand("", ".*", true);
-    // make sure lenght is available
+    // make sure length is available
     sendCommand("AT L1", ".*");
+    sendCommand("AT H1", "OK");
     sendCommand("ATFCSH"+pid,"OK");
     // FIXME - this is not true for all Pids
     sendCommand("ATFCSD300000","OK");
@@ -375,6 +376,7 @@ public abstract class OBDHandler implements ResponseHandler {
     sendCommand("ATFCSH"+pid,"OK");
     sendCommand("ATSH"+pid,"OK");
     // FIXME - this is not true for all Pids - make configurable
+    // special mode 21
     sendCommand("2101","OK");
   }
 

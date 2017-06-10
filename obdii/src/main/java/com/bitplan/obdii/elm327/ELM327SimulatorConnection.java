@@ -218,7 +218,15 @@ public class ELM327SimulatorConnection extends ELM327 {
           monitors.add(monitor);
         } else if (command.equals("2101")) {
           outputWithPrompt("OK");
-          outputWithPrompt("");
+          output("762 10 2E 61 01 D2 D2 01 90\n" + 
+              "762 21 00 01 8F 4A 0C D0 4E\n" + 
+              "75A 03 E8 03 E8 64 64 46 45\n" + 
+              "762 22 02 4B 0C 01 5E 01 5D\n" + 
+              "762 23 01 2C 00 FA 00 FA 10\n" + 
+              "762 24 0F 0F 01 BF 01 BF 28\n" + 
+              "762 25 FE 00 00 01 8F 78 7C\n" + 
+              "762 26 64 00 01 00 00 00 00\n" + 
+              "75A 03 E8 03 E8 64 64 46 45\n");
         } else if (command.equals("0100")) {
           outputWithPrompt("SEARCHING ...");
           pause(2000, 0);

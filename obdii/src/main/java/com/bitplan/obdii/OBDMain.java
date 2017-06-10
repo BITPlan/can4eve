@@ -127,8 +127,9 @@ public class OBDMain extends Main {
     }
     if (pid != null)
       obdTriplet.monitorPid(display, pid, frameLimit);
-    else
+    else {
       obdTriplet.STMMonitor(display, obdTriplet.getCANValues(), frameLimit);
+    }
   }
 
   /**

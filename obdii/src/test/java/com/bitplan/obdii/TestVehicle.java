@@ -117,6 +117,6 @@ public class TestVehicle extends TestOBDII {
     VehicleGroup vg=getVehicleGroup();
     CANInfo bc = vg.getCANInfoByName("BatteryCapacity");
     assertNotNull("There should be a pid for the battery capacity",bc);
-    assertTrue("BatteryCapacity should be an ISO-TP frame based info",bc.getPid().isIsoTp());
+    assertEquals("761",bc.getPid().getIsoTp());
   }
 }

@@ -1234,16 +1234,16 @@
     },
     {
       "name": "BatteryCapacity",
-      "pid": "761",
+      "pid": "762",
       "freq": -1,
-      "isoTp": true,
+      "isoTp": "761",
       "examples": "",
       "caninfos": [
         {
           "name": "BatteryCapacity",
           "title": "Battery Capacity",
           "description": "The remaining battery Capacity in Ah",
-          "format": "%4.1f",
+          "format": "%4.1f Ah",
           "type": "DoubleValue",
           "historyValuesPerMinute": 1,
           "maxIndex": 0
