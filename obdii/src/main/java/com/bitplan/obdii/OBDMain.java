@@ -126,7 +126,7 @@ public class OBDMain extends Main {
       obdTriplet.logResponses(new File(logFileName), "Triplet");
     }
     if (pid != null)
-      obdTriplet.monitorPid(display, pid, frameLimit);
+      obdTriplet.checkPid(display, pid, frameLimit);
     else {
       obdTriplet.STMMonitor(display, obdTriplet.getCANValues(), frameLimit);
     }

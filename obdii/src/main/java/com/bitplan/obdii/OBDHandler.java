@@ -330,6 +330,20 @@ public abstract class OBDHandler implements ResponseHandler {
     sendCommand("AT CAF0", "OK"); // switch off automatic formatting
     getElm327().setHandleResponses(true);
   }
+  
+  public void checkPid(CANValueDisplay display, String pidId, long frameLimit)
+      throws Exception {
+    Pid pid=this.getElm327().getVehicleGroup().getPidById(pidId);
+    if (pid.getIsoTp()!=null) {
+      this.readPid(display, pid);
+      Thread.sleep(this.getElm327().getTimeout()*5);
+      if (display != null)
+        showValues(display);
+    }
+    else
+      this.monitorPid(display, pidId, frameLimit);
+    
+  }
 
   /**
    * monitor the given pid
