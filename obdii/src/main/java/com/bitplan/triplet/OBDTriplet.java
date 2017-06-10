@@ -211,9 +211,10 @@ public class OBDTriplet extends OBDHandler {
     initCanValues();
     // add all available PIDs to the available raw values
     for (Pid pid : getElm327().getVehicleGroup().getPids()) {
-      CANInfo pidInfo=pid.getFirstInfo();
+      CANInfo pidInfo = pid.getFirstInfo();
       if (debug) {
-        // LOGGER.log(Level.INFO,"rawValue "+pidInfo.getPid().getPid()+" added");
+        // LOGGER.log(Level.INFO,"rawValue "+pidInfo.getPid().getPid()+"
+        // added");
       }
       getCanRawValues().put(pid.getPid(), new CANRawValue(pidInfo));
     }
@@ -605,12 +606,16 @@ public class OBDTriplet extends OBDHandler {
   public void STMMonitor(CANValueDisplay display, List<CANValue<?>> canValues,
       long frameLimit) throws Exception {
     sendCommand("STFAC", "OK"); // FIXME - not understood by ELM327 v2.1 device
+    List<String> pidFilter = new ArrayList<String>();
     for (CANValue<?> canValue : canValues) {
       if (canValue.isRead()) {
         for (Pid pid : this.getElm327().getVehicleGroup().getPids()) {
-          sendCommand("STFAP " + pid.getPid().toString() + ",FFF", "OK");
+          pidFilter.add(pid.getPid());
         }
       }
+    }
+    for (String pidId : pidFilter) {
+      sendCommand("STFAP " + pidId + ",FFF", "OK");
     }
     getElm327().output("STM");
     if (display != null)
