@@ -8,7 +8,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>com.bitplan.elm327</artifactId>
 	<packaging>jar</packaging>
-	<name>ELM327 support</name>
+	<name>com.bitplan.elm327</name>
+	<description>ELM327 support</description>
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/com.github.purejavacomm/purejavacomm -->
 		<dependency>
