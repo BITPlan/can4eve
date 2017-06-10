@@ -50,7 +50,7 @@ import com.bitplan.obdii.ResponseHandler;
 public abstract class ConnectionImpl extends Thread implements Connection {
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii");
   final static Pattern snippetComplete = Pattern.compile(
-      "(.*\\>)|STOPPED|BUFFER FULL|CAN ERRROR",
+      "(.*\\>)|STOPPED|BUFFER FULL|CAN ERRROR|OUT OF MEMORY",
       Pattern.MULTILINE | Pattern.DOTALL);
 
   protected boolean sendLineFeed = true;
