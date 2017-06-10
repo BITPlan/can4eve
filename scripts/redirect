@@ -1,0 +1,26 @@
+#!/bin/bash
+# WF 2017-04
+
+#
+# show usage
+#
+usage() {
+  echo "$0 [-d|-h]"
+  echo "  -h|--help   : show this usage"
+  echo "  -d|--debug  : switch on debugging"
+  exit 1
+}
+
+# commandline option
+option=$1
+
+# optionally show usage
+case $option in
+  -h|--help) usage;;
+  # switch on debugging 
+  -d|--debug) options="--debug"
+esac
+
+#python tcp_serial_redirect.py $options -P 7000 /dev/rfcomm0 115200
+python tcp_serial_redirect.py $options -P 7000 \
+ /dev/tty.usbserial-113010822821 230400
