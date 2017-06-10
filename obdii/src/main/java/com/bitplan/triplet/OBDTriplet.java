@@ -27,8 +27,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -606,7 +608,7 @@ public class OBDTriplet extends OBDHandler {
   public void STMMonitor(CANValueDisplay display, List<CANValue<?>> canValues,
       long frameLimit) throws Exception {
     sendCommand("STFAC", "OK"); // FIXME - not understood by ELM327 v2.1 device
-    List<String> pidFilter = new ArrayList<String>();
+    Set<String> pidFilter = new HashSet<String>();
     for (CANValue<?> canValue : canValues) {
       if (canValue.isRead()) {
         for (Pid pid : this.getElm327().getVehicleGroup().getPids()) {
