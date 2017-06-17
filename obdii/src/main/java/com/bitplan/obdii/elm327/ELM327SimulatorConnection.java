@@ -209,7 +209,7 @@ public class ELM327SimulatorConnection extends ELM327 implements ResponseHandler
           monitor.start();
           monitors.add(monitor);
         } else if (command.equals("2101")) {
-          outputWithPrompt("OK");
+          // outputWithPrompt("OK");
           this.getCon().
           output("762 10 2E 61 01 D2 D2 01 90\n" + 
               "762 21 00 01 8F 4A 0C D0 4E\n" + 

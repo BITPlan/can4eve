@@ -255,7 +255,7 @@ public abstract class OBDHandler implements ResponseHandler {
     lelm.sendCommand("AT SH"+isoPid,"OK");
     // FIXME - this is not true for all Pids - make configurable
     // special mode 21
-    lelm.sendCommand("2101","OK");
+    lelm.sendCommand("2101",".*");
     while (lelm.getCon().getResponse(null).isValid()) {
       lelm.getCon().pause(0, 200);
     }
