@@ -447,7 +447,7 @@ public class TestELM327 extends TestOBDII {
     // debug = true;
     OBDTriplet lOBDTriplet = new OBDTriplet(getVehicleGroup());
     List<CANValue<?>> canValues = lOBDTriplet.getCANValues();
-    assertEquals(85, canValues.size());
+    assertEquals(84, canValues.size());
     String names = "";
     String delim = "";
     for (CANValue<?> canValue : canValues) {
@@ -489,7 +489,7 @@ public class TestELM327 extends TestOBDII {
     // debug=true;
     OBDTriplet lOBDTriplet = new OBDTriplet(getVehicleGroup());
     List<CANValue<?>> canValues = lOBDTriplet.getCANValues();
-    assertEquals(85, canValues.size());
+    assertEquals(84, canValues.size());
     for (CANValue<?> canValue : canValues) {
       if (debug) {
         LOGGER.log(Level.INFO, canValue.canInfo.getTitle() + ":"

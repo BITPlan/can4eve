@@ -255,6 +255,8 @@ public class ELM327Impl implements ELM327 {
     con.setSendLineFeed(true);
     // send a CR to stop current monitoring command like STM
     send("");
+    // reset
+    send("AT Z"); 
     // turn the ECHO off
     send("AT E0");
     // turn the Line feed on
