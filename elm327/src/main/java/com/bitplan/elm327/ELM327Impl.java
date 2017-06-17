@@ -249,7 +249,7 @@ public class ELM327Impl implements ELM327 {
     // keep the old timeout
     long timeout = con.getTimeout();
     // operate with a much lower timeout to quickly reinitialize
-    con.setTimeout(timeOutMsecs);
+    con.setTimeout(1500);
     // assume the device has not been configured to return linefeeds (yet)
     con.setReceiveLineFeed(false);
     con.setSendLineFeed(true);
@@ -257,6 +257,7 @@ public class ELM327Impl implements ELM327 {
     send("");
     // reset
     send("AT Z"); 
+    con.setTimeout(timeOutMsecs);
     // turn the ECHO off
     send("AT E0");
     // turn the Line feed on
