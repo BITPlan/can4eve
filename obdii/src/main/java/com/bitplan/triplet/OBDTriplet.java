@@ -628,8 +628,6 @@ public class OBDTriplet extends OBDHandler {
       long frameLimit) throws Exception {
     ELM327 lelm = this.getElm327();
     Connection lcon = lelm.getCon();
-    lelm.sendCommand("STFAC", "OK"); // FIXME - not understood by ELM327 v2.1
-                                     // device
     Set<String> pidFilter = new HashSet<String>();
     // VehicleGroup vg = this.getElm327().getVehicleGroup();
     for (CANValue<?> canValue : canValues) {
@@ -642,6 +640,9 @@ public class OBDTriplet extends OBDHandler {
           pidFilter.add(pid.getPid());
       }
     }
+    this.initOBD();
+    lelm.sendCommand("STFAC", "OK"); // FIXME - not understood by ELM327 v2.1
+    // device
     for (String pidId : pidFilter) {
       lelm.sendCommand("STFAP " + pidId + ",FFF", "OK");
     }
