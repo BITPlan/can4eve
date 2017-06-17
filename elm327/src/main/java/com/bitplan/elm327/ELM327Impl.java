@@ -303,7 +303,7 @@ public class ELM327Impl implements ELM327 {
     setHeader(true);
     sendCommand("AT D1", "(OK)?"); // display length
     setLength(true);
-    sendCommand("AT CAF0", "OK"); // switch off automatic formatting
+    // sendCommand("AT CAF0", "OK"); // switch off automatic formatting
     this.getCon().setHandleResponses(true);
   }
 
