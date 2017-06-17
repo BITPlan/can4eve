@@ -62,7 +62,8 @@ public class TripletDisplay extends SwingDisplay implements CANValueDisplay, Act
    */
   public void updateCanValueField(CANValue<?> canValue) {
     if (canValue.canInfo.getMaxIndex()==0) {
-      super.updateField(canValue.canInfo.getTitle(), canValue.asString(),canValue.getUpdateCount());
+      String title=canValue.canInfo.getTitle();
+      super.updateField(title, canValue.asString(),canValue.getUpdateCount());
     } else {
       // TODO - how to display?
       //for (int i=0;i<canValue.canInfo.maxIndex;i++) {

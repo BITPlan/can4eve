@@ -477,13 +477,15 @@ public class OBDTriplet extends OBDHandler {
       } // for
       // now add all raw values
       for (Pid pid : this.getElm327().getVehicleGroup().getPids()) {
-        CANRawValue canRawValue = this.getCanRawValues().get(pid.getPid());
-        if (canRawValue == null)
-          throw new RuntimeException(
-              "this can't happen - no pid raw value for PID " + pid.getPid());
-        // if (!canValueMap.containsKey(pid)) {
-        canValues.add(canRawValue);
-        canValueMap.put(pid, canRawValue);
+        if (pid.getIsoTp() == null) {
+          CANRawValue canRawValue = this.getCanRawValues().get(pid.getPid());
+          if (canRawValue == null)
+            throw new RuntimeException(
+                "this can't happen - no pid raw value for PID " + pid.getPid());
+          // if (!canValueMap.containsKey(pid)) {
+          canValues.add(canRawValue);
+          canValueMap.put(pid, canRawValue);
+        }
         // } // if
       } // for
       for (CANValue<?> canValue : canValues) {
