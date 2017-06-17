@@ -28,6 +28,7 @@ import org.kohsuke.args4j.Option;
 
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.elm327.Connection;
+import com.bitplan.elm327.LogImpl;
 import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.triplet.OBDTriplet;
 
@@ -123,6 +124,9 @@ public class OBDMain extends Main {
     ELM327 elm = obdTriplet.getElm327();
     Connection con = elm.getCon();
     con.setTimeout(timeout);
+    if (debug) {
+      con.setLog(new LogImpl());
+    }
     con.start();  
     elm.initOBD2();
     if (this.logFileName != null) {
