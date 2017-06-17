@@ -27,6 +27,8 @@ import java.util.logging.Level;
 import org.kohsuke.args4j.Option;
 
 import com.bitplan.can4eve.VehicleGroup;
+import com.bitplan.elm327.Connection;
+import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.triplet.OBDTriplet;
 
 /**
@@ -118,10 +120,11 @@ public class OBDMain extends Main {
     if (display != null)
       obdTriplet.showDisplay(display);
     // obdTriplet.elm327.debug = true;
-    obdTriplet.getElm327().setTimeout(timeout);
-    obdTriplet.getElm327().start();
-    obdTriplet.init();
-    obdTriplet.initOBD();
+    ELM327 elm = obdTriplet.getElm327();
+    Connection con = elm.getCon();
+    con.setTimeout(timeout);
+    con.start();  
+    elm.initOBD2();
     if (this.logFileName != null) {
       obdTriplet.logResponses(new File(logFileName), "Triplet");
     }

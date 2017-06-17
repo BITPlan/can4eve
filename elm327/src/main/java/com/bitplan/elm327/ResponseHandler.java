@@ -18,26 +18,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bitplan.obdii;
-
-import java.util.Date;
-import java.util.List;
-
-import com.bitplan.can4eve.CANValue;
+package com.bitplan.elm327;
 
 public interface ResponseHandler {
 
   /**
-   * raw string response handling
-   * @param pidResponse
-   * @param timeStamp
+   * raw response handling
+   * @param response
    */
-  public void handleStringResponse(String response, Date timeStamp);
+  public void handleResponse(Packet response);
   
- 
-  /**
-   * get the canValues handled by this Response Handler
-   * @return - the CAN Values
-   */
-  public List<CANValue<?>> getCANValues();
 }

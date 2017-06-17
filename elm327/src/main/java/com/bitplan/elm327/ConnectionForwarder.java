@@ -19,13 +19,11 @@
  * limitations under the License.
  */
 package com.bitplan.elm327;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.io.IOException;
 
 import javax.net.ServerSocketFactory;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Created by wf on 03.06.17.

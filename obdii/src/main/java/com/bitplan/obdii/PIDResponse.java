@@ -28,6 +28,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.bitplan.can4eve.Pid;
+import com.bitplan.elm327.Packet;
 import com.bitplan.obdii.elm327.ELM327;
 
 /**
@@ -42,7 +43,7 @@ public class PIDResponse {
 
   public static final Pattern PID_LINE_PATTERN = Pattern
       .compile("([0-9A-F]{3})\\s+([0-9]|[0-9A_F]{2})\\s(([0-9A-F]{2}\\s)+)");
-  
+
   // data representation
   // FIXME use byte?
   public int[] d;
@@ -50,7 +51,7 @@ public class PIDResponse {
   public Pid pid;
   public int pidHex;
   int len;
-  String rawString;
+  private Packet response;
   boolean valid = true;
 
   /**
@@ -62,20 +63,24 @@ public class PIDResponse {
    * @param offset
    * @param hoffset
    */
-  public PIDResponse(ELM327 elm327, String response) {
-    Matcher pmatcher = PIDResponse.PID_LINE_PATTERN.matcher(response);
+  public PIDResponse(ELM327 elm327, Packet response) {
+    String line = response.getData();
+    Matcher pmatcher = PIDResponse.PID_LINE_PATTERN.matcher(line+" ");
     if (pmatcher.matches()) {
-      rawString = response;
+      if (debug) {
+        LOGGER.log(Level.INFO, "creating PIDResponse for " + line);
+      }
+      this.setResponse(response);
       pidId = pmatcher.group(1);
       String lenStr = pmatcher.group(2);
-      boolean isotp=lenStr.length()==2;
+      boolean isotp = lenStr.length() == 2;
       String data;
       if (isotp) {
-        data=lenStr+" "+pmatcher.group(3);
+        data = lenStr + " " + pmatcher.group(3);
       } else {
-        data=pmatcher.group(3);
+        data = pmatcher.group(3);
       }
-      String[] ds=data.split("\\s");
+      String[] ds = data.split("\\s");
       pidHex = hex2decimal(pidId);
       pid = elm327.getVehicleGroup().getPidById(pidId);
       if (pid == null) {
@@ -133,13 +138,14 @@ public class PIDResponse {
    * @param response
    * @return
    */
-  public static List<PIDResponse> fromString(ELM327 elm327, String response) {
+  public static List<PIDResponse> fromResponse(ELM327 elm327, Packet response) {
     if (debug)
-      LOGGER.log(Level.INFO, "handling pid response '" + response + "'");
+      LOGGER.log(Level.INFO,
+          "handling pid response '" + response.asString() + "'");
     List<PIDResponse> responses = new ArrayList<PIDResponse>();
     Matcher matcher = null;
     if (elm327.isHeader() && elm327.isLength()) {
-      matcher = PIDResponse.PID_LINE_PATTERN.matcher(response + " ");
+      matcher = PIDResponse.PID_LINE_PATTERN.matcher(response.getData() + " ");
     }
     if (matcher == null)
       throw new RuntimeException(
@@ -148,11 +154,19 @@ public class PIDResponse {
       String pidline = matcher.group();
       if (debug)
         LOGGER.log(Level.INFO, "handling pidline '" + pidline + "'");
-      PIDResponse pidResponse = new PIDResponse(elm327, pidline);
+      PIDResponse pidResponse = new PIDResponse(elm327, response);
       if (pidResponse.valid)
         responses.add(pidResponse);
     }
     return responses;
+  }
+
+  public Packet getResponse() {
+    return response;
+  }
+
+  public void setResponse(Packet response) {
+    this.response = response;
   }
 
   /**
@@ -193,6 +207,6 @@ public class PIDResponse {
   }
 
   public String getRawString() {
-    return this.rawString;
+    return this.getResponse().getData();
   }
 }

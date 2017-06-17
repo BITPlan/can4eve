@@ -22,12 +22,11 @@ package com.bitplan.obdii.elm327;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 
-import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.VehicleGroup;
+import com.bitplan.elm327.Packet;
+import com.bitplan.elm327.ResponseHandler;
 
 /**
  * simulates an ELM327
@@ -35,7 +34,7 @@ import com.bitplan.can4eve.VehicleGroup;
  * @author wf
  *
  */
-public class ELM327SimulatorConnection extends ELM327 {
+public class ELM327SimulatorConnection extends ELM327 implements ResponseHandler {
 
   public int delay = 0; // 0,1 millisecs delay
   public int delaynano=100; 
@@ -50,34 +49,27 @@ public class ELM327SimulatorConnection extends ELM327 {
    */
   public ELM327SimulatorConnection(VehicleGroup vehicleGroup) {
     super(vehicleGroup);
-    handleResponses = true;
+    this.getCon().setHandleResponses(true);
+    this.getCon().setResponseHandler(this);
   }
   
-  @Override
   public void setHandleResponses(boolean handleResponses) {
     // ignore trying to set e.g. to false
-  }
-
-  /**
-   * run
-   */
-  public void run() {
-    super.run();
   }
 
   /**
    * handle the responses
    */
   @Override
-  public void handleStringResponse(String response, Date timeStamp) {
+  public void handleResponse(Packet response) {
     // echo
-    super.handleStringResponse(response, timeStamp);
+    // super.handleResponse(response);
     // ignore null response
     if (response == null) {
       log(" received null response");
       return;
     }
-    String command = response.toUpperCase().trim().replace(" ","");
+    String command = response.getData().toUpperCase().trim().replace(" ","");
     log(" received command " + command);
     try {
       if (command.startsWith("AT")) {
@@ -99,18 +91,18 @@ public class ELM327SimulatorConnection extends ELM327 {
           String option = command.substring(1).trim();
           log("Set Linefeed handling to " + option);
           if (option.startsWith("1")) {
-            sendLineFeed = true;
+            setSendLineFeed(true);
           } else if (option.startsWith("0")) {
-            sendLineFeed = false;
+            setSendLineFeed(false);
           }
           outputWithPrompt("OK");
         } else if (command.startsWith("H")) {
           String option = command.substring(1).trim();
           log("Set header handling to " + option);
           if (option.startsWith("1")) {
-            header = true;
+            setHeader(true);
           } else if (option.startsWith("0")) {
-            header = false;
+            setHeader(false);
           }
           outputWithPrompt("OK");
         } else if (command.equals("RV")) { 
@@ -119,18 +111,18 @@ public class ELM327SimulatorConnection extends ELM327 {
           String option = command.substring(1).trim();
           log("Set length handling to " + option);
           if (option.startsWith("1")) {
-            length = true;
+            setLength(true);
           } else if (option.startsWith("0")) {
-            length = false;
+            setLength(false);
           }
           outputWithPrompt("OK");
         } else if (command.equals("E1") || command.equals("E0")) {
           String option = command.substring(1).trim();
           log("Set echo handling to " + option);
           if (option.startsWith("1")) {
-            echo = true;
+            setEcho(true);
           } else if (option.startsWith("0")) {
-            echo = false;
+            setEcho(false);
           }
           outputWithPrompt("OK");
         } else if (command.startsWith("CAF")) {
@@ -156,7 +148,7 @@ public class ELM327SimulatorConnection extends ELM327 {
           filter = command.substring(3).trim();
           outputWithPrompt("OK");
         } else if (command.startsWith("MA")) {
-          Monitor monitor = new Monitor(this, filter, header, length);
+          Monitor monitor = new Monitor(this, filter, isHeader(), isLength());
           monitor.start();
           monitors.add(monitor);
         } else if (command.equals("DP")) {
@@ -213,11 +205,12 @@ public class ELM327SimulatorConnection extends ELM327 {
         } else if (command.startsWith("STFAP")) {
           outputWithPrompt("OK");      
         } else if (command.equals("STM")) {  
-          Monitor monitor = new Monitor(this, header, length);
+          Monitor monitor = new Monitor(this, isHeader(), isLength());
           monitor.start();
           monitors.add(monitor);
         } else if (command.equals("2101")) {
           outputWithPrompt("OK");
+          this.getCon().
           output("762 10 2E 61 01 D2 D2 01 90\n" + 
               "762 21 00 01 8F 4A 0C D0 4E\n" + 
               "75A 03 E8 03 E8 64 64 46 45\n" + 
@@ -229,15 +222,15 @@ public class ELM327SimulatorConnection extends ELM327 {
               "75A 03 E8 03 E8 64 64 46 45\n");
         } else if (command.equals("0100")) {
           outputWithPrompt("SEARCHING ...");
-          pause(2000, 0);
+          this.getCon().pause(2000, 0);
           outputWithPrompt("UNABLE TO CONNECT");
         } else {
-          LOGGER.log(Level.WARNING, "unknown command '" + command + "'");
+          log("unknown command '" + command + "'");
         }
       }
     } catch (Exception e) {
-      LOGGER.log(Level.WARNING, "handleResponse failed " + e.getMessage());
-      if (debug)
+      log("handleResponse failed " + e.getMessage());
+      if (isDebug())
         e.printStackTrace();
     }
     // TODO - check if we need a pause here
@@ -251,8 +244,7 @@ public class ELM327SimulatorConnection extends ELM327 {
    * @throws IOException
    */
   protected void outputWithPrompt(String response) throws IOException {
-    output(response);
-    output("\r\n>");
+    this.getCon().output(response+"\r\n>");
   }
 
   /**

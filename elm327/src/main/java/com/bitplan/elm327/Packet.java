@@ -37,6 +37,9 @@ public interface Packet {
 
     // true if this is an empty package created by a timeout
     boolean isTimeOut();
+    // true if this is a package which was received as a response
+    boolean isValid();
+    void setValid(boolean valid);
 
     // The raw data for this packet e.g. including echo an caret prompt
     String getRawData();
@@ -51,4 +54,6 @@ public interface Packet {
     public void setRequest(Packet p);
     public Packet getResponse();
     public void setResponse(Packet p);
+    String asString();
+
 }

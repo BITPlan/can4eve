@@ -32,6 +32,10 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import com.bitplan.elm327.Packet;
+import com.bitplan.elm327.PacketImpl;
+import com.bitplan.elm327.ResponseHandler;
+
 public class LogReader {
   public static boolean debug = false;
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii");
@@ -114,12 +118,14 @@ public class LogReader {
           buf.append(canLine.charAt(i + 1));
           buf.append(" ");
         }
-        this.responseHandler.handleStringResponse(buf.toString(), timeStamp);
+        Packet p=new PacketImpl(buf.toString(), timeStamp);
+        this.responseHandler.handleResponse(p);
       } else if (line.startsWith("20")) {
         tsVal = line.substring(0, 23);
         Date timeStamp = logDateFormatter.parse(tsVal);
         canLine = line.substring(24) + "\n";
-        this.responseHandler.handleStringResponse(canLine, timeStamp);
+        Packet p=new PacketImpl(canLine, timeStamp);
+        this.responseHandler.handleResponse(p);
       } else {
         // ignore
       }

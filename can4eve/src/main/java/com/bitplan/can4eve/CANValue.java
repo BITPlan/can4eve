@@ -287,7 +287,7 @@ public abstract class CANValue<ValueType> {
     try {
       result = String.format(canInfo.getFormat(), value);
     } catch (Throwable th) {
-      ErrorHandler.handle(th, this.canInfo.getTitle());
+      ErrorHandler.handle(th, this.canInfo.getTitle()+"='"+value+"'");
     }
     return result;
   }

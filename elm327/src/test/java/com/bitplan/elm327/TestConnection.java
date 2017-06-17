@@ -49,6 +49,8 @@ public class TestConnection {
         }
         return testConnection;
     }
+    
+   
 
     @Test
     public void testConnection() throws IOException, InterruptedException {
@@ -98,9 +100,8 @@ public class TestConnection {
         timeout=250;
         Socket clientSocket=new Socket(ip,port);
         ELM327 elm = new ELM327Impl();
-        Connection con=new ConnectionImpl();
+        Connection con=elm.getCon();
         con.setLog(new LogImpl());
-        elm.setCon(con);
         con.connect(clientSocket);
         con.start();
         elm.initOBD2(timeout);
@@ -116,6 +117,4 @@ public class TestConnection {
           elm.getId(),elm.getDescription(),elm.getDeviceId(),elm.getHardwareId(),elm.getFirmwareId(),elm.getCarVoltage()));
 
     }
-
-
 }

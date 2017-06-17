@@ -39,6 +39,10 @@ public interface Connection extends Debugable, Runnable {
     public boolean isReceiveLineFeed();
 
     public void setReceiveLineFeed(boolean receiveLineFeed);
+    
+    public String getTitle();
+
+    public void setTitle(String title);
 
     /**
      * get the InputStream
@@ -121,12 +125,42 @@ public interface Connection extends Debugable, Runnable {
      * @param timeout the timeout to set
      */
     public void setTimeout(long timeout);
+    
+    /**
+     * pause for given amount of time
+     * @param millis
+     * @param nanos
+     */
+    public void pause(long millis, int nanos);
+    
     /**
      * get a response
      * @param request - the request to get the response for
      * @return the packet which is returned for the request
      */
     public Packet getResponse(Packet request);
+    
+    /**
+     * get the responseHandler for this communication (if any)
+     * @return - the ResponseHandler or null if there is none
+     */
+    public ResponseHandler getResponseHandler();
+    
+    /**
+     * set the responseHandler for this communication
+     * @param handler - the new ResponseHandler
+     */
+    public void setResponseHandler(ResponseHandler handler);
+    
+    public boolean isHandleResponses();
+
+    public void setHandleResponses(boolean handleResponses);
 
     public void close() throws IOException;
+    
+    /**
+     * am I  alive?
+     * @return whether the connection Thread is alive
+     */
+    public boolean isAlive();
 }

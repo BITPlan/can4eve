@@ -25,17 +25,17 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.kohsuke.args4j.Option;
 
 import com.bitplan.can4eve.VehicleGroup;
+import com.bitplan.elm327.Connection;
+import com.bitplan.elm327.LogImpl;
 import com.bitplan.obdii.Main;
 
 public class ElmSimulator extends Main {
   /**
-   * current Version of the CANTriplet tool
+   * current Version of the can4eve tool
    */
   public static final String VERSION = "0.0.1";
 
@@ -81,8 +81,7 @@ public class ElmSimulator extends Main {
    * start the Server
    */
   public void startServer() {
-    final ExecutorService clientProcessingPool = Executors
-        .newFixedThreadPool(10);
+    // final ExecutorService clientProcessingPool = Executors.newFixedThreadPool(10);
 
     Runnable serverTask = new Runnable() {
 
@@ -91,7 +90,7 @@ public class ElmSimulator extends Main {
         try {
           if (verbose)
             System.out.println(
-                String.format("Waiting for clients to connect via port %5d...",
+                String.format("ELM327 Simulator waiting for clients to connect via port %5d...",
                     getServerSocket().getLocalPort()));
           running = true;
           VehicleGroup vehicleGroup=null;
@@ -104,15 +103,19 @@ public class ElmSimulator extends Main {
             Socket clientSocket = getServerSocket().accept();
             ELM327SimulatorConnection elm327SimulatorConnection = new ELM327SimulatorConnection(
                 vehicleGroup);
-            elm327SimulatorConnection.connect(clientSocket);
-            elm327SimulatorConnection.debug = debug;
-            elm327SimulatorConnection.setReceiveLineFeed(true);
+            Connection con = elm327SimulatorConnection.getCon();
+            con.setTitle(String.format("ELM327 Simulator on port %5d",clientSocket.getPort()));
+            con.connect(clientSocket);
+            if (debug)
+              con.setLog(new LogImpl());
+            con.setReceiveLineFeed(true);
             simulatorConnectionsByPort.put(clientSocket.getPort(),
                 elm327SimulatorConnection);
             if (verbose)
               System.out.println(String.format(
                   "Accepting connection via port %5d", clientSocket.getPort()));
-            clientProcessingPool.execute(elm327SimulatorConnection);
+            // clientProcessingPool.execute(con);
+            con.start();
           }
           getServerSocket().close();
         } catch (IOException e) {
@@ -124,7 +127,6 @@ public class ElmSimulator extends Main {
     };
     serverThread = new Thread(serverTask);
     serverThread.start();
-
   }
 
   /**

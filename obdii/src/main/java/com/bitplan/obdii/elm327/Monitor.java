@@ -26,6 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.bitplan.can4eve.Pid;
+import com.bitplan.elm327.Connection;
 
 
 /**
@@ -51,6 +52,8 @@ public class Monitor extends Thread {
 
   private List<Pid> pids;
 
+  private Connection con;
+
   /**
    * create a Monitor
    * 
@@ -74,6 +77,7 @@ public class Monitor extends Thread {
    */
   public Monitor(ELM327 elm, boolean header, boolean length) {
     this.elm = elm;
+    this.con=elm.getCon();
     this.header = header;
     this.length = length;
     this.pids=elm.getVehicleGroup().getPids();
@@ -181,14 +185,14 @@ public class Monitor extends Thread {
             sample = lPidFilter + " " + sample;
           if (debug)
             LOGGER.log(Level.INFO, "sample: " + sample);
-          elm.output(sample);
+          con.output(sample);
         }
       } catch (IOException e) {
         LOGGER.log(Level.WARNING, "monitor output issue " + e.getMessage());
       }
       int pausemsecs = 1000 / freq;
       for (int t = 0; t <= (pausemsecs); t++) {
-        elm.pause(1, 0);
+        con.pause(1, 0);
         if (!running)
           break;
       }

@@ -20,13 +20,12 @@
  */
 package com.bitplan.elm327;
 
-import java.io.IOException;
-
 /**
  * communication to ELM327 devices
  * see e.g. https://www.sparkfun.com/datasheets/Widgets/ELM327_AT_Commands.pdf
  */
 public interface ELM327 extends Debugable {
+    // Connection to delegate most of the work to
     public Connection getCon() ;
     public void setCon(Connection con);
 
@@ -72,4 +71,9 @@ public interface ELM327 extends Debugable {
     public boolean isLength();
 
     public void setLength(boolean length);
+    
+    public boolean isEcho();
+
+    public void setEcho(boolean echo);
+        
 }

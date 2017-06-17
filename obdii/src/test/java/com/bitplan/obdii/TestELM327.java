@@ -42,9 +42,11 @@ import org.junit.Test;
 
 import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue;
-import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.CANValue.DoubleValue;
-import com.bitplan.obdii.elm327.ConnectionImpl;
+import com.bitplan.can4eve.Pid;
+import com.bitplan.elm327.Connection;
+import com.bitplan.elm327.LogImpl;
+import com.bitplan.elm327.Packet;
 import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.obdii.elm327.ELM327SimulatorConnection;
 import com.bitplan.obdii.elm327.ElmSimulator;
@@ -65,7 +67,7 @@ public class TestELM327 extends TestOBDII {
   public String hostName = "pilt.bitplan.com";
   public int portNumber = 7000;
 
-  public int SIMULATOR_TIMEOUT = 35; // Simulator should be quick
+  public int SIMULATOR_TIMEOUT =50; // Simulator should be quick 2 msecs is feasible
 
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii");
   private Socket elmSocket;
@@ -93,21 +95,24 @@ public class TestELM327 extends TestOBDII {
    */
   public ELM327 getSimulation() throws Exception {
     ELM327 elm327 = new ELM327(getVehicleGroup());
-    ElmSimulator.verbose=false;
+    ElmSimulator.verbose=debug;
     ElmSimulator elm327Simulator = ElmSimulator.getInstance();
+    elm327Simulator.debug=debug;
     ServerSocket serverSocket = elm327Simulator.getServerSocket();
     Socket clientSocket=new Socket("localhost",serverSocket.getLocalPort());
-    elm327.connect(clientSocket);
-    elm327.start();
-    Thread.sleep(150);
+    Connection con=elm327.getCon();
+    con.connect(clientSocket);
+    if (debug)
+      con.setLog(new LogImpl());
+    con.start();
+    Thread.sleep(10);
+    assertTrue(elm327.getCon().isAlive());
     ELM327SimulatorConnection elm327SimulatorConnection = elm327Simulator.getSimulatorConnection(clientSocket);
-    assertTrue(elm327.isAlive());
-    // assertTrue(elm327SimulatorConnection.isAlive());
-
-    elm327.setTimeout(SIMULATOR_TIMEOUT);
-    elm327SimulatorConnection.setTimeout(SIMULATOR_TIMEOUT);
-    elm327.debug = debug;
-    elm327SimulatorConnection.debug = debug;
+    assertNotNull(elm327SimulatorConnection);
+    Connection simcon = elm327SimulatorConnection.getCon();
+    assertTrue(simcon.isAlive());
+    con.setTimeout(SIMULATOR_TIMEOUT);
+    simcon.setTimeout(SIMULATOR_TIMEOUT);
     return elm327;
   }
 
@@ -122,16 +127,16 @@ public class TestELM327 extends TestOBDII {
     if (simulated) {
       obdTriplet = new OBDTriplet(getVehicleGroup());
       obdTriplet.setElm327(getSimulation());
-      obdTriplet.getElm327().setResponseHandler(obdTriplet);
+      obdTriplet.getElm327().getCon().setResponseHandler(obdTriplet);
     } else {
       elmSocket = getTestVehicleSocket();
       obdTriplet = new OBDTriplet(getVehicleGroup(),elmSocket, debug);
     }
     display = new TripletDisplay();
     obdTriplet.showDisplay(display);
-    obdTriplet.getElm327().debug = debug;
+    //obdTriplet.getElm327().debug = debug;
     if (!simulated)
-      obdTriplet.getElm327().start();
+      obdTriplet.getElm327().getCon().start();
   }
 
   @Test
@@ -163,12 +168,12 @@ public class TestELM327 extends TestOBDII {
     // debug=true;
     ELM327 elm327 = getSimulation();
     long start = System.nanoTime();
-    String response = elm327.send("ATI");
-    assertEquals("ELM327 v1.3a", response);
+    Packet response = elm327.send("ATI");
+    assertEquals("ELM327 v1.3a", response.getData());
     response = elm327.send("AT @1");
-    assertEquals("SCANTOOL.NET LLC", response);
+    assertEquals("SCANTOOL.NET LLC", response.getData());
     response = elm327.send("STDI");
-    assertEquals("OBDLink SX r4.2", response);
+    assertEquals("OBDLink SX r4.2", response.getData());
     long stop = System.nanoTime();
     long msecs = (stop - start) / 1000000;
     elm327.log("" + msecs + " msescs");
@@ -178,9 +183,8 @@ public class TestELM327 extends TestOBDII {
   @Test
   public void testBatteryCapacity() throws Exception {
     this.prepareOBDTriplet(simulated, debug);
-    obdTriplet.init();
     obdTriplet.initOBD();
-    obdTriplet.setDebug(true);
+    // obdTriplet.setDebug(true);
     obdTriplet.readPid(display,byName("BatteryCapacity"));
     Thread.sleep(200);
     assertNotNull("the battery capacity should be set",obdTriplet.batteryCapacity.getValue());
@@ -189,10 +193,9 @@ public class TestELM327 extends TestOBDII {
   
   @Test
   public void testOBDTriplet() throws Exception {
-    // debug=true;
+    //debug=true;
     // PIDResponse.debug=true;
     this.prepareOBDTriplet(simulated, debug);
-    obdTriplet.init();
     obdTriplet.initOBD();
     int frameLimit = 1;
     obdTriplet.readPid(display,byName("BatteryCapacity"));
@@ -201,7 +204,7 @@ public class TestELM327 extends TestOBDII {
     obdTriplet.monitorPid(display, byName("Steering_Wheel").getPid(), frameLimit);
     obdTriplet.monitorPid(display, byName("Odometer_Speed").getPid(), frameLimit);
     obdTriplet.monitorPid(display, byName("VIN").getPid(), frameLimit * 3);
-    //Thread.sleep(50000);   
+    // Thread.sleep(50000);   
     //display.waitClose();
     assertNotNull("the battery capacity should be set",obdTriplet.batteryCapacity.getValue());
     assertNotNull(obdTriplet.SOC);
@@ -221,6 +224,7 @@ public class TestELM327 extends TestOBDII {
   @Test
   public void testProtocols() throws Exception {
     ELM327 elm327 = getSimulation();
+    Connection lcon = elm327.getCon();
     String prots[] = { "1", "SAE J1850 PWM", "2", "SAE J1850 VPW", "3",
         "ISO 9141-2", "4", "ISO 14230-4 (KWP 5BAUD)", "5",
         "ISO 14230-4 (KWP FAST)", "6", "ISO 15765-4 (CAN 11/500)", "7",
@@ -229,17 +233,16 @@ public class TestELM327 extends TestOBDII {
     for (int i = 0; i < prots.length; i += 2) {
       String code = prots[i];
       String prot = prots[i + 1];
-      elm327.send("AT SP " + code);
-      elm327.output("AT DP");
-      String response = elm327.getResponse();
-      assertEquals(prot, response);
+      lcon.send("AT SP " + code);
+      Packet request = lcon.output("AT DP");
+      Packet response = lcon.getResponse(request);
+      assertEquals(prot, response.getData());
     }
   }
 
   @Test
   public void testSocket() throws Exception {
     prepareOBDTriplet(simulated, debug);
-    obdTriplet.init();
     obdTriplet.initOBD();
     int loops = 1;
     int frameLimit = 3;
@@ -261,17 +264,7 @@ public class TestELM327 extends TestOBDII {
     }
   }
 
-  @Test
-  public void testSnippetComplete() {
-    String snippets[] = { "A", "OK>" };
-    boolean expected[] = { false, true };
-    int index = 0;
-    for (String snippet : snippets) {
-      boolean check = ConnectionImpl.checkSnippetComplete(snippet, debug);
-      assertEquals(expected[index], check);
-      index++;
-    }
-  }
+ 
 
   @Test
   public void testOBDMain() throws Exception {
@@ -329,7 +322,6 @@ public class TestELM327 extends TestOBDII {
     // Monitor.debug=true;
     // debug=true;
     prepareOBDTriplet(simulated, debug);
-    obdTriplet.init();
     obdTriplet.initOBD();
     File logRoot = new File("src/test/data");
     File logFile = null;
@@ -356,24 +348,27 @@ public class TestELM327 extends TestOBDII {
     String cmds[] = { "ATI", "AT@1", "ATSP6" };
     // binary search
     for (String cmd : cmds) {
-      String response = "";
+      Packet response;
       long workingTimeOut = 300;
-      elm327.setTimeout(workingTimeOut);
-      long diff = elm327.getTimeout();
+      Connection con=elm327.getCon();
+      con.setTimeout(workingTimeOut);
+      long diff = con.getTimeout();
       while (diff > 5) {
-        elm327.log("timeout=" + elm327.getTimeout());
-        response = elm327.send("ATI");
+        elm327.log("timeout=" + con.getTimeout());
+        response = con.send("ATI");
         if (response != null) {
-          workingTimeOut = elm327.getTimeout();
-          elm327.setTimeout(elm327.getTimeout() / 2);
+          workingTimeOut = con.getTimeout();
+          con.setTimeout(con.getTimeout() / 2);
         } else {
-          elm327.setTimeout((workingTimeOut + elm327.getTimeout()) / 2);
+          con.setTimeout((workingTimeOut + con.getTimeout()) / 2);
         }
-        diff = Math.abs(workingTimeOut - elm327.getTimeout());
+        diff = Math.abs(workingTimeOut - con.getTimeout());
       }
       if (debug)
-        System.out.println("timeout=" + elm327.getTimeout() + " for command " + cmd);
-      assertTrue(elm327.getTimeout() < 50);
+        System.out.println("timeout=" + con.getTimeout() + " for command " + cmd);
+      assertTrue(con.getTimeout() < 50);
+      // TODO we might also need a minimum timeout
+      // assertTrue("Timeout too low - simulator broken?",con.getTimeout() >4);   
     }
   }
 
