@@ -245,7 +245,8 @@ public abstract class OBDHandler implements ResponseHandler {
     lelm.sendCommand("AT L1", ".*");
     lelm.sendCommand("AT H1", "OK");
     lelm.sendCommand("AT SP6", "OK");
-    lelm.sendCommand("AT CRA " + isoPid,"OK");
+    // TODO - do we want to filter?
+    // lelm.sendCommand("AT CRA " + pid.getPid(),"OK");
     lelm.sendCommand("AT FCSH"+isoPid,"OK");
     // FIXME - this is not true for all Pids
     lelm.sendCommand("AT FCSD300000","OK");
