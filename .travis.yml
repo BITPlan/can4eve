@@ -11,8 +11,10 @@ language: android
 jdk: oraclejdk8
 # switch off gpg handling
 install: mvn install -DskipTests=true -Dgpg.skip=true
-# Android tools
-components:
+# Android 
+# https://docs.travis-ci.com/user/languages/android/
+android:
+  components:
     - tools
-    - build-tools-24.0.3
+    - build-tools-25.0.0
     - android-25
