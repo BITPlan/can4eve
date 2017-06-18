@@ -192,8 +192,8 @@ public class TestELM327 extends TestOBDII {
   
   @Test
   public void testOBDTriplet() throws Exception {
-    debug=true;
-    PIDResponse.debug=true;
+    //debug=true;
+    //PIDResponse.debug=true;
     this.prepareOBDTriplet(simulated, debug);
     obdTriplet.initOBD();
     int frameLimit = 1;
@@ -203,7 +203,8 @@ public class TestELM327 extends TestOBDII {
     obdTriplet.monitorPid(display, byName("Steering_Wheel").getPid(), frameLimit);
     obdTriplet.monitorPid(display, byName("Odometer_Speed").getPid(), frameLimit);
     obdTriplet.monitorPid(display, byName("VIN").getPid(), frameLimit * 3); // 3 should be enough but somehow on travis the test then fails
-    // Thread.sleep(50000);   
+    // let's wait a bit for the results 
+    Thread.sleep(500);   
     //display.waitClose();
     assertNotNull("the battery capacity should be set",obdTriplet.batteryCapacity.getValue());
     assertNotNull(obdTriplet.SOC);
