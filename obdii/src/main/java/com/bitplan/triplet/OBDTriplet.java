@@ -240,7 +240,7 @@ public class OBDTriplet extends OBDHandler {
     if (debug)
       LOGGER.log(Level.INFO, "triplet handling PID Response " + pr.pidId + " ("
           + pr.pid.getName() + ")");
-    Date timeStamp = new Date(pr.getResponse().getTimeStamp());
+    Date timeStamp = pr.getResponse().getTime();
     switch (pr.pid.getName()) {
     case "Accelerator":
       accelerator.setValue(pr.d[2] / 250.0 * 100, timeStamp);

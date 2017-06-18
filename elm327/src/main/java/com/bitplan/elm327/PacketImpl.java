@@ -57,6 +57,11 @@ public class PacketImpl implements Packet {
     public long getTimeStamp() {
         return timeStamp;
     }
+    
+    @Override
+    public Date getTime() {
+      return time;
+    }
 
     @Override
     public Packet getRequest() {
@@ -130,4 +135,5 @@ public class PacketImpl implements Packet {
         result=String.format("%s (%s): %s",ts,getData(),response.getData());
       return result;
     }
+
 }

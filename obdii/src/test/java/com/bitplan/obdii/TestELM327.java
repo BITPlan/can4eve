@@ -383,7 +383,7 @@ public class TestELM327 extends TestOBDII {
   public void testPIDs() throws Exception {
     final int slow = 0; 
     boolean withHistory = false;
-    //final int slow=100; // msecs for slower motion
+    //final int slow=20; // msecs for slower motion
     //boolean withHistory = true;
     // debug=true;
     // prepareOBDTriplet(true);
@@ -392,7 +392,7 @@ public class TestELM327 extends TestOBDII {
         "Triplet_2017-04-17_104141.log", "Triplet_2017-04-15_192134.log",
         "Triplet_2017-04-15_132733.log", "Triplet_2017-04-14_191849.log",
         "capture_chg_1104.txt" };
-    // final int[] max = { 1800000,122000,30000, 50000, 2000000 };
+    //final int[] max = { 1800000,122000,30000, 50000, 2000000 };
     final int[] max = { 72000, 180000, 122000, 30000, 50000, 200000 };
 
     for (String fileName : fileNames) {

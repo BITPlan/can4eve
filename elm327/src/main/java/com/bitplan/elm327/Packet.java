@@ -20,6 +20,8 @@
  */
 package com.bitplan.elm327;
 
+import java.util.Date;
+
 /**
  * a transmission to or from the ELM327 device
  * it carries the data and the timestamp when the packet was
@@ -55,5 +57,6 @@ public interface Packet {
     public Packet getResponse();
     public void setResponse(Packet p);
     String asString();
+    Date getTime();
 
 }
