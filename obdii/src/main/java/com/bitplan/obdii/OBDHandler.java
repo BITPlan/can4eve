@@ -145,6 +145,7 @@ public abstract class OBDHandler implements ResponseHandler {
     Connection con=new ConnectionImpl();
     con.connect(elmSocket);
     getElm327().setCon(con);
+    con.setResponseHandler(this);
   }
 
   /**
