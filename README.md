@@ -1,6 +1,9 @@
 # can4eve
 CAN OBDII analysis for electric vehicles
 
+[![Build Status](https://travis-ci.org/BITPlan/can4eve.svg?branch=master)](https://travis-ci.org/BITPlan/can4eve)
+
+
 ## What is can4eve? 
 can4eve 
 * is a software for electric vehicles
