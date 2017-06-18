@@ -16,5 +16,15 @@ install: mvn install -DskipTests=true -Dgpg.skip=true
 android:
   components:
     - tools
-    - build-tools-25.0.0
+    - build-tools-25.0.3
     - android-25
+
+# Caching
+# see https://stackoverflow.com/questions/40295515/caching-android-sdk-in-travis-ci
+cache:
+  directories:
+    - $HOME/.gradle/wrapper
+    - $HOME/.gradle/native
+    - $HOME/.gradle/daemon
+    - $HOME/.gradle/caches/jars-3
+    - $HOME/.gradle/caches/3.5
