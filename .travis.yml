@@ -1,4 +1,11 @@
 # this is a java project using maven
+# it also compiles an android result with gradle
 language: java
+# 
+# Java 8
+#  
+# to avoid Unsupported major.minor version 52.0 we need to specify the JDK to be used
+# https://stackoverflow.com/a/40208648/1497139
+jdk: oraclejdk8
 # switch off gpg handling
 install: mvn install -DskipTests=true -Dgpg.skip=true
