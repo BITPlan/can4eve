@@ -103,7 +103,7 @@ public class TestELM327 extends TestOBDII {
     if (debug)
       con.setLog(new LogImpl());
     con.start();
-    Thread.sleep(10);
+    Thread.sleep(20); // 10 is not enough for jenkins on capri
     assertTrue(elm327.getCon().isAlive());
     ELM327SimulatorConnection elm327SimulatorConnection = elm327Simulator.getSimulatorConnection(clientSocket);
     assertNotNull(elm327SimulatorConnection);
