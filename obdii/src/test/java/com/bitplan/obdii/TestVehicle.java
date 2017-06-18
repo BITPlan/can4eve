@@ -126,7 +126,7 @@ public class TestVehicle extends TestOBDII {
     VehicleGroup vg=getVehicleGroup();
     assertEquals(3,vg.getModels().size());
     assertEquals(51,vg.getPids().size());
-    debug=true;
+    // debug=true;
     JsonResult jr=this.checkJson(vg);
     assertNotNull(jr.gson);
   }

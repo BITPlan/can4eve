@@ -39,13 +39,17 @@ import java.util.List;
  * as applicable for medium/heavy duty vehicles), primarily for state mandated emissions inspections.
  */
 public class Pid {
-  String name;
-  String pid; // hexadecimal code for the PID 
-  int freq; // frequency of transmission on bus per second
+  String name;     // name of the PID e.g. VIN
+  String pid;      // hexadecimal code for the PID 
+  int freq;        // frequency of transmission on bus per second
   String examples;
-  String isoTp; // this is an ISO-TP frame based Pid
+  String isoTp;    // if this is an ISO-TP frame based Pid 
   List<CANInfo> caninfos=new ArrayList<CANInfo>();
 
+  /**
+   * add the given CANinfo to this PID
+   * @param caninfo
+   */
   public void addCANInfo(CANInfo caninfo) {
     caninfos.add(caninfo);
   }
@@ -53,6 +57,7 @@ public class Pid {
   public CANInfo getFirstInfo() {
     return caninfos.get(0);
   }
+  
   public List<CANInfo> getCaninfos() {
     return caninfos;
   }
