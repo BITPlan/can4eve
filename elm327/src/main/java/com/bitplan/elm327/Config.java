@@ -37,6 +37,7 @@ public class Config {
   String serialDevice; // e.g. cu.usbserial-113010822821 on MacOSx
   int serialBaud;      // e.g. 115200
   String ip;           // e.g. 192.168.1.30
+  private String vehicleName;  // e.g. my Ion
   int port;            // e.g. 35000
   int timeout;         // e.g. 500 (for 1/2 sec)
   
@@ -86,6 +87,14 @@ public class Config {
 
   public void setDebug(boolean debug) {
     this.debug = debug;
+  }
+
+  public String getVehicleName() {
+    return vehicleName;
+  }
+
+  public void setVehicleName(String vehicleName) {
+    this.vehicleName = vehicleName;
   }
 
   public static void setInstance(Config instance) {

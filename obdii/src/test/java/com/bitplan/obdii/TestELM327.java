@@ -44,6 +44,7 @@ import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.Pid;
+import com.bitplan.elm327.Config;
 import com.bitplan.elm327.Connection;
 import com.bitplan.elm327.LogImpl;
 import com.bitplan.elm327.Packet;
@@ -63,9 +64,6 @@ public class TestELM327 extends TestOBDII {
   public static boolean debug = false;
   public static boolean simulated = true;
   // the vehicle under test
-  public String vehicleName = "Ion";
-  public String hostName = "pilt.bitplan.com";
-  public int portNumber = 7000;
 
   public int SIMULATOR_TIMEOUT =50; // Simulator should be quick 2 msecs is feasible
 
@@ -81,9 +79,9 @@ public class TestELM327 extends TestOBDII {
    * @throws UnknownHostException
    * @throws IOException
    */
-  public Socket getTestVehicleSocket()
+  public Socket getTestVehicleSocket(Config config)
       throws UnknownHostException, IOException {
-    Socket elmSocket = new Socket(hostName, portNumber);
+    Socket elmSocket = new Socket(config.getIp(), config.getPort());
     return elmSocket;
   }
 
@@ -129,7 +127,8 @@ public class TestELM327 extends TestOBDII {
       obdTriplet.setElm327(getSimulation());
       obdTriplet.getElm327().getCon().setResponseHandler(obdTriplet);
     } else {
-      elmSocket = getTestVehicleSocket();
+      Config config=Config.getInstance();
+      elmSocket = getTestVehicleSocket(config);
       obdTriplet = new OBDTriplet(getVehicleGroup(),elmSocket, debug);
     }
     display = new TripletDisplay();
@@ -325,8 +324,10 @@ public class TestELM327 extends TestOBDII {
     obdTriplet.initOBD();
     File logRoot = new File("src/test/data");
     File logFile = null;
-    if (!simulated)
-      logFile = obdTriplet.logResponses(logRoot, vehicleName);
+    if (!simulated) {
+      Config config=Config.getInstance();
+      logFile = obdTriplet.logResponses(logRoot, config.getVehicleName());
+    }
     int frameLimit = 150;
     obdTriplet.STMMonitor(display, obdTriplet.getCANValues(), frameLimit);
     if (debug)
