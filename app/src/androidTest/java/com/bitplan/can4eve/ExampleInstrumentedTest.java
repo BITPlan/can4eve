@@ -1,4 +1,4 @@
-package com.bitplan.canuv;
+package com.bitplan.can4eve;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

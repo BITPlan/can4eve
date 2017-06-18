@@ -1,4 +1,4 @@
-package com.bitplan.canuv;
+package com.bitplan.can4eve;
 
 import android.content.res.Configuration;
 import android.os.Bundle;

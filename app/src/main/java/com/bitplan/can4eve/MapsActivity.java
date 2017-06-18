@@ -1,4 +1,4 @@
-package com.bitplan.canuv;
+package com.bitplan.can4eve;
 
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
