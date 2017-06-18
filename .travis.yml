@@ -11,6 +11,7 @@ language: android
 jdk: oraclejdk8
 # switch off gpg handling
 install: mvn install -DskipTests=true -Dgpg.skip=true
+script: mvn test
 # Android 
 # https://docs.travis-ci.com/user/languages/android/
 android:

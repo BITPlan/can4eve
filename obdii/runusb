@@ -1,0 +1,43 @@
+#!/bin/bash
+# 2017-04-02
+dev=/dev/ttyUSB0
+os=`uname`
+case $os in
+  Darwin) 
+   #dev=/dev/tty.usbserial-113010822821
+   dev=/dev/cu.usbserial-113010822821
+  ;;
+esac
+
+#
+# show usage
+#
+usage() {
+  echo "$0 [-d|-h]"
+  echo "  -h|--help   : show this usage"
+  echo "  -d|--debug  : switch on debugging"
+  #exit 1
+}
+
+# commandline option
+option=$1
+
+# optionally show usage
+case $option in
+  -h|--help) 
+    usage
+    options="--help"
+    ;;
+  # switch on debugging 
+  # see https://sdqweb.ipd.kit.edu/wiki/Remote_Debugging_mit_Eclipse
+  -d|--debug) options="--debug"
+esac
+
+soption="-F";
+case $os in
+  Darwin) soption="-f";;
+esac
+#stty $soption $dev 115200
+stty $soption $dev 230400&
+#stty $soption $dev 460800&
+java -jar target/com.bitplan.obdii-0.0.1-jar-with-dependencies.jar $options --conn $dev --display Swing --log Ion
