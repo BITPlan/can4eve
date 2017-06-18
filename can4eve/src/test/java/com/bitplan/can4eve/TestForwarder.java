@@ -20,10 +20,12 @@
  */
 package com.bitplan.can4eve;
 
+import java.io.FileNotFoundException;
+
 import org.junit.Test;
 
 import com.bitplan.can4eve.Can4eve;
-
+import com.bitplan.elm327.Config;
 
 /**
  * Created by wf on 05.06.17.
@@ -31,11 +33,12 @@ import com.bitplan.can4eve.Can4eve;
 
 public class TestForwarder {
   @Test
-  public void testCan4EveForwarding() {
-    Can4eve can4eve = new Can4eve();
-    String args[] = {"-f", "-d", "--device", "cu.usbserial-113010822821"};
-    can4eve.maininstance(args);
+  public void testCan4EveForwarding() throws FileNotFoundException {
+    Config config = Config.getInstance();
+    if (config != null) {
+      Can4eve can4eve = new Can4eve();
+      String args[] = { "-f", "-d", "--device", config.getSerialDevice() };
+      can4eve.maininstance(args);
+    }
   }
 }
-
-

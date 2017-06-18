@@ -19,6 +19,59 @@ public class Config {
   String ip;           // e.g. 192.168.1.30
   int port;            // e.g. 35000
   int timeout;         // e.g. 500 (for 1/2 sec)
+  
+  public String getSerialDevice() {
+    return serialDevice;
+  }
+
+  public void setSerialDevice(String serialDevice) {
+    this.serialDevice = serialDevice;
+  }
+
+  public int getSerialBaud() {
+    return serialBaud;
+  }
+
+  public void setSerialBaud(int serialBaud) {
+    this.serialBaud = serialBaud;
+  }
+
+  public String getIp() {
+    return ip;
+  }
+
+  public void setIp(String ip) {
+    this.ip = ip;
+  }
+
+  public int getPort() {
+    return port;
+  }
+
+  public void setPort(int port) {
+    this.port = port;
+  }
+
+  public int getTimeout() {
+    return timeout;
+  }
+
+  public void setTimeout(int timeout) {
+    this.timeout = timeout;
+  }
+
+  public boolean isDebug() {
+    return debug;
+  }
+
+  public void setDebug(boolean debug) {
+    this.debug = debug;
+  }
+
+  public static void setInstance(Config instance) {
+    Config.instance = instance;
+  }
+
   boolean debug;       // e.g. true 
   
 
