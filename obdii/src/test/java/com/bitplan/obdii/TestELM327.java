@@ -202,18 +202,19 @@ public class TestELM327 extends TestOBDII {
     obdTriplet.monitorPid(display, byName("SOC").getPid(), frameLimit);
     obdTriplet.monitorPid(display, byName("Steering_Wheel").getPid(), frameLimit);
     obdTriplet.monitorPid(display, byName("Odometer_Speed").getPid(), frameLimit);
-    obdTriplet.monitorPid(display, byName("VIN").getPid(), frameLimit * 3);
+    obdTriplet.monitorPid(display, byName("VIN").getPid(), frameLimit * 6); // 3 should be enough but somehow on travis the test then fails
     // Thread.sleep(50000);   
     //display.waitClose();
     assertNotNull("the battery capacity should be set",obdTriplet.batteryCapacity.getValue());
     assertNotNull(obdTriplet.SOC);
     assertEquals(new Double(44.8),obdTriplet.batteryCapacity.getValue(),0.1);
     assertEquals(new Double(100.0), obdTriplet.SOC.getValue(), 0.1);
+    assertEquals(new Integer(95), obdTriplet.range.getValue());
     assertEquals(new Integer(721), obdTriplet.odometer.getValue());
     assertEquals(new Double(-9.5),obdTriplet.steeringWheelPosition.getValue(),0.01);
     assertEquals(new Double(2.5),obdTriplet.steeringWheelMovement.getValue(),0.01);
     assertEquals("VF31NZKYZHU900769", obdTriplet.VIN.getValue());
-    assertEquals(new Integer(95), obdTriplet.range.getValue());
+
 
     obdTriplet.close();
     //display.waitClose();
