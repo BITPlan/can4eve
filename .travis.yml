@@ -11,7 +11,7 @@ language: android
 jdk: oraclejdk8
 # support for headless Swing tests and other gui stuff
 # https://docs.travis-ci.com/user/gui-and-headless-browsers/ 
-before_scrip0t:
+before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3 # give xvfb some time to start
