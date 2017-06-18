@@ -539,6 +539,7 @@ public class OBDTriplet extends OBDHandler {
         long updates = totalUpdates - latestTotalUpdates;
         double fps = 1000.0 * updates / msecs;
         display.updateField("fps", fps, ++fpsUpdateCount);
+        display.updateField("# of bufferOverruns",super.bufferOverruns , fpsUpdateCount);
         latestTotalUpdates = totalUpdates;
         latestUpdate = now;
       }

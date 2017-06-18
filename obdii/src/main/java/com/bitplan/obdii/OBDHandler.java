@@ -70,7 +70,7 @@ public abstract class OBDHandler implements ResponseHandler {
   protected List<CANValue<?>> canValues;
   private Map<String, CANRawValue> canRawValues = new HashMap<String, CANRawValue>();
 
-  int bufferOverruns = 0;
+  protected int bufferOverruns = 0;
 
   public ELM327 getElm327() {
     return elm327;
