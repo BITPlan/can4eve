@@ -42,9 +42,9 @@ public class VehicleGroup {
   private List<VehicleModel> models = new ArrayList<VehicleModel>();
 
   List<Pid> pids = new ArrayList<Pid>();
-  Map<String, Pid> pidByPid = new HashMap<String, Pid>();
-  Map<String, Pid> pidByName = new HashMap<String, Pid>();
-  Map<String,CANInfo> canInfoByName=new HashMap<String,CANInfo>();
+  transient Map<String, Pid> pidByPid = new HashMap<String, Pid>();
+  transient Map<String, Pid> pidByName = new HashMap<String, Pid>();
+  transient Map<String,CANInfo> canInfoByName=new HashMap<String,CANInfo>();
 
   public String getName() {
     return name;
