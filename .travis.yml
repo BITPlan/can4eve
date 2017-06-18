@@ -1,6 +1,8 @@
 # this is a java project using maven
 # it also compiles an android result with gradle
-language: java
+# see https://github.com/travis-ci/travis-ci/issues/2551
+language: android 
+#language: java
 # 
 # Java 8
 #  

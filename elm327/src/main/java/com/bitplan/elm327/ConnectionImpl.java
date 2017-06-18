@@ -57,9 +57,9 @@ public class ConnectionImpl extends Thread implements Connection {
   final static int BUFFER_SIZE = 8192;
 
   // regular expression to check that an elm327 response is "complete"
-  // while there is no linefeed received
+  // while there is no line feed received
   final static Pattern snippetPattern = Pattern.compile(
-      "(.*\\>)|STOPPED|BUFFER FULL|CAN ERROR|OUT OF MEMORY",
+      "(.*\\>)|STOPPED|BUFFER FULL|CAN ERROR|\\<DATA ERROR|OUT OF MEMORY",
       Pattern.MULTILINE | Pattern.DOTALL);
 
   LinkedBlockingQueue<Packet> responses = new LinkedBlockingQueue<Packet>();

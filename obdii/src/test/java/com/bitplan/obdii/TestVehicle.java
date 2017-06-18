@@ -64,6 +64,28 @@ public class TestVehicle extends TestOBDII {
     }
     return pid;
   }
+  
+  public class JsonResult {
+    Gson gson;
+    String  json;
+  }
+  /**
+   * check the Json
+   * @param vehicleGroup
+   */
+  public JsonResult checkJson(VehicleGroup vehicleGroup) {
+    JsonResult result=new JsonResult();
+    GsonBuilder gsonBuilder = new GsonBuilder();
+    // new GraphAdapterBuilder().addType(Pid.class).registerOn(gsonBuilder);
+    Gson gson = gsonBuilder.setPrettyPrinting().create();;
+    String json=gson.toJson(vehicleGroup);
+    assertNotNull(json);
+    if (debug)
+      System.out.println(json);
+    result.json=json;
+    result.gson=gson;
+    return result;
+  }
 
   @Test
   public void testVehicle() {
@@ -92,17 +114,11 @@ public class TestVehicle extends TestOBDII {
       Pid pid=convert(opid);
       vehicleGroup.addPid(pid);
     }
-    GsonBuilder gsonBuilder = new GsonBuilder();
-    // new GraphAdapterBuilder().addType(Pid.class).registerOn(gsonBuilder);
-    Gson gson = gsonBuilder.setPrettyPrinting().create();;
-    String json=gson.toJson(vehicleGroup);
-    assertNotNull(json);
-    if (debug)
-      System.out.println(json);
-    
-    VehicleGroup vg=gson.fromJson(json, VehicleGroup.class);
+    // debug=true;
+    JsonResult jr=this.checkJson(vehicleGroup);
+    VehicleGroup vg=jr.gson.fromJson(jr.json, VehicleGroup.class);
     assertEquals(3,vg.getModels().size());
-    assertEquals(51,vg.getPids().size());
+    assertEquals(50,vg.getPids().size());
   }
   
   @Test
@@ -110,6 +126,9 @@ public class TestVehicle extends TestOBDII {
     VehicleGroup vg=getVehicleGroup();
     assertEquals(3,vg.getModels().size());
     assertEquals(51,vg.getPids().size());
+    // debug=true;
+    JsonResult jr=this.checkJson(vg);
+    assertNotNull(jr.gson);
   }
   
   @Test
