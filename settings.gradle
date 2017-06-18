@@ -1,1 +1,1 @@
-include ':app', ':elm327', ':can4eve', ':usbserial'
+include ':app', ':elm327', ':can4eve', ':usbserial', ':obdii'

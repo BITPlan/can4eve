@@ -11,6 +11,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/can4eve" />
             <option value="$PROJECT_DIR$/elm327" />
+            <option value="$PROJECT_DIR$/obdii" />
             <option value="$PROJECT_DIR$/usbserial" />
           </set>
         </option>

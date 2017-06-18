@@ -6,7 +6,9 @@ dependencies {
     compile project(':elm327')
     // https://mvnrepository.com/artifact/args4j/args4j
     compile group: 'args4j', name: 'args4j', version: '2.33'
-
+    // Circular Fifo Queue
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-collections4
+    compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.1'
 }
 
 sourceCompatibility = "1.7"

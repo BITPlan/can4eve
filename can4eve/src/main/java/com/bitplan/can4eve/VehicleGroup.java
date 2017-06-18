@@ -152,6 +152,9 @@ public class VehicleGroup {
     if (vehicleGroup == null) {
       InputStream jsonStream = VehicleGroup.class.getClassLoader()
           .getResourceAsStream("com/bitplan/can4eve/" + name + ".json");
+      if (jsonStream==null) {
+        throw new Exception(String.format("Could not load VehicleGroup %s.json from classpath",name));
+      }
       vehicleGroup = VehicleGroup.fromJsonStream(jsonStream);
     }
     return vehicleGroup;
