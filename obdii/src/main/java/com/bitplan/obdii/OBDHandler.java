@@ -115,15 +115,16 @@ public abstract class OBDHandler implements ResponseHandler {
       throw new IllegalArgumentException(
           "device " + device.getPath() + " does not exist");
     try {
-      Connection con=new ConnectionImpl();
+      Connection con=this.getElm327().getCon();
       con.setInput(new FileInputStream(device));
       con.setOutput(new FileOutputStream(device));
-      this.getElm327().setCon(con);
+      attachConnection(con);
     } catch (FileNotFoundException e) {
       // this shouldn't be possible we checked above that the file exists
       throw new RuntimeException("this can't happen: " + e.getMessage());
     }
   }
+  
 
   /**
    * create an OBDTriplet connection via the given socket
@@ -142,9 +143,16 @@ public abstract class OBDHandler implements ResponseHandler {
       LOGGER.log(Level.INFO, "receiveBuffer=" + elmSocket.getReceiveBufferSize()
           + " sendBuffer=" + elmSocket.getSendBufferSize());
     }
-    Connection con=new ConnectionImpl();
+    Connection con=this.getElm327().getCon();
     con.connect(elmSocket);
-    getElm327().setCon(con);
+    attachConnection(con);
+  }
+  
+  /**
+   * attach the connection to me
+   * @param con
+   */
+  public void attachConnection(Connection con) {
     con.setResponseHandler(this);
   }
 
