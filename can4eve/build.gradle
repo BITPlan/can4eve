@@ -18,7 +18,7 @@ version = '0.0.1'
 //create a single Jar with all dependencies
 task fatJar(type: Jar) {
     manifest {
-        attributes 'Implementation-Title': 'caneve',
+        attributes 'Implementation-Title': 'can4eve',
                 'Implementation-Version': version,
                 'Main-Class': 'Can4eve'
     }

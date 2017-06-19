@@ -47,5 +47,5 @@ android {
 	assemble.dependsOn 'createSourcesJar'
 
     createJar.dependsOn(deleteJar, build)
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '25.0.3'
 }

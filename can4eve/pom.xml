@@ -8,7 +8,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>com.bitplan.can4eve.can4eve</artifactId>
 	<packaging>jar</packaging>
-	<name>com.bitplan.can4eve</name>
+	<name>com.bitplan.can4eve.can4eve</name>
 	<description>Can4Eve Swing application</description>
 	<dependencies>
 		<dependency>
