@@ -2,4 +2,5 @@
 /bin/
 /target
 .settings
+/build
 Ion
