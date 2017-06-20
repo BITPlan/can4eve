@@ -57,6 +57,7 @@ public class SwingDisplay implements Display {
   private JPanel buttonPanel;
   MigLayout layout;
   Map<String, SwingLabelField> fieldMap = new HashMap<String, SwingLabelField>();
+  public List<SwingLabelField> fields=new ArrayList<SwingLabelField>();
   JPanel mainPanel;
   ContainerPanel historyPanel;
   ContainerPanel cellTemperaturPanel;
@@ -253,6 +254,7 @@ public class SwingDisplay implements Display {
   public void add(SwingLabelField lf) {
     if (debug)
       LOGGER.log(Level.INFO, "Adding field " + lf.title);
+    fields.add(lf);
     fieldMap.put(lf.title, lf);
     JPanel dataPanel = dataPanels.get(dataPanels.size()-1);
     if (dataPanel.getComponents().length>27) {

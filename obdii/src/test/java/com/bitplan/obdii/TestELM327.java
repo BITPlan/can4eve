@@ -44,14 +44,20 @@ import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.Pid;
+import com.bitplan.can4eve.gui.Field;
+import com.bitplan.can4eve.gui.Form;
+import com.bitplan.can4eve.gui.Forms;
 import com.bitplan.elm327.Config;
 import com.bitplan.elm327.Connection;
 import com.bitplan.elm327.LogImpl;
 import com.bitplan.elm327.Packet;
+import com.bitplan.obdii.SwingDisplay.SwingLabelField;
 import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.obdii.elm327.ELM327SimulatorConnection;
 import com.bitplan.obdii.elm327.ElmSimulator;
 import com.bitplan.triplet.OBDTriplet;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * Test ELM327 communication
@@ -65,7 +71,8 @@ public class TestELM327 extends TestOBDII {
   public static boolean simulated = true;
   // the vehicle under test
 
-  public int SIMULATOR_TIMEOUT =50; // Simulator should be quick 2 msecs is feasible
+  public int SIMULATOR_TIMEOUT = 50; // Simulator should be quick 2 msecs is
+                                     // feasible
 
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii");
   private Socket elmSocket;
@@ -93,19 +100,20 @@ public class TestELM327 extends TestOBDII {
    */
   public ELM327 getSimulation() throws Exception {
     ELM327 elm327 = new ELM327(getVehicleGroup());
-    ElmSimulator.verbose=debug;
+    ElmSimulator.verbose = debug;
     ElmSimulator elm327Simulator = ElmSimulator.getInstance();
-    elm327Simulator.debug=debug;
+    elm327Simulator.debug = debug;
     ServerSocket serverSocket = elm327Simulator.getServerSocket();
-    Socket clientSocket=new Socket("localhost",serverSocket.getLocalPort());
-    Connection con=elm327.getCon();
+    Socket clientSocket = new Socket("localhost", serverSocket.getLocalPort());
+    Connection con = elm327.getCon();
     con.connect(clientSocket);
     if (debug)
       con.setLog(new LogImpl());
     con.start();
     Thread.sleep(20); // 10 is not enough for jenkins on capri
     assertTrue(elm327.getCon().isAlive());
-    ELM327SimulatorConnection elm327SimulatorConnection = elm327Simulator.getSimulatorConnection(clientSocket);
+    ELM327SimulatorConnection elm327SimulatorConnection = elm327Simulator
+        .getSimulatorConnection(clientSocket);
     assertNotNull(elm327SimulatorConnection);
     Connection simcon = elm327SimulatorConnection.getCon();
     assertTrue(simcon.isAlive());
@@ -127,13 +135,13 @@ public class TestELM327 extends TestOBDII {
       obdTriplet.setElm327(getSimulation());
       obdTriplet.getElm327().getCon().setResponseHandler(obdTriplet);
     } else {
-      Config config=Config.getInstance();
+      Config config = Config.getInstance();
       elmSocket = getTestVehicleSocket(config);
-      obdTriplet = new OBDTriplet(getVehicleGroup(),elmSocket, debug);
+      obdTriplet = new OBDTriplet(getVehicleGroup(), elmSocket, debug);
     }
     display = new TripletDisplay();
     obdTriplet.showDisplay(display);
-    //obdTriplet.getElm327().debug = debug;
+    // obdTriplet.getElm327().debug = debug;
     if (!simulated)
       obdTriplet.getElm327().getCon().start();
   }
@@ -178,45 +186,62 @@ public class TestELM327 extends TestOBDII {
     elm327.log("" + msecs + " msescs");
     assertTrue(msecs < 100);
   }
-  
+
   @Test
   public void testBatteryCapacity() throws Exception {
     this.prepareOBDTriplet(simulated, debug);
     obdTriplet.initOBD();
     // obdTriplet.setDebug(true);
-    obdTriplet.readPid(display,byName("BatteryCapacity"));
+    obdTriplet.readPid(display, byName("BatteryCapacity"));
     Thread.sleep(200);
-    assertNotNull("the battery capacity should be set",obdTriplet.batteryCapacity.getValue());
-    assertEquals(new Double(44.7),obdTriplet.batteryCapacity.getValue(),0.01);
+    assertNotNull("the battery capacity should be set",
+        obdTriplet.batteryCapacity.getValue());
+    assertEquals(new Double(44.7), obdTriplet.batteryCapacity.getValue(), 0.01);
   }
-  
+
   @Test
   public void testOBDTriplet() throws Exception {
-    //debug=true;
-    //PIDResponse.debug=true;
+    // debug=true;
+    // PIDResponse.debug=true;
     this.prepareOBDTriplet(simulated, debug);
     obdTriplet.initOBD();
     int frameLimit = 1;
-    obdTriplet.readPid(display,byName("BatteryCapacity"));
+    obdTriplet.readPid(display, byName("BatteryCapacity"));
     obdTriplet.monitorPid(display, byName("Range").getPid(), frameLimit);
     obdTriplet.monitorPid(display, byName("SOC").getPid(), frameLimit);
-    obdTriplet.monitorPid(display, byName("Steering_Wheel").getPid(), frameLimit);
-    obdTriplet.monitorPid(display, byName("Odometer_Speed").getPid(), frameLimit);
-    obdTriplet.monitorPid(display, byName("VIN").getPid(), frameLimit * 3); // 3 should be enough but somehow on travis the test then fails
-    // let's wait a bit for the results 
-    Thread.sleep(500);   
-    //display.waitClose();
-    assertNotNull("the battery capacity should be set",obdTriplet.batteryCapacity.getValue());
+    obdTriplet.monitorPid(display, byName("Steering_Wheel").getPid(),
+        frameLimit);
+    obdTriplet.monitorPid(display, byName("Odometer_Speed").getPid(),
+        frameLimit);
+    obdTriplet.monitorPid(display, byName("VIN").getPid(), frameLimit * 3); // 3
+                                                                            // should
+                                                                            // be
+                                                                            // enough
+                                                                            // but
+                                                                            // somehow
+                                                                            // on
+                                                                            // travis
+                                                                            // the
+                                                                            // test
+                                                                            // then
+                                                                            // fails
+    // let's wait a bit for the results
+    Thread.sleep(500);
+    // display.waitClose();
+    assertNotNull("the battery capacity should be set",
+        obdTriplet.batteryCapacity.getValue());
     assertNotNull(obdTriplet.SOC);
-    assertEquals(new Double(44.8),obdTriplet.batteryCapacity.getValue(),0.1);
+    assertEquals(new Double(44.8), obdTriplet.batteryCapacity.getValue(), 0.1);
     assertEquals(new Double(100.0), obdTriplet.SOC.getValue(), 0.1);
     assertEquals(new Integer(95), obdTriplet.range.getValue());
     assertEquals(new Integer(721), obdTriplet.odometer.getValue());
-    assertEquals(new Double(-9.5),obdTriplet.steeringWheelPosition.getValue(),0.01);
-    assertEquals(new Double(2.5),obdTriplet.steeringWheelMovement.getValue(),0.01);
+    assertEquals(new Double(-9.5), obdTriplet.steeringWheelPosition.getValue(),
+        0.01);
+    assertEquals(new Double(2.5), obdTriplet.steeringWheelMovement.getValue(),
+        0.01);
     assertEquals("VF31NZKYZHU900769", obdTriplet.VIN.getValue());
     obdTriplet.close();
-    //display.waitClose();
+    // display.waitClose();
     display.close();
   }
 
@@ -263,8 +288,6 @@ public class TestELM327 extends TestOBDII {
     }
   }
 
- 
-
   @Test
   public void testOBDMain() throws Exception {
     // debug = true;
@@ -272,19 +295,19 @@ public class TestELM327 extends TestOBDII {
     OBDMain obdMain = new OBDMain();
     OBDMain.testMode = true;
     String debugArg = "-v";
-    /*int frameLimit = 50000;
-    String host="pilt.bitplan.com";
-    int port=7000;*/
-    String host="localhost";
-    int port=35000;
+    /*
+     * int frameLimit = 50000; String host="pilt.bitplan.com"; int port=7000;
+     */
+    String host = "localhost";
+    int port = 35000;
     int frameLimit = 100;
     String limit = "--limit=" + frameLimit;
     if (debug)
       debugArg = "--debug";
-    String args[] = { debugArg, "--host="+host,"--port="+port, "--display=Swing",
-        limit };
+    String args[] = { debugArg, "--host=" + host, "--port=" + port,
+        "--display=Swing", limit };
     int exitCode = obdMain.maininstance(args);
-    assertEquals(0,exitCode);
+    assertEquals(0, exitCode);
   }
 
   @Test
@@ -296,8 +319,8 @@ public class TestELM327 extends TestOBDII {
     String limit = "--limit=" + frameLimit;
     File logRoot = new File("/tmp/Ion");
     logRoot.mkdirs();
-    String args[] = { "--host=localhost", "--port="+ElmSimulator.DEFAULT_PORT, "--display=Swing", limit,
-        "--log=" + logRoot.getAbsolutePath() };
+    String args[] = { "--host=localhost", "--port=" + ElmSimulator.DEFAULT_PORT,
+        "--display=Swing", limit, "--log=" + logRoot.getAbsolutePath() };
     obdMain.maininstance(args);
   }
 
@@ -310,9 +333,41 @@ public class TestELM327 extends TestOBDII {
     String debugArg = "-v";
     if (debug)
       debugArg = "--debug";
-    String args[] = { debugArg, "--host=localhost","--port="+ElmSimulator.DEFAULT_PORT, "--display=Console",
+    String args[] = { debugArg, "--host=localhost",
+        "--port=" + ElmSimulator.DEFAULT_PORT, "--display=Console",
         "--limit=10", "--pid=346" };
     obdMain.maininstance(args);
+  }
+
+  @Test
+  public void testForms() throws Exception {
+    prepareOBDTriplet(simulated, debug);
+    Forms forms = new Forms();
+    Form form = new Form();
+    forms.getForms().add(form);
+    form.setTitle("data 1");
+    for (SwingLabelField sfield : display.fields) {
+      if (!sfield.title.startsWith("Raw")) {
+        Field field = new Field();
+        field.setTitle(sfield.title);
+        field.setLabelSize(sfield.labelSize);
+        field.setFieldSize(sfield.fieldSize);
+        field.setFormat(sfield.format);
+        form.getFields().add(field);
+        if (form.getFields().size() >= 27) {
+          form = new Form();
+          forms.getForms().add(form);
+          form.setTitle("data " + forms.getForms().size());
+        }
+      }
+    }
+    GsonBuilder gsonBuilder = new GsonBuilder();
+    // new GraphAdapterBuilder().addType(Pid.class).registerOn(gsonBuilder);
+    Gson gson = gsonBuilder.setPrettyPrinting().create();
+    String json = gson.toJson(forms);
+    //debug=true;
+    if (debug)
+      System.out.println(json);
   }
 
   @Test
@@ -325,7 +380,7 @@ public class TestELM327 extends TestOBDII {
     File logRoot = new File("src/test/data");
     File logFile = null;
     if (!simulated) {
-      Config config=Config.getInstance();
+      Config config = Config.getInstance();
       logFile = obdTriplet.logResponses(logRoot, config.getVehicleName());
     }
     int frameLimit = 150;
@@ -351,7 +406,7 @@ public class TestELM327 extends TestOBDII {
     for (String cmd : cmds) {
       Packet response;
       long workingTimeOut = 300;
-      Connection con=elm327.getCon();
+      Connection con = elm327.getCon();
       con.setTimeout(workingTimeOut);
       long diff = con.getTimeout();
       while (diff > 5) {
@@ -366,10 +421,11 @@ public class TestELM327 extends TestOBDII {
         diff = Math.abs(workingTimeOut - con.getTimeout());
       }
       if (debug)
-        System.out.println("timeout=" + con.getTimeout() + " for command " + cmd);
+        System.out
+            .println("timeout=" + con.getTimeout() + " for command " + cmd);
       assertTrue(con.getTimeout() < 50);
       // TODO we might also need a minimum timeout
-      // assertTrue("Timeout too low - simulator broken?",con.getTimeout() >4);   
+      // assertTrue("Timeout too low - simulator broken?",con.getTimeout() >4);
     }
   }
 
@@ -381,10 +437,10 @@ public class TestELM327 extends TestOBDII {
   @SuppressWarnings("unused")
   @Test
   public void testPIDs() throws Exception {
-    final int slow = 0; 
+    final int slow = 0;
     boolean withHistory = false;
-    //final int slow=20; // msecs for slower motion
-    //boolean withHistory = true;
+    // final int slow=20; // msecs for slower motion
+    // boolean withHistory = true;
     // debug=true;
     // prepareOBDTriplet(true);
     String[] fileNames = {
@@ -392,7 +448,7 @@ public class TestELM327 extends TestOBDII {
         "Triplet_2017-04-17_104141.log", "Triplet_2017-04-15_192134.log",
         "Triplet_2017-04-15_132733.log", "Triplet_2017-04-14_191849.log",
         "capture_chg_1104.txt" };
-    //final int[] max = { 1800000,122000,30000, 50000, 2000000 };
+    // final int[] max = { 1800000,122000,30000, 50000, 2000000 };
     final int[] max = { 72000, 180000, 122000, 30000, 50000, 200000 };
 
     for (String fileName : fileNames) {
@@ -405,7 +461,7 @@ public class TestELM327 extends TestOBDII {
         Thread.sleep(2000);
       obdTriplet.getElm327().setHeader(true);
       obdTriplet.getElm327().setLength(true);
-      File logCAN = new File("src/test/data/" + fileName+".zip");
+      File logCAN = new File("src/test/data/" + fileName + ".zip");
       assertTrue("" + logCAN.getPath() + " should exist", logCAN.exists());
       LogReader logReader = new LogReader(logCAN, obdTriplet);
       final int updates = 300;
@@ -460,10 +516,9 @@ public class TestELM327 extends TestOBDII {
       LOGGER.log(Level.INFO, names);
     }
     assertTrue(names.startsWith(
-        "VIN,# of Cells,Battery Capacity,Key,total km,Trip Odo,Trip Rounds,Speed,RPM,RPM Speed,Range,SOC,Climate,Vent Dir,AC Amps,AC Volts,DC Amps,DC Volts,Motor temp,Charger temp,Shifter,Steering Position,Steering Movement,Accelerator,Break Pressed,Break Pedal,Blinker Left,Blinker Right,Door Open,Parking Light,Head Light,High Beam,Cell Temperature,Cell Voltage"
-    ));
+        "VIN,# of Cells,Battery Capacity,Key,total km,Trip Odo,Trip Rounds,Speed,RPM,RPM Speed,Range,SOC,Climate,Vent Dir,AC Amps,AC Volts,DC Amps,DC Volts,Motor temp,Charger temp,Shifter,Steering Position,Steering Movement,Accelerator,Break Pressed,Break Pedal,Blinker Left,Blinker Right,Door Open,Parking Light,Head Light,High Beam,Cell Temperature,Cell Voltage"));
   }
-  
+
   @Test
   public void testPidFromPid() throws Exception {
     OBDTriplet lOBDTriplet = new OBDTriplet(getVehicleGroup());
@@ -475,7 +530,7 @@ public class TestELM327 extends TestOBDII {
         assertNotNull(canInfo);
         assertNotNull("pid should not be null for " + canInfo.getTitle(),
             canInfo.getPid());
-        String pidId=canInfo.getPid().getPid();
+        String pidId = canInfo.getPid().getPid();
         Pid pid = lOBDTriplet.getElm327().getVehicleGroup().getPidById(pidId);
         assertEquals(pid.getPid(), canValue.canInfo.getPid().getPid());
       }
@@ -508,9 +563,7 @@ public class TestELM327 extends TestOBDII {
   @Test
   public void testPidResponseRegexp() {
     // debug=true;
-    String responses[] = {
-        "101 1 04\n",
-        "6D6 8 00 00 00 00 00 00 00 00\n",
+    String responses[] = { "101 1 04\n", "6D6 8 00 00 00 00 00 00 00 00\n",
         "231 8 00 00 00 00 00 00 00 00\n" + "6D5 8 00 00 00 00 00 00 00 00\n"
             + "101 1 04\n",
         "346 8 27 10 57 20 00 00 00 4D\n" + "308 8 00 03 E8 00 00 00 000^@0 "
@@ -518,7 +571,7 @@ public class TestELM327 extends TestOBDII {
         "236 8 0C 4E 10 00 80 00 00 4C " + "288 8 07 C4 29 9F 01 42 11 1C "
             + "6FA 8 02 37 36 39 00 00 00 00 " + "564 8 00 00 00 00 0" };
     // \\s([0-9])\\s(([0-9A-F]{2})\\s)+
-    int expected[] = {1,1, 3, 3, 4 };
+    int expected[] = { 1, 1, 3, 3, 4 };
     int r = 0;
     for (String response : responses) {
       int hit = 0;
@@ -534,40 +587,40 @@ public class TestELM327 extends TestOBDII {
           System.out.println(String.format("\t%3d:%s", hit, pidline));
         Matcher lmatcher = PIDResponse.PID_LINE_PATTERN.matcher(pidline);
         if (lmatcher.matches()) {
-          assertEquals(4,lmatcher.groupCount());
+          assertEquals(4, lmatcher.groupCount());
           for (int i = 1; i <= lmatcher.groupCount(); i++) {
-            String pid=lmatcher.group(1);
-            assertEquals(3,pid.length());
-            String lenStr=lmatcher.group(2);
-            int len=Integer.parseInt(lenStr);
-            String ds=lmatcher.group(3).trim();
+            String pid = lmatcher.group(1);
+            assertEquals(3, pid.length());
+            String lenStr = lmatcher.group(2);
+            int len = Integer.parseInt(lenStr);
+            String ds = lmatcher.group(3).trim();
             String[] d = ds.split(" ");
             // there are two broken pid strings
             if (!("308".equals(pid) || "564".equals(pid)))
-              assertEquals("'"+ds+"'",len,d.length);
+              assertEquals("'" + ds + "'", len, d.length);
             if (debug)
               System.out
                   .println(String.format("\t\t%3d:%s", i, lmatcher.group(i)));
           }
         }
       }
-      assertEquals(response,expected[r - 1],hit);
+      assertEquals(response, expected[r - 1], hit);
     }
 
   }
-  
-  @Test 
+
+  @Test
   public void testIntegrate() throws Exception {
-    CANInfo tripRoundsInfo=getVehicleGroup().getCANInfoByName("TripRounds");
+    CANInfo tripRoundsInfo = getVehicleGroup().getCANInfoByName("TripRounds");
     DoubleValue tripRounds = new DoubleValue(tripRoundsInfo);
     // two round per minute values
-    int rpm1=2000;
-    int rpm2=4000;
+    int rpm1 = 2000;
+    int rpm2 = 4000;
     // two measurment dates - 1 second appart
-    Date date1 =new Date(0);
-    Date date2 =new Date(1000);
-    tripRounds.integrate(rpm1, date1, rpm2, date2, 1/60000.0);
-    assertEquals(50.0,tripRounds.getValueItem().getValue(),0.1);
+    Date date1 = new Date(0);
+    Date date2 = new Date(1000);
+    tripRounds.integrate(rpm1, date1, rpm2, date2, 1 / 60000.0);
+    assertEquals(50.0, tripRounds.getValueItem().getValue(), 0.1);
   }
 
 }

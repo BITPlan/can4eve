@@ -170,6 +170,9 @@ public class OBDTriplet extends OBDHandler {
     return canInfo;
   }
 
+  /**
+   * initialize the CanValues
+   */
   public void initCanValues() {
     // car parameters
     accelerator = new DoubleValue(getCanInfo("Accelerator"));
@@ -540,6 +543,7 @@ public class OBDTriplet extends OBDHandler {
         double fps = 1000.0 * updates / msecs;
         display.updateField("fps", fps, ++fpsUpdateCount);
         display.updateField("# of bufferOverruns",super.bufferOverruns , fpsUpdateCount);
+        display.updateField("OBDII", this.getElm327().getDescription(), 1);
         latestTotalUpdates = totalUpdates;
         latestUpdate = now;
       }

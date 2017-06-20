@@ -42,7 +42,7 @@ public class ELM327Impl implements ELM327 {
   // description as returned by AT @1
   String description;
 
-  // device id as retuned by AT @2
+  // device id as returned by AT @2
   String deviceId;
 
   String carVoltage;

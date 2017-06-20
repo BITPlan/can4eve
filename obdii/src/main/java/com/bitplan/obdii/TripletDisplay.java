@@ -37,6 +37,7 @@ import com.bitplan.can4eve.CANValue;
 public class TripletDisplay extends SwingDisplay implements CANValueDisplay, ActionListener {
   protected LabelField fpsField;
   protected LabelField bufferOverrunField;
+  protected LabelField obdDescriptionField;
   
   @Override
   public void actionPerformed(ActionEvent e) {
@@ -55,6 +56,7 @@ public class TripletDisplay extends SwingDisplay implements CANValueDisplay, Act
   public TripletDisplay() {
     super("CanTriplet");
     super.addButton("stop",this);
+    obdDescriptionField=super.addField("OBDII", "%s",5, 15);
     fpsField=super.addField("fps", "%5.0f", 3, 6);
     bufferOverrunField=super.addField("# of bufferOverruns", "%5d", 13, 6);
   }
