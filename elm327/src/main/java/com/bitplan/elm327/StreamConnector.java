@@ -132,7 +132,7 @@ public class StreamConnector extends Thread {
                             log.log(str);
                         }
                     }
-                    yield();
+                    // yield();
                 }
             } catch (IOException e) {
                 if (running) {
