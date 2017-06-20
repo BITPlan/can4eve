@@ -1,8 +1,0 @@
-Jun 19, 2017 8:09:45 PM com.bitplan.elm327.LogImpl log
-INFORMATION: found serial port: cu.Bluetooth-Incoming-Port
-Jun 19, 2017 8:09:45 PM com.bitplan.elm327.LogImpl log
-INFORMATION: found serial port: tty.Bluetooth-Incoming-Port
-Jun 19, 2017 8:09:45 PM com.bitplan.elm327.LogImpl log
-INFORMATION: found serial port: cu.chacha2-JL_SPP
-Jun 19, 2017 8:09:45 PM com.bitplan.elm327.LogImpl log
-INFORMATION: found serial port: tty.chacha2-JL_SPP
