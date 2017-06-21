@@ -732,7 +732,7 @@ public class OBDTriplet extends OBDHandler {
     this.getCANValues(); // side effec: creates map;
     for (CANValue<?> canValue:top) {
       CANInfo canInfo = canValue.canInfo;
-      monitorPid(display,canInfo.getPid().getPid(), canInfo.getMaxIndex()+3);
+      monitorPid(display,canInfo.getPid().getPid(), canInfo.getMaxIndex()+5);
       printWriter.write(canValue.asCSV());
     }
     printWriter.close();
