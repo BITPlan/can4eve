@@ -20,6 +20,11 @@
  */
 package com.bitplan.triplet;
 
+/**
+ * Climate description
+ * @author wf
+ *
+ */
 public class Climate {
   int ventLevel;
   String climateLevel;

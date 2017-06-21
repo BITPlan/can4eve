@@ -27,6 +27,8 @@ import java.util.logging.Logger;
 
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 
+import com.bitplan.csv.CSVUtil;
+
 
 /**
  * base class for all PidValues
@@ -302,6 +304,15 @@ public abstract class CANValue<ValueType> {
       return asString(getValue());
     else
       return "-";
+  }
+  
+  public String asCSV() {
+    if (this.valueItem.available) {
+      String csv=CSVUtil.csv(this.canInfo.title, asString());
+      return csv;
+    }
+    else
+      return "";
   }
 
   public static class IntegerValue extends CANValue<Integer> {

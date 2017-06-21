@@ -20,6 +20,8 @@
  */
 package com.bitplan.elm327;
 
+import com.bitplan.csv.CSVUtil;
+
 /**
  * Created by wf on 03.06.17.
  *
@@ -308,6 +310,16 @@ public class ELM327Impl implements ELM327 {
     }
     return info;
   }
+  
+  public String asCSV() {
+    String csv="";
+    csv+=CSVUtil.csv("id",this.getId());
+    csv+=CSVUtil.csv("description",this.getDescription());
+    csv+=CSVUtil.csv("firmwareId",this.getFirmwareId());
+    csv+=CSVUtil.csv("hardwareId", this.getHardwareId());
+    return csv;
+  }
+
 
   public void initOBD2() throws Exception {
     initOBD2(INIT_TIMEOUT);

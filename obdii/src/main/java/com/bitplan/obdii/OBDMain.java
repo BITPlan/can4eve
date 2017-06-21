@@ -73,6 +73,10 @@ public class OBDMain extends Main {
   @Option(name = "-p", aliases = {
       "--pid" }, usage = "pid to monitor\nthe pid to monitor")
   String pid;
+  
+  @Option(name = "-r", aliases = {
+  "--report" }, usage = "create a report of all pids for this vehicle group\n")
+  String reportFileName;
 
   @Option(name = "-t", aliases = {
       "--timeout" }, usage = "timeout in msecs\nthe timeout for elm327 communication")
@@ -132,7 +136,9 @@ public class OBDMain extends Main {
     if (this.logFileName != null) {
       obdTriplet.logResponses(new File(logFileName), "Triplet");
     }
-    if (pid != null)
+    if (this.reportFileName!=null) {
+      obdTriplet.report(display,reportFileName);
+    } else if (pid != null)
       obdTriplet.checkPid(display, pid, frameLimit);
     else {
       obdTriplet.STMMonitor(display, obdTriplet.getCANValues(), frameLimit);

@@ -21,7 +21,9 @@
 package com.bitplan.triplet;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,8 +48,10 @@ import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.elm327.Connection;
 import com.bitplan.can4eve.CANValue.*;
+import com.bitplan.csv.CSVUtil;
 import com.bitplan.obdii.CANValueDisplay;
 import com.bitplan.obdii.CANValueHistoryPlot;
+import com.bitplan.obdii.Display;
 import com.bitplan.obdii.OBDHandler;
 import com.bitplan.obdii.PIDResponse;
 import com.bitplan.obdii.TripletDisplay;
@@ -101,6 +105,7 @@ public class OBDTriplet extends OBDHandler {
   ShifterPositionValue shifterPositionValue;
   // meter per Round // FIXME - is vehicle dependen and needs to be configured
   private double kmPerRound = 0.261 / 1000.0;
+  private CANValue<?>[] top;
 
   public boolean isWithHistory() {
     return withHistory;
@@ -214,6 +219,18 @@ public class OBDTriplet extends OBDHandler {
         getCanInfo("SteeringWheelMovement"));
     shifterPositionValue = new ShifterPositionValue(
         getCanInfo("ShifterPosition"));
+    // the top list as requested
+    CANValue<?>[] topArray = { this.VIN, this.cellCount, this.batteryCapacity,
+        this.key, this.odometer, this.tripOdo, this.tripRounds, this.speed,
+        this.rpm, this.rpmSpeed, this.range, this.SOC, this.climateValue,
+        this.ventDirection, this.acamps, this.acvolts, this.dcamps,
+        this.dcvolts, this.motortemp, this.chargertemp,
+        this.shifterPositionValue, this.steeringWheelPosition,
+        this.steeringWheelMovement, this.accelerator, this.breakPressed,
+        this.breakPedal, this.blinkerLeft, this.blinkerRight, this.doorOpen,
+        this.parkingLight, this.headLight, this.highBeam,
+        this.cellTemperature, this.cellVoltage };
+    top=topArray;
   }
 
   /**
@@ -457,22 +474,11 @@ public class OBDTriplet extends OBDHandler {
    */
   public List<CANValue<?>> getCANValues() {
     if (canValues == null) {
-      // the top list as requested
-      CANValue<?>[] top = { this.VIN, this.cellCount, this.batteryCapacity,
-          this.key, this.odometer, this.tripOdo, this.tripRounds, this.speed,
-          this.rpm, this.rpmSpeed, this.range, this.SOC, this.climateValue,
-          this.ventDirection, this.acamps, this.acvolts, this.dcamps,
-          this.dcvolts, this.motortemp, this.chargertemp,
-          this.shifterPositionValue, this.steeringWheelPosition,
-          this.steeringWheelMovement, this.accelerator, this.breakPressed,
-          this.breakPedal, this.blinkerLeft, this.blinkerRight, this.doorOpen,
-          this.parkingLight, this.headLight, this.highBeam,
-          this.cellTemperature, this.cellVoltage };
       // start the canValues with the top list
       canValues = new ArrayList<CANValue<?>>(Arrays.asList(top));
       // TODO check handling of raw values
       // create a map of these already added values
-      Map<Pid, CANValue<?>> canValueMap = new HashMap<Pid, CANValue<?>>();
+      HashMap<Pid, CANValue<?>> canValueMap = new HashMap<Pid, CANValue<?>>();
       for (CANValue<?> canValue : canValues) {
         CANInfo canInfo = canValue.canInfo;
         Pid pid = canInfo.getPid();
@@ -692,6 +698,44 @@ public class OBDTriplet extends OBDHandler {
 
   public void initOBD() throws Exception {
     this.getElm327().initOBD2();
+  }
+  
+  /**
+   * get the PID with the given PID id
+   * @param pidId
+   * @return
+   * @throws Exception
+   */
+  public Pid pidByName(String pidId) throws Exception {
+    Pid pid=getElm327().getVehicleGroup().getPidByName(pidId);
+    return pid;
+  }
+
+  /**
+   * create a csv report according to https://github.com/BITPlan/can4eve/issues/4
+   * and put the result into the given CSV file
+   * @param display 
+   * @param reportFileName - the filename to use
+   * @throws Exception 
+   */
+  public void report(CANValueDisplay display, String reportFileName) throws Exception {
+    File reportFile=new File(reportFileName);
+    PrintWriter printWriter=new PrintWriter(reportFile);
+    this.getElm327().identify();
+    String isoDate=isoDateFormatter.format(new Date());
+    printWriter.write(CSVUtil.csv("date", isoDate));
+    String elmCSV=this.getElm327().asCSV();
+    printWriter.write(elmCSV);
+    printWriter.flush();
+    readPid(display,pidByName("BatteryCapacity"));
+    printWriter.write(this.batteryCapacity.asCSV());
+    this.getCANValues(); // side effec: creates map;
+    for (CANValue<?> canValue:top) {
+      CANInfo canInfo = canValue.canInfo;
+      monitorPid(display,canInfo.getPid().getPid(), canInfo.getMaxIndex()+3);
+      printWriter.write(canValue.asCSV());
+    }
+    printWriter.close();
   }
 
 }

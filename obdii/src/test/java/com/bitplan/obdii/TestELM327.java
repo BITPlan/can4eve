@@ -622,5 +622,27 @@ public class TestELM327 extends TestOBDII {
     tripRounds.integrate(rpm1, date1, rpm2, date2, 1 / 60000.0);
     assertEquals(50.0, tripRounds.getValueItem().getValue(), 0.1);
   }
-
+  
+  /**
+   * test creating a report according to 
+   * https://github.com/BITPlan/can4eve/issues/4
+   * @throws Exception 
+   */
+  @Test
+  public void testReport() throws Exception {
+    this.prepareOBDTriplet(simulated, debug);
+    obdTriplet.initOBD();
+    File reportFile = File.createTempFile("report", ".csv");
+    obdTriplet.report(display,reportFile.getAbsolutePath());
+    assertTrue(reportFile.exists());
+    List<String> lines = FileUtils.readLines(reportFile, "UTF-8");
+    debug=true;
+    if (debug) {
+      for (String line:lines) {
+        System.out.println(line);
+      }
+    }
+    assertEquals(27,lines.size());
+    reportFile.delete();
+  }
 }

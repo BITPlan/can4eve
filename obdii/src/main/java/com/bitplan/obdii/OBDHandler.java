@@ -40,7 +40,6 @@ import com.bitplan.can4eve.CANValue.CANRawValue;
 import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.elm327.Connection;
-import com.bitplan.elm327.ConnectionImpl;
 import com.bitplan.elm327.Packet;
 import com.bitplan.elm327.ResponseHandler;
 import com.bitplan.obdii.elm327.ELM327;
