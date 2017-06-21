@@ -35,6 +35,7 @@ public class ELM327Impl implements ELM327 {
   boolean echo;
   boolean sendLineFeed;
   boolean debug;
+  boolean useable;
 
   // id as returned by AT I
   String id;
@@ -111,6 +112,10 @@ public class ELM327Impl implements ELM327 {
   @Override
   public boolean isDebug() {
     return con.isDebug();
+  }
+
+  public boolean isUsable() {
+    return useable;
   }
 
   /**
@@ -281,9 +286,27 @@ public class ELM327Impl implements ELM327 {
     deviceId = r.getData();
     carVoltage = sendCommand("AT RV", ".*").getData(); // Car VoltageAT R
     if (description.startsWith("SCANTOOL")) {
+      useable=true;
       hardwareId = sendCommand("STDI", ".*").getData(); // Hardware ID string
       firmwareId = sendCommand("STI", ".*").getData(); // Firmware ID
     }
+  }
+  
+  /**
+   * get the info for the device
+   */
+  public String getInfo() {
+    String info="No useable ELM327 device could be detected";
+    if (useable) {
+      info="useable ELM327 compatible device detected";
+    }
+    if (id!=null) {
+      info+="\n"+id;
+    }
+    if (description!=null) {
+      info+="\n"+this.getDescription();
+    }
+    return info;
   }
 
   public void initOBD2() throws Exception {

@@ -30,6 +30,7 @@ import com.bitplan.elm327.SerialImpl;
 import org.kohsuke.args4j.Option;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -44,17 +45,24 @@ public class Can4eve extends Main {
   int portNumber = 7000;
 
   @Option(name = "-b", aliases = {
-    "--baud" }, usage = "port\nthe baud rate for a serial connection")
-  int baudRate = 115200*2;
+    "--baud" }, usage = "port\nthe baud rate for a serial connection - 0 to automatically determine it")
+  int baudRate = 38400;
 
   @Option(name= "-f", aliases={"--forward"}, usage="forward the local OBDII connection")
   boolean forward=false;
+  
+  @Option(name= "-t", aliases={"--test"}, usage="test the OBDII connection")
+  boolean test=false;
 
   @Option(name= "-dv", aliases={"--device"}, usage="the device for the local OBDII connection")
   String device;
 
   @Option(name= "-lf", aliases={"--logfile"}, usage="log to the logfile at the given path")
   String logFilePath=null;
+
+  private SerialImpl con;
+
+  private ELM327Impl elm;
 
 
   /**
@@ -65,14 +73,13 @@ public class Can4eve extends Main {
   }
 
   /**
-   * start forwarding
+   * prepare the device
    * @param pDevice
-   * @param pPortNumber
    * @param pBaudRate
-   * @throws Exception if something goes wrong
+   * @throws IOException
    */
-  public void forward(String pDevice, int pPortNumber, int pBaudRate) throws Exception {
-    SerialImpl con = new SerialImpl();
+  public void prepare(String pDevice, int pBaudRate) throws IOException {
+    con = new SerialImpl();
     if (debug) {
       con.setLog(new LogImpl());
       if (this.logFilePath!=null) {
@@ -81,9 +88,20 @@ public class Can4eve extends Main {
     }
     con.connect(pDevice, pBaudRate);
     con.start();
-    ConnectionForwarder forwarder=new ConnectionForwarder();
-    ELM327 elm = new ELM327Impl();
+    elm = new ELM327Impl();
     elm.setCon(con);
+  }
+  
+  /**
+   * start forwarding
+   * @param pDevice
+   * @param pPortNumber
+   * @param pBaudRate
+   * @throws Exception if something goes wrong
+   */
+  public void forward(String pDevice, int pPortNumber, int pBaudRate) throws Exception {
+    prepare(pDevice,pBaudRate);
+    ConnectionForwarder forwarder=new ConnectionForwarder();
     elm.initOBD2();
     // elm.initOBD2();
     forwarder.setLog(elm.getLog());
@@ -92,6 +110,19 @@ public class Can4eve extends Main {
     ServerSocket serverSocket = forwarder.getServerSocket();
     Socket clientSocket=new Socket("localhost",serverSocket.getLocalPort());
     forwarder.getServerThread().join();
+  }
+  
+  /**
+   * test the given OBDII device
+   * @param pDevice
+   * @param pBaudRate
+   * @throws Exception 
+   */
+  private void testOBDII(String pDevice, int pBaudRate) throws Exception {
+    prepare(pDevice,pBaudRate);
+    elm.reinitCommunication(500);
+    elm.identify();
+    System.out.println(elm.getInfo());
   }
 
   @Override
@@ -103,6 +134,8 @@ public class Can4eve extends Main {
     } else {
       if (forward) {
         forward(device,portNumber,baudRate);
+      } if (test) {
+        testOBDII(device,baudRate);
       } else {
         usage("no operation mode selected");
       }

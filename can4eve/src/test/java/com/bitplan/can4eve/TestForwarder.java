@@ -24,7 +24,6 @@ import java.io.FileNotFoundException;
 
 import org.junit.Test;
 
-import com.bitplan.can4eve.Can4eve;
 import com.bitplan.elm327.Config;
 
 /**
@@ -38,6 +37,16 @@ public class TestForwarder {
     if (config != null) {
       Can4eve can4eve = new Can4eve();
       String args[] = { "-f", "-d", "--device", config.getSerialDevice() };
+      can4eve.maininstance(args);
+    }
+  }
+  
+  @Test
+  public void testOBDIITester() throws FileNotFoundException {
+    Config config = Config.getInstance();
+    if (config != null) {
+      Can4eve can4eve = new Can4eve();
+      String args[] = { "-t", "-d", "--device", config.getSerialDevice() };
       can4eve.maininstance(args);
     }
   }

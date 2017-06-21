@@ -76,4 +76,6 @@ public interface ELM327 extends Debugable {
 
     public void setEcho(boolean echo);
         
+    public boolean isUsable();
+    public String getInfo();
 }
