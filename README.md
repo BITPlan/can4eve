@@ -19,7 +19,7 @@ can4eve is written in Java
 It has been tested on
 * Raspberry PI
 * MacOS
-An Android version is in preparation.
+* an Android version is in preparation.
 
 Since Apple does not support Java on the iPhone and since Microsoft does not support Java on some of its environments can4eve 
 would have to be ported to run in these environments. Currently there are no plans to work around this.
