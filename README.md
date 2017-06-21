@@ -37,3 +37,6 @@ https://www.apache.org/licenses/LICENSE-2.0
 
 ### Creator 
 [![BITPlan](http://wiki.bitplan.com/images/wiki/thumb/8/87/BITPlanLogo2012.svg/200px-BITPlanLogo2012.svg.png)](http://web.bitplan.com)
+
+### Version History
+2017-06 0.0.1 - non released developer version
