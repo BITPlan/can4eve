@@ -57,7 +57,7 @@ public class OBDMain extends Main {
 
   @Option(name = "--limit", aliases = {
       "--framelimit" }, usage = "limit\nthe maximum number of frames to read")
-  long frameLimit = 500 * 4800; // some 1 1/2 hours at 500fps
+  protected long frameLimit = 500 * 4800; // some 1 1/2 hours at 500fps
 
   @Option(name = "-l", aliases = {
       "--log" }, usage = "log\nthe logfile to write")
@@ -137,7 +137,7 @@ public class OBDMain extends Main {
       obdTriplet.logResponses(new File(logFileName), "Triplet");
     }
     if (this.reportFileName!=null) {
-      obdTriplet.report(display,reportFileName);
+      obdTriplet.report(display,reportFileName,frameLimit);
     } else if (pid != null)
       obdTriplet.checkPid(display, pid, frameLimit);
     else {

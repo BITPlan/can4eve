@@ -21,7 +21,6 @@
 package com.bitplan.triplet;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -31,7 +30,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -40,18 +38,21 @@ import java.util.logging.Level;
 
 import javax.swing.SwingUtilities;
 
-import com.bitplan.obdii.CANCellStatePlot;
 import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue;
+import com.bitplan.can4eve.CANValue.BooleanValue;
+import com.bitplan.can4eve.CANValue.CANRawValue;
+import com.bitplan.can4eve.CANValue.DoubleValue;
+import com.bitplan.can4eve.CANValue.IntegerValue;
+import com.bitplan.can4eve.CANValue.StringValue;
 import com.bitplan.can4eve.ErrorHandler;
 import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.VehicleGroup;
-import com.bitplan.elm327.Connection;
-import com.bitplan.can4eve.CANValue.*;
 import com.bitplan.csv.CSVUtil;
+import com.bitplan.elm327.Connection;
+import com.bitplan.obdii.CANCellStatePlot;
 import com.bitplan.obdii.CANValueDisplay;
 import com.bitplan.obdii.CANValueHistoryPlot;
-import com.bitplan.obdii.Display;
 import com.bitplan.obdii.OBDHandler;
 import com.bitplan.obdii.PIDResponse;
 import com.bitplan.obdii.TripletDisplay;
@@ -228,9 +229,9 @@ public class OBDTriplet extends OBDHandler {
         this.shifterPositionValue, this.steeringWheelPosition,
         this.steeringWheelMovement, this.accelerator, this.breakPressed,
         this.breakPedal, this.blinkerLeft, this.blinkerRight, this.doorOpen,
-        this.parkingLight, this.headLight, this.highBeam,
-        this.cellTemperature, this.cellVoltage };
-    top=topArray;
+        this.parkingLight, this.headLight, this.highBeam, this.cellTemperature,
+        this.cellVoltage };
+    top = topArray;
   }
 
   /**
@@ -548,7 +549,8 @@ public class OBDTriplet extends OBDHandler {
         long updates = totalUpdates - latestTotalUpdates;
         double fps = 1000.0 * updates / msecs;
         display.updateField("fps", fps, ++fpsUpdateCount);
-        display.updateField("# of bufferOverruns",super.bufferOverruns , fpsUpdateCount);
+        display.updateField("# of bufferOverruns", super.bufferOverruns,
+            fpsUpdateCount);
         display.updateField("OBDII", this.getElm327().getDescription(), 1);
         latestTotalUpdates = totalUpdates;
         latestUpdate = now;
@@ -624,6 +626,26 @@ public class OBDTriplet extends OBDHandler {
     display.show();
   }
 
+  public void STMFilter(List<CANValue<?>> canValues) throws Exception {
+    ELM327 lelm = this.getElm327();
+    Set<String> pidFilter = new HashSet<String>();
+    for (CANValue<?> canValue : canValues) {
+      if (canValue.isRead()) {
+        Pid pid = canValue.canInfo.getPid();
+        if (pid.getIsoTp() == null) {
+          pidFilter.add(pid.getPid());
+        }
+      }
+    }
+    if (!lelm.isSTN())
+      throw new Exception("AT STM capable OBDII Adapter needed!");
+    lelm.sendCommand("STFAC", "OK"); // FIXME - not understood by ELM327 v2.1
+    // device
+    for (String pidId : pidFilter) {
+      lelm.sendCommand("STFAP " + pidId + ",FFF", "OK");
+    }
+  }
+  
   /**
    * start the STM Monitoring
    * 
@@ -639,7 +661,6 @@ public class OBDTriplet extends OBDHandler {
       long frameLimit) throws Exception {
     ELM327 lelm = this.getElm327();
     Connection lcon = lelm.getCon();
-    Set<String> pidFilter = new HashSet<String>();
     // VehicleGroup vg = this.getElm327().getVehicleGroup();
     for (CANValue<?> canValue : canValues) {
       if (canValue.isRead()) {
@@ -647,16 +668,10 @@ public class OBDTriplet extends OBDHandler {
         // handle ISO-TP based frames differently by direct reading
         if (pid.getIsoTp() != null)
           this.readPid(display, pid);
-        else
-          pidFilter.add(pid.getPid());
       }
     }
     this.initOBD();
-    lelm.sendCommand("STFAC", "OK"); // FIXME - not understood by ELM327 v2.1
-    // device
-    for (String pidId : pidFilter) {
-      lelm.sendCommand("STFAP " + pidId + ",FFF", "OK");
-    }
+    this.STMFilter(canValues);
     lcon.output("STM");
     if (display != null)
       startDisplay(display);
@@ -699,41 +714,56 @@ public class OBDTriplet extends OBDHandler {
   public void initOBD() throws Exception {
     this.getElm327().initOBD2();
   }
-  
+
   /**
    * get the PID with the given PID id
+   * 
    * @param pidId
    * @return
    * @throws Exception
    */
   public Pid pidByName(String pidId) throws Exception {
-    Pid pid=getElm327().getVehicleGroup().getPidByName(pidId);
+    Pid pid = getElm327().getVehicleGroup().getPidByName(pidId);
     return pid;
   }
 
   /**
-   * create a csv report according to https://github.com/BITPlan/can4eve/issues/4
-   * and put the result into the given CSV file
-   * @param display 
-   * @param reportFileName - the filename to use
-   * @throws Exception 
+   * create a csv report according to
+   * https://github.com/BITPlan/can4eve/issues/4 and put the result into the
+   * given CSV file
+   * 
+   * @param display
+   * @param reportFileName
+   *          - the filename to use
+   * @param frameLimit - the maximum number of frame to read
+   * @throws Exception
    */
-  public void report(CANValueDisplay display, String reportFileName) throws Exception {
-    File reportFile=new File(reportFileName);
-    PrintWriter printWriter=new PrintWriter(reportFile);
+  public void report(CANValueDisplay display, String reportFileName, long frameLimit)
+      throws Exception {
+    File reportFile = new File(reportFileName);
+    PrintWriter printWriter = new PrintWriter(reportFile);
     this.getElm327().identify();
-    String isoDate=isoDateFormatter.format(new Date());
+    String isoDate = isoDateFormatter.format(new Date());
     printWriter.write(CSVUtil.csv("date", isoDate));
-    String elmCSV=this.getElm327().asCSV();
+    String elmCSV = this.getElm327().asCSV();
     printWriter.write(elmCSV);
     printWriter.flush();
-    readPid(display,pidByName("BatteryCapacity"));
+    readPid(display, pidByName("BatteryCapacity"));
     printWriter.write(this.batteryCapacity.asCSV());
-    this.getCANValues(); // side effec: creates map;
-    for (CANValue<?> canValue:top) {
-      CANInfo canInfo = canValue.canInfo;
-      monitorPid(display,canInfo.getPid().getPid(), canInfo.getMaxIndex()+5);
-      printWriter.write(canValue.asCSV());
+    // do we have an STM capable chip?
+    if (this.getElm327().isSTN()) {
+      this.STMMonitor(display, canValues, frameLimit);
+      for (CANValue<?> canValue : top) {
+        printWriter.write(canValue.asCSV());
+      }
+    } else {
+      // slow version
+      for (CANValue<?> canValue : top) {
+        CANInfo canInfo = canValue.canInfo;
+        monitorPid(display, canInfo.getPid().getPid(),
+            canInfo.getMaxIndex() + 5);
+        printWriter.write(canValue.asCSV());
+      }
     }
     printWriter.close();
   }

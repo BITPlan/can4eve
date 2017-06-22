@@ -633,10 +633,10 @@ public class TestELM327 extends TestOBDII {
     this.prepareOBDTriplet(simulated, debug);
     obdTriplet.initOBD();
     File reportFile = File.createTempFile("report", ".csv");
-    obdTriplet.report(display,reportFile.getAbsolutePath());
+    obdTriplet.report(display,reportFile.getAbsolutePath(),1000);
     assertTrue(reportFile.exists());
     List<String> lines = FileUtils.readLines(reportFile, "UTF-8");
-    debug=true;
+    //debug=true;
     if (debug) {
       for (String line:lines) {
         System.out.println(line);

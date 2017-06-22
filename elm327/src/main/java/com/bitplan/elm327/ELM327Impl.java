@@ -38,6 +38,7 @@ public class ELM327Impl implements ELM327 {
   boolean sendLineFeed;
   boolean debug;
   boolean useable;
+  boolean STN=false;
 
   // id as returned by AT I
   String id;
@@ -118,6 +119,10 @@ public class ELM327Impl implements ELM327 {
 
   public boolean isUsable() {
     return useable;
+  }
+
+  public boolean isSTN() {
+    return STN;
   }
 
   /**
@@ -289,6 +294,7 @@ public class ELM327Impl implements ELM327 {
     carVoltage = sendCommand("AT RV", ".*").getData(); // Car VoltageAT R
     if (description.startsWith("SCANTOOL")) {
       useable=true;
+      STN=true; // this device has STM command
       hardwareId = sendCommand("STDI", ".*").getData(); // Hardware ID string
       firmwareId = sendCommand("STI", ".*").getData(); // Firmware ID
     }
@@ -302,11 +308,17 @@ public class ELM327Impl implements ELM327 {
     if (useable) {
       info="useable ELM327 compatible device detected";
     }
+      
     if (id!=null) {
       info+="\n"+id;
     }
     if (description!=null) {
       info+="\n"+this.getDescription();
+    }
+    if (STN) {
+      info="this device is using an STN chip";
+      info+="\n"+this.firmwareId;
+      info+="\n"+this.hardwareId;
     }
     return info;
   }
@@ -361,4 +373,6 @@ public class ELM327Impl implements ELM327 {
   public void handle(String msg, Throwable th) {
     con.handle(msg, th);
   }
+
+ 
 }

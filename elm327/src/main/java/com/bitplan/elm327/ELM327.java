@@ -78,4 +78,5 @@ public interface ELM327 extends Debugable {
         
     public boolean isUsable();
     public String getInfo();
+    public boolean isSTN();
 }
