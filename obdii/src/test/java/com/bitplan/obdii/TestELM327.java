@@ -110,13 +110,13 @@ public class TestELM327 extends TestOBDII {
     if (debug)
       con.setLog(new LogImpl());
     con.start();
-    int WAIT_ALIVE=20;  // 20 milliseconds to wait 10 is not enough for jenkins on capri
+    int WAIT_ALIVE=30;  // 30 milliseconds to wait 10 is not enough for jenkins on capri
     
     Thread.sleep(WAIT_ALIVE); 
     assertTrue(elm327.getCon().isAlive());
     ELM327SimulatorConnection elm327SimulatorConnection = elm327Simulator
         .getSimulatorConnection(clientSocket);
-    assertNotNull(elm327SimulatorConnection);
+    assertNotNull("the elmSimulator should be alive after "+WAIT_ALIVE+" msecs",elm327SimulatorConnection);
     Connection simcon = elm327SimulatorConnection.getCon();
     assertTrue(simcon.isAlive());
     con.setTimeout(SIMULATOR_TIMEOUT);
