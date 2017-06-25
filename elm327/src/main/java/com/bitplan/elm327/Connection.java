@@ -30,7 +30,7 @@ import java.net.Socket;
  * Created by wf on 03.06.17.
  */
 
-public interface Connection extends Debugable, Runnable {
+public interface Connection extends Watchable,Debugable, Runnable {
 
     public boolean isSendLineFeed();
 
@@ -163,4 +163,10 @@ public interface Connection extends Debugable, Runnable {
      * @return whether the connection Thread is alive
      */
     public boolean isAlive();
+    
+    /**
+     * set a restarter for this connection
+     * @param restarter
+     */
+    public void setRestarter(Restartable restarter);
 }

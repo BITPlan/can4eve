@@ -163,6 +163,7 @@ public class ELM327Impl implements ELM327 {
   @Override
   public void setCon(Connection con) {
     this.con = con;
+    con.setRestarter(this);
   }
 
   /**
@@ -374,5 +375,9 @@ public class ELM327Impl implements ELM327 {
     con.handle(msg, th);
   }
 
- 
+  @Override
+  public void restart() throws Exception {
+    this.reinitCommunication(this.getCon().getTimeout());
+  }
+
 }

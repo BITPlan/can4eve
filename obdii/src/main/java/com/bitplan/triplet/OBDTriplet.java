@@ -748,12 +748,12 @@ public class OBDTriplet extends OBDHandler {
     String elmCSV = this.getElm327().asCSV();
     printWriter.write(elmCSV);
     printWriter.flush();
-    readPid(display, pidByName("BatteryCapacity"));
-    printWriter.write(this.batteryCapacity.asCSV());
     // do we have an STM capable chip?
     if (this.getElm327().isSTN()) {
       this.STMMonitor(display, canValues, frameLimit);
       for (CANValue<?> canValue : top) {
+        if (debug)
+          LOGGER.log(Level.INFO,"canValue:"+canValue.canInfo.getTitle());
         printWriter.write(canValue.asCSV());
       }
     } else {

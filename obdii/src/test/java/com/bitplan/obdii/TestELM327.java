@@ -110,7 +110,9 @@ public class TestELM327 extends TestOBDII {
     if (debug)
       con.setLog(new LogImpl());
     con.start();
-    Thread.sleep(20); // 10 is not enough for jenkins on capri
+    int WAIT_ALIVE=20;  // 20 milliseconds to wait 10 is not enough for jenkins on capri
+    
+    Thread.sleep(WAIT_ALIVE); 
     assertTrue(elm327.getCon().isAlive());
     ELM327SimulatorConnection elm327SimulatorConnection = elm327Simulator
         .getSimulatorConnection(clientSocket);
@@ -630,13 +632,15 @@ public class TestELM327 extends TestOBDII {
    */
   @Test
   public void testReport() throws Exception {
+    //debug=true;
     this.prepareOBDTriplet(simulated, debug);
     obdTriplet.initOBD();
     File reportFile = File.createTempFile("report", ".csv");
-    obdTriplet.report(display,reportFile.getAbsolutePath(),1000);
+    //obdTriplet.debug=true;
+    obdTriplet.report(display,reportFile.getAbsolutePath(),45);
     assertTrue(reportFile.exists());
     List<String> lines = FileUtils.readLines(reportFile, "UTF-8");
-    //debug=true;
+    debug=true;
     if (debug) {
       for (String line:lines) {
         System.out.println(line);

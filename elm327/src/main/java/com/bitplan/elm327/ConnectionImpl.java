@@ -151,6 +151,9 @@ public class ConnectionImpl extends Thread implements Connection {
   }
 
   String response = "";
+  private WatchDog watchDog;
+  private Restartable restarter;
+  public static int WATCHDOG_TIMEOUT=2000; // how long do we wait if no communication is happening
 
   /**
    * we are not in receiveLineFeed Mode and might receive any kind of snippets
@@ -192,6 +195,9 @@ public class ConnectionImpl extends Thread implements Connection {
     response.updateTimeStamp();
     response.setResponse(response);
     responses.add(response);
+    // tell the watchDog all is well
+    if (watchDog!=null)
+      watchDog.ping(this);
     if (this.handleResponses && this.responseHandler!=null) {
       this.responseHandler.handleResponse(response);
     }
@@ -362,6 +368,27 @@ public class ConnectionImpl extends Thread implements Connection {
   @Override
   public void setHandleResponses(boolean handleResponses) {
     this.handleResponses = handleResponses;
+  }
+
+  @Override
+  public void setWatchDog(WatchDog watchDog) {
+    this.watchDog=watchDog;
+  }
+
+  @Override
+  public int getWatchDogTimeOutMSecs() {
+    return WATCHDOG_TIMEOUT;
+  }
+
+  @Override
+  public void restart() throws Exception {
+    if (restarter!=null)
+      restarter.restart();
+  }
+
+  @Override
+  public void setRestarter(Restartable restarter) {
+    this.restarter=restarter;
   }
 
 }

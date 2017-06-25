@@ -24,7 +24,7 @@ package com.bitplan.elm327;
  * communication to ELM327 devices
  * see e.g. https://www.sparkfun.com/datasheets/Widgets/ELM327_AT_Commands.pdf
  */
-public interface ELM327 extends Debugable {
+public interface ELM327 extends Restartable,Debugable {
     // Connection to delegate most of the work to
     public Connection getCon() ;
     public void setCon(Connection con);
