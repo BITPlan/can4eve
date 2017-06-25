@@ -367,7 +367,7 @@ public class TestELM327 extends TestOBDII {
     // new GraphAdapterBuilder().addType(Pid.class).registerOn(gsonBuilder);
     Gson gson = gsonBuilder.setPrettyPrinting().create();
     String json = gson.toJson(forms);
-    debug=true;
+    // debug=true;
     if (debug)
       System.out.println(json);
   }
