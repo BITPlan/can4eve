@@ -22,7 +22,9 @@ package com.bitplan.obdii;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +35,9 @@ import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -48,7 +53,7 @@ import net.miginfocom.swing.MigLayout;
  * @author wf
  *
  */
-public class SwingDisplay implements Display {
+public class SwingDisplay implements Display,ActionListener {
   public static boolean debug = false;
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii");
   String title;
@@ -282,6 +287,8 @@ public class SwingDisplay implements Display {
   public void displayFrame() {
     frame = new JFrame(title);
     frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    frame.setJMenuBar(createMenuBar());
+    // add the tabbedPane
     frame.getContentPane().add(tabbedPane);
     frame.pack();
     Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -292,6 +299,50 @@ public class SwingDisplay implements Display {
     frame.setLocation(dim.width / 2 - frame.getSize().width / 2,
         dim.height / 2 - frame.getSize().height / 2);
     frame.setVisible(true);
+  }
+  
+  /**
+   * create a Menu
+   * @param title
+   * @param vk
+   * @param description
+   * @return
+   */
+  private JMenu createMenu(String title, int vk, String description) {
+    JMenu menu = new JMenu(title);
+    menu.setMnemonic(vk);
+    menu.getAccessibleContext().setAccessibleDescription(description);
+    return menu;
+  }
+  
+  /**
+   * add the given menu item
+   * @param menu
+   * @param title
+   * @param vk
+   * @param description
+   * @param actionListener
+   * @return
+   */
+  protected JMenuItem addMenuItem(JMenu menu,String title, int vk, String description,ActionListener actionListener) {
+    JMenuItem menuItem = new JMenuItem(title,vk);
+    menuItem.getAccessibleContext().setAccessibleDescription(description);
+    menuItem.addActionListener(actionListener);
+    menu.add(menuItem);
+    return menuItem;
+  }
+
+  private JMenuBar createMenuBar() {
+    //Create the menu bar.
+    JMenuBar menuBar = new JMenuBar();
+   
+    //Build the file menu.
+    JMenu filemenu=createMenu("File",KeyEvent.VK_F,"File menu.");
+    this.addMenuItem(filemenu, "Quit", KeyEvent.VK_Q, "Quit", this);
+    JMenu helpmenu=createMenu("Help",KeyEvent.VK_H,"Help menu");
+    menuBar.add(filemenu);
+    menuBar.add(helpmenu);
+    return menuBar;
   }
 
   /**
@@ -338,4 +389,18 @@ public class SwingDisplay implements Display {
     buttonPanel.add(button);
     return button;
   }
+
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    Object source = e.getSource();
+    if (source instanceof JMenuItem) {
+      JMenuItem menuItem=(JMenuItem)source;
+      if (menuItem.getText().equalsIgnoreCase("QUIT")) {
+        frame.setVisible(false);
+      }
+    }
+    
+  }
+  
+
 }

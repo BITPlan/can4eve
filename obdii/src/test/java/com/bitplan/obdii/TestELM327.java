@@ -110,7 +110,7 @@ public class TestELM327 extends TestOBDII {
     if (debug)
       con.setLog(new LogImpl());
     con.start();
-    int WAIT_ALIVE=30;  // 30 milliseconds to wait 10 is not enough for jenkins on capri
+    int WAIT_ALIVE=40;  // 40 milliseconds to wait 10 is not enough for jenkins on capri
     
     Thread.sleep(WAIT_ALIVE); 
     assertTrue(elm327.getCon().isAlive());
