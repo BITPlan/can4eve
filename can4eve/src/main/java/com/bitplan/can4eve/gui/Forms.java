@@ -23,6 +23,11 @@ package com.bitplan.can4eve.gui;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Forms used
+ * @author wf
+ *
+ */
 public class Forms {
   private List<Form> forms=new ArrayList<Form>();
 

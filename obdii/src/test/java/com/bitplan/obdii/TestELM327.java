@@ -618,7 +618,7 @@ public class TestELM327 extends TestOBDII {
     // two round per minute values
     int rpm1 = 2000;
     int rpm2 = 4000;
-    // two measurment dates - 1 second appart
+    // two measurement dates - 1 second appart
     Date date1 = new Date(0);
     Date date2 = new Date(1000);
     tripRounds.integrate(rpm1, date1, rpm2, date2, 1 / 60000.0);
@@ -640,7 +640,7 @@ public class TestELM327 extends TestOBDII {
     obdTriplet.report(display,reportFile.getAbsolutePath(),45);
     assertTrue(reportFile.exists());
     List<String> lines = FileUtils.readLines(reportFile, "UTF-8");
-    debug=true;
+    //debug=true;
     if (debug) {
       for (String line:lines) {
         System.out.println(line);

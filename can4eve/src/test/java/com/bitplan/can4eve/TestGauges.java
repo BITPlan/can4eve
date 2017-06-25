@@ -29,10 +29,15 @@ import javax.swing.SwingUtilities;
 
 import org.junit.Test;
 
-import com.bitplan.can4eve.gui.GaugePanel;
+import com.bitplan.can4eve.gui.swing.GaugePanel;
 
 import eu.hansolo.steelseries.gauges.Radial;
 
+/**
+ * test the Gauges 
+ * @author wf
+ *
+ */
 public class TestGauges {
   int W=600;
   int H=600;

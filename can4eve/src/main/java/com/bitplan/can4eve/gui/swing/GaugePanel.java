@@ -18,7 +18,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bitplan.can4eve.gui;
+package com.bitplan.can4eve.gui.swing;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +26,16 @@ import java.util.List;
 import javax.swing.JComponent;
 
 /**
- * A panel with gauges
+ * A generic multiple platform panel with gauges
  * @author wf
  *
  */
 public class GaugePanel {
+  
+  public GaugePanel() {
+    
+  }
+  
   private List<JComponent> components=new ArrayList<JComponent>();
   
   public List<JComponent> getComponents() {
