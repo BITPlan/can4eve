@@ -21,18 +21,17 @@
 package com.bitplan.can4eve;
 
 
-import com.bitplan.elm327.ConnectionForwarder;
-import com.bitplan.elm327.ELM327;
-import com.bitplan.elm327.ELM327Impl;
-import com.bitplan.elm327.LogImpl;
-import com.bitplan.elm327.SerialImpl;
-
-import org.kohsuke.args4j.Option;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+
+import org.kohsuke.args4j.Option;
+
+import com.bitplan.elm327.ConnectionForwarder;
+import com.bitplan.elm327.ELM327Impl;
+import com.bitplan.elm327.LogImpl;
+import com.bitplan.elm327.SerialImpl;
 
 /**
  * Created by wf on 05.06.17.
@@ -153,6 +152,5 @@ public class Can4eve extends Main {
     if (!testMode)
       System.exit(result);
   }
-
 
 }

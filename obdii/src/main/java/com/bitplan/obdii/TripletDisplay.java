@@ -25,9 +25,11 @@ import java.awt.event.ActionListener;
 import java.util.Collection;
 
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import com.bitplan.can4eve.CANValue;
+import com.bitplan.can4eve.gui.swing.JLink;
 
 /**
  * Swing based Display
@@ -54,7 +56,7 @@ public class TripletDisplay extends SwingDisplay implements CANValueDisplay, Act
    * create the TripletDisplay
    */
   public TripletDisplay() {
-    super("CanTriplet");
+    super("CanTriplet","en");
     super.addButton("stop",this);
     obdDescriptionField=super.addField("OBDII", "%s",5, 15);
     fpsField=super.addField("fps", "%5.0f", 3, 6);
@@ -134,6 +136,15 @@ public class TripletDisplay extends SwingDisplay implements CANValueDisplay, Act
    */
   public void updateCellVoltage(JPanel panel) {
     this.cellVoltagePanel.updatePanel(panel);
+  }
+
+  @Override
+  public void showAbout() {
+    JPanel panel=new JPanel();
+    JLink link=new JLink("can4eve","http://can4eve.bitplan.com");
+    panel.add(link);
+    JOptionPane.showMessageDialog(frame, panel);
+    
   }
 
 }

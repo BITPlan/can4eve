@@ -45,6 +45,8 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 
+import com.bitplan.can4eve.gui.swing.Translator;
+
 import net.miginfocom.swing.MigLayout;
 
 /**
@@ -53,7 +55,7 @@ import net.miginfocom.swing.MigLayout;
  * @author wf
  *
  */
-public class SwingDisplay implements Display,ActionListener {
+public abstract class SwingDisplay implements Display,ActionListener {
   public static boolean debug = false;
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii");
   String title;
@@ -68,6 +70,12 @@ public class SwingDisplay implements Display,ActionListener {
   ContainerPanel cellTemperaturPanel;
   ContainerPanel cellVoltagePanel;
   protected JTabbedPane tabbedPane;
+  
+  public static final String FILE_TXT = "fileMenu";
+  public static final String QUIT_TXT="quitMenuItem";
+  private static final String HELP_TXT = "helpMenu";
+  private static final String ABOUT_TXT = "aboutMenuItem";
+  private static final String MENU_TXT = "Menu";
   
   /**
    * a container for a panel to be exchanged
@@ -112,8 +120,10 @@ public class SwingDisplay implements Display,ActionListener {
    * display the display
    * 
    * @param title
+   * @param localeName
    */
-  public SwingDisplay(String title) {
+  public SwingDisplay(String title, String localeName) {
+    Translator.initialize(localeName);
     this.title = title;
     tabbedPane=new JTabbedPane();
    
@@ -331,19 +341,48 @@ public class SwingDisplay implements Display,ActionListener {
     menu.add(menuItem);
     return menuItem;
   }
+  
+  /**
+   * create an internationalized menu
+   * @param i18nTxt
+   * @param vk
+   * @return
+   */
+  private JMenu createMenuI18n(String i18nTxt, int vk) {
+    String title=Translator.translate(i18nTxt);
+    return createMenu(title,vk,title+" "+Translator.translate(MENU_TXT));
+  }
+  
+  /**
+   * add an internationalized menu item
+   * @param filemenu
+   * @param i18nTxt
+   * @param vk
+   * @param actionListener
+   */
+  private JMenuItem addMenuItemI18n(JMenu menu, String i18nTxt, int vk,
+      ActionListener actionListener) {
+    String title=Translator.translate(i18nTxt);
+    JMenuItem menuItem = this.addMenuItem(menu, title, vk, title, actionListener);
+    menuItem.setActionCommand(i18nTxt);
+    return menuItem;
+  }
+
 
   private JMenuBar createMenuBar() {
     //Create the menu bar.
     JMenuBar menuBar = new JMenuBar();
    
     //Build the file menu.
-    JMenu filemenu=createMenu("File",KeyEvent.VK_F,"File menu.");
-    this.addMenuItem(filemenu, "Quit", KeyEvent.VK_Q, "Quit", this);
-    JMenu helpmenu=createMenu("Help",KeyEvent.VK_H,"Help menu");
+    JMenu filemenu=createMenuI18n(FILE_TXT,KeyEvent.VK_F);
+    this.addMenuItemI18n(filemenu,QUIT_TXT, KeyEvent.VK_Q, this);
+    JMenu helpmenu=createMenuI18n(HELP_TXT,KeyEvent.VK_H);
+    this.addMenuItemI18n(helpmenu, ABOUT_TXT, KeyEvent.VK_A,this);
     menuBar.add(filemenu);
     menuBar.add(helpmenu);
     return menuBar;
   }
+
 
   /**
    * show the display
@@ -395,12 +434,16 @@ public class SwingDisplay implements Display,ActionListener {
     Object source = e.getSource();
     if (source instanceof JMenuItem) {
       JMenuItem menuItem=(JMenuItem)source;
-      if (menuItem.getText().equalsIgnoreCase("QUIT")) {
+      String actionCmd=menuItem.getActionCommand();
+      if (actionCmd.equalsIgnoreCase(QUIT_TXT)) {
         frame.setVisible(false);
+      } else  if (actionCmd.equalsIgnoreCase(ABOUT_TXT)) {
+        showAbout();
       }
     }
     
   }
   
+  public abstract void showAbout();
 
 }
