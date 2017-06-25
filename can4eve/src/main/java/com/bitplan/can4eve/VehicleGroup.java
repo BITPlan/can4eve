@@ -32,7 +32,7 @@ import com.google.gson.Gson;
 
 /**
  * a group of vehicles that share the same OBDII-Diagnosis infrastructure
- * 
+ * see http://can4eve.bitplan.com/index.php/VehicleGroup
  * @author wf
  *
  */
