@@ -129,7 +129,11 @@ public class PacketImpl implements Packet {
      * @return
      */
     public String asString() {
-      String ts=isoDateFormatter.format(time);
+      String ts="";
+      synchronized(this) {
+        // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6231579
+        ts=isoDateFormatter.format(time);
+      }
       String result="null";
       if (response!=null)
         result=String.format("%s (%s): %s",ts,getData(),response.getData());
