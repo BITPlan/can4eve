@@ -69,7 +69,7 @@ public class TestGauges {
 
   @Test
   public void testRadial() throws InterruptedException {
-    GaugeDemo gaugeDemo = new GaugeDemo();
+    final GaugeDemo gaugeDemo = new GaugeDemo();
     final Radial gauge = new Radial();
     gauge.setBounds(0, 0, W, H);
     gauge.setTitle("SOC");
