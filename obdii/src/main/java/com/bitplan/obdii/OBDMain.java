@@ -68,15 +68,19 @@ public class OBDMain extends Main {
   }
 
   @Option(name = "--display", usage = "display\nthe display to use one of:\n None,Console,Swing")
-  DisplayChoice displayChoice = DisplayChoice.None;
+  DisplayChoice displayChoice = DisplayChoice.Swing;
 
   @Option(name = "-p", aliases = {
       "--pid" }, usage = "pid to monitor\nthe pid to monitor")
   String pid;
-  
+
   @Option(name = "-r", aliases = {
-  "--report" }, usage = "create a report of all pids for this vehicle group\n")
+      "--report" }, usage = "create a report of all pids for this vehicle group\n")
   String reportFileName;
+
+  @Option(name = "-m", aliases = {
+      "--monitor" }, usage = "automatically start monitoring\n")
+  boolean monitor = false;
 
   @Option(name = "-t", aliases = {
       "--timeout" }, usage = "timeout in msecs\nthe timeout for elm327 communication")
@@ -90,6 +94,9 @@ public class OBDMain extends Main {
 
   private Socket elmSocket;
 
+  /**
+   * construct me
+   */
   public OBDMain() {
     super.name = "CANTriplet";
   }
@@ -100,30 +107,22 @@ public class OBDMain extends Main {
    * @throws Exception
    */
   public void doMonitorOBD() throws Exception {
-    VehicleGroup vehicleGroup=VehicleGroup.get(this.vehicleGroupName);
+    VehicleGroup vehicleGroup = VehicleGroup.get(this.vehicleGroupName);
     if (device != null) {
       if (debug)
         LOGGER.log(Level.INFO, "using device " + device);
-      obdTriplet = new OBDTriplet(vehicleGroup,new File(device));
+      obdTriplet = new OBDTriplet(vehicleGroup, new File(device));
     } else {
       if (debug)
         LOGGER.log(Level.INFO,
             "using host: " + hostName + " port " + portNumber);
       elmSocket = new Socket(hostName, portNumber);
-      obdTriplet = new OBDTriplet(vehicleGroup,elmSocket);
+      obdTriplet = new OBDTriplet(vehicleGroup, elmSocket);
     }
     obdTriplet.setDebug(debug);
-    switch (displayChoice) {
-    case Swing:
-      display = new TripletDisplay();
-      break;
-    case Console:
-      display = new ConsoleDisplay();
-      break;
-    default:
-    }
-    if (display != null)
+    if (display != null) {
       obdTriplet.showDisplay(display);
+    }
     // obdTriplet.elm327.debug = true;
     ELM327 elm = obdTriplet.getElm327();
     Connection con = elm.getCon();
@@ -131,13 +130,13 @@ public class OBDMain extends Main {
     if (debug) {
       con.setLog(new LogImpl());
     }
-    con.start();  
+    con.start();
     elm.initOBD2();
     if (this.logFileName != null) {
       obdTriplet.logResponses(new File(logFileName), "Triplet");
     }
-    if (this.reportFileName!=null) {
-      obdTriplet.report(display,reportFileName,frameLimit);
+    if (this.reportFileName != null) {
+      obdTriplet.report(display, reportFileName, frameLimit);
     } else if (pid != null)
       obdTriplet.checkPid(display, pid, frameLimit);
     else {
@@ -157,7 +156,27 @@ public class OBDMain extends Main {
     if (this.showHelp) {
       showHelp();
     } else {
-      doMonitorOBD();
+      switch (displayChoice) {
+      case Swing:
+        display = new TripletDisplay(this);
+        break;
+      case Console:
+        display = new ConsoleDisplay();
+        break;
+      default:
+      }
+      if (this.monitor) {
+        doMonitorOBD();
+      } else {
+        // run GUI
+        if (this.display instanceof SwingDisplay) {
+          SwingDisplay sd = (SwingDisplay) display;
+          display.show();
+          sd.waitClose();
+        } else {
+          showHelp();
+        }
+      }
     }
   }
 

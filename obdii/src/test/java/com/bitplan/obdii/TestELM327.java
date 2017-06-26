@@ -44,6 +44,7 @@ import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.Pid;
+import com.bitplan.can4eve.SoftwareVersion;
 import com.bitplan.can4eve.gui.Field;
 import com.bitplan.can4eve.gui.Form;
 import com.bitplan.can4eve.gui.Forms;
@@ -123,6 +124,25 @@ public class TestELM327 extends TestOBDII {
     simcon.setTimeout(SIMULATOR_TIMEOUT);
     return elm327;
   }
+  
+  public class DummySoftwareVersion implements SoftwareVersion {
+
+    @Override
+    public String getName() {
+      return "CanTriplet";
+    }
+
+    @Override
+    public String getVersion() {
+      return OBDMain.VERSION;
+    }
+
+    @Override
+    public String getUrl() {
+      return "http://can4eve.bitplan.com";
+    }
+    
+  }
 
   /**
    * prepare OBD Triplet
@@ -141,7 +161,7 @@ public class TestELM327 extends TestOBDII {
       elmSocket = getTestVehicleSocket(config);
       obdTriplet = new OBDTriplet(getVehicleGroup(), elmSocket, debug);
     }
-    display = new TripletDisplay();
+    display = new TripletDisplay(new DummySoftwareVersion());
     obdTriplet.showDisplay(display);
     // obdTriplet.getElm327().debug = debug;
     if (!simulated)
@@ -457,7 +477,7 @@ public class TestELM327 extends TestOBDII {
       obdTriplet = new OBDTriplet(getVehicleGroup());
       obdTriplet.setWithHistory(withHistory);
       // obdTriplet.setDebug(true);
-      display = new TripletDisplay();
+      display = new TripletDisplay(new DummySoftwareVersion());
       obdTriplet.showDisplay(display);
       if (slow > 0)
         Thread.sleep(2000);

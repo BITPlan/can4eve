@@ -53,7 +53,10 @@ public class JLink extends JLabel {
    * @throws IllegalArgumentException if uri is not a valid URI
    */
   public JLink(String text, String uri) {
-    this(text, URI.create(uri));
+    super(text);
+    if (uri==null)
+      uri="";
+    init(URI.create(uri));
   }
 
   /**
@@ -61,6 +64,14 @@ public class JLink extends JLabel {
    */
   public JLink(String text, URI uri) {
     super(text);
+    init(uri);
+   }
+  
+  /**
+   * initialize me with the given uri
+   * @param uri
+   */
+  public void init(URI uri) {
     setLink(uri);
 
     addMouseListener(new MouseAdapter() {

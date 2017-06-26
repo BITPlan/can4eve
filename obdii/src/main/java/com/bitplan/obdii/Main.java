@@ -27,8 +27,14 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
 import com.bitplan.can4eve.ErrorHandler;
+import com.bitplan.can4eve.SoftwareVersion;
 
-public abstract class Main {
+/**
+ * generatic Main class
+ * @author wf
+ *
+ */
+public abstract class Main  implements SoftwareVersion {
   public static boolean testMode;
   protected static int exitCode;
   protected CmdLineParser parser;
@@ -44,7 +50,7 @@ public abstract class Main {
       "--version" }, usage = "showVersion\nshow current version if this switch is used")
   protected  boolean showVersion = false;
 
-  String VERSION="0.0.1";
+  static String VERSION="0.0.1";
   String name=this.getClass().getSimpleName();
   String github;
 
@@ -58,6 +64,18 @@ public abstract class Main {
       System.err.println(" github: " + github);
     }
   }
+  
+  public String getName() {
+    return name;
+  }
+  
+  public String getVersion() {
+    return VERSION;
+  }
+  
+  public String getUrl() {
+    return github;
+  };
 
   /**
    * display usage

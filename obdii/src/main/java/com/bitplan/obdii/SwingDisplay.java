@@ -410,8 +410,12 @@ public abstract class SwingDisplay implements Display,ActionListener {
    * @throws InterruptedException
    */
   public void waitClose() throws InterruptedException {
+    int sleep=1000/50; // human eye reaction time
+    while ((frame==null) || (!frame.isVisible())) {
+      Thread.sleep(sleep);
+    }
     while (frame != null && frame.isVisible()) {
-      Thread.sleep(50);
+      Thread.sleep(sleep);
     }
   }
 

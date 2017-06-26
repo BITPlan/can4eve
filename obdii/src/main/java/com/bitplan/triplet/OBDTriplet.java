@@ -594,6 +594,12 @@ public class OBDTriplet extends OBDHandler {
     return now;
   }
 
+  /**
+   * show the history
+   * @param display
+   * @param now
+   * @return the now value
+   */
   private Date showHistory(CANValueDisplay display, Date now) {
     if (display instanceof TripletDisplay) {
       final TripletDisplay tripletDisplay = (TripletDisplay) display;
@@ -626,6 +632,12 @@ public class OBDTriplet extends OBDHandler {
     display.show();
   }
 
+  /**
+   * set the ELM327 to filter the given canValues in preparation
+   * of an AT STM command
+   * @param canValues
+   * @throws Exception
+   */
   public void STMFilter(List<CANValue<?>> canValues) throws Exception {
     ELM327 lelm = this.getElm327();
     Set<String> pidFilter = new HashSet<String>();
@@ -704,6 +716,9 @@ public class OBDTriplet extends OBDHandler {
         TimeUnit.MILLISECONDS);
   }
 
+  /**
+   * stop the display
+   */
   private void stopDisplay() {
     if (displayexecutor != null) {
       displayexecutor.shutdown();
@@ -711,6 +726,10 @@ public class OBDTriplet extends OBDHandler {
 
   }
 
+  /**
+   * delegate the initialization of the OBD device 
+   * @throws Exception
+   */
   public void initOBD() throws Exception {
     this.getElm327().initOBD2();
   }
@@ -768,4 +787,4 @@ public class OBDTriplet extends OBDHandler {
     printWriter.close();
   }
 
-}
+} // OBDTriplet

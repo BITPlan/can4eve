@@ -29,6 +29,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import com.bitplan.can4eve.CANValue;
+import com.bitplan.can4eve.SoftwareVersion;
 import com.bitplan.can4eve.gui.swing.JLink;
 
 /**
@@ -40,9 +41,11 @@ public class TripletDisplay extends SwingDisplay implements CANValueDisplay, Act
   protected LabelField fpsField;
   protected LabelField bufferOverrunField;
   protected LabelField obdDescriptionField;
+  private SoftwareVersion softwareVersion;
   
   @Override
   public void actionPerformed(ActionEvent e) {
+    super.actionPerformed(e);
     Object source = e.getSource();
     if (source instanceof JButton) {
       JButton button = (JButton)source;
@@ -54,9 +57,12 @@ public class TripletDisplay extends SwingDisplay implements CANValueDisplay, Act
   
   /**
    * create the TripletDisplay
+   * @param softwareVersion
    */
-  public TripletDisplay() {
+  public TripletDisplay(SoftwareVersion softwareVersion) {
+    // FIXME - get locale from preferences
     super("CanTriplet","en");
+    this.softwareVersion=softwareVersion;
     super.addButton("stop",this);
     obdDescriptionField=super.addField("OBDII", "%s",5, 15);
     fpsField=super.addField("fps", "%5.0f", 3, 6);
@@ -141,10 +147,9 @@ public class TripletDisplay extends SwingDisplay implements CANValueDisplay, Act
   @Override
   public void showAbout() {
     JPanel panel=new JPanel();
-    JLink link=new JLink("can4eve","http://can4eve.bitplan.com");
+    JLink link=new JLink(softwareVersion.getName()+" "+softwareVersion.getVersion(),softwareVersion.getUrl());
     panel.add(link);
     JOptionPane.showMessageDialog(frame, panel);
-    
   }
 
 }
