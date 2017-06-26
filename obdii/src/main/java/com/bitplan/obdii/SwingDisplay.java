@@ -120,10 +120,8 @@ public abstract class SwingDisplay implements Display, ActionListener {
    * display the display
    * 
    * @param title
-   * @param localeName
    */
-  public SwingDisplay(String title, String localeName) {
-    Translator.initialize(localeName);
+  public SwingDisplay(String title) {
     this.title = title;
     tabbedPane = new JTabbedPane();
 
@@ -446,23 +444,30 @@ public abstract class SwingDisplay implements Display, ActionListener {
    * 
    * @throws InterruptedException
    */
-  public void waitStatus(boolean open) throws InterruptedException {
+  public void waitStatus(boolean open)  {
     int sleep = 1000 / 50; // human eye reaction time
+    try {
     if (open)
       while ((frame == null) || (!frame.isVisible())) {
-        Thread.sleep(sleep);
+      
+          Thread.sleep(sleep);
       }
     else
       while (frame != null && frame.isVisible()) {
         Thread.sleep(sleep);
       }
+    } catch (InterruptedException e) {
+      ErrorHandler.handle(e);
+    }
   }
 
-  public void waitOpen() throws InterruptedException {
+  @Override
+  public void waitOpen()  {
     waitStatus(true);
   }
 
-  public void waitClose() throws InterruptedException {
+  @Override
+  public void waitClose()  {
     waitStatus(false);
   }
 

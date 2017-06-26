@@ -23,7 +23,9 @@ package com.bitplan.can4eve.gui;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -38,6 +40,7 @@ public class App {
   String name;
   String feedback;
   private List<Form> forms = new ArrayList<Form>();
+  private Map<String,Form> formById=new HashMap<String,Form>();
   private Menu mainMenu;
 
   public String getName() {
@@ -80,7 +83,21 @@ public class App {
    * reinitializatin of data structures
    */
   public void reinit() {
-    // no need yet
+    for (Form form:this.getForms()) {
+      form.reinit();
+      if (form.getId()!=null)
+        this.formById.put(form.getId(), form);
+    }
+  }
+  
+  /**
+   * get the form by the given id
+   * @param id
+   * @return the form by id
+   */
+  public Form getFormById(String id) {
+    Form form=this.formById.get(id);
+    return form;
   }
 
   /**
@@ -127,4 +144,5 @@ public class App {
     }
     return instance;
   }
+
 }

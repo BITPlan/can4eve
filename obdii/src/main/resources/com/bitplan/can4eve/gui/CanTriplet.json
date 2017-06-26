@@ -2,6 +2,26 @@
   "name": "CanTriplet",
   "feedback": "https://github.com/BITPlan/can4eve/issues",
   "forms": [
+  {
+      "title": "Preferences",
+      "id": "preferencesForm",
+      "icon": "settings",
+      "headerText": "choose your Preferences",
+      "fields": [
+        {
+          "title": "hostname",
+          "format": "%s",
+          "labelSize": 10,
+          "fieldSize": 40
+        },
+        {
+          "title": "port",
+          "format": "%4d",
+          "labelSize": 10,
+          "fieldSize": 40
+        }
+       ]
+    },
     {
       "title": "Device",
       "fields": [
@@ -238,6 +258,11 @@
         "title": "File",
         "shortCut": "F",
         "menuItems": [
+          {
+            "id": "preferencesMenuItem",
+            "title": "Preferences",
+            "shortCut": "P"
+          },
           {
             "id": "quitMenuItem",
             "title": "Quit",

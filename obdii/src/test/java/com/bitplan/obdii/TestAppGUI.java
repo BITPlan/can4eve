@@ -22,10 +22,16 @@ package com.bitplan.obdii;
 
 import static org.junit.Assert.*;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import com.bitplan.can4eve.gui.App;
 
+/**
+ * test the descriptive application gui
+ * @author wf
+ *
+ */
 public class TestAppGUI {
   @Test
   public void testAppGUI() throws Exception {
@@ -33,5 +39,11 @@ public class TestAppGUI {
     assertNotNull(app);
     assertEquals(2,app.getMainMenu().getSubMenus().size());
     assertEquals(2,app.getForms().size());
+  }
+  
+  @Test
+  public void testJoin() {
+    String langs=StringUtils.join(OBDMain.LangChoice.values(),",");
+    assertEquals("en,de",langs);
   }
 }

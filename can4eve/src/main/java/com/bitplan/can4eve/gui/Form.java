@@ -29,9 +29,24 @@ import java.util.List;
  *
  */
 public class Form {
+  String id;
+  String icon;
   String title;
+  String headerText;
   private List<Field> fields=new ArrayList<Field>();
   
+  public String getId() {
+    return id;
+  }
+  public void setId(String id) {
+    this.id = id;
+  }
+  public String getIcon() {
+    return icon;
+  }
+  public void setIcon(String icon) {
+    this.icon = icon;
+  }
   public String getTitle() {
     return title;
   }
@@ -39,10 +54,22 @@ public class Form {
     this.title = title;
   }
 
+  public String getHeaderText() {
+    return headerText;
+  }
+  public void setHeaderText(String headerText) {
+    this.headerText = headerText;
+  }
   public List<Field> getFields() {
     return fields;
   }
   public void setFields(List<Field> fields) {
     this.fields = fields;
+  }
+  public void reinit() {
+    for (Field field:this.getFields()) {
+      field.reinit();
+    }
+    
   }
 }

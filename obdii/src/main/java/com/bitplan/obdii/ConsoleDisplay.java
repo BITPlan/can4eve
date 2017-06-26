@@ -54,6 +54,18 @@ public class ConsoleDisplay  implements CANValueDisplay {
   @Override
   public LabelField addField(String title, String format, int labelSize, int fieldSize) {
     return null;
+  }
+
+  @Override
+  public void waitOpen() {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void waitClose() {
+    // TODO Auto-generated method stub
+    
   }  
 
 }

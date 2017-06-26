@@ -66,7 +66,7 @@ public class TripletDisplay extends SwingDisplay
    */
   public TripletDisplay(SoftwareVersion softwareVersion) {
     // FIXME - get locale from preferences
-    super("CanTriplet", "en");
+    super("CanTriplet");
     this.softwareVersion = softwareVersion;
     super.addButton("stop", this);
     obdDescriptionField = super.addField("OBDII", "%s", 5, 15);

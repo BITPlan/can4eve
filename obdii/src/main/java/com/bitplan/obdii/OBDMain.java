@@ -24,9 +24,12 @@ import java.io.File;
 import java.net.Socket;
 import java.util.logging.Level;
 
+import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.args4j.Option;
 
 import com.bitplan.can4eve.VehicleGroup;
+import com.bitplan.can4eve.gui.App;
+import com.bitplan.can4eve.gui.swing.Translator;
 import com.bitplan.elm327.Connection;
 import com.bitplan.elm327.LogImpl;
 import com.bitplan.obdii.elm327.ELM327;
@@ -41,7 +44,7 @@ import com.bitplan.triplet.OBDTriplet;
  */
 public class OBDMain extends Main {
   protected static OBDMain obd;
-  protected CANValueDisplay display;
+  protected CANValueDisplay canValueDisplay;
 
   @Option(name = "--host", aliases = {
       "--hostname" }, usage = "host\nthe host to connect to")
@@ -63,12 +66,20 @@ public class OBDMain extends Main {
       "--log" }, usage = "log\nthe logfile to write")
   String logFileName;
 
+  
   enum DisplayChoice {
-    None, Console, Swing
+    None, Console, Swing, JavaFX
   }
 
-  @Option(name = "--display", usage = "display\nthe display to use one of:\n None,Console,Swing")
-  DisplayChoice displayChoice = DisplayChoice.Swing;
+  @Option(name = "--display", usage = "display\nthe display to use one of:\n None,Console,Swing,JavaFX")
+  DisplayChoice displayChoice = DisplayChoice.JavaFX;
+
+  @Option(name = "--lang", usage = "language\nthe language to use one of:\nen,de")
+  LangChoice langChoice = LangChoice.en;
+  
+  enum LangChoice {
+    en,de
+  }
 
   @Option(name = "-p", aliases = {
       "--pid" }, usage = "pid to monitor\nthe pid to monitor")
@@ -128,8 +139,8 @@ public class OBDMain extends Main {
       obdTriplet = new OBDTriplet(vehicleGroup, elmSocket);
     }
     obdTriplet.setDebug(debug);
-    if (display != null) {
-      obdTriplet.showDisplay(display);
+    if (canValueDisplay != null) {
+      obdTriplet.showDisplay(canValueDisplay);
     }
     // obdTriplet.elm327.debug = true;
     ELM327 elm = obdTriplet.getElm327();
@@ -144,11 +155,11 @@ public class OBDMain extends Main {
       obdTriplet.logResponses(new File(logFileName), "Triplet");
     }
     if (this.reportFileName != null) {
-      obdTriplet.report(display, reportFileName, frameLimit);
+      obdTriplet.report(canValueDisplay, reportFileName, frameLimit);
     } else if (pid != null)
-      obdTriplet.checkPid(display, pid, frameLimit);
+      obdTriplet.checkPid(canValueDisplay, pid, frameLimit);
     else {
-      obdTriplet.STMMonitor(display, obdTriplet.getCANValues(), frameLimit);
+      obdTriplet.STMMonitor(canValueDisplay, obdTriplet.getCANValues(), frameLimit);
     }
   }
 
@@ -159,17 +170,25 @@ public class OBDMain extends Main {
    *           if a problem occurs
    */
   public void work() throws Exception {
+    Translator.initialize(this.langChoice.name());
     if (this.showVersion || this.debug)
       showVersion();
     if (this.showHelp) {
       showHelp();
     } else {
+      JavaFXDisplay jfxDisplay;
       switch (displayChoice) {
       case Swing:
-        display = new TripletDisplay(this);
+        canValueDisplay = new TripletDisplay(this);
+        break;
+      case JavaFX:
+        JavaFXDisplay.setSoftwareVersion(this);
+        JavaFXDisplay.setApp(App.getInstance());
+        jfxDisplay=JavaFXDisplay.getInstance();
+        canValueDisplay=jfxDisplay;
         break;
       case Console:
-        display = new ConsoleDisplay();
+        canValueDisplay = new ConsoleDisplay();
         break;
       default:
       }
@@ -177,11 +196,11 @@ public class OBDMain extends Main {
         doMonitorOBD();
       } else {
         // run GUI
-        if (this.display instanceof SwingDisplay) {
-          SwingDisplay sd = (SwingDisplay) display;
+        if (this.canValueDisplay instanceof Display) {
+          Display display = (Display)canValueDisplay;
           display.show();
-          sd.waitOpen();
-          sd.waitClose();
+          display.waitOpen();
+          display.waitClose();
         } else {
           showHelp();
         }

@@ -29,4 +29,6 @@ public interface Display {
   public void show();
   public LabelField addField(String title,String format, int labelSize,int fieldSize);
   public void updateField(String title, Object value, int updateCount);
+  public void waitOpen();
+  public void waitClose();
 }
