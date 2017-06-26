@@ -34,3 +34,9 @@ cache:
     - $HOME/.gradle/daemon
     - $HOME/.gradle/caches/jars-3
     - $HOME/.gradle/caches/3.5
+# Java FX support
+sudo: false
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
