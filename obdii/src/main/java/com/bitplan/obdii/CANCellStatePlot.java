@@ -85,6 +85,9 @@ public class CANCellStatePlot {
    */
   public ChartPanel getPanel() {
     final IntervalXYDataset dataset = createDataset();
+    Range xRange = DatasetUtilities.findDomainBounds(dataset);
+    if (xRange==null)
+      return null;
     final JFreeChart chart = createChart(dataset);
     final ChartPanel chartPanel = new ChartPanel(chart);
     return chartPanel;
@@ -118,6 +121,7 @@ public class CANCellStatePlot {
    *          a dataset.
    * 
    * @return A chart.
+   * @throws Exception 
    */
   private JFreeChart createChart(final IntervalXYDataset dataset) {
 

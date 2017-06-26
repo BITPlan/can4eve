@@ -28,15 +28,22 @@ package com.bitplan.can4eve.gui;
 public class Field {
   String id;
   String label;
-  private String title;
-  private String format;
-  private int labelSize;
-  private int fieldSize;
+  String title;
+  String fieldKind;
+  String format;
+  int labelSize;
+  int fieldSize;
   public String getTitle() {
     return title;
   }
   public void setTitle(String title) {
     this.title = title;
+  }
+  public String getFieldKind() {
+    return fieldKind;
+  }
+  public void setFieldKind(String fieldKind) {
+    this.fieldKind = fieldKind;
   }
   public String getId() {
     return id;

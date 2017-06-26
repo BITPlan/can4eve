@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -50,6 +51,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
@@ -79,7 +81,8 @@ public class JavaFXDisplay extends Application
   private TabPane tabPane;
 
   private Map<String, TextField> textFields;
-  public JavaFXDisplay(App app,SoftwareVersion softwareVersion) {
+
+  public JavaFXDisplay(App app, SoftwareVersion softwareVersion) {
     new JFXPanel();
     this.setApp(app);
     this.setSoftwareVersion(softwareVersion);
@@ -102,29 +105,21 @@ public class JavaFXDisplay extends Application
   }
 
   /*
-  public static JavaFXDisplay instance;
-
-  public JavaFXDisplay() {
-    instance = this;
-  }
-
-  /*
-   * get the instance
+   * public static JavaFXDisplay instance;
+   * 
+   * public JavaFXDisplay() { instance = this; }
+   * 
+   * /* get the instance
    * 
    * @return
    *
-  public static JavaFXDisplay getInstance() {
-    if (instance == null) {
-      //String[] args = {};
-      //Application.launch(JavaFXDisplay.class, args);
-      new JavaFXDisp
-    }
-    return instance;
-  }
-  */
+   * public static JavaFXDisplay getInstance() { if (instance == null) {
+   * //String[] args = {}; //Application.launch(JavaFXDisplay.class, args); new
+   * JavaFXDisp } return instance; }
+   */
   @Override
   public void show() throws Exception {
-    Platform.runLater(()->{
+    Platform.runLater(() -> {
       try {
         this.start(new Stage());
       } catch (Exception e) {
@@ -146,21 +141,7 @@ public class JavaFXDisplay extends Application
   }
 
   @Override
-  public void updateField(String title, Object value, int updateCount) {
-    TextField tfield=textFields.get(title);
-    if (tfield==null) {
-      if (!title.startsWith("Raw"))
-        LOGGER.log(Level.WARNING, "could not find field "+title);
-    } else {
-      if (value!=null)
-        Platform.runLater(()->tfield.setText(value.toString()));
-    }
-
-  }
-
-  @Override
   public void addCANValueField(CANValue<?> canValue) {
-    
 
   }
 
@@ -171,10 +152,39 @@ public class JavaFXDisplay extends Application
   }
 
   @Override
+  public void updateField(String title, Object value, int updateCount) {
+    TextField tfield = textFields.get(title);
+    if (tfield == null) {
+      if (!title.startsWith("Raw"))
+        LOGGER.log(Level.WARNING, "could not find field " + title);
+    } else {
+      if (value != null) {
+        final String valueText = value.toString();
+        // valueText+="("+updateCount+")";
+        Platform.runLater(() -> tfield.setText(valueText));
+      }
+    }
+
+  }
+
+  /**
+   * get the title of the active Panel
+   * 
+   * @return - the activeTab
+   */
+  public Tab getActiveTab() {
+    SingleSelectionModel<Tab> smodel = tabPane.getSelectionModel();
+    Tab selectedTab = smodel.getSelectedItem();
+    return selectedTab;
+  }
+
+  @Override
   public void updateCanValueField(CANValue<?> canValue) {
+    String title = canValue.canInfo.getTitle();
     if (canValue.canInfo.getMaxIndex() == 0) {
-      String title = canValue.canInfo.getTitle();
       updateField(title, canValue.asString(), canValue.getUpdateCount());
+    } else {
+      // TODO - generic solution?
     }
   }
 
@@ -183,33 +193,32 @@ public class JavaFXDisplay extends Application
    * 
    * @throws InterruptedException
    */
-  public void waitStatus(boolean open)  {
+  public void waitStatus(boolean open) {
     int sleep = 1000 / 50; // human eye reaction time
     try {
-    if (open)
-      while ((stage == null) || (!stage.isShowing())) {
-      
+      if (open)
+        while ((stage == null) || (!stage.isShowing())) {
+
           Thread.sleep(sleep);
-      }
-    else
-      while (stage != null && stage.isShowing()) {
-        Thread.sleep(sleep);
-      }
+        }
+      else
+        while (stage != null && stage.isShowing()) {
+          Thread.sleep(sleep);
+        }
     } catch (InterruptedException e) {
       ErrorHandler.handle(e);
     }
   }
 
   @Override
-  public void waitOpen()  {
+  public void waitOpen() {
     waitStatus(true);
   }
 
   @Override
-  public void waitClose()  {
+  public void waitClose() {
     waitStatus(false);
   }
-
 
   /**
    * create the Menu Bar
@@ -238,7 +247,7 @@ public class JavaFXDisplay extends Application
         softwareVersion.getName() + " " + softwareVersion.getVersion());
     this.stage = stage;
     Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
-    root=new VBox();
+    root = new VBox();
     Scene scene = new Scene(root, primScreenBounds.getWidth() / 2,
         primScreenBounds.getHeight() / 2);
     scene.setFill(Color.OLDLACE);
@@ -252,17 +261,18 @@ public class JavaFXDisplay extends Application
 
   /**
    * setup the Application
+   * 
    * @param app
    */
   private void setup(App app) {
     tabPane = new TabPane();
     tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
-     textFields=new HashMap<String,TextField>();
-    Group mainGroup=app.getGroupById("mainGroup");
-    for (Form form:mainGroup.getForms()) {
-      Tab tab=new Tab();
+    textFields = new HashMap<String, TextField>();
+    Group mainGroup = app.getGroupById("mainGroup");
+    for (Form form : mainGroup.getForms()) {
+      Tab tab = new Tab();
       tab.setText(form.getTitle());
-      GenericPanel panel=new GenericPanel(form);
+      GenericPanel panel = new GenericPanel(form);
       textFields.putAll(panel.textFields);
       tab.setContent(panel);
       tabPane.getTabs().add(tab);
@@ -303,6 +313,9 @@ public class JavaFXDisplay extends Application
     alert.showAndWait();
   }
 
+  /**
+   * browse to the feedback page
+   */
   public void showFeedback() {
     try {
       JLink.open(App.getInstance().getFeedback());
@@ -321,7 +334,8 @@ public class JavaFXDisplay extends Application
      * usernamePassword.getKey() + ", Password=" + usernamePassword.getValue());
      * });
      */
-    GenericDialog preferencesDialog = new GenericDialog(app.getFormById("preferencesGroup","preferencesForm"));
+    GenericDialog preferencesDialog = new GenericDialog(
+        app.getFormById("preferencesGroup", "preferencesForm"));
     Optional<Map<String, String>> result = preferencesDialog.show();
   }
 
@@ -329,8 +343,20 @@ public class JavaFXDisplay extends Application
    * close this display
    */
   public void close() {
-    if (stage!=null)
-     Platform.runLater(()->stage.close());
+    if (stage != null)
+      Platform.runLater(() -> stage.close());
+  }
+
+  /**
+   * select a random tab
+   */
+  public void selectRandomTab() {
+    if (tabPane != null) {
+      SingleSelectionModel<Tab> smodel = tabPane.getSelectionModel();
+      Random random = new Random();
+      int tabIndex = random.nextInt(tabPane.getTabs().size());
+      smodel.select(tabIndex);
+    }
   }
 
 }

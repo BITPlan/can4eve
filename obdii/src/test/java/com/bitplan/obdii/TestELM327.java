@@ -173,7 +173,7 @@ public class TestELM327 extends TestOBDII {
    */
   private JavaFXDisplay getDisplay() throws Exception {
     Translator.initialize("en");
-    JavaFXDisplay jfxDisplay = new JavaFXDisplay(App.getInstance(),new DummySoftwareVersion());
+    JavaFXDisplay jfxDisplay = new JFXTripletDisplay(App.getInstance(),new DummySoftwareVersion());
     return jfxDisplay;
   }
 
@@ -476,12 +476,11 @@ public class TestELM327 extends TestOBDII {
    * 
    * @throws Exception
    */
-  @SuppressWarnings("unused")
   @Test
   public void testPIDs() throws Exception {
     final int slow = 0;
     boolean withHistory = false;
-    // final int slow=20; // msecs for slower motion
+    //final int slow=20; // msecs for slower motion
     // boolean withHistory = true;
     // debug=true;
     // prepareOBDTriplet(true);
@@ -500,14 +499,12 @@ public class TestELM327 extends TestOBDII {
       display = getDisplay();
       obdTriplet.showDisplay(display);
       display.waitOpen();
-      if (slow > 0)
-        Thread.sleep(2000);
       obdTriplet.getElm327().setHeader(true);
       obdTriplet.getElm327().setLength(true);
       File logCAN = new File("src/test/data/" + fileName + ".zip");
       assertTrue("" + logCAN.getPath() + " should exist", logCAN.exists());
       LogReader logReader = new LogReader(logCAN, obdTriplet);
-      final int updates = 300;
+      final int updates = 300; // how often shall we update?
       logReader.read(logReader.new LogListener() {
 
         @Override
@@ -520,7 +517,8 @@ public class TestELM327 extends TestOBDII {
               // ignore
             }
           }
-          if (count % 3000 == 0) {
+          if (count % (updates*10) == 0) {
+            Platform.runLater(()->display.selectRandomTab());
             if (debug)
               LOGGER.log(Level.INFO,
                   String.format("%6d (%6d): %s", count, len, line));

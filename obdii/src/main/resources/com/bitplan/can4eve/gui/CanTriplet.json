@@ -276,7 +276,23 @@
 							"fieldSize": 40
 						}
 					]
-				}
+				},
+				{
+					"title": "Cell Temp",
+					"fields": [{
+							"title": "Cell Temperature",
+							"fieldKind": "Plot"
+						}
+					]
+				},
+				{
+					"title": "Cell Voltage",
+					"fields": [{
+							"title": "Cell Voltage",
+							"fieldKind": "Plot"
+						}
+					]
+				}	
 			]
 		}
 	],

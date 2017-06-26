@@ -181,7 +181,7 @@ public class OBDMain extends Main {
         canValueDisplay = new TripletDisplay(this);
         break;
       case JavaFX:
-        jfxDisplay=new JavaFXDisplay(App.getInstance(),this);
+        jfxDisplay=new JFXTripletDisplay(App.getInstance(),this);
         canValueDisplay=jfxDisplay;
         break;
       case Console:
