@@ -29,7 +29,9 @@ import java.util.logging.Logger;
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.SoftwareVersion;
 import com.bitplan.can4eve.gui.App;
+import com.bitplan.can4eve.gui.Form;
 import com.bitplan.can4eve.gui.javafx.GenericDialog;
+import com.bitplan.can4eve.gui.javafx.GenericPanel;
 //import com.bitplan.can4eve.gui.javafx.LoginDialog;
 import com.bitplan.can4eve.gui.swing.JLink;
 import com.bitplan.can4eve.gui.swing.Translator;
@@ -45,6 +47,9 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
@@ -63,7 +68,11 @@ public class JavaFXDisplay extends Application
   private static com.bitplan.can4eve.gui.App app;
   private static SoftwareVersion softwareVersion;
   private MenuBar menuBar;
-  private Stage stage;
+  protected Stage stage;
+
+  private VBox root;
+
+  private TabPane tabPane;
 
   public SoftwareVersion getSoftwareVersion() {
     return softwareVersion;
@@ -142,14 +151,12 @@ public class JavaFXDisplay extends Application
 
   @Override
   public void waitOpen() {
-    // TODO Auto-generated method stub
-
+    // not necessary - we are launched
   }
 
   @Override
   public void waitClose() {
-    // TODO Auto-generated method stub
-
+    // not necessary?
   }
 
   /**
@@ -179,14 +186,33 @@ public class JavaFXDisplay extends Application
         softwareVersion.getName() + " " + softwareVersion.getVersion());
     this.stage = stage;
     Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
-    Scene scene = new Scene(new VBox(), primScreenBounds.getWidth() / 2,
+    root=new VBox();
+    Scene scene = new Scene(root, primScreenBounds.getWidth() / 2,
         primScreenBounds.getHeight() / 2);
     scene.setFill(Color.OLDLACE);
     createMenuBar(scene);
     stage.setScene(scene);
+    setup(app);
     stage.show();
     stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2);
     stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 4);
+  }
+
+  /**
+   * setup the Application
+   * @param app
+   */
+  private void setup(App app) {
+    tabPane = new TabPane();
+    tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
+    for (Form form:app.getForms()) {
+      Tab tab=new Tab();
+      tab.setText(form.getTitle());
+      GenericPanel panel=new GenericPanel(form);
+      tab.setContent(panel);
+      tabPane.getTabs().add(tab);
+    }
+    root.getChildren().add(tabPane);
   }
 
   @Override

@@ -29,12 +29,10 @@ import com.bitplan.can4eve.gui.Form;
 
 import javafx.application.Platform;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -55,6 +53,24 @@ public class GenericDialog {
     this.form=form;
   }
   
+  /**
+   * get the Fields for the given form
+   * @param grid
+   * @param form
+   * @param ypos
+   * @return - the Map of fields
+   */
+  public static Map<String,TextField>  getFields(GridPane grid, Form form, int ypos) {
+    Map<String,TextField> textFields=new HashMap<String,TextField>();
+    for (com.bitplan.can4eve.gui.Field field:form.getFields()) {
+      TextField tfield = new TextField();
+      tfield.setPromptText(field.getTitle());
+      grid.add(new Label(field.getTitle()+":"), 0, ypos);
+      grid.add(tfield, 1, ypos++);
+      textFields.put(field.getId(), tfield);
+    }
+    return textFields;
+  }
   /**
    * show this form
    * @return
@@ -79,26 +95,15 @@ public class GenericDialog {
     grid.setHgap(10);
     grid.setVgap(10);
     grid.setPadding(new Insets(20, 150, 10, 10));
-    Map<String,TextField> textFields=new HashMap<String,TextField>();
+   
     int ypos=0;
-    TextField firstField=null;
-    for (com.bitplan.can4eve.gui.Field field:form.getFields()) {
-      TextField tfield = new TextField();
-      tfield.setPromptText(field.getTitle());
-      grid.add(new Label(field.getTitle()+":"), 0, ypos);
-      grid.add(tfield, 1, ypos++);
-      textFields.put(field.getId(), tfield);
-      if (firstField==null)
-        firstField=tfield;
-    }
-
+    Map<String, TextField> textFields = getFields(grid,form,ypos);
     dialog.getDialogPane().setContent(grid);
 
     // Request focus on the first field by default.
-    if (firstField!=null) {
-      final TextField focusField=firstField;
-      Platform.runLater(() ->focusField.requestFocus());
-    }
+    final TextField focusField=textFields.get(form.getFields().get(0).getId());
+    Platform.runLater(() ->focusField.requestFocus());
+
 
     // Convert the result to a username-password-pair when the login button is clicked.
     dialog.setResultConverter(dialogButton -> {

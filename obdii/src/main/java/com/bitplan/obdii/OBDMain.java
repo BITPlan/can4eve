@@ -24,7 +24,6 @@ import java.io.File;
 import java.net.Socket;
 import java.util.logging.Level;
 
-import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.args4j.Option;
 
 import com.bitplan.can4eve.VehicleGroup;

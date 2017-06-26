@@ -19,11 +19,23 @@
           "format": "%4d",
           "labelSize": 10,
           "fieldSize": 40
+        },
+        {
+          "title": "serialDevice",
+          "format": "%s",
+          "labelSize": 10,
+          "fieldSize": 40
+        },
+        {
+          "title": "baudRate",
+          "format": "%5d",
+          "labelSize": 10,
+          "fieldSize": 40
         }
        ]
     },
     {
-      "title": "Device",
+      "title": "Connection",
       "fields": [
         {
           "title": "date",
@@ -48,8 +60,12 @@
           "format": "%5d",
           "labelSize": 13,
           "fieldSize": 6
-        },
-    
+        }
+       ]
+    },
+    {
+      "title": "Vehicle",
+      "fields": [
         {
           "title": "VIN",
           "format": "%s",
@@ -67,14 +83,96 @@
           "format": "%s",
           "labelSize": 13,
           "fieldSize": 40
-        },
-        {
+        }
+       ]
+    },
+    {
+      "title": "Parking",
+      "fields": [
+       {
           "title": "Key",
           "format": "%s",
           "labelSize": 13,
           "fieldSize": 40
         },
+     
         {
+          "title": "Range",
+          "format": "%s",
+          "labelSize": 13,
+          "fieldSize": 40
+        },
+        {
+          "title": "SOC",
+          "format": "%s",
+          "labelSize": 13,
+          "fieldSize": 40
+        },
+        {
+          "title": "Climate",
+          "format": "%s",
+          "labelSize": 13,
+          "fieldSize": 40
+        },
+        {
+          "title": "Vent Dir",
+          "format": "%s",
+          "labelSize": 13,
+          "fieldSize": 40
+        },
+        {
+          "title": "Door Open",
+          "format": "%s",
+          "labelSize": 13,
+          "fieldSize": 40
+        },
+        {
+          "title": "Parking Light",
+          "format": "%s",
+          "labelSize": 13,
+          "fieldSize": 40
+        }
+      ]
+    },
+    {
+      "title": "Charging",
+      "fields": [
+        {
+          "title": "AC Amps",
+          "format": "%s",
+          "labelSize": 13,
+          "fieldSize": 40
+        },
+        {
+          "title": "AC Volts",
+          "format": "%s",
+          "labelSize": 13,
+          "fieldSize": 40
+        },
+        {
+          "title": "DC Amps",
+          "format": "%s",
+          "labelSize": 13,
+          "fieldSize": 40
+        },
+        {
+          "title": "DC Volts",
+          "format": "%s",
+          "labelSize": 13,
+          "fieldSize": 40
+        },
+        {
+          "title": "Charger temp",
+          "format": "%s",
+          "labelSize": 13,
+          "fieldSize": 40
+        }
+      ]
+    },
+    {
+      "title": "Trip",
+      "fields": [
+         {
           "title": "total km",
           "format": "%s",
           "labelSize": 13,
@@ -109,77 +207,10 @@
           "format": "%s",
           "labelSize": 13,
           "fieldSize": 40
-        },
-        {
-          "title": "Range",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "SOC",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "Climate",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "Vent Dir",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "AC Amps",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "AC Volts",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "DC Amps",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "DC Volts",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "Motor temp",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "Charger temp",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "Shifter",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
         }
-        
-      ]
+        ]
     },
-    {
+      {
       "title": "Moving",
       "fields": [
       {
@@ -225,18 +256,6 @@
           "fieldSize": 40
         },
         {
-          "title": "Door Open",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "Parking Light",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
           "title": "Head Light",
           "format": "%s",
           "labelSize": 13,
@@ -244,6 +263,18 @@
         },
         {
           "title": "High Beam",
+          "format": "%s",
+          "labelSize": 13,
+          "fieldSize": 40
+        },
+        {
+          "title": "Motor temp",
+          "format": "%s",
+          "labelSize": 13,
+          "fieldSize": 40
+        },
+        {
+          "title": "Shifter",
           "format": "%s",
           "labelSize": 13,
           "fieldSize": 40

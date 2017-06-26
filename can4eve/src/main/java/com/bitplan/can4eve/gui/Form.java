@@ -66,6 +66,7 @@ public class Form {
   public void setFields(List<Field> fields) {
     this.fields = fields;
   }
+  
   public void reinit() {
     for (Field field:this.getFields()) {
       field.reinit();
