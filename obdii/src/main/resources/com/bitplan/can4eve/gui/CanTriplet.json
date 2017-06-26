@@ -1,323 +1,318 @@
 {
-  "name": "CanTriplet",
-  "feedback": "https://github.com/BITPlan/can4eve/issues",
-  "forms": [
-  {
-      "title": "Preferences",
-      "id": "preferencesForm",
-      "icon": "settings",
-      "headerText": "choose your Preferences",
-      "fields": [
-        {
-          "title": "hostname",
-          "format": "%s",
-          "labelSize": 10,
-          "fieldSize": 40
-        },
-        {
-          "title": "port",
-          "format": "%4d",
-          "labelSize": 10,
-          "fieldSize": 40
-        },
-        {
-          "title": "serialDevice",
-          "format": "%s",
-          "labelSize": 10,
-          "fieldSize": 40
-        },
-        {
-          "title": "baudRate",
-          "format": "%5d",
-          "labelSize": 10,
-          "fieldSize": 40
-        }
-       ]
-    },
-    {
-      "title": "Connection",
-      "fields": [
-        {
-          "title": "date",
-          "format": "%s",
-          "labelSize": 10,
-          "fieldSize": 40
-        },
-        {
-          "title": "OBDII",
-          "format": "%s",
-          "labelSize": 5,
-          "fieldSize": 15
-        },
-        {
-          "title": "fps",
-          "format": "%5.0f",
-          "labelSize": 3,
-          "fieldSize": 6
-        },
-        {
-          "title": "# of bufferOverruns",
-          "format": "%5d",
-          "labelSize": 13,
-          "fieldSize": 6
-        }
-       ]
-    },
-    {
-      "title": "Vehicle",
-      "fields": [
-        {
-          "title": "VIN",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "# of Cells",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "Battery Capacity",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        }
-       ]
-    },
-    {
-      "title": "Parking",
-      "fields": [
-       {
-          "title": "Key",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-     
-        {
-          "title": "Range",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "SOC",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "Climate",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "Vent Dir",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "Door Open",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "Parking Light",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        }
-      ]
-    },
-    {
-      "title": "Charging",
-      "fields": [
-        {
-          "title": "AC Amps",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "AC Volts",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "DC Amps",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "DC Volts",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "Charger temp",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        }
-      ]
-    },
-    {
-      "title": "Trip",
-      "fields": [
-         {
-          "title": "total km",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "Trip Odo",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "Trip Rounds",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "Speed",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "RPM",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "RPM Speed",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        }
-        ]
-    },
-      {
-      "title": "Moving",
-      "fields": [
-      {
-          "title": "Steering Position",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "Steering Movement",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "Accelerator",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "Break Pressed",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "Break Pedal",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "Blinker Left",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "Blinker Right",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "Head Light",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "High Beam",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "Motor temp",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        },
-        {
-          "title": "Shifter",
-          "format": "%s",
-          "labelSize": 13,
-          "fieldSize": 40
-        }
-      ]
-    }
-  ],
-  "mainMenu": {
-    "subMenus": [
-      {
-        "id": "fileMenu",
-        "title": "File",
-        "shortCut": "F",
-        "menuItems": [
-          {
-            "id": "preferencesMenuItem",
-            "title": "Preferences",
-            "shortCut": "P"
-          },
-          {
-            "id": "quitMenuItem",
-            "title": "Quit",
-            "shortCut": "Q"
-          }
-        ]
-      },
-      {
-        "id": "helpMenu",
-        "title": "Help",
-        "shortCut": "H",
-        "menuItems": [
-          {
-            "id": "aboutMenuItem",
-            "title": "About",
-            "shortCut": "A"
-          },
-          {
-            "id": "feedbackMenuItem",
-            "title": "send Feedback",
-            "shortCut": "F"
-          }
-        ]
-      }
-    ]
-  }
+	"name": "CanTriplet",
+	"feedback": "https://github.com/BITPlan/can4eve/issues",
+	"groups": [{
+			"id": "preferencesGroup",
+			"forms": [{
+				"title": "Preferences",
+				"id": "preferencesForm",
+				"icon": "settings",
+				"headerText": "choose your Preferences",
+				"fields": [{
+						"title": "hostname",
+						"format": "%s",
+						"labelSize": 10,
+						"fieldSize": 40
+					},
+					{
+						"title": "port",
+						"format": "%4d",
+						"labelSize": 10,
+						"fieldSize": 40
+					},
+					{
+						"title": "serialDevice",
+						"format": "%s",
+						"labelSize": 10,
+						"fieldSize": 40
+					},
+					{
+						"title": "baudRate",
+						"format": "%5d",
+						"labelSize": 10,
+						"fieldSize": 40
+					}
+				]
+			}]
+		},
+		{
+			"id": "mainGroup",
+			"forms": [{
+					"title": "Connection",
+					"fields": [{
+							"title": "date",
+							"format": "%s",
+							"labelSize": 10,
+							"fieldSize": 40
+						},
+						{
+							"title": "OBDII",
+							"format": "%s",
+							"labelSize": 5,
+							"fieldSize": 15
+						},
+						{
+							"title": "fps",
+							"format": "%5.0f",
+							"labelSize": 3,
+							"fieldSize": 6
+						},
+						{
+							"title": "# of bufferOverruns",
+							"format": "%5d",
+							"labelSize": 13,
+							"fieldSize": 6
+						}
+					]
+				},
+				{
+					"title": "Vehicle",
+					"fields": [{
+							"title": "VIN",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "# of Cells",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "Battery Capacity",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						}
+					]
+				},
+				{
+					"title": "Parking",
+					"fields": [{
+							"title": "Key",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "Climate",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "Vent Dir",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "Door Open",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "Parking Light",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						}
+					]
+				},
+				{
+					"title": "Charging",
+					"fields": [{
+							"title": "AC Amps",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "AC Volts",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "DC Amps",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "DC Volts",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "Charger temp",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						}
+					]
+				},
+				{
+					"title": "Trip",
+					"fields": [{
+							"title": "total km",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "Trip Odo",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "Trip Rounds",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "Range",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "SOC",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "Speed",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "RPM",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "RPM Speed",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "Shifter",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						}
+					]
+				},
+				{
+					"title": "Moving",
+					"fields": [{
+							"title": "Steering Position",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "Steering Movement",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "Accelerator",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "Break Pressed",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "Break Pedal",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "Blinker Left",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "Blinker Right",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "Head Light",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "High Beam",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "Motor temp",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						}
+					]
+				}
+			]
+		}
+	],
+	"mainMenu": {
+		"subMenus": [{
+				"id": "fileMenu",
+				"title": "File",
+				"shortCut": "F",
+				"menuItems": [{
+						"id": "preferencesMenuItem",
+						"title": "Preferences",
+						"shortCut": "P"
+					},
+					{
+						"id": "quitMenuItem",
+						"title": "Quit",
+						"shortCut": "Q"
+					}
+				]
+			},
+			{
+				"id": "helpMenu",
+				"title": "Help",
+				"shortCut": "H",
+				"menuItems": [{
+						"id": "aboutMenuItem",
+						"title": "About",
+						"shortCut": "A"
+					},
+					{
+						"id": "feedbackMenuItem",
+						"title": "send Feedback",
+						"shortCut": "F"
+					}
+				]
+			}
+		]
+	}
 }

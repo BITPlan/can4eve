@@ -60,6 +60,7 @@ public class Form {
   public void setHeaderText(String headerText) {
     this.headerText = headerText;
   }
+ 
   public List<Field> getFields() {
     return fields;
   }

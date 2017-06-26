@@ -624,8 +624,9 @@ public class OBDTriplet extends OBDHandler {
    * show the given display
    * 
    * @param display
+   * @throws Exception 
    */
-  public void showDisplay(CANValueDisplay display) {
+  public void showDisplay(CANValueDisplay display) throws Exception {
     display.addField("date", "%s", 10, 40);
     canValues = getCANValues();
     display.addCanValueFields(canValues);

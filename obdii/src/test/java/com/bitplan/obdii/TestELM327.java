@@ -45,22 +45,18 @@ import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.SoftwareVersion;
-import com.bitplan.can4eve.gui.Field;
-import com.bitplan.can4eve.gui.Form;
-import com.bitplan.can4eve.gui.Menu;
-import com.bitplan.can4eve.gui.MenuItem;
 import com.bitplan.can4eve.gui.App;
+import com.bitplan.can4eve.gui.swing.Translator;
 import com.bitplan.elm327.Config;
 import com.bitplan.elm327.Connection;
 import com.bitplan.elm327.LogImpl;
 import com.bitplan.elm327.Packet;
-import com.bitplan.obdii.SwingDisplay.SwingLabelField;
 import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.obdii.elm327.ELM327SimulatorConnection;
 import com.bitplan.obdii.elm327.ElmSimulator;
 import com.bitplan.triplet.OBDTriplet;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+
+import javafx.application.Platform;
 
 /**
  * Test ELM327 communication
@@ -80,7 +76,7 @@ public class TestELM327 extends TestOBDII {
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii");
   private Socket elmSocket;
   private OBDTriplet obdTriplet;
-  private TripletDisplay display;
+  private JavaFXDisplay display;
 
   /**
    * get the Socket for the testVehicle
@@ -163,11 +159,22 @@ public class TestELM327 extends TestOBDII {
       elmSocket = getTestVehicleSocket(config);
       obdTriplet = new OBDTriplet(getVehicleGroup(), elmSocket, debug);
     }
-    display = new TripletDisplay(new DummySoftwareVersion());
+    display = getDisplay();
     obdTriplet.showDisplay(display);
     // obdTriplet.getElm327().debug = debug;
     if (!simulated)
       obdTriplet.getElm327().getCon().start();
+  }
+
+  /**
+   * get the Display
+   * @return
+   * @throws Exception
+   */
+  private JavaFXDisplay getDisplay() throws Exception {
+    Translator.initialize("en");
+    JavaFXDisplay jfxDisplay = new JavaFXDisplay(App.getInstance(),new DummySoftwareVersion());
+    return jfxDisplay;
   }
 
   @Test
@@ -329,7 +336,7 @@ public class TestELM327 extends TestOBDII {
     if (debug)
       debugArg = "--debug";
     String args[] = { debugArg, "--host=" + host, "--port=" + port,
-       "--monitor", "--display=Swing", limit };
+       "--monitor", "--display=JavaFX", limit };
     int exitCode = obdMain.maininstance(args);
     assertEquals(0, exitCode);
   }
@@ -344,7 +351,7 @@ public class TestELM327 extends TestOBDII {
     File logRoot = new File("/tmp/Ion");
     logRoot.mkdirs();
     String args[] = { "--host=localhost", "--port=" + ElmSimulator.DEFAULT_PORT,
-       "--monitor", "--display=Swing", limit, "--log=" + logRoot.getAbsolutePath() };
+       "--monitor", "--display=JavaFX", limit, "--log=" + logRoot.getAbsolutePath() };
     obdMain.maininstance(args);
   }
 
@@ -363,8 +370,8 @@ public class TestELM327 extends TestOBDII {
     obdMain.maininstance(args);
   }
 
-  @Ignore
-  // to create JSON 
+  /*@Ignore
+   to create initial JSON 
   public void testAppGUI() throws Exception {
     prepareOBDTriplet(simulated, debug);
     App app = new App();
@@ -403,7 +410,7 @@ public class TestELM327 extends TestOBDII {
     debug=true;
     if (debug)
       System.out.println(json);
-  }
+  }*/
 
   @Test
   public void testSTM() throws Exception {
@@ -423,7 +430,7 @@ public class TestELM327 extends TestOBDII {
     if (debug)
       obdTriplet.showValues(new ConsoleDisplay());
     obdTriplet.close();
-    display.close();
+    Platform.runLater(() ->display.close());
     if (!simulated) {
       assertTrue(logFile.exists());
       List<String> logLines = FileUtils.readLines(logFile, "UTF-8");
@@ -490,8 +497,9 @@ public class TestELM327 extends TestOBDII {
       obdTriplet = new OBDTriplet(getVehicleGroup());
       obdTriplet.setWithHistory(withHistory);
       // obdTriplet.setDebug(true);
-      display = new TripletDisplay(new DummySoftwareVersion());
+      display = getDisplay();
       obdTriplet.showDisplay(display);
+      display.waitOpen();
       if (slow > 0)
         Thread.sleep(2000);
       obdTriplet.getElm327().setHeader(true);
@@ -519,8 +527,7 @@ public class TestELM327 extends TestOBDII {
           }
           if (count > max[index]) {
             if (display != null)
-              if (display.frame != null)
-                display.frame.setVisible(false);
+                display.close();
             return false;
           }
           return true;

@@ -21,6 +21,7 @@
 package com.bitplan.obdii;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -30,6 +31,7 @@ import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.SoftwareVersion;
 import com.bitplan.can4eve.gui.App;
 import com.bitplan.can4eve.gui.Form;
+import com.bitplan.can4eve.gui.Group;
 import com.bitplan.can4eve.gui.javafx.GenericDialog;
 import com.bitplan.can4eve.gui.javafx.GenericPanel;
 //import com.bitplan.can4eve.gui.javafx.LoginDialog;
@@ -38,6 +40,7 @@ import com.bitplan.can4eve.gui.swing.Translator;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
@@ -50,6 +53,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
@@ -74,11 +78,18 @@ public class JavaFXDisplay extends Application
 
   private TabPane tabPane;
 
+  private Map<String, TextField> textFields;
+  public JavaFXDisplay(App app,SoftwareVersion softwareVersion) {
+    new JFXPanel();
+    this.setApp(app);
+    this.setSoftwareVersion(softwareVersion);
+  }
+
   public SoftwareVersion getSoftwareVersion() {
     return softwareVersion;
   }
 
-  public static void setSoftwareVersion(SoftwareVersion softwareVersion) {
+  public void setSoftwareVersion(SoftwareVersion softwareVersion) {
     JavaFXDisplay.softwareVersion = softwareVersion;
   }
 
@@ -86,31 +97,40 @@ public class JavaFXDisplay extends Application
     return app;
   }
 
-  public static void setApp(com.bitplan.can4eve.gui.App app) {
+  public void setApp(com.bitplan.can4eve.gui.App app) {
     JavaFXDisplay.app = app;
   }
 
+  /*
   public static JavaFXDisplay instance;
 
   public JavaFXDisplay() {
     instance = this;
   }
 
-  /**
+  /*
    * get the instance
    * 
    * @return
-   */
+   *
   public static JavaFXDisplay getInstance() {
     if (instance == null) {
-      String[] args = {};
-      Application.launch(JavaFXDisplay.class, args);
+      //String[] args = {};
+      //Application.launch(JavaFXDisplay.class, args);
+      new JavaFXDisp
     }
     return instance;
   }
-
+  */
   @Override
-  public void show() {
+  public void show() throws Exception {
+    Platform.runLater(()->{
+      try {
+        this.start(new Stage());
+      } catch (Exception e) {
+        ErrorHandler.handle(e);
+      }
+    });
     // https://stackoverflow.com/a/36805921/1497139
     // Platform.runLater(() ->
     // stage.setTitle(softwareVersion.getName()+"
@@ -121,19 +141,26 @@ public class JavaFXDisplay extends Application
   @Override
   public LabelField addField(String title, String format, int labelSize,
       int fieldSize) {
-    // TODO Auto-generated method stub
+    // ignore this
     return null;
   }
 
   @Override
   public void updateField(String title, Object value, int updateCount) {
-    // TODO Auto-generated method stub
+    TextField tfield=textFields.get(title);
+    if (tfield==null) {
+      if (!title.startsWith("Raw"))
+        LOGGER.log(Level.WARNING, "could not find field "+title);
+    } else {
+      if (value!=null)
+        Platform.runLater(()->tfield.setText(value.toString()));
+    }
 
   }
 
   @Override
   public void addCANValueField(CANValue<?> canValue) {
-    // TODO Auto-generated method stub
+    
 
   }
 
@@ -145,19 +172,44 @@ public class JavaFXDisplay extends Application
 
   @Override
   public void updateCanValueField(CANValue<?> canValue) {
-    // TODO Auto-generated method stub
+    if (canValue.canInfo.getMaxIndex() == 0) {
+      String title = canValue.canInfo.getTitle();
+      updateField(title, canValue.asString(), canValue.getUpdateCount());
+    }
+  }
 
+  /**
+   * wait for close
+   * 
+   * @throws InterruptedException
+   */
+  public void waitStatus(boolean open)  {
+    int sleep = 1000 / 50; // human eye reaction time
+    try {
+    if (open)
+      while ((stage == null) || (!stage.isShowing())) {
+      
+          Thread.sleep(sleep);
+      }
+    else
+      while (stage != null && stage.isShowing()) {
+        Thread.sleep(sleep);
+      }
+    } catch (InterruptedException e) {
+      ErrorHandler.handle(e);
+    }
   }
 
   @Override
-  public void waitOpen() {
-    // not necessary - we are launched
+  public void waitOpen()  {
+    waitStatus(true);
   }
 
   @Override
-  public void waitClose() {
-    // not necessary?
+  public void waitClose()  {
+    waitStatus(false);
   }
+
 
   /**
    * create the Menu Bar
@@ -205,10 +257,13 @@ public class JavaFXDisplay extends Application
   private void setup(App app) {
     tabPane = new TabPane();
     tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
-    for (Form form:app.getForms()) {
+     textFields=new HashMap<String,TextField>();
+    Group mainGroup=app.getGroupById("mainGroup");
+    for (Form form:mainGroup.getForms()) {
       Tab tab=new Tab();
       tab.setText(form.getTitle());
       GenericPanel panel=new GenericPanel(form);
+      textFields.putAll(panel.textFields);
       tab.setContent(panel);
       tabPane.getTabs().add(tab);
     }
@@ -266,8 +321,16 @@ public class JavaFXDisplay extends Application
      * usernamePassword.getKey() + ", Password=" + usernamePassword.getValue());
      * });
      */
-    GenericDialog preferencesDialog = new GenericDialog(app.getFormById("preferencesForm"));
+    GenericDialog preferencesDialog = new GenericDialog(app.getFormById("preferencesGroup","preferencesForm"));
     Optional<Map<String, String>> result = preferencesDialog.show();
+  }
+
+  /**
+   * close this display
+   */
+  public void close() {
+    if (stage!=null)
+     Platform.runLater(()->stage.close());
   }
 
 }

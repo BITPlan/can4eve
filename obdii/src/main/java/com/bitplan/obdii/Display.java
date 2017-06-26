@@ -26,7 +26,7 @@ package com.bitplan.obdii;
  *
  */
 public interface Display {
-  public void show();
+  public void show() throws Exception;
   public LabelField addField(String title,String format, int labelSize,int fieldSize);
   public void updateField(String title, Object value, int updateCount);
   public void waitOpen();

@@ -39,8 +39,9 @@ import com.google.gson.GsonBuilder;
 public class App {
   String name;
   String feedback;
-  private List<Form> forms = new ArrayList<Form>();
-  private Map<String,Form> formById=new HashMap<String,Form>();
+  private List<Group> groups = new ArrayList<Group>();
+
+  private Map<String,Group> groupById=new HashMap<String,Group>();
   private Menu mainMenu;
 
   public String getName() {
@@ -71,32 +72,43 @@ public class App {
     this.mainMenu = mainMenu;
   }
 
-  public List<Form> getForms() {
-    return forms;
+  public List<Group> getGroups() {
+    return groups;
   }
-
-  public void setForms(List<Form> forms) {
-    this.forms = forms;
+  public void setGroups(List<Group> groups) {
+    this.groups = groups;
   }
 
   /**
    * reinitializatin of data structures
    */
   public void reinit() {
-    for (Form form:this.getForms()) {
-      form.reinit();
-      if (form.getId()!=null)
-        this.formById.put(form.getId(), form);
+    for (Group group:this.getGroups()) {
+      group.reinit();
+      if (group.getId()!=null)
+        this.groupById.put(group.getId(), group);
     }
   }
+  
+  /**
+   * get the group by the given id
+   * @param groupId
+   * @return the group
+   */
+  public Group getGroupById(String groupId) {
+    Group group=this.groupById.get(groupId);
+    return group;
+  }
+
   
   /**
    * get the form by the given id
    * @param id
    * @return the form by id
    */
-  public Form getFormById(String id) {
-    Form form=this.formById.get(id);
+  public Form getFormById(String groupId,String formId) {
+    Group group=getGroupById(groupId);
+    Form form=group.getFormById(formId);
     return form;
   }
 
@@ -145,4 +157,5 @@ public class App {
     return instance;
   }
 
+  
 }
