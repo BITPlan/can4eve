@@ -36,8 +36,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-import javax.swing.SwingUtilities;
-
 import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.BooleanValue;
@@ -50,12 +48,10 @@ import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.csv.CSVUtil;
 import com.bitplan.elm327.Connection;
-import com.bitplan.obdii.CANCellStatePlot;
 import com.bitplan.obdii.CANValueDisplay;
-import com.bitplan.obdii.CANValueHistoryPlot;
+import com.bitplan.obdii.JFXTripletDisplay;
 import com.bitplan.obdii.OBDHandler;
 import com.bitplan.obdii.PIDResponse;
-import com.bitplan.obdii.TripletDisplay;
 import com.bitplan.obdii.elm327.ELM327;
 
 /**
@@ -534,15 +530,11 @@ public class OBDTriplet extends OBDHandler {
     if (latestUpdate == null) {
       latestUpdate = now;
       latestHistoryUpdate = now;
-      latestCellValueUpdate = now;
     } else {
       // TODO configure frequency
       if (now.getTime() - latestHistoryUpdate.getTime() >= 500
           && isWithHistory()) {
         latestHistoryUpdate = showHistory(display, now);
-      }
-      if (now.getTime() - latestCellValueUpdate.getTime() >= 500) {
-        latestCellValueUpdate = showCellValues(display, now);
       }
       long msecs = now.getTime() - latestUpdate.getTime();
       if (msecs >= 1000) {
@@ -559,63 +551,15 @@ public class OBDTriplet extends OBDHandler {
   }
 
   /**
-   * show the cellValues
-   * 
-   * @param display
-   * @param now
-   * @return - the date
-   */
-  private Date showCellValues(CANValueDisplay display, Date now) {
-    if (display instanceof TripletDisplay) {
-      final TripletDisplay tripletDisplay = (TripletDisplay) display;
-      String activePanelTitle = tripletDisplay.getActivePanelTitle();
-      if (debug)
-        LOGGER.log(Level.INFO, "active Panel is " + activePanelTitle);
-      if ("cellTemperature".equals(activePanelTitle)) {
-        final CANCellStatePlot cellStatePlot = new CANCellStatePlot(
-            "cellTemperature", "cell", "Temperature", this.cellTemperature,
-            1.0);
-        SwingUtilities.invokeLater(new Runnable() {
-          public void run() {
-            tripletDisplay.updateCellTemperature(cellStatePlot.getPanel());
-          }
-        });
-      }
-      if ("cellVoltage".equals(activePanelTitle)) {
-        final CANCellStatePlot cellStatePlot = new CANCellStatePlot(
-            "cellVoltage", "cell", "Voltage", this.cellVoltage, 0.01);
-        SwingUtilities.invokeLater(new Runnable() {
-          public void run() {
-            tripletDisplay.updateCellVoltage(cellStatePlot.getPanel());
-          }
-        });
-      }
-    }
-    return now;
-  }
-
-  /**
    * show the history
    * @param display
    * @param now
    * @return the now value
    */
   private Date showHistory(CANValueDisplay display, Date now) {
-    if (display instanceof TripletDisplay) {
-      final TripletDisplay tripletDisplay = (TripletDisplay) display;
-      if ("history".equals(tripletDisplay.getActivePanelTitle())) {
-        List<CANValue<?>> plotValues = new ArrayList<CANValue<?>>();
-        plotValues.add(SOC);
-        plotValues.add(range);
-        final CANValueHistoryPlot valuePlot = new CANValueHistoryPlot(
-            "SOC/RR over time", "time", "SOC/RR", plotValues);
-        // http://stackoverflow.com/questions/218155/how-do-i-change-jpanel-inside-a-jframe-on-the-fly
-        SwingUtilities.invokeLater(new Runnable() {
-          public void run() {
-            tripletDisplay.updateHistory(valuePlot.getPanel());
-          }
-        });
-      }
+    if (display instanceof JFXTripletDisplay) {
+      final JFXTripletDisplay tripletDisplay = (JFXTripletDisplay) display;
+      tripletDisplay.updateHistory(SOC,range,"SOC/RR over time","time","SOC/RR");
     }
     return now;
   }

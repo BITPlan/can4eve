@@ -1,9 +1,13 @@
 package com.bitplan.obdii;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.JPanel;
 
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
+import com.bitplan.can4eve.CANValue.IntegerValue;
 import com.bitplan.can4eve.SoftwareVersion;
 import com.bitplan.can4eve.gui.App;
 
@@ -44,16 +48,38 @@ public class JFXTripletDisplay extends JavaFXDisplay {
   }
 
   /**
+   * update the history
+   * @param xValue
+   * @param yValue
+   * @param title
+   * @param xTitle
+   * @param yTitle
+   */
+  public void updateHistory(DoubleValue xValue, IntegerValue yValue, String title,
+      String xTitle, String yTitle) {
+    Tab activeTab = super.getActiveTab();
+    String activePanelTitle = activeTab.getText();
+    if ("history".equals(activePanelTitle)) {
+      List<CANValue<?>> plotValues = new ArrayList<CANValue<?>>();
+      plotValues.add(xValue);
+      plotValues.add(yValue);
+      final CANValueHistoryPlot valuePlot = new CANValueHistoryPlot(
+          title, xTitle, yTitle, plotValues);
+      Platform.runLater(() -> updateTab(activeTab, valuePlot.getPanel()));
+    }
+  }
+
+  /**
    * special handling for Cell Temperature and Cell Voltage
    */
   @Override
   public void updateCanValueField(CANValue<?> canValue) {
     String title = canValue.canInfo.getTitle();
+    Tab activeTab = super.getActiveTab();
+    String activePanelTitle = activeTab.getText();
     if (title.toLowerCase().startsWith("cell")) {
       // TODO - use some kind of id to clearly identify plotable stuff
       // Cell Temp / Cell Voltage e.g. might not work in i18n
-      Tab activeTab = super.getActiveTab();
-      String activePanelTitle = activeTab.getText();
       if (title.startsWith(activePanelTitle)) {
         if (canValue.getUpdateCount() % canValue.canInfo.getMaxIndex() == 0) {
           if ("Cell Temp".equals(activePanelTitle)) {

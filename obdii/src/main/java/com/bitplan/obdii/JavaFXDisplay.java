@@ -286,7 +286,7 @@ public class JavaFXDisplay extends Application
     if (source instanceof MenuItem) {
       MenuItem menuItem = (MenuItem) source;
       if ("quitMenuItem".equals(menuItem.getId())) {
-        Platform.exit();
+        close();
       } else if ("aboutMenuItem".equals(menuItem.getId())) {
         showAbout();
       } else if ("feedbackMenuItem".equals(menuItem.getId())) {

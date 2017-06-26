@@ -67,10 +67,10 @@ public class OBDMain extends Main {
 
   
   enum DisplayChoice {
-    None, Console, Swing, JavaFX
+    None, Console, JavaFX
   }
 
-  @Option(name = "--display", usage = "display\nthe display to use one of:\n None,Console,Swing,JavaFX")
+  @Option(name = "--display", usage = "display\nthe display to use one of:\n None,Console,JavaFX")
   DisplayChoice displayChoice = DisplayChoice.JavaFX;
 
   @Option(name = "--lang", usage = "language\nthe language to use one of:\nen,de")
@@ -177,9 +177,6 @@ public class OBDMain extends Main {
     } else {
       JavaFXDisplay jfxDisplay;
       switch (displayChoice) {
-      case Swing:
-        canValueDisplay = new TripletDisplay(this);
-        break;
       case JavaFX:
         jfxDisplay=new JFXTripletDisplay(App.getInstance(),this);
         canValueDisplay=jfxDisplay;

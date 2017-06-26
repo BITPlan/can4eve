@@ -292,6 +292,14 @@
 							"fieldKind": "Plot"
 						}
 					]
+				},
+				{
+					"title": "history",
+					"fields": [{
+							"title": "history",
+							"fieldKind": "Plot"
+						}
+					]
 				}	
 			]
 		}
