@@ -40,7 +40,7 @@ public class TestAppGUI {
     assertNotNull(app);
     assertEquals(2,app.getMainMenu().getSubMenus().size());
     assertEquals(2,app.getGroups().size());
-    int [] expected={1,8};
+    int [] expected={1,9};
     int i=0;
     for (Group group:app.getGroups()) {
       assertEquals(expected[i++],group.getForms().size());

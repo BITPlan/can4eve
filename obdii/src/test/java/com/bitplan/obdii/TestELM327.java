@@ -478,9 +478,9 @@ public class TestELM327 extends TestOBDII {
    */
   @Test
   public void testPIDs() throws Exception {
-    //final int slow = 0;
+    final int slow = 0;
     //boolean withHistory = false;
-    final int slow=20; // msecs for slower motion
+    //final int slow=20; // msecs for slower motion
     boolean withHistory = true;
     // debug=true;
     // prepareOBDTriplet(true);
