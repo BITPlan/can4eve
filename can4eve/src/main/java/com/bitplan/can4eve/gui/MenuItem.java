@@ -20,22 +20,31 @@
  */
 package com.bitplan.can4eve.gui;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * Forms used
+ * platform independent menu Item
  * @author wf
  *
  */
-public class Forms {
-  private List<Form> forms=new ArrayList<Form>();
-
-  public List<Form> getForms() {
-    return forms;
+public class MenuItem {
+  String id;
+  String title;
+  String shortCut;
+  public String getId() {
+    return id;
   }
-
-  public void setForms(List<Form> forms) {
-    this.forms = forms;
+  public void setId(String id) {
+    this.id = id;
+  }
+  public String getTitle() {
+    return title;
+  }
+  public void setTitle(String title) {
+    this.title = title;
+  }
+  public String getShortCut() {
+    return shortCut;
+  }
+  public void setShortCut(String shortCut) {
+    this.shortCut = shortCut;
   }
 }

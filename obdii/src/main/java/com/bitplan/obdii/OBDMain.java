@@ -95,6 +95,14 @@ public class OBDMain extends Main {
   private Socket elmSocket;
 
   /**
+   * the url for the about dialog
+   */
+  @Override
+  public String getUrl() {
+    return "http://can4eve.bitplan.com";
+  };
+  
+  /**
    * construct me
    */
   public OBDMain() {

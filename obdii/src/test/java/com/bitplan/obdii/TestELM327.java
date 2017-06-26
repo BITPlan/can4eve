@@ -47,7 +47,9 @@ import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.SoftwareVersion;
 import com.bitplan.can4eve.gui.Field;
 import com.bitplan.can4eve.gui.Form;
-import com.bitplan.can4eve.gui.Forms;
+import com.bitplan.can4eve.gui.Menu;
+import com.bitplan.can4eve.gui.MenuItem;
+import com.bitplan.can4eve.gui.App;
 import com.bitplan.elm327.Config;
 import com.bitplan.elm327.Connection;
 import com.bitplan.elm327.LogImpl;
@@ -361,12 +363,26 @@ public class TestELM327 extends TestOBDII {
     obdMain.maininstance(args);
   }
 
-  @Test
-  public void testForms() throws Exception {
+  @Ignore
+  // to create JSON 
+  public void testAppGUI() throws Exception {
     prepareOBDTriplet(simulated, debug);
-    Forms forms = new Forms();
+    App app = new App();
+    app.setName("CanTriplet");
+    Menu menu=new Menu();
+    app.setMainMenu(menu);
+    Menu fileMenu=new Menu();
+    fileMenu.setId("fileMenu");
+    fileMenu.setTitle("File");
+    fileMenu.setShortCut("F");
+    MenuItem fileQuit=new MenuItem();
+    fileQuit.setId("quitMenuItem");
+    fileQuit.setTitle("Quit");
+    fileQuit.setShortCut("Q");
+    fileMenu.getMenuItems().add(fileQuit);
+    menu.getSubMenus().add(fileMenu);
     Form form = new Form();
-    forms.getForms().add(form);
+    app.getForms().add(form);
     form.setTitle("data 1");
     for (SwingLabelField sfield : display.fields) {
       if (!sfield.title.startsWith("Raw")) {
@@ -378,16 +394,13 @@ public class TestELM327 extends TestOBDII {
         form.getFields().add(field);
         if (form.getFields().size() >= 27) {
           form = new Form();
-          forms.getForms().add(form);
-          form.setTitle("data " + forms.getForms().size());
+          app.getForms().add(form);
+          form.setTitle("data " + app.getForms().size());
         }
       }
     }
-    GsonBuilder gsonBuilder = new GsonBuilder();
-    // new GraphAdapterBuilder().addType(Pid.class).registerOn(gsonBuilder);
-    Gson gson = gsonBuilder.setPrettyPrinting().create();
-    String json = gson.toJson(forms);
-    // debug=true;
+    String json = app.asJson();
+    debug=true;
     if (debug)
       System.out.println(json);
   }

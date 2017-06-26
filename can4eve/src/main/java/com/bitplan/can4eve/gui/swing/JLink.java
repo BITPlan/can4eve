@@ -146,6 +146,14 @@ public class JLink extends JLabel {
   }
 
   /**
+   * open the given url
+   * @param url
+   */
+  public static void open(String url) {
+    URI luri = URI.create(url);
+    open(luri);
+  }
+  /**
    * Attempts to open a URI in the user's default browser, displaying a graphical warning message
    * if it fails.
    */
@@ -156,7 +164,7 @@ public class JLink extends JLabel {
         desktop.browse(uri);
       } catch (IOException e) {
         JOptionPane.showMessageDialog(null,
-            "Failed to open " + uri + " - your computer is likely misconfigured.",
+            "Failed to open '" + uri + "' - your computer is likely misconfigured.",
             "Cannot Open Link", JOptionPane.WARNING_MESSAGE);
       }
     } else {
@@ -187,4 +195,5 @@ public class JLink extends JLabel {
           FORMAT_STRING, color.getRed(), color.getGreen(), color.getBlue(), underlinedText);
     }
   }
+
 }

@@ -24,7 +24,6 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,8 +43,11 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
+import com.bitplan.can4eve.gui.App;
 import com.bitplan.can4eve.gui.swing.Translator;
+import com.bitplan.can4eve.util.OSCheck;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -69,12 +71,7 @@ public abstract class SwingDisplay implements Display, ActionListener {
   ContainerPanel historyPanel;
   ContainerPanel cellTemperaturPanel;
   ContainerPanel cellVoltagePanel;
-  protected JTabbedPane tabbedPane;
-
-  public static final String FILE_TXT = "fileMenu";
-  public static final String QUIT_TXT = "quitMenuItem";
-  private static final String HELP_TXT = "helpMenu";
-  private static final String ABOUT_TXT = "aboutMenuItem";
+  protected JTabbedPane tabbedPane; 
   private static final String MENU_TXT = "Menu";
 
   /**
@@ -298,11 +295,22 @@ public abstract class SwingDisplay implements Display, ActionListener {
 
   /**
    * the display
+   * @throwsException 
    */
-  public void displayFrame() {
+  public void displayFrame(App app) throws Exception {
+    switch (OSCheck.getOperatingSystemType()) {
+    case MacOS:
+      // http://alvinalexander.com/blog/post/jfc-swing/making-java-swing-app-look-like-mac-app
+      // System.setProperty("apple.laf.useScreenMenuBar", "true");
+      // System.setProperty("com.apple.mrj.application.apple.menu.about.name", Translator.translate("appName"));
+      break;
+    default:
+      break;
+    }
+    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
     frame = new JFrame(title);
     frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    frame.setJMenuBar(createMenuBar());
+    frame.setJMenuBar(createMenuBar(app));
     // add the tabbedPane
     frame.getContentPane().add(tabbedPane);
     frame.pack();
@@ -316,6 +324,16 @@ public abstract class SwingDisplay implements Display, ActionListener {
     frame.setVisible(true);
   }
 
+  /**
+   * get the VK for the given shortCut
+   * @param shortCut
+   * @return the VK
+   */
+  public int asVK(String shortCut) {
+    char k=shortCut.charAt(0);
+    return k;
+  }
+  
   /**
    * create a Menu
    * 
@@ -354,7 +372,7 @@ public abstract class SwingDisplay implements Display, ActionListener {
    * create an internationalized menu
    * 
    * @param i18nTxt
-   * @param vk
+   * @param shortCut
    * @return
    */
   private JMenu createMenuI18n(String i18nTxt, int vk) {
@@ -379,17 +397,21 @@ public abstract class SwingDisplay implements Display, ActionListener {
     return menuItem;
   }
 
-  private JMenuBar createMenuBar() {
+  /**
+   * create the menu Bar as Configured in the Appp
+   * @return
+   * @throws Exception 
+   */
+  private JMenuBar createMenuBar(App app) throws Exception {
     // Create the menu bar.
     JMenuBar menuBar = new JMenuBar();
-
-    // Build the file menu.
-    JMenu filemenu = createMenuI18n(FILE_TXT, KeyEvent.VK_F);
-    this.addMenuItemI18n(filemenu, QUIT_TXT, KeyEvent.VK_Q, this);
-    JMenu helpmenu = createMenuI18n(HELP_TXT, KeyEvent.VK_H);
-    this.addMenuItemI18n(helpmenu, ABOUT_TXT, KeyEvent.VK_A, this);
-    menuBar.add(filemenu);
-    menuBar.add(helpmenu);
+    for (com.bitplan.can4eve.gui.Menu menu:app.getMainMenu().getSubMenus()) {
+      JMenu jmenu=createMenuI18n(menu.getId(),  asVK(menu.getShortCut()));
+      for (com.bitplan.can4eve.gui.MenuItem menuitem:menu.getMenuItems()) {
+        this.addMenuItemI18n(jmenu, menuitem.getId(),asVK(menuitem.getShortCut()),this);
+      }
+      menuBar.add(jmenu);
+    }
     return menuBar;
   }
 
@@ -399,7 +421,13 @@ public abstract class SwingDisplay implements Display, ActionListener {
   public void show() {
     SwingUtilities.invokeLater(new Runnable() {
       public void run() {
-        displayFrame();
+        try {
+          // FIXME - make configurable
+          App app=App.getInstance();
+          displayFrame(app);
+        } catch (Exception e) {
+          ErrorHandler.handle(e);
+        }
       }
     });
   }
@@ -429,11 +457,11 @@ public abstract class SwingDisplay implements Display, ActionListener {
         Thread.sleep(sleep);
       }
   }
-  
+
   public void waitOpen() throws InterruptedException {
     waitStatus(true);
   }
-  
+
   public void waitClose() throws InterruptedException {
     waitStatus(false);
   }
@@ -459,15 +487,16 @@ public abstract class SwingDisplay implements Display, ActionListener {
     if (source instanceof JMenuItem) {
       JMenuItem menuItem = (JMenuItem) source;
       String actionCmd = menuItem.getActionCommand();
-      if (actionCmd.equalsIgnoreCase(QUIT_TXT)) {
+      if (actionCmd.equalsIgnoreCase("quitMenuItem")) {
         frame.setVisible(false);
-      } else if (actionCmd.equalsIgnoreCase(ABOUT_TXT)) {
+      } else if (actionCmd.equalsIgnoreCase("aboutMenuItem")) {
         showAbout();
+      } else if (actionCmd.equalsIgnoreCase("feedbackMenuItem")) {
+        showFeedback();
       }
     }
-
   }
 
   public abstract void showAbout();
-
+  public abstract void showFeedback();
 }
