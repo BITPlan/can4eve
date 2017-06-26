@@ -327,7 +327,7 @@ public class TestELM327 extends TestOBDII {
     if (debug)
       debugArg = "--debug";
     String args[] = { debugArg, "--host=" + host, "--port=" + port,
-        "--display=Swing", limit };
+       "--monitor", "--display=Swing", limit };
     int exitCode = obdMain.maininstance(args);
     assertEquals(0, exitCode);
   }
@@ -342,7 +342,7 @@ public class TestELM327 extends TestOBDII {
     File logRoot = new File("/tmp/Ion");
     logRoot.mkdirs();
     String args[] = { "--host=localhost", "--port=" + ElmSimulator.DEFAULT_PORT,
-        "--display=Swing", limit, "--log=" + logRoot.getAbsolutePath() };
+       "--monitor", "--display=Swing", limit, "--log=" + logRoot.getAbsolutePath() };
     obdMain.maininstance(args);
   }
 

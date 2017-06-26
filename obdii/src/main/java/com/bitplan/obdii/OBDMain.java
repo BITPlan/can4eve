@@ -172,6 +172,7 @@ public class OBDMain extends Main {
         if (this.display instanceof SwingDisplay) {
           SwingDisplay sd = (SwingDisplay) display;
           display.show();
+          sd.waitOpen();
           sd.waitClose();
         } else {
           showHelp();

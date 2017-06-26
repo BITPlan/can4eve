@@ -55,30 +55,31 @@ import net.miginfocom.swing.MigLayout;
  * @author wf
  *
  */
-public abstract class SwingDisplay implements Display,ActionListener {
+public abstract class SwingDisplay implements Display, ActionListener {
   public static boolean debug = false;
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii");
   String title;
   JFrame frame;
-  private List<JPanel> dataPanels=new ArrayList<JPanel>();
+  private List<JPanel> dataPanels = new ArrayList<JPanel>();
   private JPanel buttonPanel;
   MigLayout layout;
   Map<String, SwingLabelField> fieldMap = new HashMap<String, SwingLabelField>();
-  public List<SwingLabelField> fields=new ArrayList<SwingLabelField>();
+  public List<SwingLabelField> fields = new ArrayList<SwingLabelField>();
   JPanel mainPanel;
   ContainerPanel historyPanel;
   ContainerPanel cellTemperaturPanel;
   ContainerPanel cellVoltagePanel;
   protected JTabbedPane tabbedPane;
-  
+
   public static final String FILE_TXT = "fileMenu";
-  public static final String QUIT_TXT="quitMenuItem";
+  public static final String QUIT_TXT = "quitMenuItem";
   private static final String HELP_TXT = "helpMenu";
   private static final String ABOUT_TXT = "aboutMenuItem";
   private static final String MENU_TXT = "Menu";
-  
+
   /**
    * a container for a panel to be exchanged
+   * 
    * @author wf
    *
    */
@@ -86,9 +87,10 @@ public abstract class SwingDisplay implements Display,ActionListener {
     String title;
     JPanel containerPanel;
     JPanel contentPanel;
-    
+
     /**
      * update the content of this Panel
+     * 
      * @param panel
      */
     public void updatePanel(JPanel panel) {
@@ -104,6 +106,7 @@ public abstract class SwingDisplay implements Display,ActionListener {
 
   /**
    * add a data Panel
+   * 
    * @return
    */
   public JScrollPane addDataPanel() {
@@ -115,7 +118,7 @@ public abstract class SwingDisplay implements Display,ActionListener {
     dataPanels.add(dataPanel);
     return scrollPane;
   }
-  
+
   /**
    * display the display
    * 
@@ -125,29 +128,30 @@ public abstract class SwingDisplay implements Display,ActionListener {
   public SwingDisplay(String title, String localeName) {
     Translator.initialize(localeName);
     this.title = title;
-    tabbedPane=new JTabbedPane();
-   
+    tabbedPane = new JTabbedPane();
+
     mainPanel = new JPanel(new MigLayout("wrap 2"));
-    buttonPanel=new JPanel();
+    buttonPanel = new JPanel();
     JScrollPane scrollPane = addDataPanel();
-    mainPanel.add(buttonPanel,"span 2");
+    mainPanel.add(buttonPanel, "span 2");
     mainPanel.add(scrollPane);
-    addTab("data"+dataPanels.size(), mainPanel);
-    this.historyPanel=addContainerPanel("history");
-    this.cellTemperaturPanel=addContainerPanel("cellTemperature");
-    this.cellVoltagePanel=addContainerPanel("cellVoltage");
+    addTab("data" + dataPanels.size(), mainPanel);
+    this.historyPanel = addContainerPanel("history");
+    this.cellTemperaturPanel = addContainerPanel("cellTemperature");
+    this.cellVoltagePanel = addContainerPanel("cellVoltage");
   }
 
   /**
    * add a ContainerPanel with the given titel
+   * 
    * @param title
    * @return the ContainerPanel
    */
   private ContainerPanel addContainerPanel(String title) {
-    ContainerPanel cPanel=new ContainerPanel();
-    cPanel.title=title;
-    cPanel.contentPanel=new JPanel();
-    cPanel.containerPanel=new JPanel();
+    ContainerPanel cPanel = new ContainerPanel();
+    cPanel.title = title;
+    cPanel.contentPanel = new JPanel();
+    cPanel.containerPanel = new JPanel();
     cPanel.containerPanel.add(cPanel.contentPanel);
     addTab(title, cPanel.containerPanel);
     return cPanel;
@@ -271,11 +275,11 @@ public abstract class SwingDisplay implements Display,ActionListener {
       LOGGER.log(Level.INFO, "Adding field " + lf.title);
     fields.add(lf);
     fieldMap.put(lf.title, lf);
-    JPanel dataPanel = dataPanels.get(dataPanels.size()-1);
-    if (dataPanel.getComponents().length>27) {
+    JPanel dataPanel = dataPanels.get(dataPanels.size() - 1);
+    if (dataPanel.getComponents().length > 27) {
       this.addDataPanel();
-      dataPanel = dataPanels.get(dataPanels.size()-1);
-      addTab("data"+dataPanels.size(), dataPanel);
+      dataPanel = dataPanels.get(dataPanels.size() - 1);
+      addTab("data" + dataPanels.size(), dataPanel);
     }
     dataPanel.add(lf.label, migWidth(lf.labelSize));
     dataPanel.add(lf.field, migWidth(lf.fieldSize));
@@ -284,11 +288,12 @@ public abstract class SwingDisplay implements Display,ActionListener {
 
   /**
    * add the panel with the given title to the tabbed pane
+   * 
    * @param title
    * @param panel
    */
   private void addTab(String title, JPanel panel) {
-    tabbedPane.add(title,panel);
+    tabbedPane.add(title, panel);
   }
 
   /**
@@ -302,17 +307,18 @@ public abstract class SwingDisplay implements Display,ActionListener {
     frame.getContentPane().add(tabbedPane);
     frame.pack();
     Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-    Dimension frameDim=(Dimension) dim.clone();
-    frameDim.height=480;
+    Dimension frameDim = (Dimension) dim.clone();
+    frameDim.height = 480;
     frame.setMaximumSize(frameDim);
     frame.setPreferredSize(frameDim);
     frame.setLocation(dim.width / 2 - frame.getSize().width / 2,
         dim.height / 2 - frame.getSize().height / 2);
     frame.setVisible(true);
   }
-  
+
   /**
    * create a Menu
+   * 
    * @param title
    * @param vk
    * @param description
@@ -324,9 +330,10 @@ public abstract class SwingDisplay implements Display,ActionListener {
     menu.getAccessibleContext().setAccessibleDescription(description);
     return menu;
   }
-  
+
   /**
    * add the given menu item
+   * 
    * @param menu
    * @param title
    * @param vk
@@ -334,27 +341,30 @@ public abstract class SwingDisplay implements Display,ActionListener {
    * @param actionListener
    * @return
    */
-  protected JMenuItem addMenuItem(JMenu menu,String title, int vk, String description,ActionListener actionListener) {
-    JMenuItem menuItem = new JMenuItem(title,vk);
+  protected JMenuItem addMenuItem(JMenu menu, String title, int vk,
+      String description, ActionListener actionListener) {
+    JMenuItem menuItem = new JMenuItem(title, vk);
     menuItem.getAccessibleContext().setAccessibleDescription(description);
     menuItem.addActionListener(actionListener);
     menu.add(menuItem);
     return menuItem;
   }
-  
+
   /**
    * create an internationalized menu
+   * 
    * @param i18nTxt
    * @param vk
    * @return
    */
   private JMenu createMenuI18n(String i18nTxt, int vk) {
-    String title=Translator.translate(i18nTxt);
-    return createMenu(title,vk,title+" "+Translator.translate(MENU_TXT));
+    String title = Translator.translate(i18nTxt);
+    return createMenu(title, vk, title + " " + Translator.translate(MENU_TXT));
   }
-  
+
   /**
    * add an internationalized menu item
+   * 
    * @param filemenu
    * @param i18nTxt
    * @param vk
@@ -362,27 +372,26 @@ public abstract class SwingDisplay implements Display,ActionListener {
    */
   private JMenuItem addMenuItemI18n(JMenu menu, String i18nTxt, int vk,
       ActionListener actionListener) {
-    String title=Translator.translate(i18nTxt);
-    JMenuItem menuItem = this.addMenuItem(menu, title, vk, title, actionListener);
+    String title = Translator.translate(i18nTxt);
+    JMenuItem menuItem = this.addMenuItem(menu, title, vk, title,
+        actionListener);
     menuItem.setActionCommand(i18nTxt);
     return menuItem;
   }
 
-
   private JMenuBar createMenuBar() {
-    //Create the menu bar.
+    // Create the menu bar.
     JMenuBar menuBar = new JMenuBar();
-   
-    //Build the file menu.
-    JMenu filemenu=createMenuI18n(FILE_TXT,KeyEvent.VK_F);
-    this.addMenuItemI18n(filemenu,QUIT_TXT, KeyEvent.VK_Q, this);
-    JMenu helpmenu=createMenuI18n(HELP_TXT,KeyEvent.VK_H);
-    this.addMenuItemI18n(helpmenu, ABOUT_TXT, KeyEvent.VK_A,this);
+
+    // Build the file menu.
+    JMenu filemenu = createMenuI18n(FILE_TXT, KeyEvent.VK_F);
+    this.addMenuItemI18n(filemenu, QUIT_TXT, KeyEvent.VK_Q, this);
+    JMenu helpmenu = createMenuI18n(HELP_TXT, KeyEvent.VK_H);
+    this.addMenuItemI18n(helpmenu, ABOUT_TXT, KeyEvent.VK_A, this);
     menuBar.add(filemenu);
     menuBar.add(helpmenu);
     return menuBar;
   }
-
 
   /**
    * show the display
@@ -409,24 +418,35 @@ public abstract class SwingDisplay implements Display,ActionListener {
    * 
    * @throws InterruptedException
    */
+  public void waitStatus(boolean open) throws InterruptedException {
+    int sleep = 1000 / 50; // human eye reaction time
+    if (open)
+      while ((frame == null) || (!frame.isVisible())) {
+        Thread.sleep(sleep);
+      }
+    else
+      while (frame != null && frame.isVisible()) {
+        Thread.sleep(sleep);
+      }
+  }
+  
+  public void waitOpen() throws InterruptedException {
+    waitStatus(true);
+  }
+  
   public void waitClose() throws InterruptedException {
-    int sleep=1000/50; // human eye reaction time
-    while ((frame==null) || (!frame.isVisible())) {
-      Thread.sleep(sleep);
-    }
-    while (frame != null && frame.isVisible()) {
-      Thread.sleep(sleep);
-    }
+    waitStatus(false);
   }
 
   /**
    * add a button with the given name
+   * 
    * @param name
-   * @param tripletDisplay 
+   * @param tripletDisplay
    * @return
    */
   public JButton addButton(String name, ActionListener actionListener) {
-    JButton button=new JButton(name);
+    JButton button = new JButton(name);
     button.setName(name);
     button.addActionListener(actionListener);
     buttonPanel.add(button);
@@ -437,17 +457,17 @@ public abstract class SwingDisplay implements Display,ActionListener {
   public void actionPerformed(ActionEvent e) {
     Object source = e.getSource();
     if (source instanceof JMenuItem) {
-      JMenuItem menuItem=(JMenuItem)source;
-      String actionCmd=menuItem.getActionCommand();
+      JMenuItem menuItem = (JMenuItem) source;
+      String actionCmd = menuItem.getActionCommand();
       if (actionCmd.equalsIgnoreCase(QUIT_TXT)) {
         frame.setVisible(false);
-      } else  if (actionCmd.equalsIgnoreCase(ABOUT_TXT)) {
+      } else if (actionCmd.equalsIgnoreCase(ABOUT_TXT)) {
         showAbout();
       }
     }
-    
+
   }
-  
+
   public abstract void showAbout();
 
 }
