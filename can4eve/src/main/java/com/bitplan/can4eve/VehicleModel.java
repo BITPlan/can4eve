@@ -20,6 +20,11 @@
  */
 package com.bitplan.can4eve;
 
+/**
+ * Vehicle Model
+ * @author wf
+ *
+ */
 public class VehicleModel {
   String maker;
   String model;

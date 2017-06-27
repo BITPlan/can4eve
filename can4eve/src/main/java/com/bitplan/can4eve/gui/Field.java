@@ -30,6 +30,8 @@ public class Field {
   String label;
   String title;
   String fieldKind;
+  String type;
+  String choices;
   String format;
   int labelSize;
   int fieldSize;
@@ -44,6 +46,18 @@ public class Field {
   }
   public void setFieldKind(String fieldKind) {
     this.fieldKind = fieldKind;
+  }
+  public String getType() {
+    return type;
+  }
+  public void setType(String type) {
+    this.type = type;
+  }
+  public String getChoices() {
+    return choices;
+  }
+  public void setChoices(String choices) {
+    this.choices = choices;
   }
   public String getId() {
     return id;

@@ -31,6 +31,7 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Control;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -62,19 +63,25 @@ public class GenericDialog {
    * @param ypos
    * @return - the Map of fields
    */
-  public static Map<String, TextField> getFields(GridPane grid, Form form,
+  public static Map<String, Control> getFields(GridPane grid, Form form,
       int ypos) {
-    Map<String, TextField> textFields = new HashMap<String, TextField>();
+    Map<String, Control> controls = new HashMap<String, Control>();
     for (com.bitplan.can4eve.gui.Field field : form.getFields()) {
       if (field.getFieldKind() == null) {
-        TextField tfield = new TextField();
-        tfield.setPromptText(field.getTitle());
+        Control control=null;
+        if (field.getType()==null) {
+          TextField tfield = new TextField();
+          tfield.setPromptText(field.getTitle());
+          control=tfield;
+        }
         grid.add(new Label(field.getTitle() + ":"), 0, ypos);
-        grid.add(tfield, 1, ypos++);
-        textFields.put(field.getId(), tfield);
+        if (control!=null) {
+          grid.add(control, 1, ypos++);
+          controls.put(field.getId(), control);
+        }
       }
     }
-    return textFields;
+    return controls;
   }
 
   /**
@@ -82,9 +89,9 @@ public class GenericDialog {
    * 
    * @return
    */
-  public Optional<Map<String, String>> show() {
+  public Optional<Map<String,Object>> show() {
     // Create the custom dialog.
-    Dialog<Map<String, String>> dialog = new Dialog<>();
+    Dialog<Map<String, Object>> dialog = new Dialog<>();
     dialog.setTitle(form.getTitle());
     dialog.setHeaderText(form.getHeaderText());
 
@@ -95,8 +102,8 @@ public class GenericDialog {
       dialog.setGraphic(new ImageView(iconUrl.toString()));
 
     // Set the button types.
-    ButtonType loginButtonType = new ButtonType("Ok", ButtonData.OK_DONE);
-    dialog.getDialogPane().getButtonTypes().addAll(loginButtonType,
+    ButtonType okButton = new ButtonType("Ok", ButtonData.OK_DONE);
+    dialog.getDialogPane().getButtonTypes().addAll(okButton,
         ButtonType.CANCEL);
 
     // Create labels and fields.
@@ -106,29 +113,37 @@ public class GenericDialog {
     grid.setPadding(new Insets(20, 150, 10, 10));
 
     int ypos = 0;
-    Map<String, TextField> textFields = getFields(grid, form, ypos);
+    Map<String, Control> controls = getFields(grid, form, ypos);
     dialog.getDialogPane().setContent(grid);
 
     // Request focus on the first field by default.
-    final TextField focusField = textFields
+    final Control focusField = controls
         .get(form.getFields().get(0).getId());
     Platform.runLater(() -> focusField.requestFocus());
 
     // Convert the result to a username-password-pair when the login button is
     // clicked.
     dialog.setResultConverter(dialogButton -> {
-      if (dialogButton == loginButtonType) {
-        Map<String, String> result = new HashMap<String, String>();
+      if (dialogButton == okButton) {
+        Map<String, Object> result = new HashMap<String, Object>();
         for (com.bitplan.can4eve.gui.Field field : form.getFields()) {
-          TextField tfield = textFields.get(field.getId());
-          result.put(field.getId(), tfield.getText());
+          Control control = controls.get(field.getId());
+          result.put(field.getId(), getValue(control));
         }
         return result;
       }
       return null;
     });
 
-    Optional<Map<String, String>> result = dialog.showAndWait();
+    Optional<Map<String, Object>> result = dialog.showAndWait();
     return result;
+  }
+
+  private Object getValue(Control control) {
+    if (control instanceof TextField) {
+      TextField tfield=(TextField) control;
+      return tfield.getText();
+    }
+    return null;
   }
 }

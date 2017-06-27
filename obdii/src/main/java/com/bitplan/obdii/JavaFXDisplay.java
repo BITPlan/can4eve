@@ -48,6 +48,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Control;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -80,7 +81,7 @@ public class JavaFXDisplay extends Application
 
   private TabPane tabPane;
 
-  private Map<String, TextField> textFields;
+  private Map<String, Control> controls;
 
   public JavaFXDisplay(App app, SoftwareVersion softwareVersion) {
     new JFXPanel();
@@ -153,14 +154,15 @@ public class JavaFXDisplay extends Application
 
   @Override
   public void updateField(String title, Object value, int updateCount) {
-    TextField tfield = textFields.get(title);
-    if (tfield == null) {
+    Control control=controls.get(title);
+    if (control == null) {
       if (!title.startsWith("Raw"))
         LOGGER.log(Level.WARNING, "could not find field " + title);
     } else {
-      if (value != null) {
+      if (value != null && control instanceof TextField) {
         final String valueText = value.toString();
         // valueText+="("+updateCount+")";
+        TextField tfield = (TextField) control;
         Platform.runLater(() -> tfield.setText(valueText));
       }
     }
@@ -267,13 +269,13 @@ public class JavaFXDisplay extends Application
   private void setup(App app) {
     tabPane = new TabPane();
     tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
-    textFields = new HashMap<String, TextField>();
+    controls = new HashMap<String, Control>();
     Group mainGroup = app.getGroupById("mainGroup");
     for (Form form : mainGroup.getForms()) {
       Tab tab = new Tab();
       tab.setText(form.getTitle());
       GenericPanel panel = new GenericPanel(form);
-      textFields.putAll(panel.textFields);
+      controls.putAll(panel.controls);
       tab.setContent(panel);
       tabPane.getTabs().add(tab);
     }
@@ -293,11 +295,19 @@ public class JavaFXDisplay extends Application
         showFeedback();
       } else if ("preferencesMenuItem".equals(menuItem.getId())) {
         showPreferences();
+      } else if ("vehicleMenuItem".equals(menuItem.getId())) {
+        showVehicle();
       } else {
         LOGGER.log(Level.WARNING, "unhandled menu item " + menuItem.getId()
             + ":" + menuItem.getText());
       }
     }
+  }
+
+  private void showVehicle() {
+    GenericDialog vehicleDialog = new GenericDialog(
+        app.getFormById("preferencesGroup", "vehicleForm"));
+    Optional<Map<String, Object>> result = vehicleDialog.show();
   }
 
   /**
@@ -336,7 +346,7 @@ public class JavaFXDisplay extends Application
      */
     GenericDialog preferencesDialog = new GenericDialog(
         app.getFormById("preferencesGroup", "preferencesForm"));
-    Optional<Map<String, String>> result = preferencesDialog.show();
+    Optional<Map<String, Object>> result = preferencesDialog.show();
   }
 
   /**

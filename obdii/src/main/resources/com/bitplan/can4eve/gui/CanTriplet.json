@@ -4,36 +4,88 @@
 	"groups": [{
 			"id": "preferencesGroup",
 			"forms": [{
-				"title": "Preferences",
-				"id": "preferencesForm",
-				"icon": "settings",
-				"headerText": "choose your Preferences",
-				"fields": [{
-						"title": "hostname",
-						"format": "%s",
-						"labelSize": 10,
-						"fieldSize": 40
-					},
-					{
-						"title": "port",
-						"format": "%4d",
-						"labelSize": 10,
-						"fieldSize": 40
-					},
-					{
-						"title": "serialDevice",
-						"format": "%s",
-						"labelSize": 10,
-						"fieldSize": 40
-					},
-					{
-						"title": "baudRate",
-						"format": "%5d",
-						"labelSize": 10,
-						"fieldSize": 40
-					}
-				]
-			}]
+					"title": "Preferences",
+					"id": "preferencesForm",
+					"icon": "settings",
+					"headerText": "choose your Preferences",
+					"fields": [{
+							"title": "hostname",
+							"format": "%s",
+							"labelSize": 10,
+							"fieldSize": 40
+						},
+						{
+							"title": "port",
+							"format": "%4d",
+							"labelSize": 10,
+							"fieldSize": 40
+						},
+						{
+							"title": "serialDevice",
+							"format": "%s",
+							"labelSize": 10,
+							"fieldSize": 40,
+							"type": "File"
+						},
+						{
+							"title": "baudRate",
+							"format": "%5d",
+							"labelSize": 10,
+							"fieldSize": 40
+						},
+						{
+							"title": "log",
+							"format": "%s",
+							"labelSize": 10,
+							"fieldSize": 40,
+							"type": "Boolean"
+						},
+						{
+							"title": "logFile",
+							"format": "%s",
+							"labelSize": 10,
+							"fieldSize": 40,
+							"type": "File"
+						}
+					]
+				},
+				{
+					"title": "Vehicle",
+					"id": "vehicleForm",
+					"icon": "vehicle",
+					"headerText": "vehicle Details",
+					"fields": [{
+							"title": "nickName",
+							"format": "%s",
+							"labelSize": 10,
+							"fieldSize": 40
+						},
+						{
+							"title": "VIN",
+							"format": "%s",
+							"labelSize": 10,
+							"fieldSize": 40
+						},
+						{
+							"title": "group",
+							"format": "%s",
+							"labelSize": 10,
+							"fieldSize": 40,
+							"type": "Choice",
+							"choices": "Triplet"
+						},
+						{
+							"title": "model",
+							"format": "%s",
+							"labelSize": 10,
+							"fieldSize": 40,
+							"type": "Choice",
+							"choices": "Mitsubishi i-Miev,Citroën C-Zero,Peugeot Ion"
+						}
+
+					]
+				}
+			]
 		},
 		{
 			"id": "mainGroup",
@@ -280,27 +332,24 @@
 				{
 					"title": "Cell Temp",
 					"fields": [{
-							"title": "Cell Temperature",
-							"fieldKind": "Plot"
-						}
-					]
+						"title": "Cell Temperature",
+						"fieldKind": "Plot"
+					}]
 				},
 				{
 					"title": "Cell Voltage",
 					"fields": [{
-							"title": "Cell Voltage",
-							"fieldKind": "Plot"
-						}
-					]
+						"title": "Cell Voltage",
+						"fieldKind": "Plot"
+					}]
 				},
 				{
 					"title": "history",
 					"fields": [{
-							"title": "history",
-							"fieldKind": "Plot"
-						}
-					]
-				}	
+						"title": "history",
+						"fieldKind": "Plot"
+					}]
+				}
 			]
 		}
 	],
@@ -318,6 +367,17 @@
 						"id": "quitMenuItem",
 						"title": "Quit",
 						"shortCut": "Q"
+					}
+				]
+			},
+			{
+				"id": "vehicleMenu",
+				"title": "Vehicle",
+				"shortCut": "V",
+				"menuItems": [{
+						"id": "vehicleMenuItem",
+						"title": "Details",
+						"shortCut": "D"
 					}
 				]
 			},

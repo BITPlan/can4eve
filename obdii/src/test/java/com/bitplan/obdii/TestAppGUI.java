@@ -38,9 +38,9 @@ public class TestAppGUI {
   public void testAppGUI() throws Exception {
     App app=App.getInstance();
     assertNotNull(app);
-    assertEquals(2,app.getMainMenu().getSubMenus().size());
+    assertEquals(3,app.getMainMenu().getSubMenus().size());
     assertEquals(2,app.getGroups().size());
-    int [] expected={1,9};
+    int [] expected={2,9};
     int i=0;
     for (Group group:app.getGroups()) {
       assertEquals(expected[i++],group.getForms().size());
