@@ -123,6 +123,7 @@ public class TestAppGUI {
   }
 
   // Swing Version of things
+  /*
   @Test
   public void testLineChart() throws Exception {
     List<CANValue<?>> plotValues = this.getPlotValues();
@@ -136,7 +137,7 @@ public class TestAppGUI {
     plotDemo.waitOpen();
     Thread.sleep(5000);
     plotDemo.frame.setVisible(false);
-  }
+  }*/
 
   @Test
   public void testLineChartJavaFx() throws Exception {

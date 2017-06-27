@@ -30,11 +30,13 @@ import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.CANValue.IntegerValue;
 import com.bitplan.can4eve.SoftwareVersion;
 import com.bitplan.can4eve.gui.App;
+import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
 import com.bitplan.obdii.javafx.JavaFXDisplay;
 
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import javafx.scene.control.Tab;
+import javafx.scene.layout.Region;
 
 /**
  * a Java FX based display for triplet vehicles
@@ -67,6 +69,17 @@ public class JFXTripletDisplay extends JavaFXDisplay {
       tab.setContent(swingNode);
     }
   }
+  
+  /**
+   * update the given tab with the given region
+   * @param tab
+   * @param region
+   */
+  private void updateTab(Tab tab, Region region) {
+    if (region!=null) {
+      tab.setContent(region);
+    }
+  }
 
   /**
    * update the history
@@ -84,9 +97,9 @@ public class JFXTripletDisplay extends JavaFXDisplay {
       List<CANValue<?>> plotValues = new ArrayList<CANValue<?>>();
       plotValues.add(xValue);
       plotValues.add(yValue);
-      final CANValueHistoryPlot valuePlot = new CANValueHistoryPlot(
+      final JFXCanValueHistoryPlot valuePlot = new JFXCanValueHistoryPlot(
           title, xTitle, yTitle, plotValues);
-      Platform.runLater(() -> updateTab(activeTab, valuePlot.getPanel()));
+      Platform.runLater(() -> updateTab(activeTab, valuePlot.getLineChart()));
     }
   }
 
