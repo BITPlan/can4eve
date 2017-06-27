@@ -22,6 +22,8 @@ package com.bitplan.elm327;
 
 import org.junit.Test;
 
+import com.bitplan.elm327.Config.ConfigMode;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -51,10 +53,10 @@ public class TestConnection {
    */
   public Connection getTestConnection() throws FileNotFoundException {
     if (testConnection == null) {
-      Config config = Config.getInstance();
+      Config config = Config.getInstance(ConfigMode.Test);
       SerialImpl con = new SerialImpl();
       con.setLog(new LogImpl());
-      con.connect(config.serialDevice, config.serialBaud);
+      con.connect(config.serialDevice, config.baudRate);
       con.start();
       testConnection = con;
     }
@@ -63,7 +65,7 @@ public class TestConnection {
 
   @Test
   public void testConfig() throws FileNotFoundException {
-    if (Config.getInstance() == null) {
+    if (Config.getInstance(ConfigMode.Test) == null) {
       System.err.println(
           "Warning: Device configuration for tests missing - only tests with simulator will work!");
       System.err.println(
@@ -71,10 +73,10 @@ public class TestConnection {
       System.err.println("for how to configure the test environment.");
       System.err.println();
       System.err.println("you might want to create a file "
-          + Config.getConfigFile().getAbsolutePath());
+          + Config.getConfigFile(ConfigMode.Test).getAbsolutePath());
       System.err.println("with json content like the following example");
       Config config = new Config();
-      config.serialBaud = 115200;
+      config.baudRate = 115200;
       config.serialDevice = "cu.usbserial-113010822821";
       System.err.println(config.asJson());
     }
@@ -82,7 +84,7 @@ public class TestConnection {
 
   @Test
   public void testConnection() throws IOException, InterruptedException {
-    Config config = Config.getInstance();
+    Config config = Config.getInstance(ConfigMode.Test);
     if (config != null) {
       Connection con = getTestConnection();
       Packet p = con.send("AT @1");
@@ -98,7 +100,7 @@ public class TestConnection {
 
   @Test
   public void testELM327() throws Exception {
-    Config config = Config.getInstance();
+    Config config = Config.getInstance(ConfigMode.Test);
     if (config != null) {
       ELM327 elm = new ELM327Impl();
       elm.setCon(getTestConnection());
@@ -114,7 +116,7 @@ public class TestConnection {
 
   @Test
   public void testServer() throws Exception {
-    Config config = Config.getInstance();
+    Config config = Config.getInstance(ConfigMode.Test);
     if (config != null) {
       ConnectionForwarder forwarder = new ConnectionForwarder();
       ELM327 elm = new ELM327Impl();
@@ -145,7 +147,7 @@ public class TestConnection {
    */
   public ELM327 getWifi(Config config) throws Exception {
     // V-Link Wifi socket
-    Socket clientSocket = new Socket(config.ip, config.port);
+    Socket clientSocket = new Socket(config.hostname, config.port);
     ELM327 elm = new ELM327Impl();
     Connection con = elm.getCon();
     con.setLog(new LogImpl());
@@ -160,8 +162,8 @@ public class TestConnection {
    */
   @Test
   public void testVLink() throws Exception {
-    Config config = Config.getInstance();
-    if (config != null && config.ip != null) {
+    Config config = Config.getInstance(ConfigMode.Test);
+    if (config != null && config.hostname != null) {
       ELM327 elm = getWifi(config);
       System.out.println(String.format(
           "id: %s\ndescription:%s \ndevice id: %s\nhardware id: %s\nfirmware id:%s\nvoltage:%s\n",

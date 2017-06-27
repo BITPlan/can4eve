@@ -4,12 +4,19 @@
 	"groups": [{
 			"id": "preferencesGroup",
 			"forms": [{
-					"title": "Preferences",
-					"id": "preferencesForm",
+					"title": "Settings",
+					"id": "settingsForm",
 					"icon": "settings",
-					"headerText": "choose your Preferences",
+					"headerText": "choose your Settings",
 					"fields": [{
+							"title": "deviceType",
+							"hint": "type of OBDII connector",
+							"format": "%s",
+							"type": "Choice",
+							"choices": "USB,Bluetooth,Network,Simulator"
+					  },{
 							"title": "hostname",
+							"hint": "hostname or IP address",
 							"format": "%s",
 							"labelSize": 10,
 							"fieldSize": 40
@@ -17,8 +24,7 @@
 						{
 							"title": "port",
 							"format": "%4d",
-							"labelSize": 10,
-							"fieldSize": 40
+							"type": "Integer"
 						},
 						{
 							"title": "serialDevice",
@@ -30,22 +36,26 @@
 						{
 							"title": "baudRate",
 							"format": "%5d",
-							"labelSize": 10,
-							"fieldSize": 40
+							"type": "Integer"
 						},
 						{
-							"title": "log",
+							"title": "timeout",
+							"hint": "timeout in milli seconds",
+							"format": "%5d",
+							"type": "Integer"
+						},
+						{
+							"title": "debug",
+							"hint": "display debugging information for the device",
 							"format": "%s",
 							"labelSize": 10,
 							"fieldSize": 40,
 							"type": "Boolean"
 						},
 						{
-							"title": "logFile",
-							"format": "%s",
-							"labelSize": 10,
-							"fieldSize": 40,
-							"type": "File"
+							"title": "logPrefix",
+							"hint": "the prefix to use for logfiles",
+							"format": "%s"
 						}
 					]
 				},
@@ -359,9 +369,9 @@
 				"title": "File",
 				"shortCut": "F",
 				"menuItems": [{
-						"id": "preferencesMenuItem",
-						"title": "Preferences",
-						"shortCut": "P"
+						"id": "settingsMenuItem",
+						"title": "Settings",
+						"shortCut": "S"
 					},
 					{
 						"id": "quitMenuItem",

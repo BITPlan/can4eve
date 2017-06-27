@@ -32,6 +32,7 @@ import com.bitplan.can4eve.gui.swing.Translator;
 import com.bitplan.elm327.Connection;
 import com.bitplan.elm327.LogImpl;
 import com.bitplan.obdii.elm327.ELM327;
+import com.bitplan.obdii.javafx.JavaFXDisplay;
 import com.bitplan.triplet.OBDTriplet;
 
 /**

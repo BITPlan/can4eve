@@ -28,6 +28,7 @@ package com.bitplan.can4eve.gui;
 public class Field {
   String id;
   String label;
+  String hint;
   String title;
   String fieldKind;
   String type;
@@ -70,6 +71,12 @@ public class Field {
   }
   public void setLabel(String label) {
     this.label = label;
+  }
+  public String getHint() {
+    return hint;
+  }
+  public void setHint(String hint) {
+    this.hint = hint;
   }
   public int getLabelSize() {
     return labelSize;

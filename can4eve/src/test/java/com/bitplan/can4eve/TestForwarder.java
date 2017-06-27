@@ -25,6 +25,7 @@ import java.io.FileNotFoundException;
 import org.junit.Test;
 
 import com.bitplan.elm327.Config;
+import com.bitplan.elm327.Config.ConfigMode;
 
 /**
  * Created by wf on 05.06.17.
@@ -33,7 +34,7 @@ import com.bitplan.elm327.Config;
 public class TestForwarder {
   @Test
   public void testCan4EveForwarding() throws FileNotFoundException {
-    Config config = Config.getInstance();
+    Config config = Config.getInstance(ConfigMode.Test);
     if (config != null) {
       Can4eve can4eve = new Can4eve();
       String args[] = { "-f", "-d", "--device", config.getSerialDevice() };
@@ -43,7 +44,7 @@ public class TestForwarder {
   
   @Test
   public void testOBDIITester() throws FileNotFoundException {
-    Config config = Config.getInstance();
+    Config config = Config.getInstance(ConfigMode.Test);
     if (config != null) {
       Can4eve can4eve = new Can4eve();
       String args[] = { "-t", "-d", "--device", config.getSerialDevice() };

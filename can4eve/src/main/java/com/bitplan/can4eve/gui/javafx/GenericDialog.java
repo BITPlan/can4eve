@@ -31,12 +31,10 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Control;
 import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
 
 /**
  * Generic Dialog
@@ -45,13 +43,18 @@ import javafx.scene.layout.GridPane;
  */
 public class GenericDialog {
   private Form form;
+  private Stage stage;
+  protected Map<String, GenericControl> controls;
+  private Dialog<Map<String, Object>> dialog;
+  private ButtonType okButtonType;
 
   /**
    * construct me from the given form description
    * 
    * @param form
    */
-  public GenericDialog(Form form) {
+  public GenericDialog(Stage stage, Form form) {
+    this.stage = stage;
     this.form = form;
   }
 
@@ -63,35 +66,31 @@ public class GenericDialog {
    * @param ypos
    * @return - the Map of fields
    */
-  public static Map<String, Control> getFields(GridPane grid, Form form,
-      int ypos) {
-    Map<String, Control> controls = new HashMap<String, Control>();
+  public static Map<String, GenericControl> getFields(Stage stage,
+      GridPane grid, Form form, int ypos) {
+    Map<String, GenericControl> controls = new HashMap<String, GenericControl>();
     for (com.bitplan.can4eve.gui.Field field : form.getFields()) {
-      if (field.getFieldKind() == null) {
-        Control control=null;
-        if (field.getType()==null) {
-          TextField tfield = new TextField();
-          tfield.setPromptText(field.getTitle());
-          control=tfield;
-        }
-        grid.add(new Label(field.getTitle() + ":"), 0, ypos);
-        if (control!=null) {
-          grid.add(control, 1, ypos++);
-          controls.put(field.getId(), control);
-        }
+      GenericControl gcontrol = GenericControl.create(stage, field);
+      grid.add(gcontrol.label, 0, ypos);
+      if (gcontrol.control != null) {
+        grid.add(gcontrol.control, 1, ypos);
       }
+      if (gcontrol.button != null) {
+        grid.add(gcontrol.button, 2, ypos);
+      }
+      controls.put(field.getId(), gcontrol);
+      ypos++;
     }
     return controls;
   }
 
   /**
-   * show this form
-   * 
-   * @return
+   * setup the control according to the given valueMap
+   * @param valueMap
    */
-  public Optional<Map<String,Object>> show() {
+  public void setup(Map<String, Object> valueMap) {
     // Create the custom dialog.
-    Dialog<Map<String, Object>> dialog = new Dialog<>();
+    dialog = new Dialog<Map<String, Object>>();
     dialog.setTitle(form.getTitle());
     dialog.setHeaderText(form.getHeaderText());
 
@@ -102,9 +101,8 @@ public class GenericDialog {
       dialog.setGraphic(new ImageView(iconUrl.toString()));
 
     // Set the button types.
-    ButtonType okButton = new ButtonType("Ok", ButtonData.OK_DONE);
-    dialog.getDialogPane().getButtonTypes().addAll(okButton,
-        ButtonType.CANCEL);
+    okButtonType = new ButtonType("Ok", ButtonData.OK_DONE);
+    dialog.getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
 
     // Create labels and fields.
     GridPane grid = new GridPane();
@@ -113,22 +111,36 @@ public class GenericDialog {
     grid.setPadding(new Insets(20, 150, 10, 10));
 
     int ypos = 0;
-    Map<String, Control> controls = getFields(grid, form, ypos);
+    controls = getFields(stage, grid, form, ypos);
     dialog.getDialogPane().setContent(grid);
+    if (valueMap != null) {
+      for (GenericControl control : controls.values()) {
+        control.setValue(valueMap.get(control.field.getId()));
+      }
+    }
+  }
+
+  /**
+   * show this form with the given values
+   * 
+   * @return
+   */
+  public Optional<Map<String, Object>> show(Map<String, Object> valueMap) {
+    setup(valueMap);
 
     // Request focus on the first field by default.
-    final Control focusField = controls
+    final GenericControl focusField = controls
         .get(form.getFields().get(0).getId());
-    Platform.runLater(() -> focusField.requestFocus());
+    Platform.runLater(() -> focusField.control.requestFocus());
 
     // Convert the result to a username-password-pair when the login button is
     // clicked.
     dialog.setResultConverter(dialogButton -> {
-      if (dialogButton == okButton) {
+      if (dialogButton == okButtonType) {
         Map<String, Object> result = new HashMap<String, Object>();
         for (com.bitplan.can4eve.gui.Field field : form.getFields()) {
-          Control control = controls.get(field.getId());
-          result.put(field.getId(), getValue(control));
+          GenericControl gcontrol = controls.get(field.getId());
+          result.put(field.getId(), gcontrol.getValue());
         }
         return result;
       }
@@ -139,11 +151,13 @@ public class GenericDialog {
     return result;
   }
 
-  private Object getValue(Control control) {
-    if (control instanceof TextField) {
-      TextField tfield=(TextField) control;
-      return tfield.getText();
-    }
-    return null;
+  /**
+   * show me with no values predefined
+   * 
+   * @return - the map of new values
+   */
+  public Optional<Map<String, Object>> show() {
+    return show(null);
   }
+
 }

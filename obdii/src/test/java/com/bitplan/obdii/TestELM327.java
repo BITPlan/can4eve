@@ -48,12 +48,14 @@ import com.bitplan.can4eve.SoftwareVersion;
 import com.bitplan.can4eve.gui.App;
 import com.bitplan.can4eve.gui.swing.Translator;
 import com.bitplan.elm327.Config;
+import com.bitplan.elm327.Config.ConfigMode;
 import com.bitplan.elm327.Connection;
 import com.bitplan.elm327.LogImpl;
 import com.bitplan.elm327.Packet;
 import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.obdii.elm327.ELM327SimulatorConnection;
 import com.bitplan.obdii.elm327.ElmSimulator;
+import com.bitplan.obdii.javafx.JavaFXDisplay;
 import com.bitplan.triplet.OBDTriplet;
 
 import javafx.application.Platform;
@@ -87,7 +89,7 @@ public class TestELM327 extends TestOBDII {
    */
   public Socket getTestVehicleSocket(Config config)
       throws UnknownHostException, IOException {
-    Socket elmSocket = new Socket(config.getIp(), config.getPort());
+    Socket elmSocket = new Socket(config.getHostname(), config.getPort());
     return elmSocket;
   }
 
@@ -155,7 +157,7 @@ public class TestELM327 extends TestOBDII {
       obdTriplet.setElm327(getSimulation());
       obdTriplet.getElm327().getCon().setResponseHandler(obdTriplet);
     } else {
-      Config config = Config.getInstance();
+      Config config = Config.getInstance(ConfigMode.Test);
       elmSocket = getTestVehicleSocket(config);
       obdTriplet = new OBDTriplet(getVehicleGroup(), elmSocket, debug);
     }
@@ -422,8 +424,8 @@ public class TestELM327 extends TestOBDII {
     File logRoot = new File("src/test/data");
     File logFile = null;
     if (!simulated) {
-      Config config = Config.getInstance();
-      logFile = obdTriplet.logResponses(logRoot, config.getVehicleName());
+      Config config = Config.getInstance(ConfigMode.Test);
+      logFile = obdTriplet.logResponses(logRoot, config.getLogPrefix());
     }
     int frameLimit = 150;
     obdTriplet.STMMonitor(display, obdTriplet.getCANValues(), frameLimit);

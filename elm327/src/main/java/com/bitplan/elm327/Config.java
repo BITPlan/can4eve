@@ -23,6 +23,10 @@ package com.bitplan.elm327;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.io.FileUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -34,13 +38,18 @@ import com.google.gson.GsonBuilder;
  *
  */
 public class Config {
-  String serialDevice; // e.g. cu.usbserial-113010822821 on MacOSx
-  int serialBaud;      // e.g. 115200
-  String ip;           // e.g. 192.168.1.30
-  private String vehicleName;  // e.g. my Ion
-  int port;            // e.g. 35000
-  int timeout;         // e.g. 500 (for 1/2 sec)
-  
+  public enum ConfigMode {Test,Preferences}
+  public enum DeviceType {USB,Bluetooth,Network,Simulator}
+  DeviceType deviceType; // e.g. USB
+  String serialDevice;   // e.g. cu.usbserial-113010822821 on MacOSx
+  Integer baudRate;      // e.g. 115200
+  String hostname;       // e.g. 192.168.1.30
+  String logPrefix;      // e.g. my Ion
+  Integer port;          // e.g. 35000
+  Integer timeout;       // e.g. 500 (for 1/2 sec)
+  Boolean debug;         // e.g. true
+  private static Map<ConfigMode,Config> configs=new HashMap<ConfigMode,Config>();
+
   public String getSerialDevice() {
     return serialDevice;
   }
@@ -49,20 +58,20 @@ public class Config {
     this.serialDevice = serialDevice;
   }
 
-  public int getSerialBaud() {
-    return serialBaud;
+  public int getBaudRate() {
+    return baudRate;
   }
 
-  public void setSerialBaud(int serialBaud) {
-    this.serialBaud = serialBaud;
+  public void setBaudRate(int serialBaud) {
+    this.baudRate = serialBaud;
   }
 
-  public String getIp() {
-    return ip;
+  public String getHostname() {
+    return hostname;
   }
 
-  public void setIp(String ip) {
-    this.ip = ip;
+  public void setHostname(String hostname) {
+    this.hostname = hostname;
   }
 
   public int getPort() {
@@ -81,31 +90,22 @@ public class Config {
     this.timeout = timeout;
   }
 
-  public boolean isDebug() {
-    return debug;
-  }
-
   public void setDebug(boolean debug) {
     this.debug = debug;
   }
 
-  public String getVehicleName() {
-    return vehicleName;
+  public String getLogPrefix() {
+    return logPrefix;
   }
 
-  public void setVehicleName(String vehicleName) {
-    this.vehicleName = vehicleName;
+  public void setLogPrefix(String logPrefix) {
+    this.logPrefix = logPrefix;
   }
 
-  public static void setInstance(Config instance) {
-    Config.instance = instance;
-  }
-
-  boolean debug;       // e.g. true 
-  
-
-  static Config instance;
-
+  /**
+   * get the Gson
+   * @return
+   */
   public static Gson getGson() {
     GsonBuilder gsonBuilder = new GsonBuilder();
     // new GraphAdapterBuilder().addType(Pid.class).registerOn(gsonBuilder);
@@ -123,26 +123,81 @@ public class Config {
     return json;
   }
   
-  public static File getConfigFile() {
+  /**
+   * get the config file
+   * @param configMode 
+   * @return
+   */
+  public static File getConfigFile(ConfigMode configMode) {
     String home = System.getProperty("user.home");
-    String configFilename = home + "/.can4eve/testconfig.json";
+    String filename="preferences";
+    switch (configMode) {
+    case Test:
+      filename="testconfig";
+    default:
+      break;
+    }
+    String configFilename = home + "/.can4eve/"+filename+".json";
     File configFile = new File(configFilename);
     return configFile;
+  }
+  
+  /**
+   * save the settings
+   * @throws Exception
+   */
+  public void save(ConfigMode configMode) throws Exception {
+    File configFile=getConfigFile(configMode);
+    // create the config directory if it does not exist yet
+    if (!configFile.getParentFile().isDirectory())
+      configFile.getParentFile().mkdirs();
+    FileUtils.writeStringToFile(configFile, this.asJson(),"UTF-8");
   }
 
   /**
    * get the 
+   * @param configMode 
    * @return
    * @throws FileNotFoundException
    */
-  public static Config getInstance() throws FileNotFoundException {
+  public static Config getInstance(ConfigMode configMode) throws FileNotFoundException {
+    Config instance=configs.get(configMode);
     if (instance == null) {
-      File configFile=getConfigFile();
+      File configFile=getConfigFile(configMode);
       if (configFile.canRead()) {
         FileReader jsonReader = new FileReader(configFile);
         instance = getGson().fromJson(jsonReader, Config.class);
+        configs.put(configMode, instance);
       }
     }
     return instance;
+  }
+
+  /**
+   * get me as a map
+   * @return
+   */
+  @SuppressWarnings("unchecked")
+  public Map<String,Object> asMap() {
+    Map<String,Object> map=new HashMap<String,Object>();
+    map = (Map<String,Object>) getGson().fromJson(this.asJson(), map.getClass());
+    return map;
+  }
+
+  /**
+   * set my values from the given map
+   * @param map
+   */
+  public void fromMap(Map<String, Object> map) {
+    String dType=(String)map.get("deviceType");
+    if (dType!=null)
+      this.deviceType=DeviceType.valueOf(dType);
+    this.hostname=(String) map.get("hostname");
+    this.port=(Integer) map.get("port");
+    this.serialDevice=(String) map.get("serialDevice");
+    this.baudRate=(Integer) map.get("baudRate");
+    this.timeout=(Integer) map.get("timeout");
+    this.debug=(Boolean)map.get("debug");
+    this.logPrefix=(String) map.get("logPrefix");
   }
 }

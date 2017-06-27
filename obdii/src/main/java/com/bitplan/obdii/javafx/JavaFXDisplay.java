@@ -18,11 +18,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bitplan.obdii;
+package com.bitplan.obdii.javafx;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
 import java.util.logging.Level;
@@ -33,11 +34,18 @@ import com.bitplan.can4eve.SoftwareVersion;
 import com.bitplan.can4eve.gui.App;
 import com.bitplan.can4eve.gui.Form;
 import com.bitplan.can4eve.gui.Group;
+import com.bitplan.can4eve.gui.javafx.GenericControl;
 import com.bitplan.can4eve.gui.javafx.GenericDialog;
 import com.bitplan.can4eve.gui.javafx.GenericPanel;
 //import com.bitplan.can4eve.gui.javafx.LoginDialog;
 import com.bitplan.can4eve.gui.swing.JLink;
 import com.bitplan.can4eve.gui.swing.Translator;
+import com.bitplan.elm327.Config;
+import com.bitplan.elm327.Config.ConfigMode;
+import com.bitplan.obdii.CANValueDisplay;
+import com.bitplan.obdii.Display;
+import com.bitplan.obdii.ErrorHandler;
+import com.bitplan.obdii.LabelField;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -48,7 +56,6 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Control;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -56,7 +63,6 @@ import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
@@ -70,7 +76,7 @@ import javafx.stage.Stage;
  */
 public class JavaFXDisplay extends Application
     implements Display, CANValueDisplay, EventHandler<ActionEvent> {
-  protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii");
+  protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.javafx");
 
   private static com.bitplan.can4eve.gui.App app;
   private static SoftwareVersion softwareVersion;
@@ -81,7 +87,9 @@ public class JavaFXDisplay extends Application
 
   private TabPane tabPane;
 
-  private Map<String, Control> controls;
+  private Map<String, GenericControl> controls;
+
+  public static final boolean debug=false;
 
   public JavaFXDisplay(App app, SoftwareVersion softwareVersion) {
     new JFXPanel();
@@ -154,17 +162,12 @@ public class JavaFXDisplay extends Application
 
   @Override
   public void updateField(String title, Object value, int updateCount) {
-    Control control=controls.get(title);
+    GenericControl control = controls.get(title);
     if (control == null) {
       if (!title.startsWith("Raw"))
         LOGGER.log(Level.WARNING, "could not find field " + title);
     } else {
-      if (value != null && control instanceof TextField) {
-        final String valueText = value.toString();
-        // valueText+="("+updateCount+")";
-        TextField tfield = (TextField) control;
-        Platform.runLater(() -> tfield.setText(valueText));
-      }
+      Platform.runLater(() -> control.setValue(value));
     }
 
   }
@@ -269,12 +272,12 @@ public class JavaFXDisplay extends Application
   private void setup(App app) {
     tabPane = new TabPane();
     tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
-    controls = new HashMap<String, Control>();
+    controls = new HashMap<String, GenericControl>();
     Group mainGroup = app.getGroupById("mainGroup");
     for (Form form : mainGroup.getForms()) {
       Tab tab = new Tab();
       tab.setText(form.getTitle());
-      GenericPanel panel = new GenericPanel(form);
+      GenericPanel panel = new GenericPanel(stage, form);
       controls.putAll(panel.controls);
       tab.setContent(panel);
       tabPane.getTabs().add(tab);
@@ -284,28 +287,32 @@ public class JavaFXDisplay extends Application
 
   @Override
   public void handle(ActionEvent event) {
-    Object source = event.getSource();
-    if (source instanceof MenuItem) {
-      MenuItem menuItem = (MenuItem) source;
-      if ("quitMenuItem".equals(menuItem.getId())) {
-        close();
-      } else if ("aboutMenuItem".equals(menuItem.getId())) {
-        showAbout();
-      } else if ("feedbackMenuItem".equals(menuItem.getId())) {
-        showFeedback();
-      } else if ("preferencesMenuItem".equals(menuItem.getId())) {
-        showPreferences();
-      } else if ("vehicleMenuItem".equals(menuItem.getId())) {
-        showVehicle();
-      } else {
-        LOGGER.log(Level.WARNING, "unhandled menu item " + menuItem.getId()
-            + ":" + menuItem.getText());
+    try {
+      Object source = event.getSource();
+      if (source instanceof MenuItem) {
+        MenuItem menuItem = (MenuItem) source;
+        if ("quitMenuItem".equals(menuItem.getId())) {
+          close();
+        } else if ("aboutMenuItem".equals(menuItem.getId())) {
+          showAbout();
+        } else if ("feedbackMenuItem".equals(menuItem.getId())) {
+          showFeedback();
+        } else if ("settingsMenuItem".equals(menuItem.getId())) {
+          showSettings();
+        } else if ("vehicleMenuItem".equals(menuItem.getId())) {
+          showVehicle();
+        } else {
+          LOGGER.log(Level.WARNING, "unhandled menu item " + menuItem.getId()
+              + ":" + menuItem.getText());
+        }
       }
+    } catch (Exception e) {
+      ErrorHandler.handle(e);
     }
   }
 
   private void showVehicle() {
-    GenericDialog vehicleDialog = new GenericDialog(
+    GenericDialog vehicleDialog = new GenericDialog(stage,
         app.getFormById("preferencesGroup", "vehicleForm"));
     Optional<Map<String, Object>> result = vehicleDialog.show();
   }
@@ -336,17 +343,30 @@ public class JavaFXDisplay extends Application
 
   /**
    * show the preferences
+   * 
+   * @throws Exception
    */
-  public void showPreferences() {
-    /*
-     * LoginDialog loginDialog=new LoginDialog(); loginDialog.show();
-     * result.ifPresent(usernamePassword -> { System.out.println("Username=" +
-     * usernamePassword.getKey() + ", Password=" + usernamePassword.getValue());
-     * });
-     */
-    GenericDialog preferencesDialog = new GenericDialog(
-        app.getFormById("preferencesGroup", "preferencesForm"));
-    Optional<Map<String, Object>> result = preferencesDialog.show();
+  public void showSettings() throws Exception {
+    Config config = Config.getInstance(ConfigMode.Preferences);
+    SettingsDialog settingsDialog = new SettingsDialog(stage,
+        app.getFormById("preferencesGroup", "settingsForm"));
+    if (config == null)
+      config = new Config();
+    Optional<Map<String, Object>> result = settingsDialog.show(config.asMap());
+    if (result.isPresent()) {
+      Map<String, Object> map = result.get();
+      if (debug) {
+        for (Entry<String, Object> me : map.entrySet()) {
+          String value = "?";
+          if (me.getValue() != null)
+            value = me.getValue().toString() + "("
+                + me.getValue().getClass().getSimpleName() + ")";
+          LOGGER.log(Level.INFO, me.getKey() + "=" + value);
+        }
+      }
+      config.fromMap(map);
+      config.save(ConfigMode.Preferences);
+    }
   }
 
   /**
