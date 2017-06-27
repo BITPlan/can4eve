@@ -124,21 +124,30 @@ public class Config {
   }
   
   /**
+   * get the Config directory 
+   * @return the config directory
+   */
+  public static File getConfigDirectory() {
+    String home = System.getProperty("user.home");
+    File configDirectory=new File(home+"/.can4eve/");
+    return configDirectory;
+  }
+  
+  /**
    * get the config file
    * @param configMode 
    * @return
    */
   public static File getConfigFile(ConfigMode configMode) {
-    String home = System.getProperty("user.home");
-    String filename="preferences";
+    String filename="obdii";
     switch (configMode) {
     case Test:
-      filename="testconfig";
+      filename="testobdii";
     default:
       break;
     }
-    String configFilename = home + "/.can4eve/"+filename+".json";
-    File configFile = new File(configFilename);
+    String configFilename =filename+".json";
+    File configFile = new File(getConfigDirectory(),configFilename);
     return configFile;
   }
   

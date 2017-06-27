@@ -20,6 +20,7 @@
  */
 package com.bitplan.obdii.javafx;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,6 +47,8 @@ import com.bitplan.obdii.CANValueDisplay;
 import com.bitplan.obdii.Display;
 import com.bitplan.obdii.ErrorHandler;
 import com.bitplan.obdii.LabelField;
+import com.bitplan.obdii.Preferences;
+import com.bitplan.obdii.Preferences.LangChoice;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -91,6 +94,11 @@ public class JavaFXDisplay extends Application
 
   public static final boolean debug=false;
 
+  /**
+   * construct me from an abstract application description and a software version
+   * @param app - the generic gui application description
+   * @param softwareVersion
+   */
   public JavaFXDisplay(App app, SoftwareVersion softwareVersion) {
     new JFXPanel();
     this.setApp(app);
@@ -233,11 +241,11 @@ public class JavaFXDisplay extends Application
   public void createMenuBar(Scene scene) {
     menuBar = new MenuBar();
     for (com.bitplan.can4eve.gui.Menu amenu : app.getMainMenu().getSubMenus()) {
-      Menu menu = new Menu(Translator.translate(amenu.getId()));
+      Menu menu = new Menu(i18n(amenu.getId()));
       menuBar.getMenus().add(menu);
       for (com.bitplan.can4eve.gui.MenuItem amenuitem : amenu.getMenuItems()) {
         MenuItem menuItem = new MenuItem(
-            Translator.translate(amenuitem.getId()));
+            i18n(amenuitem.getId()));
         menuItem.setOnAction(this);
         menuItem.setId(amenuitem.getId());
         menu.getItems().add(menuItem);
@@ -299,6 +307,8 @@ public class JavaFXDisplay extends Application
           showFeedback();
         } else if ("settingsMenuItem".equals(menuItem.getId())) {
           showSettings();
+        } else if ("preferencesMenuItem".equals(menuItem.getId())) {
+          showPreferences();
         } else if ("vehicleMenuItem".equals(menuItem.getId())) {
           showVehicle();
         } else {
@@ -311,23 +321,40 @@ public class JavaFXDisplay extends Application
     }
   }
 
+  /**
+   * show the vehicle Dialog
+   */
   private void showVehicle() {
     GenericDialog vehicleDialog = new GenericDialog(stage,
         app.getFormById("preferencesGroup", "vehicleForm"));
     Optional<Map<String, Object>> result = vehicleDialog.show();
+    if (result.isPresent()) {
+      
+    }
+  }
+  
+  /**
+   * show the given alert
+   * @param title
+   * @param headerText
+   * @param content
+   */
+  private void showAlert(String title,String headerText,String content) {
+    Alert alert = new Alert(AlertType.INFORMATION);
+    alert.setTitle(title);
+    alert.setHeaderText(headerText);
+    alert.setContentText(content);
+    alert.showAndWait();
   }
 
   /**
    * show an About dialog
    */
   private void showAbout() {
-    Alert alert = new Alert(AlertType.INFORMATION);
-    alert.setTitle("About");
-    String title = softwareVersion.getName() + " "
+    String headerText = softwareVersion.getName() + " "
         + softwareVersion.getVersion();
-    alert.setHeaderText(title);
-    alert.setContentText(softwareVersion.getUrl());
-    alert.showAndWait();
+    showAlert("About",headerText,softwareVersion.getUrl());
+   
   }
 
   /**
@@ -339,6 +366,36 @@ public class JavaFXDisplay extends Application
     } catch (Exception e) {
       ErrorHandler.handle(e);
     }
+  }
+  
+  /**
+   * show the Preferences
+   * @throws Exception 
+   */
+  public void showPreferences() throws Exception {
+    Preferences preferences=Preferences.getInstance();
+    GenericDialog preferencesDialog = new GenericDialog(stage,
+        app.getFormById("preferencesGroup", "preferencesForm"));
+    Optional<Map<String, Object>> result = preferencesDialog.show(preferences.asMap());
+    if (result.isPresent()) {
+      LangChoice lang = preferences.getLanguage();
+      preferences.fromMap(result.get());
+      preferences.save();
+      if (!lang.equals(preferences.getLanguage())) {
+        Translator.initialize(preferences.getLanguage().name());
+        this.showAlert(i18n("language_changed_title"), i18n("language_changed"), i18n("newlanguage_restart"));
+      }
+    }
+  }
+  
+  /**
+   * internationalization function
+   * @param text
+   * @return translated text
+   */
+  public String i18n(String text) {
+    String i18n=Translator.translate(text);
+    return i18n;
   }
 
   /**

@@ -31,6 +31,7 @@ import com.bitplan.can4eve.gui.App;
 import com.bitplan.can4eve.gui.swing.Translator;
 import com.bitplan.elm327.Connection;
 import com.bitplan.elm327.LogImpl;
+import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.obdii.javafx.JavaFXDisplay;
 import com.bitplan.triplet.OBDTriplet;
@@ -66,7 +67,6 @@ public class OBDMain extends Main {
       "--log" }, usage = "log\nthe logfile to write")
   String logFileName;
 
-  
   enum DisplayChoice {
     None, Console, JavaFX
   }
@@ -75,12 +75,8 @@ public class OBDMain extends Main {
   DisplayChoice displayChoice = DisplayChoice.JavaFX;
 
   @Option(name = "--lang", usage = "language\nthe language to use one of:\nen,de")
-  LangChoice langChoice = LangChoice.en;
+  LangChoice language = LangChoice.notSet;
   
-  enum LangChoice {
-    en,de
-  }
-
   @Option(name = "-p", aliases = {
       "--pid" }, usage = "pid to monitor\nthe pid to monitor")
   String pid;
@@ -170,7 +166,13 @@ public class OBDMain extends Main {
    *           if a problem occurs
    */
   public void work() throws Exception {
-    Translator.initialize(this.langChoice.name());
+    Preferences preferences=Preferences.getInstance();
+    if (this.language!=LangChoice.notSet) {
+      Translator.initialize(this.language.name());
+    } else {
+      Translator.initialize(preferences.getLanguage().name());
+    }
+    
     if (this.showVersion || this.debug)
       showVersion();
     if (this.showHelp) {

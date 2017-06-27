@@ -6,8 +6,8 @@
 			"forms": [{
 					"title": "Settings",
 					"id": "settingsForm",
-					"icon": "settings",
-					"headerText": "choose your Settings",
+					"icon": "obdii",
+					"headerText": "choose your OBDII connection",
 					"fields": [{
 							"title": "deviceType",
 							"hint": "type of OBDII connector",
@@ -48,14 +48,32 @@
 							"title": "debug",
 							"hint": "display debugging information for the device",
 							"format": "%s",
-							"labelSize": 10,
-							"fieldSize": 40,
 							"type": "Boolean"
 						},
 						{
 							"title": "logPrefix",
 							"hint": "the prefix to use for logfiles",
 							"format": "%s"
+						}
+					]
+				},
+				{
+					"title": "Preferences",
+					"id": "preferencesForm",
+					"icon": "preferences",
+					"headerText": "choose your Preferences",
+					"fields": [{
+							"title": "language",
+							"hint": "the language of your choice",
+							"format": "%s",
+							"type": "Choice",
+							"choices": "en,de"
+					  },
+					  {
+							"title": "debug",
+							"hint": "output debugging information for the application",
+							"format": "%s",
+							"type": "Boolean"
 						}
 					]
 				},
@@ -116,12 +134,12 @@
 						{
 							"title": "fps",
 							"format": "%5.0f",
-							"labelSize": 3,
-							"fieldSize": 6
+							"type": "Integer"
 						},
 						{
 							"title": "# of bufferOverruns",
 							"format": "%5d",
+							"type": "Integer",
 							"labelSize": 13,
 							"fieldSize": 6
 						}
@@ -369,15 +387,27 @@
 				"title": "File",
 				"shortCut": "F",
 				"menuItems": [{
-						"id": "settingsMenuItem",
-						"title": "Settings",
-						"shortCut": "S"
-					},
-					{
 						"id": "quitMenuItem",
 						"title": "Quit",
 						"shortCut": "Q"
 					}
+				]
+			},
+			{
+				"id": "settingsMenu",
+				"title": "Settings",
+				"shortCut": "F",
+				"menuItems": [{
+						"id": "settingsMenuItem",
+						"title": "OBDII",
+						"shortCut": "O"
+					},
+					{
+						"id": "preferencesMenuItem",
+						"title": "Preferences",
+						"shortCut": "P"
+					}
+					
 				]
 			},
 			{

@@ -26,7 +26,6 @@ import java.util.Map;
 import com.bitplan.can4eve.gui.Form;
 import com.bitplan.can4eve.gui.javafx.GenericControl;
 import com.bitplan.can4eve.gui.javafx.GenericDialog;
-import com.bitplan.can4eve.util.OSCheck;
 
 import javafx.stage.Stage;
 
