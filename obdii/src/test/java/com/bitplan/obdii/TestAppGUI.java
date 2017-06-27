@@ -31,95 +31,125 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
-import com.bitplan.can4eve.CANValue.DoubleValue;
-import com.bitplan.can4eve.CANValue.IntegerValue;
 import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue;
+import com.bitplan.can4eve.CANValue.DoubleValue;
+import com.bitplan.can4eve.CANValue.IntegerValue;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.gui.App;
 import com.bitplan.can4eve.gui.Group;
+import com.bitplan.can4eve.gui.javafx.SampleApp;
 import com.bitplan.can4eve.gui.swing.PanelFrame;
 import com.bitplan.can4eve.json.JsonManager;
 import com.bitplan.can4eve.json.JsonManagerImpl;
 import com.bitplan.obdii.Preferences.LangChoice;
+import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
 
 /**
  * test the descriptive application gui
+ * 
  * @author wf
  *
  */
 public class TestAppGUI {
   @Test
   public void testAppGUI() throws Exception {
-    App app=App.getInstance();
+    App app = App.getInstance();
     assertNotNull(app);
-    assertEquals(4,app.getMainMenu().getSubMenus().size());
-    assertEquals(2,app.getGroups().size());
-    int [] expected={3,9};
-    int i=0;
-    for (Group group:app.getGroups()) {
-      assertEquals(expected[i++],group.getForms().size());
+    assertEquals(4, app.getMainMenu().getSubMenus().size());
+    assertEquals(2, app.getGroups().size());
+    int[] expected = { 3, 9 };
+    int i = 0;
+    for (Group group : app.getGroups()) {
+      assertEquals(expected[i++], group.getForms().size());
     }
   }
-  
+
   @Test
   public void testJoin() {
-    String langs=StringUtils.join(LangChoice.values(),",");
-    assertEquals("en,de,notSet",langs);
+    String langs = StringUtils.join(LangChoice.values(), ",");
+    assertEquals("en,de,notSet", langs);
   }
-  
+
   @Test
   public void testPreferences() {
-    Preferences pref=new Preferences();
-    pref.debug=true;
+    Preferences pref = new Preferences();
+    pref.debug = true;
     pref.setLanguage(LangChoice.de);
-    String json=pref.asJson();
-    //System.out.println(json);
-    assertEquals("{\n" + 
-        "  \"language\": \"de\",\n" + 
-        "  \"debug\": true\n" + 
-        "}" ,json);
-    JsonManager<Preferences> jmPreferences=new JsonManagerImpl<Preferences>(Preferences.class);
-    Preferences pref2=jmPreferences.fromJson(json);
+    String json = pref.asJson();
+    // System.out.println(json);
+    assertEquals(
+        "{\n" + "  \"language\": \"de\",\n" + "  \"debug\": true\n" + "}",
+        json);
+    JsonManager<Preferences> jmPreferences = new JsonManagerImpl<Preferences>(
+        Preferences.class);
+    Preferences pref2 = jmPreferences.fromJson(json);
     assertNotNull(pref2);
-    assertEquals(pref2.debug,pref.debug);
-    assertEquals(pref2.getLanguage(),pref.getLanguage());
-    Preferences pref3=new Preferences();
+    assertEquals(pref2.debug, pref.debug);
+    assertEquals(pref2.getLanguage(), pref.getLanguage());
+    Preferences pref3 = new Preferences();
     pref3.fromMap(pref2.asMap());
-    assertEquals(pref3.debug,pref.debug);
-    assertEquals(pref3.getLanguage(),pref.getLanguage());
+    assertEquals(pref3.debug, pref.debug);
+    assertEquals(pref3.getLanguage(), pref.getLanguage());
   }
-  
-  @Test
-  public void testLineChart() throws Exception {
+
+  /**
+   * get the plot Values
+   * 
+   * @return
+   * @throws Exception
+   */
+  public List<CANValue<?>> getPlotValues() throws Exception {
     VehicleGroup vg = VehicleGroup.get("triplet");
     CANInfo socInfo = vg.getCANInfoByName("SOC");
     assertNotNull(socInfo);
-    DoubleValue SOC=new DoubleValue(socInfo);
-    CANInfo rrInfo=vg.getCANInfoByName("Range");
+    DoubleValue SOC = new DoubleValue(socInfo);
+    CANInfo rrInfo = vg.getCANInfoByName("Range");
     assertNotNull(rrInfo);
-    IntegerValue RR=new IntegerValue(rrInfo);
-    Calendar date=Calendar.getInstance();
-    final long ONE_MINUTE_IN_MILLIS=60000;//millisecs
+    IntegerValue RR = new IntegerValue(rrInfo);
+    Calendar date = Calendar.getInstance();
+    final long ONE_MINUTE_IN_MILLIS = 60000;// millisecs
     // https://stackoverflow.com/a/9044010/1497139
-    long t= date.getTimeInMillis();
-    for (int i=0;i<50;i++) {
+    long t = date.getTimeInMillis();
+    for (int i = 0; i < 50; i++) {
       Date timeStamp = new Date(t + (i * ONE_MINUTE_IN_MILLIS));
-      SOC.setValue(90-i*1.2, timeStamp);
-      RR.setValue(90-i, timeStamp);
+      SOC.setValue(90 - i * 1.2, timeStamp);
+      RR.setValue(90 - i, timeStamp);
     }
     List<CANValue<?>> plotValues = new ArrayList<CANValue<?>>();
     plotValues.add(SOC);
     plotValues.add(RR);
-    String title="SOC/RR";
-    String xTitle="time";
-    String yTitle="%/km";
-    final CANValueHistoryPlot valuePlot = new CANValueHistoryPlot(
-        title, xTitle, yTitle, plotValues);
+    return plotValues;
+  }
+
+  // Swing Version of things
+  @Test
+  public void testLineChart() throws Exception {
+    List<CANValue<?>> plotValues = this.getPlotValues();
+    String title = "SOC/RR";
+    String xTitle = "time";
+    String yTitle = "%/km";
+    final CANValueHistoryPlot valuePlot = new CANValueHistoryPlot(title, xTitle,
+        yTitle, plotValues);
     final PanelFrame plotDemo = new PanelFrame(false);
     plotDemo.show(valuePlot.getPanel());
     plotDemo.waitOpen();
-    Thread.sleep(2000);
+    Thread.sleep(5000);
     plotDemo.frame.setVisible(false);
   }
+
+  @Test
+  public void testLineChartJavaFx() throws Exception {
+    List<CANValue<?>> plotValues = this.getPlotValues();
+    String title = "SOC/RR";
+    String xTitle = "time";
+    String yTitle = "%/km";
+    SampleApp.toolkitInit();
+    final JFXCanValueHistoryPlot valuePlot = new JFXCanValueHistoryPlot(title,
+        xTitle, yTitle, plotValues);
+    SampleApp sampleApp=new SampleApp("SOC/RR",valuePlot.getLineChart());
+    sampleApp.show();
+    Thread.sleep(5000);
+  }
+
 }

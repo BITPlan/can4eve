@@ -20,7 +20,6 @@
  */
 package com.bitplan.obdii.javafx;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +40,6 @@ import com.bitplan.can4eve.gui.javafx.GenericPanel;
 //import com.bitplan.can4eve.gui.javafx.LoginDialog;
 import com.bitplan.can4eve.gui.swing.JLink;
 import com.bitplan.can4eve.gui.swing.Translator;
-import com.bitplan.can4eve.util.OSCheck;
 import com.bitplan.elm327.Config;
 import com.bitplan.elm327.Config.ConfigMode;
 import com.bitplan.obdii.CANValueDisplay;
