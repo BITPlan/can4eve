@@ -47,6 +47,14 @@ public class SampleApp extends WaitableApp {
     this.region = region;
   }
 
+  public Stage getStage() {
+    return stage;
+  }
+
+  public void setStage(Stage stage) {
+    this.stage = stage;
+  }
+
   @Override
   public void start(Stage stage) {
     super.start(stage);

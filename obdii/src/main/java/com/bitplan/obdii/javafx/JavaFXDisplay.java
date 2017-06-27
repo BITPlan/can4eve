@@ -98,11 +98,8 @@ public class JavaFXDisplay extends WaitableApp implements CANValueDisplay, Event
    * @param app - the generic gui application description
    * @param softwareVersion
    */
-  @SuppressWarnings("restriction")
   public JavaFXDisplay(App app, SoftwareVersion softwareVersion) {
-    ///https://stackoverflow.com/a/38883432/1497139
-    // http://www.programcreek.com/java-api-examples/index.php?api=com.sun.javafx.application.PlatformImpl
-    com.sun.javafx.application.PlatformImpl.startup(()->{});
+    toolkitInit();
     // new JFXPanel();
     this.setApp(app);
     this.setSoftwareVersion(softwareVersion);

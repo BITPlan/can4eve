@@ -15,11 +15,14 @@ import javafx.stage.Stage;
 public abstract class WaitableApp extends Application implements Display {
   protected Stage stage;
 
+  /**
+   * allow startup without launch
+   */
   @SuppressWarnings("restriction")
-
   public static void toolkitInit() {
-    com.sun.javafx.application.PlatformImpl.startup(() -> {
-    });
+    ///https://stackoverflow.com/a/38883432/1497139
+    // http://www.programcreek.com/java-api-examples/index.php?api=com.sun.javafx.application.PlatformImpl
+    com.sun.javafx.application.PlatformImpl.startup(()->{});
   }
 
   @Override
@@ -75,7 +78,7 @@ public abstract class WaitableApp extends Application implements Display {
    */
   public void close() {
     if (stage != null)
-      Platform.runLater(() -> stage.close());
+      Platform.runLater(() -> stage.hide());
   }
 
 }

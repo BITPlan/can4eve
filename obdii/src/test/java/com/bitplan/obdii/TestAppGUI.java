@@ -149,7 +149,7 @@ public class TestAppGUI {
     for (int i = 0; i < cellTemp.canInfo.getMaxIndex(); i++) {
       cellTemp.setValue(i, 15+Math.random()*15, timeStamp);
     }
-    String title = "CellTemperatur";
+    String title = "Cell Temperature";
     String xTitle = "cell";
     String yTitle = "° Celsius";
     SampleApp.toolkitInit();
@@ -159,7 +159,7 @@ public class TestAppGUI {
     sampleApp.show();
     sampleApp.waitOpen();
     Thread.sleep(2500);
-    sampleApp.stop();
+    sampleApp.close();
   }
   
   @Test
@@ -175,7 +175,7 @@ public class TestAppGUI {
     sampleApp.show();
     sampleApp.waitOpen();
     Thread.sleep(2500);
-    sampleApp.stop();
+    //sampleApp.close();
   }
 
 }

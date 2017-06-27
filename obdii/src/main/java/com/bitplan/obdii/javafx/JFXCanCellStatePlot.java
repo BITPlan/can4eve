@@ -61,15 +61,22 @@ public class JFXCanCellStatePlot {
   }
 
   /**
-   * get the BarChart for the cellStates  (e.g. Temperature/Voltage)
+   * get the BarChart for the cellStates (e.g. Temperature/Voltage)
    * 
    * @return - the barchart
    */
   public BarChart<String, Number> getBarChart() {
+    if (cellValues == null)
+      return null;
     // defining the axes
     final CategoryAxis xAxis = new CategoryAxis();
-    final NumberAxis yAxis = new NumberAxis(cellValues.getMin() - rangeExtra,
-        cellValues.getMax() + rangeExtra, tickUnit);
+    NumberAxis yAxis;
+    if ((cellValues.getMax() != null) && (cellValues.getMax() != null)) {
+      yAxis = new NumberAxis(cellValues.getMin() - rangeExtra,
+          cellValues.getMax() + rangeExtra, tickUnit);
+    } else {
+      yAxis= new NumberAxis();
+    }
     yAxis.setLabel(yTitle);
     xAxis.setLabel(xTitle);
     // creating the chart
@@ -90,7 +97,7 @@ public class JFXCanCellStatePlot {
     for (int i = 0; i < canInfo.getMaxIndex(); i++) {
       if (cellValues.getValueItems() != null)
         if (cellValues.getValueItems()[i].isAvailable()) {
-          String cellnum=""+(i+1);
+          String cellnum = "" + (i + 1);
           series.getData().add(new XYChart.Data<String, Number>(cellnum,
               cellValues.getValueItems()[i].getValue()));
         }
