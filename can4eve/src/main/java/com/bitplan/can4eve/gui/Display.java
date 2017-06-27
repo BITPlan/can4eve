@@ -18,7 +18,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bitplan.obdii;
+package com.bitplan.can4eve.gui;
 
 /**
  * generic display interface
@@ -26,9 +26,7 @@ package com.bitplan.obdii;
  *
  */
 public interface Display {
-  public void show() throws Exception;
-  public LabelField addField(String title,String format, int labelSize,int fieldSize);
-  public void updateField(String title, Object value, int updateCount);
+  public void show() throws Exception; 
   public void waitOpen();
   public void waitClose();
 }

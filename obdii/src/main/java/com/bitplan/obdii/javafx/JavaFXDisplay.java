@@ -37,19 +37,18 @@ import com.bitplan.can4eve.gui.Group;
 import com.bitplan.can4eve.gui.javafx.GenericControl;
 import com.bitplan.can4eve.gui.javafx.GenericDialog;
 import com.bitplan.can4eve.gui.javafx.GenericPanel;
+import com.bitplan.can4eve.gui.javafx.WaitableApp;
 //import com.bitplan.can4eve.gui.javafx.LoginDialog;
 import com.bitplan.can4eve.gui.swing.JLink;
 import com.bitplan.can4eve.gui.swing.Translator;
 import com.bitplan.elm327.Config;
 import com.bitplan.elm327.Config.ConfigMode;
 import com.bitplan.obdii.CANValueDisplay;
-import com.bitplan.obdii.Display;
 import com.bitplan.obdii.ErrorHandler;
 import com.bitplan.obdii.LabelField;
 import com.bitplan.obdii.Preferences;
 import com.bitplan.obdii.Preferences.LangChoice;
 
-import javafx.application.Application;
 import javafx.application.Platform;
 //import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
@@ -76,20 +75,21 @@ import javafx.stage.Stage;
  * @author wf
  *
  */
-public class JavaFXDisplay extends Application
-    implements Display, CANValueDisplay, EventHandler<ActionEvent> {
+public class JavaFXDisplay extends WaitableApp implements CANValueDisplay, EventHandler<ActionEvent> {
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.javafx");
 
   private static com.bitplan.can4eve.gui.App app;
   private static SoftwareVersion softwareVersion;
   private MenuBar menuBar;
-  protected Stage stage;
+  
 
   private VBox root;
 
   private TabPane tabPane;
 
   private Map<String, GenericControl> controls;
+
+  protected boolean available;
 
   public static final boolean debug=false;
 
@@ -124,35 +124,6 @@ public class JavaFXDisplay extends Application
     JavaFXDisplay.app = app;
   }
 
-  /*
-   * public static JavaFXDisplay instance;
-   * 
-   * public JavaFXDisplay() { instance = this; }
-   * 
-   * /* get the instance
-   * 
-   * @return
-   *
-   * public static JavaFXDisplay getInstance() { if (instance == null) {
-   * //String[] args = {}; //Application.launch(JavaFXDisplay.class, args); new
-   * JavaFXDisp } return instance; }
-   */
-  @Override
-  public void show() throws Exception {
-    Platform.runLater(() -> {
-      try {
-        this.start(new Stage());
-      } catch (Exception e) {
-        ErrorHandler.handle(e);
-      }
-    });
-    // https://stackoverflow.com/a/36805921/1497139
-    // Platform.runLater(() ->
-    // stage.setTitle(softwareVersion.getName()+"
-    // "+softwareVersion.getVersion())
-    // );
-  }
-
   @Override
   public LabelField addField(String title, String format, int labelSize,
       int fieldSize) {
@@ -173,6 +144,8 @@ public class JavaFXDisplay extends Application
 
   @Override
   public void updateField(String title, Object value, int updateCount) {
+    if (controls==null)
+      return;
     GenericControl control = controls.get(title);
     if (control == null) {
       if (!title.startsWith("Raw"))
@@ -204,37 +177,7 @@ public class JavaFXDisplay extends Application
     }
   }
 
-  /**
-   * wait for close
-   * 
-   * @throws InterruptedException
-   */
-  public void waitStatus(boolean open) {
-    int sleep = 1000 / 50; // human eye reaction time
-    try {
-      if (open)
-        while ((stage == null) || (!stage.isShowing())) {
-
-          Thread.sleep(sleep);
-        }
-      else
-        while (stage != null && stage.isShowing()) {
-          Thread.sleep(sleep);
-        }
-    } catch (InterruptedException e) {
-      ErrorHandler.handle(e);
-    }
-  }
-
-  @Override
-  public void waitOpen() {
-    waitStatus(true);
-  }
-
-  @Override
-  public void waitClose() {
-    waitStatus(false);
-  }
+ 
 
   /**
    * create the Menu Bar
@@ -258,7 +201,8 @@ public class JavaFXDisplay extends Application
   }
 
   @Override
-  public void start(Stage stage) throws Exception {
+  public void start(Stage stage) {
+    super.start(stage);
     stage.setTitle(
         softwareVersion.getName() + " " + softwareVersion.getVersion());
     this.stage = stage;
@@ -273,6 +217,7 @@ public class JavaFXDisplay extends Application
     stage.show();
     stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2);
     stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 4);
+    available=true;
   }
 
   /**

@@ -321,10 +321,53 @@ public abstract class CANValue<ValueType> {
     }
   }
 
+  /**
+   * Double Values
+   * @author wf
+   *
+   */
   public static class DoubleValue extends CANValue<Double> {
+    Double min;
+    Double max;
+    
     public DoubleValue(CANInfo canInfo) {
       super(canInfo, Double.class);
     }
+    
+    public Double getMin() {
+      return min;
+    }
+
+    public void setMin(Double min) {
+      this.min = min;
+    }
+
+    public Double getMax() {
+      return max;
+    }
+
+    public void setMax(Double max) {
+      this.max = max;
+    }
+
+    /**
+     * set the Value and calc min and max while at it
+     */
+    public void setValue(int index, Double value, Date timeStamp) {
+      super.setValue(index, value, timeStamp);
+      if (min==null)
+        min=value;
+      else
+        if (value<min) {
+          min=value;
+        }
+      if (max==null) 
+        max=value;
+      if (value>max) {
+        max=value;
+      }
+    }
+    
 
     /**
      * calc the numerical integral and add it

@@ -39,10 +39,10 @@ import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.gui.App;
 import com.bitplan.can4eve.gui.Group;
 import com.bitplan.can4eve.gui.javafx.SampleApp;
-import com.bitplan.can4eve.gui.swing.PanelFrame;
 import com.bitplan.can4eve.json.JsonManager;
 import com.bitplan.can4eve.json.JsonManagerImpl;
 import com.bitplan.obdii.Preferences.LangChoice;
+import com.bitplan.obdii.javafx.JFXCanCellStatePlot;
 import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
 
 /**
@@ -140,6 +140,29 @@ public class TestAppGUI {
   }*/
 
   @Test
+  public void testBarChartJavaFx() throws Exception {
+    VehicleGroup vg = VehicleGroup.get("triplet");
+    CANInfo cellInfo = vg.getCANInfoByName("CellTemperature");
+    assertNotNull(cellInfo);
+    DoubleValue cellTemp = new DoubleValue(cellInfo);
+    Date timeStamp=new Date();
+    for (int i = 0; i < cellTemp.canInfo.getMaxIndex(); i++) {
+      cellTemp.setValue(i, 15+Math.random()*15, timeStamp);
+    }
+    String title = "CellTemperatur";
+    String xTitle = "cell";
+    String yTitle = "° Celsius";
+    SampleApp.toolkitInit();
+    final JFXCanCellStatePlot valuePlot = new JFXCanCellStatePlot(title,
+        xTitle, yTitle, cellTemp,2.0,0.5);
+    SampleApp sampleApp=new SampleApp("Cell Temperature",valuePlot.getBarChart());
+    sampleApp.show();
+    sampleApp.waitOpen();
+    Thread.sleep(2500);
+    sampleApp.stop();
+  }
+  
+  @Test
   public void testLineChartJavaFx() throws Exception {
     List<CANValue<?>> plotValues = this.getPlotValues();
     String title = "SOC/RR";
@@ -150,7 +173,9 @@ public class TestAppGUI {
         xTitle, yTitle, plotValues);
     SampleApp sampleApp=new SampleApp("SOC/RR",valuePlot.getLineChart());
     sampleApp.show();
-    Thread.sleep(5000);
+    sampleApp.waitOpen();
+    Thread.sleep(2500);
+    sampleApp.stop();
   }
 
 }

@@ -304,7 +304,6 @@ public class TestELM327 extends TestOBDII {
     obdTriplet.initOBD();
     int loops = 1;
     int frameLimit = 3;
-    ConsoleDisplay cdisplay = new ConsoleDisplay();
     List<CANValue<?>> canvalues = obdTriplet.getElm327().getCANValues();
     int max = 11;
     for (int i = 0; i < loops; i++) {
@@ -313,12 +312,12 @@ public class TestELM327 extends TestOBDII {
         obdTriplet.monitorPid(display,
             canvalue.canInfo.getPid().getPid().toString(), frameLimit);
         if (debug)
-          obdTriplet.showValues(cdisplay);
+          obdTriplet.showValues(display);
         if (count++ > max)
           break;
       }
       if (debug)
-        obdTriplet.showValues(cdisplay);
+        obdTriplet.showValues(display);
     }
   }
 
@@ -430,8 +429,6 @@ public class TestELM327 extends TestOBDII {
     }
     int frameLimit = 150;
     obdTriplet.STMMonitor(display, obdTriplet.getCANValues(), frameLimit);
-    if (debug)
-      obdTriplet.showValues(new ConsoleDisplay());
     obdTriplet.close();
     Platform.runLater(() ->display.close());
     if (!simulated) {

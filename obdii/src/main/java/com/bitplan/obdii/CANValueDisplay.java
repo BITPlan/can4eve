@@ -23,6 +23,7 @@ package com.bitplan.obdii;
 import java.util.Collection;
 
 import com.bitplan.can4eve.CANValue;
+import com.bitplan.can4eve.gui.Display;
 
 /**
  * Display for CAN Values
@@ -33,4 +34,6 @@ public interface CANValueDisplay extends Display {
   public void addCANValueField(CANValue<?> canValue);
   public void addCanValueFields(Collection<CANValue<?>> list);
   public void updateCanValueField(CANValue<?> canValue);
+  public LabelField addField(String title,String format, int labelSize,int fieldSize);
+  public void updateField(String title, Object value, int updateCount);
 }

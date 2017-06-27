@@ -28,6 +28,7 @@ import org.kohsuke.args4j.Option;
 
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.gui.App;
+import com.bitplan.can4eve.gui.Display;
 import com.bitplan.can4eve.gui.swing.Translator;
 import com.bitplan.elm327.Connection;
 import com.bitplan.elm327.LogImpl;
@@ -68,10 +69,10 @@ public class OBDMain extends Main {
   String logFileName;
 
   enum DisplayChoice {
-    None, Console, JavaFX
+    None, JavaFX
   }
 
-  @Option(name = "--display", usage = "display\nthe display to use one of:\n None,Console,JavaFX")
+  @Option(name = "--display", usage = "display\nthe display to use one of:\n None,JavaFX")
   DisplayChoice displayChoice = DisplayChoice.JavaFX;
 
   @Option(name = "--lang", usage = "language\nthe language to use one of:\nen,de")
@@ -183,9 +184,6 @@ public class OBDMain extends Main {
       case JavaFX:
         jfxDisplay=new JFXTripletDisplay(App.getInstance(),this);
         canValueDisplay=jfxDisplay;
-        break;
-      case Console:
-        canValueDisplay = new ConsoleDisplay();
         break;
       default:
       }

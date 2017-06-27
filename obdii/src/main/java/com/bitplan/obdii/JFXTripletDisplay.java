@@ -23,18 +23,17 @@ package com.bitplan.obdii;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JPanel;
-
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.CANValue.IntegerValue;
 import com.bitplan.can4eve.SoftwareVersion;
 import com.bitplan.can4eve.gui.App;
+import com.bitplan.obdii.javafx.JFXCanCellStatePlot;
 import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
 import com.bitplan.obdii.javafx.JavaFXDisplay;
 
 import javafx.application.Platform;
-import javafx.embed.swing.SwingNode;
+//import javafx.embed.swing.SwingNode;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.Region;
 
@@ -56,19 +55,7 @@ public class JFXTripletDisplay extends JavaFXDisplay {
     super(app, softwareVersion);
   }
 
-  /**
-   * update the given tab with the given panel
-   * 
-   * @param tab
-   * @param panel
-   */
-  public void updateTab(Tab tab, JPanel panel) {
-    if (panel != null) {
-      final SwingNode swingNode = new SwingNode();
-      swingNode.setContent(panel);
-      tab.setContent(swingNode);
-    }
-  }
+  
   
   /**
    * update the given tab with the given region
@@ -108,6 +95,8 @@ public class JFXTripletDisplay extends JavaFXDisplay {
    */
   @Override
   public void updateCanValueField(CANValue<?> canValue) {
+    if (!available)
+      return;
     String title = canValue.canInfo.getTitle();
     Tab activeTab = super.getActiveTab();
     String activePanelTitle = activeTab.getText();
@@ -118,17 +107,17 @@ public class JFXTripletDisplay extends JavaFXDisplay {
         if (canValue.getUpdateCount() % canValue.canInfo.getMaxIndex() == 0) {
           if ("Cell Temp".equals(activePanelTitle)) {
             DoubleValue cellTemperature = (DoubleValue) canValue;
-            final CANCellStatePlot cellStatePlot = new CANCellStatePlot(
-                "cellTemperature", "cell", "Temperature", cellTemperature, 1.0);
+            final JFXCanCellStatePlot cellStatePlot = new JFXCanCellStatePlot(
+                "cellTemperature", "cell", "Temperature", cellTemperature, 1.0,0.5);
             Platform
-                .runLater(() -> updateTab(activeTab, cellStatePlot.getPanel()));
+                .runLater(() -> updateTab(activeTab, cellStatePlot.getBarChart()));
           }
           if ("Cell Voltage".equals(activePanelTitle)) {
             DoubleValue cellVoltage = (DoubleValue) canValue;
-            final CANCellStatePlot cellStatePlot = new CANCellStatePlot(
-                "cellVoltage", "cell", "Voltage", cellVoltage, 0.01);
+            final JFXCanCellStatePlot cellStatePlot = new JFXCanCellStatePlot(
+                "cellVoltage", "cell", "Voltage", cellVoltage, 0.01,0.1);
             Platform
-                .runLater(() -> updateTab(activeTab, cellStatePlot.getPanel()));
+                .runLater(() -> updateTab(activeTab, cellStatePlot.getBarChart()));
           }
         }
       }
