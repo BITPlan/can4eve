@@ -207,6 +207,7 @@ public class TestELM327 extends TestOBDII {
   public void testInit() throws Exception {
     // debug=true;
     ELM327 elm327 = getSimulation();
+    elm327.reinitCommunication(200);
     long start = System.nanoTime();
     Packet response = elm327.send("ATI");
     assertEquals("ELM327 v1.3a", response.getData());
