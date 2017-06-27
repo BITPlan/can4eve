@@ -163,12 +163,22 @@ public class OBDTriplet extends OBDHandler {
    * @param canInfoName
    * @return
    */
-  protected CANInfo getCanInfo(String canInfoName) {
-    VehicleGroup vg = this.getElm327().getVehicleGroup();
+  public static CANInfo getCanInfo(VehicleGroup vg,String canInfoName) {
     CANInfo canInfo = vg.getCANInfoByName(canInfoName);
     if (canInfo == null)
       throw new RuntimeException("Misconfigured canValue " + canInfoName
           + " missing canInfo in vehicle Group " + vg.getName());
+    return canInfo;
+  }
+  
+  /**
+   * get the canInfo for the given CanInfo name
+   * @param canInfoName
+   * @return
+   */
+  private CANInfo getCanInfo(String canInfoName) {
+    VehicleGroup vg = this.getElm327().getVehicleGroup();
+    CANInfo canInfo=OBDTriplet.getCanInfo(vg, canInfoName);
     return canInfo;
   }
 

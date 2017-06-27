@@ -23,11 +23,22 @@ package com.bitplan.obdii;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
+import com.bitplan.can4eve.CANValue.DoubleValue;
+import com.bitplan.can4eve.CANValue.IntegerValue;
+import com.bitplan.can4eve.CANInfo;
+import com.bitplan.can4eve.CANValue;
+import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.gui.App;
 import com.bitplan.can4eve.gui.Group;
+import com.bitplan.can4eve.gui.swing.PanelFrame;
 import com.bitplan.can4eve.json.JsonManager;
 import com.bitplan.can4eve.json.JsonManagerImpl;
 import com.bitplan.obdii.Preferences.LangChoice;
@@ -77,5 +88,38 @@ public class TestAppGUI {
     pref3.fromMap(pref2.asMap());
     assertEquals(pref3.debug,pref.debug);
     assertEquals(pref3.getLanguage(),pref.getLanguage());
+  }
+  
+  @Test
+  public void testLineChart() throws Exception {
+    VehicleGroup vg = VehicleGroup.get("triplet");
+    CANInfo socInfo = vg.getCANInfoByName("SOC");
+    assertNotNull(socInfo);
+    DoubleValue SOC=new DoubleValue(socInfo);
+    CANInfo rrInfo=vg.getCANInfoByName("Range");
+    assertNotNull(rrInfo);
+    IntegerValue RR=new IntegerValue(rrInfo);
+    Calendar date=Calendar.getInstance();
+    final long ONE_MINUTE_IN_MILLIS=60000;//millisecs
+    // https://stackoverflow.com/a/9044010/1497139
+    long t= date.getTimeInMillis();
+    for (int i=0;i<50;i++) {
+      Date timeStamp = new Date(t + (i * ONE_MINUTE_IN_MILLIS));
+      SOC.setValue(90-i*1.2, timeStamp);
+      RR.setValue(90-i, timeStamp);
+    }
+    List<CANValue<?>> plotValues = new ArrayList<CANValue<?>>();
+    plotValues.add(SOC);
+    plotValues.add(RR);
+    String title="SOC/RR";
+    String xTitle="time";
+    String yTitle="%/km";
+    final CANValueHistoryPlot valuePlot = new CANValueHistoryPlot(
+        title, xTitle, yTitle, plotValues);
+    final PanelFrame plotDemo = new PanelFrame(false);
+    plotDemo.show(valuePlot.getPanel());
+    plotDemo.waitOpen();
+    Thread.sleep(2000);
+    plotDemo.frame.setVisible(false);
   }
 }

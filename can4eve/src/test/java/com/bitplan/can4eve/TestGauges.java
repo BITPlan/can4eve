@@ -20,16 +20,10 @@
  */
 package com.bitplan.can4eve;
 
-import java.awt.Dimension;
-
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-
 import org.junit.Test;
 
 import com.bitplan.can4eve.gui.swing.GaugePanel;
+import com.bitplan.can4eve.gui.swing.PanelFrame;
 
 import eu.hansolo.steelseries.gauges.Radial;
 
@@ -39,50 +33,20 @@ import eu.hansolo.steelseries.gauges.Radial;
  *
  */
 public class TestGauges {
-  int W=600;
-  int H=600;
-  public class GaugeDemo {
-    private JFrame frame;
-    private JPanel panel;
-
-    @SuppressWarnings("serial")
-    public void createAndShowUI(GaugePanel gaugePanel) {
-      frame = new JFrame();
-      frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-      frame.setLocationByPlatform(true);
-
-      panel = new JPanel() {
-        @Override
-        public Dimension getPreferredSize() {
-          return new Dimension(W, H);
-        }
-      };
-      for (JComponent component : gaugePanel.getComponents()) {
-        panel.add(component);
-      }
-      frame.add(panel);
-      frame.pack();
-      frame.setVisible(true);
-    }
-
-  }
-
+ 
   @Test
   public void testRadial() throws InterruptedException {
-    final GaugeDemo gaugeDemo = new GaugeDemo();
+    final PanelFrame gaugeDemo = new PanelFrame(true);
     final Radial gauge = new Radial();
-    gauge.setBounds(0, 0, W, H);
+    int b=30;
+    gauge.setBounds(0, 0, gaugeDemo.getWidth()-b, gaugeDemo.getHeight()-b);
     gauge.setTitle("SOC");
     gauge.setUnitString("%");
     final GaugePanel gaugePanel = new GaugePanel();
     gaugePanel.add(gauge);
-    SwingUtilities.invokeLater(new Runnable() {
-      public void run() {
-        gaugeDemo.createAndShowUI(gaugePanel);
-      }
-    });
-    while (gaugeDemo.frame == null || !gaugeDemo.frame.isVisible())
-      Thread.sleep(10);
+    gaugeDemo.show(gaugePanel.getComponents());
+    gaugeDemo.waitOpen();
+    
     double value = 55.0;
     while (gaugeDemo.frame.isVisible()) {
       Thread.sleep(50);

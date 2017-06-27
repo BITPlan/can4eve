@@ -52,7 +52,7 @@
 			<artifactId>miglayout</artifactId>
 			<version>3.7.4</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.jfree/jfreechart -->
+		<!-- can not use this easily in JavaFX https://mvnrepository.com/artifact/org.jfree/jfreechart -->
 		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreechart</artifactId>

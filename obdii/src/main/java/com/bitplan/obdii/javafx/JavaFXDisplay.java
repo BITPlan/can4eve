@@ -41,6 +41,7 @@ import com.bitplan.can4eve.gui.javafx.GenericPanel;
 //import com.bitplan.can4eve.gui.javafx.LoginDialog;
 import com.bitplan.can4eve.gui.swing.JLink;
 import com.bitplan.can4eve.gui.swing.Translator;
+import com.bitplan.can4eve.util.OSCheck;
 import com.bitplan.elm327.Config;
 import com.bitplan.elm327.Config.ConfigMode;
 import com.bitplan.obdii.CANValueDisplay;
@@ -52,7 +53,7 @@ import com.bitplan.obdii.Preferences.LangChoice;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
+//import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
@@ -99,8 +100,12 @@ public class JavaFXDisplay extends Application
    * @param app - the generic gui application description
    * @param softwareVersion
    */
+  @SuppressWarnings("restriction")
   public JavaFXDisplay(App app, SoftwareVersion softwareVersion) {
-    new JFXPanel();
+    ///https://stackoverflow.com/a/38883432/1497139
+    // http://www.programcreek.com/java-api-examples/index.php?api=com.sun.javafx.application.PlatformImpl
+    com.sun.javafx.application.PlatformImpl.startup(()->{});
+    // new JFXPanel();
     this.setApp(app);
     this.setSoftwareVersion(softwareVersion);
   }
