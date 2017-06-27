@@ -77,7 +77,7 @@ public class TestAppGUI {
     pref.debug = true;
     pref.setLanguage(LangChoice.de);
     String json = pref.asJson();
-    System.out.println(json);
+    //System.out.println(json);
     assertEquals(
         "{\n" + 
         "  \"language\": \"de\",\n" + 
