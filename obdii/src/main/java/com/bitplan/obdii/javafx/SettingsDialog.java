@@ -26,19 +26,30 @@ import java.util.Map;
 import com.bitplan.can4eve.gui.Form;
 import com.bitplan.can4eve.gui.javafx.GenericControl;
 import com.bitplan.can4eve.gui.javafx.GenericDialog;
+import com.bitplan.elm327.Config;
+import com.bitplan.obdii.OBDApp;
+import com.bitplan.obdii.elm327.ELM327;
 
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
 /**
  * Settings dialog
+ * 
  * @author wf
  *
  */
 public class SettingsDialog extends GenericDialog {
 
+  private OBDApp obdApp;
+
   // construct me
-  public SettingsDialog(Stage stage,Form form) {
-    super(stage,form);
+  public SettingsDialog(Stage stage, Form form, OBDApp obdApp) {
+    super(stage, form);
+    this.obdApp=obdApp;
   }
 
   @Override
@@ -46,5 +57,24 @@ public class SettingsDialog extends GenericDialog {
     super.setup(valueMap);
     GenericControl serialDeviceControl = super.controls.get("serialDevice");
     serialDeviceControl.getFileChooser().setInitialDirectory(new File("/dev"));
+    Button button = new Button("test Connection");
+    button.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent e) {
+        Config config=new Config();
+        config.fromMap(SettingsDialog.this.getResult());
+        Platform.runLater(()->testConnection(config));
+      }
+    });
+    grid.add(button, 3, controls.size() + 1);
+  }
+
+  protected void testConnection(Config config) {
+    try {
+      ELM327 elm = obdApp.testConnection(config);
+      super.showAlert("Success","Connection ok", elm.getInfo());
+    } catch (Exception e) {
+      super.showError("Error", "Connection failed",e.getMessage());
+    }
   }
 }

@@ -175,7 +175,7 @@ public class TestELM327 extends TestOBDII {
    */
   private JavaFXDisplay getDisplay() throws Exception {
     Translator.initialize("en");
-    JavaFXDisplay jfxDisplay = new JFXTripletDisplay(App.getInstance(),new DummySoftwareVersion());
+    JavaFXDisplay jfxDisplay = new JFXTripletDisplay(App.getInstance(),new DummySoftwareVersion(), new OBDMain());
     return jfxDisplay;
   }
 

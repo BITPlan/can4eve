@@ -30,6 +30,9 @@ import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.gui.App;
 import com.bitplan.can4eve.gui.Display;
 import com.bitplan.can4eve.gui.swing.Translator;
+import com.bitplan.elm327.Config;
+import com.bitplan.elm327.Config.ConfigMode;
+import com.bitplan.elm327.Config.DeviceType;
 import com.bitplan.elm327.Connection;
 import com.bitplan.elm327.LogImpl;
 import com.bitplan.obdii.Preferences.LangChoice;
@@ -44,7 +47,7 @@ import com.bitplan.triplet.OBDTriplet;
  * @author wf
  *
  */
-public class OBDMain extends Main {
+public class OBDMain extends Main implements OBDApp {
   protected static OBDMain obd;
   protected CANValueDisplay canValueDisplay;
 
@@ -77,7 +80,7 @@ public class OBDMain extends Main {
 
   @Option(name = "--lang", usage = "language\nthe language to use one of:\nen,de")
   LangChoice language = LangChoice.notSet;
-  
+
   @Option(name = "-p", aliases = {
       "--pid" }, usage = "pid to monitor\nthe pid to monitor")
   String pid;
@@ -92,7 +95,7 @@ public class OBDMain extends Main {
 
   @Option(name = "-t", aliases = {
       "--timeout" }, usage = "timeout in msecs\nthe timeout for elm327 communication")
-  static long timeout = 250;
+  static int timeout = 250;
 
   @Option(name = "-c", aliases = {
       "--conn" }, usage = "connection device\nthe connection to use")
@@ -101,6 +104,8 @@ public class OBDMain extends Main {
   private OBDTriplet obdTriplet;
 
   private Socket elmSocket;
+  private VehicleGroup vehicleGroup;
+  private ELM327 elm;
 
   /**
    * the url for the about dialog
@@ -109,12 +114,59 @@ public class OBDMain extends Main {
   public String getUrl() {
     return "http://can4eve.bitplan.com";
   };
-  
+
   /**
    * construct me
    */
   public OBDMain() {
     super.name = "CANTriplet";
+  }
+
+  @Override
+  public ELM327 testConnection(Config config) throws Exception {
+    prepareOBD(config);
+    elm.identify();
+    return elm;
+  }
+
+  /**
+   * prepare the OBD connection
+   * 
+   * @param config
+   * @throws Exception
+   */
+  public void prepareOBD(Config config) throws Exception {
+    vehicleGroup = VehicleGroup.get(this.vehicleGroupName);
+    switch (config.getDeviceType()) {
+    case USB:
+      if (debug)
+        LOGGER.log(Level.INFO, "using device " + device);
+      obdTriplet = new OBDTriplet(vehicleGroup, new File(device));
+      break;
+    case Bluetooth:
+      break;
+    case Network:
+      if (debug)
+        LOGGER.log(Level.INFO,
+            "using host: " + hostName + " port " + portNumber);
+      elmSocket = new Socket(hostName, portNumber);
+      obdTriplet = new OBDTriplet(vehicleGroup, elmSocket);
+      break;
+    case Simulator:
+      break;
+    default:
+      break;
+    }
+    obdTriplet.setDebug(config.isDebug());
+    // obdTriplet.elm327.debug = true;
+    elm = obdTriplet.getElm327();
+    Connection con = elm.getCon();
+    con.setTimeout(config.getTimeout());
+    if (config.isDebug()) {
+      con.setLog(new LogImpl());
+    }
+    con.start();
+    elm.initOBD2();
   }
 
   /**
@@ -123,31 +175,25 @@ public class OBDMain extends Main {
    * @throws Exception
    */
   public void doMonitorOBD() throws Exception {
-    VehicleGroup vehicleGroup = VehicleGroup.get(this.vehicleGroupName);
-    if (device != null) {
-      if (debug)
-        LOGGER.log(Level.INFO, "using device " + device);
-      obdTriplet = new OBDTriplet(vehicleGroup, new File(device));
-    } else {
-      if (debug)
-        LOGGER.log(Level.INFO,
-            "using host: " + hostName + " port " + portNumber);
-      elmSocket = new Socket(hostName, portNumber);
-      obdTriplet = new OBDTriplet(vehicleGroup, elmSocket);
+    Config config = Config.getInstance(ConfigMode.Preferences);
+    if (config == null) {
+      config = new Config();
+      if (device != null) {
+        config.setDeviceType(DeviceType.USB);
+        config.setSerialDevice(device);
+        // FIXME - set Baud rate!
+      } else {
+        config.setDeviceType(DeviceType.Network);
+        config.setHostname(hostName);
+        config.setPort(portNumber);
+      }
+      config.setDebug(debug);
+      config.setTimeout(timeout);
     }
-    obdTriplet.setDebug(debug);
+    prepareOBD(config);
     if (canValueDisplay != null) {
       obdTriplet.showDisplay(canValueDisplay);
     }
-    // obdTriplet.elm327.debug = true;
-    ELM327 elm = obdTriplet.getElm327();
-    Connection con = elm.getCon();
-    con.setTimeout(timeout);
-    if (debug) {
-      con.setLog(new LogImpl());
-    }
-    con.start();
-    elm.initOBD2();
     if (this.logFileName != null) {
       obdTriplet.logResponses(new File(logFileName), "Triplet");
     }
@@ -156,7 +202,8 @@ public class OBDMain extends Main {
     } else if (pid != null)
       obdTriplet.checkPid(canValueDisplay, pid, frameLimit);
     else {
-      obdTriplet.STMMonitor(canValueDisplay, obdTriplet.getCANValues(), frameLimit);
+      obdTriplet.STMMonitor(canValueDisplay, obdTriplet.getCANValues(),
+          frameLimit);
     }
   }
 
@@ -167,13 +214,13 @@ public class OBDMain extends Main {
    *           if a problem occurs
    */
   public void work() throws Exception {
-    Preferences preferences=Preferences.getInstance();
-    if (this.language!=LangChoice.notSet) {
+    Preferences preferences = Preferences.getInstance();
+    if (this.language != LangChoice.notSet) {
       Translator.initialize(this.language.name());
     } else {
       Translator.initialize(preferences.getLanguage().name());
     }
-    
+
     if (this.showVersion || this.debug)
       showVersion();
     if (this.showHelp) {
@@ -182,8 +229,8 @@ public class OBDMain extends Main {
       JavaFXDisplay jfxDisplay;
       switch (displayChoice) {
       case JavaFX:
-        jfxDisplay=new JFXTripletDisplay(App.getInstance(),this);
-        canValueDisplay=jfxDisplay;
+        jfxDisplay = new JFXTripletDisplay(App.getInstance(), this, this);
+        canValueDisplay = jfxDisplay;
         break;
       default:
       }
@@ -192,7 +239,7 @@ public class OBDMain extends Main {
       } else {
         // run GUI
         if (this.canValueDisplay instanceof Display) {
-          Display display = (Display)canValueDisplay;
+          Display display = (Display) canValueDisplay;
           display.show();
           display.waitOpen();
           display.waitClose();
@@ -214,4 +261,5 @@ public class OBDMain extends Main {
     if (!testMode)
       System.exit(result);
   }
+
 }

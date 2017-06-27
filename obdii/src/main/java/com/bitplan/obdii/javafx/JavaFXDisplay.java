@@ -46,6 +46,7 @@ import com.bitplan.elm327.Config.ConfigMode;
 import com.bitplan.obdii.CANValueDisplay;
 import com.bitplan.obdii.ErrorHandler;
 import com.bitplan.obdii.LabelField;
+import com.bitplan.obdii.OBDApp;
 import com.bitplan.obdii.Preferences;
 import com.bitplan.obdii.Preferences.LangChoice;
 
@@ -55,8 +56,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -79,6 +78,7 @@ public class JavaFXDisplay extends WaitableApp implements CANValueDisplay, Event
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.javafx");
 
   private static com.bitplan.can4eve.gui.App app;
+  OBDApp obdApp;
   private static SoftwareVersion softwareVersion;
   private MenuBar menuBar;
   
@@ -93,9 +93,11 @@ public class JavaFXDisplay extends WaitableApp implements CANValueDisplay, Event
    * construct me from an abstract application description and a software version
    * @param app - the generic gui application description
    * @param softwareVersion
+   * @param obdApp 
    */
-  public JavaFXDisplay(App app, SoftwareVersion softwareVersion) {
+  public JavaFXDisplay(App app, SoftwareVersion softwareVersion, OBDApp obdApp) {
     toolkitInit();
+    this.obdApp=obdApp;
     // new JFXPanel();
     this.setApp(app);
     this.setSoftwareVersion(softwareVersion);
@@ -282,19 +284,7 @@ public class JavaFXDisplay extends WaitableApp implements CANValueDisplay, Event
     }
   }
   
-  /**
-   * show the given alert
-   * @param title
-   * @param headerText
-   * @param content
-   */
-  private void showAlert(String title,String headerText,String content) {
-    Alert alert = new Alert(AlertType.INFORMATION);
-    alert.setTitle(title);
-    alert.setHeaderText(headerText);
-    alert.setContentText(content);
-    alert.showAndWait();
-  }
+  
 
   /**
    * show an About dialog
@@ -302,7 +292,7 @@ public class JavaFXDisplay extends WaitableApp implements CANValueDisplay, Event
   private void showAbout() {
     String headerText = softwareVersion.getName() + " "
         + softwareVersion.getVersion();
-    showAlert("About",headerText,softwareVersion.getUrl());
+    GenericDialog.showAlert("About",headerText,softwareVersion.getUrl());
    
   }
 
@@ -332,7 +322,7 @@ public class JavaFXDisplay extends WaitableApp implements CANValueDisplay, Event
       preferences.save();
       if (!lang.equals(preferences.getLanguage())) {
         Translator.initialize(preferences.getLanguage().name());
-        this.showAlert(i18n("language_changed_title"), i18n("language_changed"), i18n("newlanguage_restart"));
+        GenericDialog.showAlert(i18n("language_changed_title"), i18n("language_changed"), i18n("newlanguage_restart"));
       }
     }
   }
@@ -355,7 +345,7 @@ public class JavaFXDisplay extends WaitableApp implements CANValueDisplay, Event
   public void showSettings() throws Exception {
     Config config = Config.getInstance(ConfigMode.Preferences);
     SettingsDialog settingsDialog = new SettingsDialog(stage,
-        app.getFormById("preferencesGroup", "settingsForm"));
+        app.getFormById("preferencesGroup", "settingsForm"),obdApp);
     if (config == null)
       config = new Config();
     Optional<Map<String, Object>> result = settingsDialog.show(config.asMap());

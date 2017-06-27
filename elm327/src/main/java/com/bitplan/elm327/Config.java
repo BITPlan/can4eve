@@ -50,6 +50,14 @@ public class Config {
   Boolean debug;         // e.g. true
   private static Map<ConfigMode,Config> configs=new HashMap<ConfigMode,Config>();
 
+  public DeviceType getDeviceType() {
+    return deviceType;
+  }
+
+  public void setDeviceType(DeviceType deviceType) {
+    this.deviceType = deviceType;
+  }
+
   public String getSerialDevice() {
     return serialDevice;
   }
@@ -92,6 +100,10 @@ public class Config {
 
   public void setDebug(boolean debug) {
     this.debug = debug;
+  }
+
+  public boolean isDebug() {
+    return debug;
   }
 
   public String getLogPrefix() {

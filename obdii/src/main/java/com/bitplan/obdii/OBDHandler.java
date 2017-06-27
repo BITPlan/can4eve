@@ -124,7 +124,6 @@ public abstract class OBDHandler implements ResponseHandler {
     }
   }
   
-
   /**
    * create an OBDTriplet connection via the given socket
    * 

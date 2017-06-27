@@ -50,11 +50,11 @@ public class JFXTripletDisplay extends JavaFXDisplay {
    * 
    * @param app
    * @param softwareVersion
+   * @param obdApp 
    */
-  public JFXTripletDisplay(App app, SoftwareVersion softwareVersion) {
-    super(app, softwareVersion);
+  public JFXTripletDisplay(App app, SoftwareVersion softwareVersion, OBDApp obdApp) {
+    super(app, softwareVersion, obdApp);
   }
-
   
   
   /**

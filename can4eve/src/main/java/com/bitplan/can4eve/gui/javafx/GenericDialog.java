@@ -30,8 +30,10 @@ import com.bitplan.can4eve.gui.Form;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
@@ -47,6 +49,7 @@ public class GenericDialog {
   protected Map<String, GenericControl> controls;
   private Dialog<Map<String, Object>> dialog;
   private ButtonType okButtonType;
+  protected GridPane grid;
 
   /**
    * construct me from the given form description
@@ -105,7 +108,7 @@ public class GenericDialog {
     dialog.getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
 
     // Create labels and fields.
-    GridPane grid = new GridPane();
+    grid = new GridPane();
     grid.setHgap(10);
     grid.setVgap(10);
     grid.setPadding(new Insets(20, 150, 10, 10));
@@ -118,6 +121,19 @@ public class GenericDialog {
         control.setValue(valueMap.get(control.field.getId()));
       }
     }
+  }
+  
+  /**
+   * get the result
+   * @return
+   */
+  public Map<String, Object> getResult() {
+    Map<String, Object> result = new HashMap<String, Object>();
+    for (com.bitplan.can4eve.gui.Field field : form.getFields()) {
+      GenericControl gcontrol = controls.get(field.getId());
+      result.put(field.getId(), gcontrol.getValue());
+    }
+    return result;
   }
 
   /**
@@ -137,12 +153,7 @@ public class GenericDialog {
     // clicked.
     dialog.setResultConverter(dialogButton -> {
       if (dialogButton == okButtonType) {
-        Map<String, Object> result = new HashMap<String, Object>();
-        for (com.bitplan.can4eve.gui.Field field : form.getFields()) {
-          GenericControl gcontrol = controls.get(field.getId());
-          result.put(field.getId(), gcontrol.getValue());
-        }
-        return result;
+        return getResult();
       }
       return null;
     });
@@ -158,6 +169,41 @@ public class GenericDialog {
    */
   public Optional<Map<String, Object>> show() {
     return show(null);
+  }
+  
+  /**
+   * show the given alert
+   * @param title
+   * @param headerText
+   * @param content
+   */
+  public static void showAlert(String title,String headerText,String content) {
+    showAlert(title,headerText,content,AlertType.INFORMATION);
+  }
+  
+  /**
+   * show an Error
+   * @param title
+   * @param headerText
+   * @param content
+   */
+  public void showError(String title,String headerText,String content) {
+    showAlert(title,headerText,content,AlertType.ERROR);
+  }
+  
+  /**
+   * show an alert
+   * @param title
+   * @param headerText
+   * @param content
+   * @param alertType
+   */
+  public static void showAlert(String title,String headerText,String content, AlertType alertType) {
+    Alert alert = new Alert(alertType);
+    alert.setTitle(title);
+    alert.setHeaderText(headerText);
+    alert.setContentText(content);
+    alert.showAndWait();
   }
 
 }
