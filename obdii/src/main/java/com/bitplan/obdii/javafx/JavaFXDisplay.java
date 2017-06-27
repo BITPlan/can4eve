@@ -82,15 +82,11 @@ public class JavaFXDisplay extends WaitableApp implements CANValueDisplay, Event
   private static SoftwareVersion softwareVersion;
   private MenuBar menuBar;
   
-
   private VBox root;
-
   private TabPane tabPane;
 
   private Map<String, GenericControl> controls;
-
   protected boolean available;
-
   public static final boolean debug=false;
 
   /**
@@ -174,8 +170,6 @@ public class JavaFXDisplay extends WaitableApp implements CANValueDisplay, Event
     }
   }
 
- 
-
   /**
    * create the Menu Bar
    * 
@@ -205,8 +199,18 @@ public class JavaFXDisplay extends WaitableApp implements CANValueDisplay, Event
     this.stage = stage;
     Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
     root = new VBox();
-    Scene scene = new Scene(root, primScreenBounds.getWidth() / 2,
-        primScreenBounds.getHeight() / 2);
+    double screenWidth=primScreenBounds.getWidth();
+    double screenHeight=primScreenBounds.getHeight();
+    int screenPercent;
+    try {
+      screenPercent = Preferences.getInstance().getScreenPercent();
+    } catch (Exception e) {
+      screenPercent=100;
+    }
+    double sceneWidth=screenWidth*screenPercent/100.0;
+    double sceneHeight=screenHeight*screenPercent/100.0;
+  
+    Scene scene = new Scene(root,  sceneWidth,sceneHeight);
     scene.setFill(Color.OLDLACE);
     createMenuBar(scene);
     stage.setScene(scene);

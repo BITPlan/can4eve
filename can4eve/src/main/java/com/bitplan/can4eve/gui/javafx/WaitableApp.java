@@ -1,3 +1,23 @@
+/**
+ *
+ * This file is part of the https://github.com/BITPlan/can4eve open source project
+ *
+ * Copyright 2017 BITPlan GmbH https://github.com/BITPlan
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ *  You may obtain a copy of the License at
+ *
+ *  http:www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.bitplan.can4eve.gui.javafx;
 
 import com.bitplan.can4eve.gui.Display;
@@ -20,9 +40,10 @@ public abstract class WaitableApp extends Application implements Display {
    */
   @SuppressWarnings("restriction")
   public static void toolkitInit() {
-    ///https://stackoverflow.com/a/38883432/1497139
+    /// https://stackoverflow.com/a/38883432/1497139
     // http://www.programcreek.com/java-api-examples/index.php?api=com.sun.javafx.application.PlatformImpl
-    com.sun.javafx.application.PlatformImpl.startup(()->{});
+    com.sun.javafx.application.PlatformImpl.startup(() -> {
+    });
   }
 
   @Override
@@ -78,7 +99,7 @@ public abstract class WaitableApp extends Application implements Display {
    */
   public void close() {
     if (stage != null)
-      Platform.runLater(() -> stage.hide());
+      Platform.runLater(() -> stage.close());
   }
 
 }

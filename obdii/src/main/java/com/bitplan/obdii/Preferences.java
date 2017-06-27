@@ -38,8 +38,9 @@ public class Preferences implements JsonAble {
     en, de, notSet
   }
 
-  private LangChoice language=LangChoice.en;
+  private LangChoice language = LangChoice.en;
   Boolean debug;
+  int screenPercent = 100;
 
   public LangChoice getLanguage() {
     return language;
@@ -49,12 +50,27 @@ public class Preferences implements JsonAble {
     this.language = language;
   }
 
+  public int getScreenPercent() {
+    return screenPercent;
+  }
+
+  public void setScreenPercent(int screenPercent) {
+    this.screenPercent = screenPercent;
+  }
+
   @Override
   public void fromMap(Map<String, Object> map) {
     String langChoiceStr = (String) map.get("language");
     if (langChoiceStr != null)
       this.setLanguage(LangChoice.valueOf(langChoiceStr));
     this.debug = (Boolean) map.get("debug");
+    Object value = map.get("screenPercent");
+    if (value != null) {
+      if (value instanceof Double)
+        this.screenPercent = ((Double) value).intValue();
+      else
+        this.screenPercent=(Integer)value;
+    }
   }
 
   @Override
@@ -76,8 +92,8 @@ public class Preferences implements JsonAble {
       JsonManager<Preferences> jmPreferences = new JsonManagerImpl<Preferences>(
           Preferences.class);
       instance = jmPreferences.fromJsonFile(jsonFile);
-      if (instance==null)
-        instance=new Preferences();
+      if (instance == null)
+        instance = new Preferences();
     }
     return instance;
   }

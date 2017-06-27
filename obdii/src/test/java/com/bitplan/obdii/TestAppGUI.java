@@ -77,9 +77,13 @@ public class TestAppGUI {
     pref.debug = true;
     pref.setLanguage(LangChoice.de);
     String json = pref.asJson();
-    // System.out.println(json);
+    System.out.println(json);
     assertEquals(
-        "{\n" + "  \"language\": \"de\",\n" + "  \"debug\": true\n" + "}",
+        "{\n" + 
+        "  \"language\": \"de\",\n" + 
+        "  \"debug\": true,\n" + 
+        "  \"screenPercent\": 100\n" + 
+        "}",
         json);
     JsonManager<Preferences> jmPreferences = new JsonManagerImpl<Preferences>(
         Preferences.class);
@@ -158,8 +162,7 @@ public class TestAppGUI {
     SampleApp sampleApp=new SampleApp("Cell Temperature",valuePlot.getBarChart());
     sampleApp.show();
     sampleApp.waitOpen();
-    Thread.sleep(2500);
-    sampleApp.close();
+    Thread.sleep(5000);
   }
   
   @Test
@@ -174,8 +177,7 @@ public class TestAppGUI {
     SampleApp sampleApp=new SampleApp("SOC/RR",valuePlot.getLineChart());
     sampleApp.show();
     sampleApp.waitOpen();
-    Thread.sleep(2500);
-    //sampleApp.close();
+    Thread.sleep(5000);
   }
 
 }

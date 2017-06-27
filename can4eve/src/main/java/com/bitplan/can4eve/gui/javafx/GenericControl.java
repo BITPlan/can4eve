@@ -127,7 +127,7 @@ public class GenericControl {
       tooltip.setText(field.getHint());
       control.setTooltip(tooltip);
     }
-    label = new Label(field.getTitle() + ":");
+    label = new Label(field.getLabel() + ":");
   }
 
   /**

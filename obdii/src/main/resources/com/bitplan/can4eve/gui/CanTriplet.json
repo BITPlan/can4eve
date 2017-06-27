@@ -70,6 +70,13 @@
 							"choices": "en,de"
 					  },
 					  {
+							"title": "screenPercent",
+							"label": "% of Screen",
+							"hint": "percentage of display to be used 100=Fullscreen",
+							"format": "%s",
+							"type": "Integer"
+						},
+					  {
 							"title": "debug",
 							"hint": "output debugging information for the application",
 							"format": "%s",
