@@ -26,7 +26,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Date;
@@ -50,10 +49,8 @@ import com.bitplan.can4eve.gui.swing.Translator;
 import com.bitplan.elm327.Config;
 import com.bitplan.elm327.Config.ConfigMode;
 import com.bitplan.elm327.Connection;
-import com.bitplan.elm327.LogImpl;
 import com.bitplan.elm327.Packet;
 import com.bitplan.obdii.elm327.ELM327;
-import com.bitplan.obdii.elm327.ELM327SimulatorConnection;
 import com.bitplan.obdii.elm327.ElmSimulator;
 import com.bitplan.obdii.javafx.JavaFXDisplay;
 import com.bitplan.triplet.OBDTriplet;
@@ -100,28 +97,7 @@ public class TestELM327 extends TestOBDII {
    * @throws Exception
    */
   public ELM327 getSimulation() throws Exception {
-    ELM327 elm327 = new ELM327(getVehicleGroup());
-    ElmSimulator.verbose = debug;
-    ElmSimulator elm327Simulator = ElmSimulator.getInstance();
-    elm327Simulator.debug = debug;
-    ServerSocket serverSocket = elm327Simulator.getServerSocket();
-    Socket clientSocket = new Socket("localhost", serverSocket.getLocalPort());
-    Connection con = elm327.getCon();
-    con.connect(clientSocket);
-    if (debug)
-      con.setLog(new LogImpl());
-    con.start();
-    int WAIT_ALIVE=80;  // 40 failed 2017-06-27 on travis to wait 10 msecs is not enough for jenkins on capri
-    
-    Thread.sleep(WAIT_ALIVE); 
-    assertTrue(elm327.getCon().isAlive());
-    ELM327SimulatorConnection elm327SimulatorConnection = elm327Simulator
-        .getSimulatorConnection(clientSocket);
-    assertNotNull("the elmSimulator should be alive after "+WAIT_ALIVE+" msecs",elm327SimulatorConnection);
-    Connection simcon = elm327SimulatorConnection.getCon();
-    assertTrue(simcon.isAlive());
-    con.setTimeout(SIMULATOR_TIMEOUT);
-    simcon.setTimeout(SIMULATOR_TIMEOUT);
+    ELM327 elm327 = ElmSimulator.getSimulation(getVehicleGroup(),debug,SIMULATOR_TIMEOUT);
     return elm327;
   }
   

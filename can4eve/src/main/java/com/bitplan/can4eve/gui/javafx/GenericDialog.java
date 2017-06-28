@@ -20,6 +20,8 @@
  */
 package com.bitplan.can4eve.gui.javafx;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,13 +31,16 @@ import com.bitplan.can4eve.gui.Form;
 
 import javafx.application.Platform;
 import javafx.geometry.Insets;
-import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
-import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 
 /**
@@ -89,6 +94,7 @@ public class GenericDialog {
 
   /**
    * setup the control according to the given valueMap
+   * 
    * @param valueMap
    */
   public void setup(Map<String, Object> valueMap) {
@@ -105,7 +111,8 @@ public class GenericDialog {
 
     // Set the button types.
     okButtonType = new ButtonType("Ok", ButtonData.OK_DONE);
-    dialog.getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
+    dialog.getDialogPane().getButtonTypes().addAll(okButtonType,
+        ButtonType.CANCEL);
 
     // Create labels and fields.
     grid = new GridPane();
@@ -122,9 +129,10 @@ public class GenericDialog {
       }
     }
   }
-  
+
   /**
    * get the result
+   * 
    * @return
    */
   public Map<String, Object> getResult() {
@@ -170,40 +178,88 @@ public class GenericDialog {
   public Optional<Map<String, Object>> show() {
     return show(null);
   }
-  
+
   /**
    * show the given alert
+   * 
    * @param title
    * @param headerText
    * @param content
    */
-  public static void showAlert(String title,String headerText,String content) {
-    showAlert(title,headerText,content,AlertType.INFORMATION);
+  public static void showAlert(String title, String headerText,
+      String content) {
+    showAlert(title, headerText, content, AlertType.INFORMATION);
   }
-  
+
   /**
    * show an Error
+   * 
    * @param title
    * @param headerText
    * @param content
    */
-  public static void showError(String title,String headerText,String content) {
-    showAlert(title,headerText,content,AlertType.ERROR);
+  public static void showError(String title, String headerText,
+      String content) {
+    showAlert(title, headerText, content, AlertType.ERROR);
   }
-  
+
+  /**
+   * show the Exception
+   * @param title
+   * @param headerText
+   * @param th
+   */
+  public static void showException(String title, String headerText,
+      Throwable th) {
+    Alert alert = new Alert(AlertType.ERROR);
+    alert.setTitle(title);
+    alert.setHeaderText(headerText);
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw);
+    th.printStackTrace(pw);
+    String exceptionText = sw.toString();
+    
+    alert.setContentText(th.getClass().getSimpleName()+":\n"+th.getLocalizedMessage());
+    Label label = new Label("The exception stacktrace is:");
+    
+    TextArea textArea = new TextArea(exceptionText);
+    textArea.setEditable(false);
+    textArea.setWrapText(true);
+
+    textArea.setMaxWidth(Double.MAX_VALUE);
+    textArea.setMaxHeight(Double.MAX_VALUE);
+    GridPane.setVgrow(textArea, Priority.ALWAYS);
+    GridPane.setHgrow(textArea, Priority.ALWAYS);
+
+    GridPane expContent = new GridPane();
+    expContent.setMaxWidth(Double.MAX_VALUE);
+    expContent.add(label, 0, 0);
+    expContent.add(textArea, 0, 1);
+
+    // Set expandable Exception into the dialog pane.
+    alert.getDialogPane().setExpandableContent(expContent);
+
+    alert.showAndWait();
+  }
+
   /**
    * show an alert
+   * 
    * @param title
    * @param headerText
    * @param content
    * @param alertType
    */
-  public static void showAlert(String title,String headerText,String content, AlertType alertType) {
-    Alert alert = new Alert(alertType);
-    alert.setTitle(title);
-    alert.setHeaderText(headerText);
-    alert.setContentText(content);
-    alert.showAndWait();
+  public static void showAlert(String title, String headerText, String content,
+      AlertType alertType) {
+    // make sure the showAndWait is on the FX thread - even if a little later:-)
+    Platform.runLater(() -> {
+      Alert alert = new Alert(alertType);
+      alert.setTitle(title);
+      alert.setHeaderText(headerText);
+      alert.setContentText(content);
+      alert.showAndWait();
+    });
   }
 
 }

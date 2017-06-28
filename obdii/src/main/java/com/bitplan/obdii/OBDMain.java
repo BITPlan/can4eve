@@ -38,6 +38,7 @@ import com.bitplan.elm327.Connection;
 import com.bitplan.elm327.LogImpl;
 import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.elm327.ELM327;
+import com.bitplan.obdii.elm327.ElmSimulator;
 import com.bitplan.obdii.javafx.JavaFXDisplay;
 import com.bitplan.triplet.OBDTriplet;
 
@@ -155,10 +156,8 @@ public class OBDMain extends Main implements OBDApp {
             new File(config.getSerialDevice()));
       } else {
         if (config.isDebug())
-          LOGGER.log(Level.INFO,
-              String.format(
-                  "using device %s at %6d baud" ,config.getSerialDevice(),
-                  config.getBaudRate()));
+          LOGGER.log(Level.INFO, String.format("using device %s at %6d baud",
+              config.getSerialDevice(), config.getBaudRate()));
         obdTriplet = new OBDTriplet(vehicleGroup, config.getSerialDevice(),
             config.getBaudRate());
       }
@@ -173,23 +172,33 @@ public class OBDMain extends Main implements OBDApp {
       obdTriplet = new OBDTriplet(vehicleGroup, elmSocket);
       break;
     case Simulator:
+      if (config.isDebug())
+        LOGGER.log(Level.INFO, "Using simulator on server port %5d",
+            ElmSimulator.DEFAULT_PORT);
+      elm = ElmSimulator.getSimulation(vehicleGroup, config.isDebug(),
+          ElmSimulator.SIMULATOR_TIMEOUT);
+      obdTriplet = new OBDTriplet(vehicleGroup, elm);
       break;
     default:
       break;
     }
-    if (obdTriplet==null) {
+    if (obdTriplet == null) {
       throw new Exception(Translator.translate(I18n.INVALID_CONFIGURATION));
     }
-    obdTriplet.setDebug(config.isDebug());
-    elm = obdTriplet.getElm327();
-    Connection con = elm.getCon();
-    con.setTimeout(config.getTimeout());
-    if (config.isDebug()) {
-      con.setLog(new LogImpl());
-      // TODO preferences debug is different then connection debug!
-      elm.setLog(con.getLog());
+    // the simulator is pre started and timeout and debug set
+    // all other devices are configured here
+    if (config.getDeviceType() != DeviceType.Simulator) {
+      obdTriplet.setDebug(config.isDebug());
+      elm = obdTriplet.getElm327();
+      Connection con = elm.getCon();
+      con.setTimeout(config.getTimeout());
+      if (config.isDebug()) {
+        con.setLog(new LogImpl());
+        // TODO preferences debug is different then connection debug!
+        elm.setLog(con.getLog());
+      }
+      con.start();
     }
-    con.start();
     elm.initOBD2();
   }
 
@@ -251,10 +260,10 @@ public class OBDMain extends Main implements OBDApp {
     }
     return config;
   }
-  
+
   @Override
   public void setConfig(Config config) {
-    this.config=config;
+    this.config = config;
   }
 
   /**
@@ -285,7 +294,7 @@ public class OBDMain extends Main implements OBDApp {
       default:
       }
       if (this.monitor) {
-        Platform.runLater(()->{
+        Platform.runLater(() -> {
           try {
             start();
           } catch (Exception e) {
@@ -317,5 +326,5 @@ public class OBDMain extends Main implements OBDApp {
     if (!testMode)
       System.exit(result);
   }
-  
+
 }

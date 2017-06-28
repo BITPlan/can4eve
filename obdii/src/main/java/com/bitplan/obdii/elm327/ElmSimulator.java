@@ -33,6 +33,11 @@ import com.bitplan.elm327.Connection;
 import com.bitplan.elm327.LogImpl;
 import com.bitplan.obdii.Main;
 
+/**
+ * ELMSimulator
+ * @author wf
+ *
+ */
 public class ElmSimulator extends Main {
   /**
    * current Version of the can4eve tool
@@ -51,6 +56,9 @@ public class ElmSimulator extends Main {
       "--vehicle-group" }, usage = "vehicleGroup\nthe vehicleGroup to connect to")
   String vehicleGroupName = "triplet";
 
+  public static int SIMULATOR_TIMEOUT = 50; // Simulator should be quick 2 msecs is
+  // feasible
+  
   public static boolean verbose = true;
   private static ElmSimulator instance;
   private ServerSocket serverSocket;
@@ -159,6 +167,45 @@ public class ElmSimulator extends Main {
       this.startServer();
       serverThread.join();
     }
+  }
+  
+  /**
+   * get the simulation
+   * @param vehicleGroup
+   * @param debug
+   * @param simulatorTimeout
+   * @return
+   * @throws Exception
+   */
+  public static ELM327 getSimulation(VehicleGroup vehicleGroup, boolean debug, int simulatorTimeout) throws Exception {
+    ELM327 elm327 = new ELM327(vehicleGroup);
+    ElmSimulator.verbose = debug;
+    ElmSimulator elm327Simulator = ElmSimulator.getInstance();
+    elm327Simulator.debug = debug;
+    ServerSocket serverSocket = elm327Simulator.getServerSocket();
+    Socket clientSocket = new Socket("localhost", serverSocket.getLocalPort());
+    Connection con = elm327.getCon();
+    con.connect(clientSocket);
+    if (debug)
+      con.setLog(new LogImpl());
+    con.start();
+    int WAIT_ALIVE=80;  // 40 failed 2017-06-27 on travis to wait 10 msecs is not enough for jenkins on capri
+    
+    Thread.sleep(WAIT_ALIVE); 
+    if (!elm327.getCon().isAlive()) {
+      throw new Exception(String.format("ELM327 Simulator client not alive after %3d msecs",WAIT_ALIVE));
+    }
+    ELM327SimulatorConnection elm327SimulatorConnection = elm327Simulator
+        .getSimulatorConnection(clientSocket);
+    if (elm327SimulatorConnection==null) {
+      throw new Exception("the elmSimulator should be alive after "+WAIT_ALIVE+" msecs");
+    }
+    Connection simcon = elm327SimulatorConnection.getCon();
+    if (!simcon.isAlive())
+      throw new Exception("the elmSimulator connection should be alive after "+WAIT_ALIVE+" msecs");
+    con.setTimeout(simulatorTimeout);
+    simcon.setTimeout(simulatorTimeout);
+    return elm327;
   }
 
   /**

@@ -243,12 +243,12 @@ public class JavaFXDisplay extends WaitableApp
    * @param app
    */
   private void setup(App app) {
-    statusBar=new StatusBar();
+    statusBar = new StatusBar();
     statusBar.setText("Not connected");
-    watchDogLabel=new Label();
+    watchDogLabel = new Label();
     watchDogLabel.setText("? ");
     watchDogLabel.setTextFill(Color.web("808080"));
-    watchDogLabel.setFont(new Font("Arial",24));
+    watchDogLabel.setFont(new Font("Arial", 24));
     statusBar.getLeftItems().add(watchDogLabel);
     root.getChildren().add(statusBar);
     tabPane = new TabPane();
@@ -282,19 +282,25 @@ public class JavaFXDisplay extends WaitableApp
           showSettings(false);
         } else if ("startMenuItem".equals(menuItem.getId())) {
           Task<Void> task = new Task<Void>() {
-            @Override public Void call() {
+            @Override
+            public Void call() {
               try {
+                LOGGER.log(Level.INFO, "starting monitor task");
                 obdApp.start();
+                LOGGER.log(Level.INFO, "after monitor task");
               } catch (Exception e) {
+                LOGGER.log(Level.INFO, "monitor task exception", e);
                 handle(e);
               }
+              LOGGER.log(Level.INFO, "finally after monitor task");
               return null;
             }
           };
           new Thread(task).start();
         } else if ("stopMenuItem".equals(menuItem.getId())) {
           Task<Void> task = new Task<Void>() {
-            @Override public Void call() {
+            @Override
+            public Void call() {
               try {
                 obdApp.stop();
               } catch (Exception e) {
@@ -320,8 +326,13 @@ public class JavaFXDisplay extends WaitableApp
     }
   }
 
-  private void handle(Exception e) {
-    GenericDialog.showError(I18n.get(I18n.ERROR), I18n.get(I18n.PROBLEM_OCCURED), e.getClass().getSimpleName()+":\n"+e.getMessage());
+  /**
+   * handle the given exception
+   * @param th
+   */
+  private void handle(Throwable th) {
+    Platform.runLater(() -> GenericDialog.showException((I18n.get(I18n.ERROR)),
+        I18n.get(I18n.PROBLEM_OCCURED), th));
   }
 
   /**

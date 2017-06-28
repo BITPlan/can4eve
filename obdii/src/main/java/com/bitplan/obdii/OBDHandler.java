@@ -140,6 +140,18 @@ public abstract class OBDHandler implements ResponseHandler {
   }
   
   /**
+   * construct me with a preconfigured elm
+   * @param vehicleGroup
+   * @param elm
+   */
+  public OBDHandler(VehicleGroup vehicleGroup, ELM327 elm) {
+    this(vehicleGroup);
+    this.setElm327(elm);
+    Connection con=this.getElm327().getCon();
+    attachConnection(con);
+  }
+  
+  /**
    * create an OBDTriplet connection via the given socket
    * 
    * @param elmSocket

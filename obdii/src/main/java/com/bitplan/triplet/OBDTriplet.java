@@ -170,6 +170,15 @@ public class OBDTriplet extends OBDHandler {
   }
 
   /**
+   * create me with a preconfigured elm (e.g. simulator)
+   * @param vehicleGroup
+   * @param elm
+   */
+  public OBDTriplet(VehicleGroup vehicleGroup, ELM327 elm) {
+    super(vehicleGroup,elm);
+  }
+
+  /**
    * get the CANInfo for the given canInfo Name
    * 
    * @param canInfoName
