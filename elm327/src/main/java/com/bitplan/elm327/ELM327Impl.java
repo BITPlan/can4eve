@@ -293,7 +293,7 @@ public class ELM327Impl implements ELM327 {
     r = send("AT @2");
     deviceId = r.getData();
     carVoltage = sendCommand("AT RV", ".*").getData(); // Car VoltageAT R
-    if (description.startsWith("SCANTOOL")) {
+    if (id!=null && description!=null && description.startsWith("SCANTOOL")) {
       useable=true;
       STN=true; // this device has STM command
       hardwareId = sendCommand("STDI", ".*").getData(); // Hardware ID string

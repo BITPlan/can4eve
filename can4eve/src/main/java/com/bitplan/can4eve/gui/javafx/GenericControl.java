@@ -83,6 +83,13 @@ public class GenericControl {
         || "File".equals(field.getType())) {
       textField = new TextField();
       textField.setPromptText(field.getTitle());
+      if (field.getFieldSize()!=null) {
+        // heuristic correction of columns specified in generic description
+        // versus Java FX interpretation - the columns are too wide as of 2017-06-28
+        int columnCount=field.getFieldSize()*4/6;
+        if (columnCount>0)
+          textField.setPrefColumnCount(columnCount);
+      }
       control = textField;
     } else if ("Choice".equals(field.getType())) {
       choiceBox = new ChoiceBox<String>();

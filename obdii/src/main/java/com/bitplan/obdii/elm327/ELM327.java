@@ -84,6 +84,5 @@ public class ELM327 extends com.bitplan.elm327.ELM327Impl  {
       }
     });
   }
-
   
 }

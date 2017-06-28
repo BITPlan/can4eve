@@ -74,30 +74,35 @@ import javafx.stage.Stage;
  * @author wf
  *
  */
-public class JavaFXDisplay extends WaitableApp implements CANValueDisplay, EventHandler<ActionEvent> {
+public class JavaFXDisplay extends WaitableApp
+    implements CANValueDisplay, EventHandler<ActionEvent> {
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.javafx");
 
   private static com.bitplan.can4eve.gui.App app;
   OBDApp obdApp;
   private static SoftwareVersion softwareVersion;
   private MenuBar menuBar;
-  
+
   private VBox root;
   private TabPane tabPane;
 
   private Map<String, GenericControl> controls;
   protected boolean available;
-  public static final boolean debug=false;
+  public static final boolean debug = false;
 
   /**
-   * construct me from an abstract application description and a software version
-   * @param app - the generic gui application description
+   * construct me from an abstract application description and a software
+   * version
+   * 
+   * @param app
+   *          - the generic gui application description
    * @param softwareVersion
-   * @param obdApp 
+   * @param obdApp
    */
-  public JavaFXDisplay(App app, SoftwareVersion softwareVersion, OBDApp obdApp) {
+  public JavaFXDisplay(App app, SoftwareVersion softwareVersion,
+      OBDApp obdApp) {
     toolkitInit();
-    this.obdApp=obdApp;
+    this.obdApp = obdApp;
     // new JFXPanel();
     this.setApp(app);
     this.setSoftwareVersion(softwareVersion);
@@ -139,7 +144,7 @@ public class JavaFXDisplay extends WaitableApp implements CANValueDisplay, Event
 
   @Override
   public void updateField(String title, Object value, int updateCount) {
-    if (controls==null)
+    if (controls == null)
       return;
     GenericControl control = controls.get(title);
     if (control == null) {
@@ -183,8 +188,7 @@ public class JavaFXDisplay extends WaitableApp implements CANValueDisplay, Event
       Menu menu = new Menu(i18n(amenu.getId()));
       menuBar.getMenus().add(menu);
       for (com.bitplan.can4eve.gui.MenuItem amenuitem : amenu.getMenuItems()) {
-        MenuItem menuItem = new MenuItem(
-            i18n(amenuitem.getId()));
+        MenuItem menuItem = new MenuItem(i18n(amenuitem.getId()));
         menuItem.setOnAction(this);
         menuItem.setId(amenuitem.getId());
         menu.getItems().add(menuItem);
@@ -201,18 +205,18 @@ public class JavaFXDisplay extends WaitableApp implements CANValueDisplay, Event
     this.stage = stage;
     Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
     root = new VBox();
-    double screenWidth=primScreenBounds.getWidth();
-    double screenHeight=primScreenBounds.getHeight();
+    double screenWidth = primScreenBounds.getWidth();
+    double screenHeight = primScreenBounds.getHeight();
     int screenPercent;
     try {
       screenPercent = Preferences.getInstance().getScreenPercent();
     } catch (Exception e) {
-      screenPercent=100;
+      screenPercent = 100;
     }
-    double sceneWidth=screenWidth*screenPercent/100.0;
-    double sceneHeight=screenHeight*screenPercent/100.0;
-  
-    Scene scene = new Scene(root,  sceneWidth,sceneHeight);
+    double sceneWidth = screenWidth * screenPercent / 100.0;
+    double sceneHeight = screenHeight * screenPercent / 100.0;
+
+    Scene scene = new Scene(root, sceneWidth, sceneHeight);
     scene.setFill(Color.OLDLACE);
     createMenuBar(scene);
     stage.setScene(scene);
@@ -220,7 +224,7 @@ public class JavaFXDisplay extends WaitableApp implements CANValueDisplay, Event
     stage.show();
     stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2);
     stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 4);
-    available=true;
+    available = true;
   }
 
   /**
@@ -257,7 +261,13 @@ public class JavaFXDisplay extends WaitableApp implements CANValueDisplay, Event
         } else if ("feedbackMenuItem".equals(menuItem.getId())) {
           showFeedback();
         } else if ("settingsMenuItem".equals(menuItem.getId())) {
-          showSettings();
+          showSettings(false);
+        } else if ("startMenuItem".equals(menuItem.getId())) {
+          obdApp.start();
+        } else if ("stopMenuItem".equals(menuItem.getId())) {
+          obdApp.stop();
+        } else if ("testMenuItem".equals(menuItem.getId())) {
+          showSettings(true);
         } else if ("preferencesMenuItem".equals(menuItem.getId())) {
           showPreferences();
         } else if ("vehicleMenuItem".equals(menuItem.getId())) {
@@ -268,8 +278,12 @@ public class JavaFXDisplay extends WaitableApp implements CANValueDisplay, Event
         }
       }
     } catch (Exception e) {
-      ErrorHandler.handle(e);
+      handle(e);
     }
+  }
+
+  private void handle(Exception e) {
+    GenericDialog.showError("Error", "A problem occured", e.getClass().getSimpleName()+":\n"+e.getMessage());
   }
 
   /**
@@ -280,11 +294,9 @@ public class JavaFXDisplay extends WaitableApp implements CANValueDisplay, Event
         app.getFormById("preferencesGroup", "vehicleForm"));
     Optional<Map<String, Object>> result = vehicleDialog.show();
     if (result.isPresent()) {
-      
+
     }
   }
-  
-  
 
   /**
    * show an About dialog
@@ -292,8 +304,8 @@ public class JavaFXDisplay extends WaitableApp implements CANValueDisplay, Event
   private void showAbout() {
     String headerText = softwareVersion.getName() + " "
         + softwareVersion.getVersion();
-    GenericDialog.showAlert("About",headerText,softwareVersion.getUrl());
-   
+    GenericDialog.showAlert("About", headerText, softwareVersion.getUrl());
+
   }
 
   /**
@@ -306,34 +318,38 @@ public class JavaFXDisplay extends WaitableApp implements CANValueDisplay, Event
       ErrorHandler.handle(e);
     }
   }
-  
+
   /**
    * show the Preferences
-   * @throws Exception 
+   * 
+   * @throws Exception
    */
   public void showPreferences() throws Exception {
-    Preferences preferences=Preferences.getInstance();
+    Preferences preferences = Preferences.getInstance();
     GenericDialog preferencesDialog = new GenericDialog(stage,
         app.getFormById("preferencesGroup", "preferencesForm"));
-    Optional<Map<String, Object>> result = preferencesDialog.show(preferences.asMap());
+    Optional<Map<String, Object>> result = preferencesDialog
+        .show(preferences.asMap());
     if (result.isPresent()) {
       LangChoice lang = preferences.getLanguage();
       preferences.fromMap(result.get());
       preferences.save();
       if (!lang.equals(preferences.getLanguage())) {
         Translator.initialize(preferences.getLanguage().name());
-        GenericDialog.showAlert(i18n("language_changed_title"), i18n("language_changed"), i18n("newlanguage_restart"));
+        GenericDialog.showAlert(i18n("language_changed_title"),
+            i18n("language_changed"), i18n("newlanguage_restart"));
       }
     }
   }
-  
+
   /**
    * internationalization function
+   * 
    * @param text
    * @return translated text
    */
   public String i18n(String text) {
-    String i18n=Translator.translate(text);
+    String i18n = Translator.translate(text);
     return i18n;
   }
 
@@ -342,26 +358,31 @@ public class JavaFXDisplay extends WaitableApp implements CANValueDisplay, Event
    * 
    * @throws Exception
    */
-  public void showSettings() throws Exception {
+  public void showSettings(boolean test) throws Exception {
     Config config = Config.getInstance(ConfigMode.Preferences);
     SettingsDialog settingsDialog = new SettingsDialog(stage,
-        app.getFormById("preferencesGroup", "settingsForm"),obdApp);
+        app.getFormById("preferencesGroup", "settingsForm"), obdApp);
     if (config == null)
       config = new Config();
-    Optional<Map<String, Object>> result = settingsDialog.show(config.asMap());
-    if (result.isPresent()) {
-      Map<String, Object> map = result.get();
-      if (debug) {
-        for (Entry<String, Object> me : map.entrySet()) {
-          String value = "?";
-          if (me.getValue() != null)
-            value = me.getValue().toString() + "("
-                + me.getValue().getClass().getSimpleName() + ")";
-          LOGGER.log(Level.INFO, me.getKey() + "=" + value);
+    if (test)
+      settingsDialog.testConnection(config);
+    else {
+      Optional<Map<String, Object>> result = settingsDialog
+          .show(config.asMap());
+      if (result.isPresent()) {
+        Map<String, Object> map = result.get();
+        if (debug) {
+          for (Entry<String, Object> me : map.entrySet()) {
+            String value = "?";
+            if (me.getValue() != null)
+              value = me.getValue().toString() + "("
+                  + me.getValue().getClass().getSimpleName() + ")";
+            LOGGER.log(Level.INFO, me.getKey() + "=" + value);
+          }
         }
+        config.fromMap(map);
+        config.save(ConfigMode.Preferences);
       }
-      config.fromMap(map);
-      config.save(ConfigMode.Preferences);
     }
   }
 

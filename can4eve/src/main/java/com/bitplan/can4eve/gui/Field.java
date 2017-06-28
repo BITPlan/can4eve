@@ -84,7 +84,7 @@ public class Field {
   public void setLabelSize(int labelSize) {
     this.labelSize = labelSize;
   }
-  public int getFieldSize() {
+  public Integer getFieldSize() {
     return fieldSize;
   }
   public void setFieldSize(int fieldSize) {

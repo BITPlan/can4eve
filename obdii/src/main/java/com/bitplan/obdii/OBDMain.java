@@ -21,6 +21,7 @@
 package com.bitplan.obdii;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.Socket;
 import java.util.logging.Level;
 
@@ -39,6 +40,8 @@ import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.obdii.javafx.JavaFXDisplay;
 import com.bitplan.triplet.OBDTriplet;
+
+import javafx.application.Platform;
 
 /**
  * main class for OBD connection to CAN bus of one of the Triplet cars
@@ -110,6 +113,7 @@ public class OBDMain extends Main implements OBDApp {
   private Socket elmSocket;
   private VehicleGroup vehicleGroup;
   private ELM327 elm;
+  private Config config;
 
   /**
    * the url for the about dialog
@@ -143,11 +147,18 @@ public class OBDMain extends Main implements OBDApp {
     vehicleGroup = VehicleGroup.get(this.vehicleGroupName);
     switch (config.getDeviceType()) {
     case USB:
-      if (debug)
-        LOGGER.log(Level.INFO, "using device " + config.getSerialDevice());
       if (config.getDirect()) {
-        obdTriplet = new OBDTriplet(vehicleGroup, new File(config.getSerialDevice()));
+        if (config.isDebug())
+          LOGGER.log(Level.INFO,
+              "using device (direct)" + config.getSerialDevice());
+        obdTriplet = new OBDTriplet(vehicleGroup,
+            new File(config.getSerialDevice()));
       } else {
+        if (config.isDebug())
+          LOGGER.log(Level.INFO,
+              String.format(
+                  "using device %s at %6d baud" + config.getSerialDevice(),
+                  config.getBaudRate()));
         obdTriplet = new OBDTriplet(vehicleGroup, config.getSerialDevice(),
             config.getBaudRate());
       }
@@ -155,10 +166,10 @@ public class OBDMain extends Main implements OBDApp {
     case Bluetooth:
       break;
     case Network:
-      if (debug)
-        LOGGER.log(Level.INFO,
-            "using host: " + hostName + " port " + portNumber);
-      elmSocket = new Socket(hostName, portNumber);
+      if (config.isDebug())
+        LOGGER.log(Level.INFO, String.format("using host: %s port %5d",
+            config.getHostname(), config.getPort()));
+      elmSocket = new Socket(config.getHostname(), config.getPort());
       obdTriplet = new OBDTriplet(vehicleGroup, elmSocket);
       break;
     case Simulator:
@@ -167,39 +178,22 @@ public class OBDMain extends Main implements OBDApp {
       break;
     }
     obdTriplet.setDebug(config.isDebug());
-    // obdTriplet.elm327.debug = true;
     elm = obdTriplet.getElm327();
     Connection con = elm.getCon();
     con.setTimeout(config.getTimeout());
     if (config.isDebug()) {
       con.setLog(new LogImpl());
+      // TODO preferences debug is different then connection debug!
+      elm.setLog(con.getLog());
     }
     con.start();
     elm.initOBD2();
   }
 
-  /**
-   * initialize the monitoring
-   * 
-   * @throws Exception
-   */
-  public void doMonitorOBD() throws Exception {
-    Config config = Config.getInstance(ConfigMode.Preferences);
-    if (config == null) {
-      config = new Config();
-      if (device != null) {
-        config.setDeviceType(DeviceType.USB);
-        config.setSerialDevice(device);
-        config.setBaudRate(baudRate);
-      } else {
-        config.setDeviceType(DeviceType.Network);
-        config.setHostname(hostName);
-        config.setPort(portNumber);
-      }
-      config.setDebug(debug);
-      config.setTimeout(timeout);
-    }
-    prepareOBD(config);
+  @Override
+  public ELM327 start() throws Exception {
+    if (elm == null)
+      prepareOBD(getConfig());
     if (canValueDisplay != null) {
       obdTriplet.showDisplay(canValueDisplay);
     }
@@ -214,6 +208,50 @@ public class OBDMain extends Main implements OBDApp {
       obdTriplet.STMMonitor(canValueDisplay, obdTriplet.getCANValues(),
           frameLimit);
     }
+    return elm;
+  }
+
+  @Override
+  public ELM327 stop() throws Exception {
+    if (elm != null)
+      elm.reinitCommunication(config.getTimeout());
+    return elm;
+  }
+
+  /**
+   * get the configuration
+   * 
+   * @return
+   * @throws Exception
+   */
+  public Config getConfig() {
+    if (config == null) {
+      try {
+        config = Config.getInstance(ConfigMode.Preferences);
+      } catch (FileNotFoundException e) {
+        // ignore
+      }
+      if (config == null) {
+        config = new Config();
+        if (device != null) {
+          config.setDeviceType(DeviceType.USB);
+          config.setSerialDevice(device);
+          config.setBaudRate(baudRate);
+        } else {
+          config.setDeviceType(DeviceType.Network);
+          config.setHostname(hostName);
+          config.setPort(portNumber);
+        }
+        config.setDebug(debug);
+        config.setTimeout(timeout);
+      }
+    }
+    return config;
+  }
+  
+  @Override
+  public void setConfig(Config config) {
+    this.config=config;
   }
 
   /**
@@ -244,7 +282,13 @@ public class OBDMain extends Main implements OBDApp {
       default:
       }
       if (this.monitor) {
-        doMonitorOBD();
+        Platform.runLater(()->{
+          try {
+            start();
+          } catch (Exception e) {
+            ErrorHandler.handle(e);
+          }
+        });
       } else {
         // run GUI
         if (this.canValueDisplay instanceof Display) {
@@ -270,5 +314,5 @@ public class OBDMain extends Main implements OBDApp {
     if (!testMode)
       System.exit(result);
   }
-
+  
 }

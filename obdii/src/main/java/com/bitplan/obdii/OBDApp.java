@@ -29,5 +29,9 @@ import com.bitplan.obdii.elm327.ELM327;
  *
  */
 public interface OBDApp {
+  public void setConfig(Config config);
+  public Config getConfig();
   public ELM327 testConnection(Config config) throws Exception;
+  public ELM327 start() throws Exception;
+  public ELM327 stop() throws Exception;
 }

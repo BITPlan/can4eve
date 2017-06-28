@@ -187,7 +187,7 @@ public class GenericDialog {
    * @param headerText
    * @param content
    */
-  public void showError(String title,String headerText,String content) {
+  public static void showError(String title,String headerText,String content) {
     showAlert(title,headerText,content,AlertType.ERROR);
   }
   

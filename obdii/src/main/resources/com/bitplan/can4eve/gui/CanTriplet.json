@@ -24,7 +24,8 @@
 						{
 							"title": "port",
 							"format": "%4d",
-							"type": "Integer"
+							"type": "Integer",
+							"fieldSize": 5
 						},
 						{
 							"title": "serialDevice",
@@ -399,7 +400,23 @@
 				"id": "fileMenu",
 				"title": "File",
 				"shortCut": "F",
-				"menuItems": [{
+				"menuItems": [
+				{
+						"id": "startMenuItem",
+						"title": "Start",
+						"shortCut": "S"
+					},
+					{
+						"id": "haltMenuItem",
+						"title": "Halt",
+						"shortCut": "H"
+					},
+					{
+						"id": "testMenuItem",
+						"title": "Test",
+						"shortCut": "T"
+					},
+					{
 						"id": "quitMenuItem",
 						"title": "Quit",
 						"shortCut": "Q"
