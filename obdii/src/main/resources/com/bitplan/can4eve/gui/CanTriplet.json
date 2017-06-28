@@ -464,6 +464,11 @@
 						"id": "feedbackMenuItem",
 						"title": "send Feedback",
 						"shortCut": "F"
+					},
+					{
+						"id": "bugReportMenuItem",
+						"title": "create BugReport",
+						"shortCut": "B"
 					}
 				]
 			}

@@ -29,4 +29,6 @@ public interface SoftwareVersion {
   public String getName();
   public String getVersion();
   public String getUrl();
+  public String getSupportEMail();
+  public String getSupportEMailPreamble();
 }

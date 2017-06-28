@@ -117,7 +117,15 @@ public class TestELM327 extends TestOBDII {
     public String getUrl() {
       return "http://can4eve.bitplan.com";
     }
-    
+
+    @Override
+    public String getSupportEMail() {
+      return "support@bitplan.com";
+    }
+    @Override
+    public String getSupportEMailPreamble() {
+      return "Dear can4eve support\n";
+    }
   }
 
   /**

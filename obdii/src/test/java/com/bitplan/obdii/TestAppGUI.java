@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.bitplan.can4eve.CANInfo;
@@ -38,6 +39,7 @@ import com.bitplan.can4eve.CANValue.IntegerValue;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.gui.App;
 import com.bitplan.can4eve.gui.Group;
+import com.bitplan.can4eve.gui.javafx.GenericDialog;
 import com.bitplan.can4eve.gui.javafx.SampleApp;
 import com.bitplan.can4eve.json.JsonManager;
 import com.bitplan.can4eve.json.JsonManagerImpl;
@@ -77,14 +79,9 @@ public class TestAppGUI {
     pref.debug = true;
     pref.setLanguage(LangChoice.de);
     String json = pref.asJson();
-    //System.out.println(json);
-    assertEquals(
-        "{\n" + 
-        "  \"language\": \"de\",\n" + 
-        "  \"debug\": true,\n" + 
-        "  \"screenPercent\": 100\n" + 
-        "}",
-        json);
+    // System.out.println(json);
+    assertEquals("{\n" + "  \"language\": \"de\",\n" + "  \"debug\": true,\n"
+        + "  \"screenPercent\": 100\n" + "}", json);
     JsonManager<Preferences> jmPreferences = new JsonManagerImpl<Preferences>(
         Preferences.class);
     Preferences pref2 = jmPreferences.fromJson(json);
@@ -128,20 +125,14 @@ public class TestAppGUI {
 
   // Swing Version of things
   /*
-  @Test
-  public void testLineChart() throws Exception {
-    List<CANValue<?>> plotValues = this.getPlotValues();
-    String title = "SOC/RR";
-    String xTitle = "time";
-    String yTitle = "%/km";
-    final CANValueHistoryPlot valuePlot = new CANValueHistoryPlot(title, xTitle,
-        yTitle, plotValues);
-    final PanelFrame plotDemo = new PanelFrame(false);
-    plotDemo.show(valuePlot.getPanel());
-    plotDemo.waitOpen();
-    Thread.sleep(5000);
-    plotDemo.frame.setVisible(false);
-  }*/
+   * @Test public void testLineChart() throws Exception { List<CANValue<?>>
+   * plotValues = this.getPlotValues(); String title = "SOC/RR"; String xTitle =
+   * "time"; String yTitle = "%/km"; final CANValueHistoryPlot valuePlot = new
+   * CANValueHistoryPlot(title, xTitle, yTitle, plotValues); final PanelFrame
+   * plotDemo = new PanelFrame(false); plotDemo.show(valuePlot.getPanel());
+   * plotDemo.waitOpen(); Thread.sleep(5000); plotDemo.frame.setVisible(false);
+   * }
+   */
 
   @Test
   public void testBarChartJavaFx() throws Exception {
@@ -149,22 +140,23 @@ public class TestAppGUI {
     CANInfo cellInfo = vg.getCANInfoByName("CellTemperature");
     assertNotNull(cellInfo);
     DoubleValue cellTemp = new DoubleValue(cellInfo);
-    Date timeStamp=new Date();
+    Date timeStamp = new Date();
     for (int i = 0; i < cellTemp.canInfo.getMaxIndex(); i++) {
-      cellTemp.setValue(i, 15+Math.random()*15, timeStamp);
+      cellTemp.setValue(i, 15 + Math.random() * 15, timeStamp);
     }
     String title = "Cell Temperature";
     String xTitle = "cell";
     String yTitle = "° Celsius";
     SampleApp.toolkitInit();
-    final JFXCanCellStatePlot valuePlot = new JFXCanCellStatePlot(title,
-        xTitle, yTitle, cellTemp,2.0,0.5);
-    SampleApp sampleApp=new SampleApp("Cell Temperature",valuePlot.getBarChart());
+    final JFXCanCellStatePlot valuePlot = new JFXCanCellStatePlot(title, xTitle,
+        yTitle, cellTemp, 2.0, 0.5);
+    SampleApp sampleApp = new SampleApp("Cell Temperature",
+        valuePlot.getBarChart());
     sampleApp.show();
     sampleApp.waitOpen();
     Thread.sleep(5000);
   }
-  
+
   @Test
   public void testLineChartJavaFx() throws Exception {
     List<CANValue<?>> plotValues = this.getPlotValues();
@@ -174,10 +166,20 @@ public class TestAppGUI {
     SampleApp.toolkitInit();
     final JFXCanValueHistoryPlot valuePlot = new JFXCanValueHistoryPlot(title,
         xTitle, yTitle, plotValues);
-    SampleApp sampleApp=new SampleApp("SOC/RR",valuePlot.getLineChart());
+    SampleApp sampleApp = new SampleApp("SOC/RR", valuePlot.getLineChart());
     sampleApp.show();
     sampleApp.waitOpen();
     Thread.sleep(5000);
   }
 
+  @Ignore
+  // if enable would actually call e-mail software
+  public void testSupportMail() {
+    try {
+      throw new Exception("a problem!");
+    } catch (Throwable th) {
+      String exceptionText=GenericDialog.getStackTraceText(th);
+      //GenericDialog.sendReport("support@bitplan.com", "testSupportMail", exceptionText);
+    } 
+  }
 }

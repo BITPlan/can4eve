@@ -277,7 +277,9 @@ public class JavaFXDisplay extends WaitableApp
         } else if ("aboutMenuItem".equals(menuItem.getId())) {
           showAbout();
         } else if ("feedbackMenuItem".equals(menuItem.getId())) {
-          showFeedback();
+          GenericDialog.sendReport(softwareVersion, softwareVersion.getName()+" feedback", "...");
+        } else if ("bugReportMenuItem".equals(menuItem.getId())) {
+          createIssue();
         } else if ("settingsMenuItem".equals(menuItem.getId())) {
           showSettings(false);
         } else if ("startMenuItem".equals(menuItem.getId())) {
@@ -332,7 +334,7 @@ public class JavaFXDisplay extends WaitableApp
    */
   private void handle(Throwable th) {
     Platform.runLater(() -> GenericDialog.showException((I18n.get(I18n.ERROR)),
-        I18n.get(I18n.PROBLEM_OCCURED), th));
+        I18n.get(I18n.PROBLEM_OCCURED), th,softwareVersion));
   }
 
   /**
@@ -358,9 +360,9 @@ public class JavaFXDisplay extends WaitableApp
   }
 
   /**
-   * browse to the feedback page
+   * browse to the issue page
    */
-  public void showFeedback() {
+  public void createIssue() {
     try {
       JLink.open(App.getInstance().getFeedback());
     } catch (Exception e) {

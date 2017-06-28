@@ -20,19 +20,31 @@
  */
 package com.bitplan.can4eve.gui.javafx;
 
+import java.awt.Desktop;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import com.bitplan.can4eve.ErrorHandler;
+import com.bitplan.can4eve.SoftwareVersion;
 import com.bitplan.can4eve.gui.Form;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
@@ -49,6 +61,8 @@ import javafx.stage.Stage;
  * @author wf
  */
 public class GenericDialog {
+  protected static Logger LOGGER = Logger
+      .getLogger("com.bitplan.can4eve.gui.javafx");
   private Form form;
   private Stage stage;
   protected Map<String, GenericControl> controls;
@@ -204,24 +218,98 @@ public class GenericDialog {
   }
 
   /**
-   * show the Exception
-   * @param title
-   * @param headerText
-   * @param th
+   * encode the given text
+   * 
+   * @param text
+   * @return the given text
    */
-  public static void showException(String title, String headerText,
-      Throwable th) {
-    Alert alert = new Alert(AlertType.ERROR);
-    alert.setTitle(title);
-    alert.setHeaderText(headerText);
+  public static String urlEncode(String text) {
+    String encoded;
+    try {
+      encoded = URLEncoder.encode(text, "utf-8").replace("+", "%20");
+    } catch (UnsupportedEncodingException e) {
+      // no way
+      return "";
+    }
+    return encoded;
+  }
+
+  /**
+   * send a Report
+   * 
+   * @param softwareVersion.getSupportEMail()
+   * @param subject
+   * @param body
+   * @throws IOException
+   */
+  public static void sendReport(SoftwareVersion softwareVersion, String subject,
+      String body) {
+    Desktop desktop = Desktop.getDesktop();
+    // TODO check max message body
+    // if (body.length()>100) {
+    try {
+      StringBuilder builder = new StringBuilder();
+      builder.append("mailto:" + softwareVersion.getSupportEMail() + "?subject="
+          + urlEncode(subject) + "&body=");
+      // encodes the stack trace in a mailto URI friendly form
+      // https://stackoverflow.com/a/749829/1497139
+      // https://stackoverflow.com/a/30260197/1497139
+      // https://stackoverflow.com/q/9435835/1497139
+      String preamble = softwareVersion.getSupportEMailPreamble();
+      builder.append(urlEncode(preamble));
+      builder.append(urlEncode(body));
+      URI uri = URI.create(builder.toString());
+
+      desktop.mail(uri);
+    } catch (Exception e) {
+      ErrorHandler.handle(e);
+    }
+  }
+
+  /**
+   * get the stack trace for the given exception
+   * 
+   * @param th
+   * @return - the stack trace
+   */
+  public static String getStackTraceText(Throwable th) {
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter(sw);
     th.printStackTrace(pw);
     String exceptionText = sw.toString();
-    
-    alert.setContentText(th.getClass().getSimpleName()+":\n"+th.getLocalizedMessage());
+    return exceptionText;
+  }
+
+  /**
+   * show the Exception
+   * 
+   * @param title
+   * @param headerText
+   * @param th
+   * @param softwareVersion
+   *          - the mail address to send exceptions to
+   */
+  public static void showException(String title, String headerText,
+      Throwable th, SoftwareVersion softwareVersion) {
+    Alert alert = new Alert(AlertType.ERROR);
+    alert.setTitle(title);
+    alert.setHeaderText(headerText);
+    String exceptionText = getStackTraceText(th);
+    LOGGER.log(Level.INFO, exceptionText);
+
+    alert.setContentText(
+        th.getClass().getSimpleName() + ":\n" + th.getLocalizedMessage());
     Label label = new Label("The exception stacktrace is:");
-    
+
+    Button button = new Button("Report Issue ...");
+    button.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(final ActionEvent e) {
+        GenericDialog.sendReport(softwareVersion, "can4eve issue",
+            "There seems to be trouble with the exception:\n"+exceptionText);
+      }
+    });
+
     TextArea textArea = new TextArea(exceptionText);
     textArea.setEditable(false);
     textArea.setWrapText(true);
@@ -233,8 +321,10 @@ public class GenericDialog {
 
     GridPane expContent = new GridPane();
     expContent.setMaxWidth(Double.MAX_VALUE);
-    expContent.add(label, 0, 0);
-    expContent.add(textArea, 0, 1);
+
+    expContent.add(button, 0, 0);
+    expContent.add(label, 0, 1);
+    expContent.add(textArea, 0, 2);
 
     // Set expandable Exception into the dialog pane.
     alert.getDialogPane().setExpandableContent(expContent);

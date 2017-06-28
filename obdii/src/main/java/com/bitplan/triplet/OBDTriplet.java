@@ -176,6 +176,7 @@ public class OBDTriplet extends OBDHandler {
    */
   public OBDTriplet(VehicleGroup vehicleGroup, ELM327 elm) {
     super(vehicleGroup,elm);
+    postConstruct();
   }
 
   /**

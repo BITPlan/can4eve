@@ -323,8 +323,24 @@ public class OBDMain extends Main implements OBDApp {
   public static void main(String[] args) {
     obd = new OBDMain();
     int result = obd.maininstance(args);
-    if (!testMode)
+    if (!testMode) {
+      LOGGER.log(Level.INFO,"System exit "+result);
       System.exit(result);
+    }
+  }
+
+  @Override
+  public String getSupportEMail() {
+    return "support@bitplan.com";
+  }
+
+  @Override
+  public String getSupportEMailPreamble() {
+    String javaversion = System.getProperty("java.version");
+    String os = System.getProperty("os.name");
+    return String.format(
+        "Dear can4eve support\nI am using version %s of the software on %s using Java %s\n",
+        VERSION, os, javaversion);
   }
 
 }

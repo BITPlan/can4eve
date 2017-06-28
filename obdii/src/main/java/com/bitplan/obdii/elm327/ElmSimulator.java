@@ -236,4 +236,14 @@ public class ElmSimulator extends Main {
       System.exit(result);
   }
 
+  @Override
+  public String getSupportEMail() {
+    return "support@bitplan.com";
+  }
+
+  @Override
+  public String getSupportEMailPreamble() {
+    return "Dear can4eve support\n";
+  }
+
 }
