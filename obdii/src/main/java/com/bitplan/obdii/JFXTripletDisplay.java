@@ -56,7 +56,6 @@ public class JFXTripletDisplay extends JavaFXDisplay {
     super(app, softwareVersion, obdApp);
   }
   
-  
   /**
    * update the given tab with the given region
    * @param tab
@@ -79,6 +78,8 @@ public class JFXTripletDisplay extends JavaFXDisplay {
   public void updateHistory(DoubleValue xValue, IntegerValue yValue, String title,
       String xTitle, String yTitle) {
     Tab activeTab = super.getActiveTab();
+    if (activeTab==null)
+      return;
     String activePanelTitle = activeTab.getText();
     if ("history".equals(activePanelTitle)) {
       List<CANValue<?>> plotValues = new ArrayList<CANValue<?>>();
@@ -99,6 +100,8 @@ public class JFXTripletDisplay extends JavaFXDisplay {
       return;
     String title = canValue.canInfo.getTitle();
     Tab activeTab = super.getActiveTab();
+    if (activeTab==null)
+      return;
     String activePanelTitle = activeTab.getText();
     if (title.toLowerCase().startsWith("cell")) {
       // TODO - use some kind of id to clearly identify plotable stuff

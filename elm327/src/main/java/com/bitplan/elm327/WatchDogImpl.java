@@ -20,12 +20,15 @@
  */
 package com.bitplan.elm327;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+/**
+ * Watch dog implementation
+ * @author wf
+ *
+ */
 public class WatchDogImpl extends Thread implements WatchDog {
   
   Map<Watchable,Date> watched=new HashMap<Watchable,Date>();

@@ -84,7 +84,8 @@ public abstract class WaitableApp extends Application implements Display {
    * show me
    */
   public void show() {
-
+    if (stage!=null)
+      return;
     Platform.runLater(() -> {
       try {
         this.start(new Stage());

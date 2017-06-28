@@ -73,6 +73,7 @@ public class OBDMain extends Main implements OBDApp {
 
   @Option(name = "--limit", aliases = {
       "--framelimit" }, usage = "limit\nthe maximum number of frames to read")
+  // FIXME
   protected long frameLimit = 500 * 4800; // some 1 1/2 hours at 500fps
 
   @Option(name = "-l", aliases = {
@@ -206,9 +207,9 @@ public class OBDMain extends Main implements OBDApp {
   public ELM327 start() throws Exception {
     if (elm == null)
       prepareOBD(getConfig());
-    if (canValueDisplay != null) {
-      obdTriplet.showDisplay(canValueDisplay);
-    }
+    // make can Values available
+    obdTriplet.setUpCanValues();
+
     if (this.logFileName != null) {
       obdTriplet.logResponses(new File(logFileName), "Triplet");
     }
@@ -225,6 +226,8 @@ public class OBDMain extends Main implements OBDApp {
 
   @Override
   public ELM327 stop() throws Exception {
+    // stop monitoring;
+    obdTriplet.setMonitoring(false);
     if (elm != null)
       elm.reinitCommunication(config.getTimeout());
     return elm;
@@ -294,6 +297,7 @@ public class OBDMain extends Main implements OBDApp {
       default:
       }
       if (this.monitor) {
+        // FIXME this is not a run later but potentially a new thread
         Platform.runLater(() -> {
           try {
             start();

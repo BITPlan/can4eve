@@ -172,6 +172,8 @@ public class JavaFXDisplay extends WaitableApp
    * @return - the activeTab
    */
   public Tab getActiveTab() {
+    if (tabPane==null)
+      return null;
     SingleSelectionModel<Tab> smodel = tabPane.getSelectionModel();
     Tab selectedTab = smodel.getSelectedItem();
     return selectedTab;
@@ -244,11 +246,10 @@ public class JavaFXDisplay extends WaitableApp
    */
   private void setup(App app) {
     statusBar = new StatusBar();
-    statusBar.setText("Not connected");
     watchDogLabel = new Label();
-    watchDogLabel.setText("? ");
     watchDogLabel.setTextFill(Color.web("808080"));
     watchDogLabel.setFont(new Font("Arial", 24));
+    this.setWatchDogState("?", "-");
     statusBar.getLeftItems().add(watchDogLabel);
     root.getChildren().add(statusBar);
     tabPane = new TabPane();
@@ -283,6 +284,7 @@ public class JavaFXDisplay extends WaitableApp
         } else if ("settingsMenuItem".equals(menuItem.getId())) {
           showSettings(false);
         } else if ("startMenuItem".equals(menuItem.getId())) {
+          setWatchDogState("⚙",I18n.get(I18n.MONITORING));
           Task<Void> task = new Task<Void>() {
             @Override
             public Void call() {
@@ -299,7 +301,9 @@ public class JavaFXDisplay extends WaitableApp
             }
           };
           new Thread(task).start();
-        } else if ("stopMenuItem".equals(menuItem.getId())) {
+        } else if ("haltMenuItem".equals(menuItem.getId())) {
+          // TODO use better symbol e.g. icon
+          setWatchDogState("X",I18n.get(I18n.HALTED));
           Task<Void> task = new Task<Void>() {
             @Override
             public Void call() {
@@ -326,6 +330,16 @@ public class JavaFXDisplay extends WaitableApp
     } catch (Exception e) {
       handle(e);
     }
+  }
+
+  /**
+   * set the watchDog state with the given symbol and state
+   * @param symbol
+   * @param state
+   */
+  private void setWatchDogState(String symbol, String state) {
+    this.watchDogLabel.setText(symbol);
+    this.statusBar.setText(state);
   }
 
   /**

@@ -54,6 +54,8 @@ public class I18n {
   public static final String CONNECTION_FAILED="connection_failed";
   public static final String SUPPORT_EMAIL = "support_email";
   public static final String BUGREPORTMENUITEM="bugReportMenuItem"; //create Bugreport ...
+  public static final String MONITORING = "monitoring";
+  public static final String HALTED = "halted";
   /**
    * Translate the given text
    * @param text - the text to translate

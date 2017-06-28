@@ -112,6 +112,14 @@ public class OBDTriplet extends OBDHandler {
     this.withHistory = withHistory;
   }
 
+  public boolean isMonitoring() {
+    return monitoring;
+  }
+
+  public void setMonitoring(boolean monitoring) {
+    this.monitoring = monitoring;
+  }
+
   /**
    * construct me
    */
@@ -539,9 +547,9 @@ public class OBDTriplet extends OBDHandler {
   long latestTotalUpdates;
   private ScheduledExecutorService displayexecutor;
   private Runnable displayTask;
-  private boolean withHistory = false;
+  private boolean withHistory = true;
   private Date latestHistoryUpdate;
-  private Date latestCellValueUpdate;
+  private boolean monitoring;
 
   /**
    * show the values
@@ -597,16 +605,10 @@ public class OBDTriplet extends OBDHandler {
   }
 
   /**
-   * show the given display
-   * 
-   * @param display
-   * @throws Exception 
+   * make the canValues available
    */
-  public void showDisplay(CANValueDisplay display) throws Exception {
-    display.addField("date", "%s", 10, 40);
+  public void setUpCanValues() throws Exception {
     canValues = getCANValues();
-    display.addCanValueFields(canValues);
-    display.show();
   }
 
   /**
@@ -662,13 +664,16 @@ public class OBDTriplet extends OBDHandler {
     this.initOBD();
     this.STMFilter(canValues);
     lcon.output("STM");
-    if (display != null)
-      startDisplay(display);
-    for (long i = 0; i < frameLimit; i++) {
+    setMonitoring(true);
+    // regularly update the display
+    this.startDisplay(display);
+    for (long i = 0; i < frameLimit && isMonitoring(); i++) {
       lcon.getResponse(null);
     }
-    if (display != null)
-      stopDisplay();
+    this.stopDisplay();
+    if (debug) {
+      LOGGER.log(Level.INFO,"STM finished");
+    }
   }
 
   /**
@@ -688,7 +693,7 @@ public class OBDTriplet extends OBDHandler {
         }
       }
     };
-    // update meter value every 2 seconds
+    // update meter value every 200 milliseconds
     displayexecutor.scheduleAtFixedRate(displayTask, 0, 200,
         TimeUnit.MILLISECONDS);
   }
@@ -700,7 +705,6 @@ public class OBDTriplet extends OBDHandler {
     if (displayexecutor != null) {
       displayexecutor.shutdown();
     }
-
   }
 
   /**

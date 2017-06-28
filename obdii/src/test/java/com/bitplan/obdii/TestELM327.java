@@ -145,8 +145,9 @@ public class TestELM327 extends TestOBDII {
       elmSocket = getTestVehicleSocket(config);
       obdTriplet = new OBDTriplet(getVehicleGroup(), elmSocket, debug);
     }
+    obdTriplet.setUpCanValues();
     display = getDisplay();
-    obdTriplet.showDisplay(display);
+    display.show();
     // obdTriplet.getElm327().debug = debug;
     if (!simulated)
       obdTriplet.getElm327().getCon().start();
@@ -475,14 +476,14 @@ public class TestELM327 extends TestOBDII {
         "capture_chg_1104.txt" };
     // final int[] max = { 1800000,122000,30000, 50000, 2000000 };
     final int[] max = { 72000, 180000, 122000, 30000, 50000, 200000 };
+    display = getDisplay();
+    display.show();
+    display.waitOpen();
 
     for (String fileName : fileNames) {
       obdTriplet = new OBDTriplet(getVehicleGroup());
       obdTriplet.setWithHistory(withHistory);
       // obdTriplet.setDebug(true);
-      display = getDisplay();
-      obdTriplet.showDisplay(display);
-      display.waitOpen();
       obdTriplet.getElm327().setHeader(true);
       obdTriplet.getElm327().setLength(true);
       File logCAN = new File("src/test/data/" + fileName + ".zip");

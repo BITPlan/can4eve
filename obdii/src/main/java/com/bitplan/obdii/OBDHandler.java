@@ -256,8 +256,10 @@ public abstract class OBDHandler implements ResponseHandler {
     for (long i = 0; i < frameLimit; i++) {
       // FIXME - Pseudo request - timeout handling ...
       lelm.getCon().getResponse(null);
-      if (display != null)
+      if (display != null) {
+        // FIXME all values on every request?
         showValues(display);
+      }
     }
   }
   
