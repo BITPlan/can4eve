@@ -75,6 +75,7 @@ public class SettingsDialog extends GenericDialog {
    * @param config
    */
   protected void testConnection(Config config) {
+    Platform.runLater(() ->{
     try {
       ELM327 elm = obdApp.testConnection(config);
       String info=elm.getInfo();
@@ -83,5 +84,6 @@ public class SettingsDialog extends GenericDialog {
       super.showError("Error", "Connection failed",e.getClass().getSimpleName()+":"+e.getMessage());
       ErrorHandler.handle(e);
     }
+    });
   }
 }

@@ -263,9 +263,21 @@ public class JavaFXDisplay extends WaitableApp
         } else if ("settingsMenuItem".equals(menuItem.getId())) {
           showSettings(false);
         } else if ("startMenuItem".equals(menuItem.getId())) {
-          obdApp.start();
+          Platform.runLater(()->{
+            try {
+              obdApp.start();
+            } catch (Exception e) {
+              handle(e);
+            }
+          });
         } else if ("stopMenuItem".equals(menuItem.getId())) {
-          obdApp.stop();
+          Platform.runLater(()->{
+            try {
+              obdApp.stop();
+            } catch (Exception e) {
+              handle(e);
+            }
+          });
         } else if ("testMenuItem".equals(menuItem.getId())) {
           showSettings(true);
         } else if ("preferencesMenuItem".equals(menuItem.getId())) {
