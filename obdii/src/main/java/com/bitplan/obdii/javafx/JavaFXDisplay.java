@@ -51,6 +51,7 @@ import com.bitplan.obdii.Preferences;
 import com.bitplan.obdii.Preferences.LangChoice;
 
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 //import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -263,21 +264,29 @@ public class JavaFXDisplay extends WaitableApp
         } else if ("settingsMenuItem".equals(menuItem.getId())) {
           showSettings(false);
         } else if ("startMenuItem".equals(menuItem.getId())) {
-          Platform.runLater(()->{
-            try {
-              obdApp.start();
-            } catch (Exception e) {
-              handle(e);
+          Task<Void> task = new Task<Void>() {
+            @Override public Void call() {
+              try {
+                obdApp.start();
+              } catch (Exception e) {
+                handle(e);
+              }
+              return null;
             }
-          });
+          };
+          new Thread(task).start();
         } else if ("stopMenuItem".equals(menuItem.getId())) {
-          Platform.runLater(()->{
-            try {
-              obdApp.stop();
-            } catch (Exception e) {
-              handle(e);
+          Task<Void> task = new Task<Void>() {
+            @Override public Void call() {
+              try {
+                obdApp.stop();
+              } catch (Exception e) {
+                handle(e);
+              }
+              return null;
             }
-          });
+          };
+          new Thread(task).start();
         } else if ("testMenuItem".equals(menuItem.getId())) {
           showSettings(true);
         } else if ("preferencesMenuItem".equals(menuItem.getId())) {

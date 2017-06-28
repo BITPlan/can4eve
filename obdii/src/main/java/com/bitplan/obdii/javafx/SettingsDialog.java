@@ -75,6 +75,7 @@ public class SettingsDialog extends GenericDialog {
    * @param config
    */
   protected void testConnection(Config config) {
+    // FIXME - use Task/Lamba instead
     Platform.runLater(() ->{
     try {
       ELM327 elm = obdApp.testConnection(config);
