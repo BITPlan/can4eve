@@ -78,19 +78,22 @@ public class Translator {
 
   /**
    * initialize me
+   * @return the resource Bundle for the given localName
    */
-  public static void initialize(String localeName) {
+  public static ResourceBundle initialize(String localeName) {
     Locale locale = new Locale(localeName);
-    loadBundle(locale);
+    return loadBundle(locale);
   }
 
   /**
    * load the bundle
    * @param locale
+   * @return - the resource bundle for the given locale
    */
-  public static void loadBundle(Locale locale) {
+  public static ResourceBundle loadBundle(Locale locale) {
     resourceBundle = ResourceBundle.getBundle("i18n/"+BUNDLE_NAME, locale);
     formatter = new MessageFormat("");
     formatter.setLocale(locale);
+    return resourceBundle;
   }
 }

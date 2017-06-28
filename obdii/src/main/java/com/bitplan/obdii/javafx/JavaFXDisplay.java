@@ -47,6 +47,7 @@ import com.bitplan.elm327.Config;
 import com.bitplan.elm327.Config.ConfigMode;
 import com.bitplan.obdii.CANValueDisplay;
 import com.bitplan.obdii.ErrorHandler;
+import com.bitplan.obdii.I18n;
 import com.bitplan.obdii.LabelField;
 import com.bitplan.obdii.OBDApp;
 import com.bitplan.obdii.Preferences;
@@ -320,7 +321,7 @@ public class JavaFXDisplay extends WaitableApp
   }
 
   private void handle(Exception e) {
-    GenericDialog.showError("Error", "A problem occured", e.getClass().getSimpleName()+":\n"+e.getMessage());
+    GenericDialog.showError(I18n.get(I18n.ERROR), I18n.get(I18n.PROBLEM_OCCURED), e.getClass().getSimpleName()+":\n"+e.getMessage());
   }
 
   /**

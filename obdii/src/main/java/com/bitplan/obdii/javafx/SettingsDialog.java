@@ -28,6 +28,7 @@ import com.bitplan.can4eve.gui.javafx.GenericControl;
 import com.bitplan.can4eve.gui.javafx.GenericDialog;
 import com.bitplan.elm327.Config;
 import com.bitplan.obdii.ErrorHandler;
+import com.bitplan.obdii.I18n;
 import com.bitplan.obdii.OBDApp;
 import com.bitplan.obdii.elm327.ELM327;
 
@@ -80,9 +81,9 @@ public class SettingsDialog extends GenericDialog {
     try {
       ELM327 elm = obdApp.testConnection(config);
       String info=elm.getInfo();
-      super.showAlert("Success","Connection ok", info);
+      super.showAlert(I18n.get(I18n.SUCCESS),I18n.get(I18n.CONNECTION_OK), info);
     } catch (Exception e) {
-      super.showError("Error", "Connection failed",e.getClass().getSimpleName()+":"+e.getMessage());
+      super.showError(I18n.get(I18n.ERROR), I18n.get(I18n.CONNECTION_FAILED),e.getClass().getSimpleName()+":"+e.getMessage());
       ErrorHandler.handle(e);
     }
     });

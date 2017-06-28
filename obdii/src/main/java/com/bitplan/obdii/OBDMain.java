@@ -177,6 +177,9 @@ public class OBDMain extends Main implements OBDApp {
     default:
       break;
     }
+    if (obdTriplet==null) {
+      throw new Exception(Translator.translate(I18n.INVALID_CONFIGURATION));
+    }
     obdTriplet.setDebug(config.isDebug());
     elm = obdTriplet.getElm327();
     Connection con = elm.getCon();
