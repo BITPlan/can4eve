@@ -42,6 +42,7 @@ import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.elm327.Connection;
 import com.bitplan.elm327.Packet;
 import com.bitplan.elm327.ResponseHandler;
+import com.bitplan.elm327.SerialImpl;
 import com.bitplan.obdii.elm327.ELM327;
 
 /**
@@ -101,6 +102,20 @@ public abstract class OBDHandler implements ResponseHandler {
     getElm327().getCon().setResponseHandler(this);
   }
 
+  /**
+   * create me for the given serial Device
+   * @param vehicleGroup
+   * @param pDevice
+   * @param baudRate
+   */
+  public OBDHandler(VehicleGroup vehicleGroup, String pDevice, int pBaudRate) {
+    this(vehicleGroup);
+    SerialImpl con = new SerialImpl();
+    con.connect(pDevice, pBaudRate);
+    this.getElm327().setCon(con);
+    attachConnection(con);
+  }
+  
   /**
    * create an OBD handler from the given device
    * 

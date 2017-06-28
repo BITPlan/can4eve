@@ -20,19 +20,21 @@
  */
 package com.bitplan.elm327;
 
+import static purejavacomm.CommPortIdentifier.getPortIdentifiers;
+
 /**
  * Created by wf on 03.06.17.
  */
 
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 import purejavacomm.CommPortIdentifier;
 import purejavacomm.PortInUseException;
 import purejavacomm.SerialPort;
 import purejavacomm.UnsupportedCommOperationException;
-
-import static purejavacomm.CommPortIdentifier.*;
 
 /**
  * Connection via serial port
@@ -40,6 +42,7 @@ import static purejavacomm.CommPortIdentifier.*;
  */
 public class SerialImpl extends ConnectionImpl {
     SerialPort serialPort;
+    static Map<String,SerialPort> openPorts=new HashMap<String,SerialPort>();
 
     /**
      * connect me to the given device with the given baud rate
@@ -53,7 +56,14 @@ public class SerialImpl extends ConnectionImpl {
             throw new RuntimeException("can't find device " + device);
         }
         try {
-            serialPort = (SerialPort) serialId.open(this.getClass().getSimpleName(), (int) this.timeOut);
+          String portName=serialId.getName();
+          if (openPorts.containsKey(portName)) {
+            SerialPort openPort = openPorts.get(portName);
+            openPort.close();
+            openPorts.remove(portName);
+          }
+          serialPort = (SerialPort) serialId.open(this.getClass().getSimpleName(), (int) this.timeOut);
+          openPorts.put(portName,serialPort);
         } catch (PortInUseException e) {
             handle("device is in use", e);
             throw new RuntimeException("device " + device + " is in use");
@@ -69,13 +79,29 @@ public class SerialImpl extends ConnectionImpl {
         }
         try {
             this.setInput(serialPort.getInputStream());
-
             this.setOutput(serialPort.getOutputStream());
         } catch (IOException e) {
             handle("io exception",e);
             throw new RuntimeException("io problem for device "+device);
         }
-
+    }
+    
+    /**
+     * close this connection
+     */
+    public void close() {
+      serialPort.close();
+      openPorts.remove(serialPort);
+    }
+    
+    /**
+     * close all open serial ports
+     */
+    public static void closeAll() {
+      for (SerialPort serialPort:openPorts.values()) {
+        serialPort.close();
+      }
+      openPorts.clear();
     }
 
     /**

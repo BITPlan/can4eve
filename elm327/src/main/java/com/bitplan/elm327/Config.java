@@ -40,14 +40,15 @@ import com.google.gson.GsonBuilder;
 public class Config {
   public enum ConfigMode {Test,Preferences}
   public enum DeviceType {USB,Bluetooth,Network,Simulator}
-  DeviceType deviceType; // e.g. USB
-  String serialDevice;   // e.g. cu.usbserial-113010822821 on MacOSx
-  Integer baudRate;      // e.g. 115200
-  String hostname;       // e.g. 192.168.1.30
-  String logPrefix;      // e.g. my Ion
-  Integer port;          // e.g. 35000
-  Integer timeout;       // e.g. 500 (for 1/2 sec)
-  Boolean debug;         // e.g. true
+  DeviceType deviceType;   // e.g. USB
+  String serialDevice;     // e.g. cu.usbserial-113010822821 on MacOSx
+  Integer baudRate=38400;  // e.g. 115200
+  Boolean direct=false;    // e.g. true if the device needs no serial configuration
+  String hostname;         // e.g. 192.168.1.30
+  String logPrefix;        // e.g. my Ion
+  Integer port=35000;      // e.g. 35000
+  Integer timeout;         // e.g. 500 (for 1/2 sec)
+  Boolean debug=false;      // e.g. true
   private static Map<ConfigMode,Config> configs=new HashMap<ConfigMode,Config>();
 
   public DeviceType getDeviceType() {
@@ -72,6 +73,14 @@ public class Config {
 
   public void setBaudRate(int serialBaud) {
     this.baudRate = serialBaud;
+  }
+
+  public Boolean getDirect() {
+    return direct;
+  }
+
+  public void setDirect(Boolean direct) {
+    this.direct = direct;
   }
 
   public String getHostname() {
@@ -218,6 +227,7 @@ public class Config {
     this.serialDevice=(String) map.get("serialDevice");
     this.baudRate=(Integer) map.get("baudRate");
     this.timeout=(Integer) map.get("timeout");
+    this.direct=(Boolean)map.get("direct");
     this.debug=(Boolean)map.get("debug");
     this.logPrefix=(String) map.get("logPrefix");
   }

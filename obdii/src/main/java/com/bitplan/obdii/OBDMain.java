@@ -55,6 +55,10 @@ public class OBDMain extends Main implements OBDApp {
       "--hostname" }, usage = "host\nthe host to connect to")
   String hostName = "localhost";
 
+  @Option(name = "-b", aliases = {
+      "--baud" }, usage = "port\nthe baud rate for a serial connection")
+  int baudRate = 38400;
+
   @Option(name = "--vg", aliases = {
       "--vehicle-group" }, usage = "vehicleGroup\nthe vehicleGroup to connect to")
   String vehicleGroupName = "triplet";
@@ -140,8 +144,13 @@ public class OBDMain extends Main implements OBDApp {
     switch (config.getDeviceType()) {
     case USB:
       if (debug)
-        LOGGER.log(Level.INFO, "using device " + device);
-      obdTriplet = new OBDTriplet(vehicleGroup, new File(device));
+        LOGGER.log(Level.INFO, "using device " + config.getSerialDevice());
+      if (config.getDirect()) {
+        obdTriplet = new OBDTriplet(vehicleGroup, new File(config.getSerialDevice()));
+      } else {
+        obdTriplet = new OBDTriplet(vehicleGroup, config.getSerialDevice(),
+            config.getBaudRate());
+      }
       break;
     case Bluetooth:
       break;
@@ -181,7 +190,7 @@ public class OBDMain extends Main implements OBDApp {
       if (device != null) {
         config.setDeviceType(DeviceType.USB);
         config.setSerialDevice(device);
-        // FIXME - set Baud rate!
+        config.setBaudRate(baudRate);
       } else {
         config.setDeviceType(DeviceType.Network);
         config.setHostname(hostName);

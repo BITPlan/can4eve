@@ -119,6 +119,18 @@ public class OBDTriplet extends OBDHandler {
     super(vehicleGroup);
     postConstruct();
   }
+  
+  /**
+   * construct me from a serial Device
+   * 
+   * @param vehicleGroup
+   * @param file
+   * @param baudRate
+   */
+  public OBDTriplet(VehicleGroup vehicleGroup,String device, int baudRate) {
+    super(vehicleGroup, device, baudRate);
+    postConstruct();
+  }
 
   /**
    * construct me

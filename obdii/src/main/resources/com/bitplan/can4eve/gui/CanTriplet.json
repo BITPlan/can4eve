@@ -39,6 +39,12 @@
 							"type": "Integer"
 						},
 						{
+							"title": "direct",
+							"hint": "the device needs no serial configuration",
+							"format": "%s",
+							"type": "Boolean"
+						},
+						{
 							"title": "timeout",
 							"hint": "timeout in milli seconds",
 							"format": "%5d",

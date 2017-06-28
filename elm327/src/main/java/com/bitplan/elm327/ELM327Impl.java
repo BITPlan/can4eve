@@ -317,13 +317,17 @@ public class ELM327Impl implements ELM327 {
       info+="\n"+this.getDescription();
     }
     if (STN) {
-      info="this device is using an STN chip";
+      info+="\nthis device is using the recommended STN chip";
       info+="\n"+this.firmwareId;
       info+="\n"+this.hardwareId;
     }
     return info;
   }
   
+  /**
+   * get my CSV description
+   * @return a CSV snippet
+   */
   public String asCSV() {
     String csv="";
     csv+=CSVUtil.csv("id",this.getId());
