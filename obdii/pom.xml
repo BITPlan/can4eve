@@ -39,6 +39,7 @@
 			<artifactId>gson-extras</artifactId>
 			<version>0.2.1</version>
 		</dependency>
+		<!-- Swing cruft we got rid of ... -->
 		<!-- Layout Manager http://stackoverflow.com/questions/1832432/which-swing-layouts-do-you-recommend -->
 		<!-- https://mvnrepository.com/artifact/com.jgoodies/jgoodies-forms Form 
 			Layout <dependency> <groupId>com.jgoodies</groupId> <artifactId>jgoodies-forms</artifactId> 
@@ -46,18 +47,18 @@
 		<!-- https://mvnrepository.com/artifact/net.java.dev.designgridlayout/designgridlayout 
 			<dependency> <groupId>net.java.dev.designgridlayout</groupId> <artifactId>designgridlayout</artifactId> 
 			<version>1.11</version> </dependency> -->
-		<!-- https://mvnrepository.com/artifact/com.miglayout/miglayout -->
-		<dependency>
-			<groupId>com.miglayout</groupId>
-			<artifactId>miglayout</artifactId>
-			<version>3.7.4</version>
-		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.miglayout/miglayout <dependency> 
+			<groupId>com.miglayout</groupId> <artifactId>miglayout</artifactId> <version>3.7.4</version> 
+			</dependency> -->
 		<!-- can not use this easily in JavaFX https://mvnrepository.com/artifact/org.jfree/jfreechart 
+			<dependency> <groupId>org.jfree</groupId> <artifactId>jfreechart</artifactId> 
+			<version>1.0.19</version> </dependency> -->
+		<!-- https://mvnrepository.com/artifact/org.controlsfx/controlsfx -->
 		<dependency>
-			<groupId>org.jfree</groupId>
-			<artifactId>jfreechart</artifactId>
-			<version>1.0.19</version>
-		</dependency> -->
+			<groupId>org.controlsfx</groupId>
+			<artifactId>controlsfx</artifactId>
+			<version>8.40.12</version>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
 		<!-- Circular FifoBuffer -->
 		<dependency>

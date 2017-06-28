@@ -29,6 +29,8 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.controlsfx.control.StatusBar;
+
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.SoftwareVersion;
 import com.bitplan.can4eve.gui.App;
@@ -57,6 +59,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -66,6 +69,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -89,6 +93,10 @@ public class JavaFXDisplay extends WaitableApp
 
   private Map<String, GenericControl> controls;
   protected boolean available;
+
+  private StatusBar statusBar;
+
+  private Label watchDogLabel;
   public static final boolean debug = false;
 
   /**
@@ -234,6 +242,14 @@ public class JavaFXDisplay extends WaitableApp
    * @param app
    */
   private void setup(App app) {
+    statusBar=new StatusBar();
+    statusBar.setText("Not connected");
+    watchDogLabel=new Label();
+    watchDogLabel.setText("? ");
+    watchDogLabel.setTextFill(Color.web("808080"));
+    watchDogLabel.setFont(new Font("Arial",24));
+    statusBar.getLeftItems().add(watchDogLabel);
+    root.getChildren().add(statusBar);
     tabPane = new TabPane();
     tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
     controls = new HashMap<String, GenericControl>();
