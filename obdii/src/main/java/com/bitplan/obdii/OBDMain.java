@@ -157,7 +157,7 @@ public class OBDMain extends Main implements OBDApp {
         if (config.isDebug())
           LOGGER.log(Level.INFO,
               String.format(
-                  "using device %s at %6d baud" + config.getSerialDevice(),
+                  "using device %s at %6d baud" ,config.getSerialDevice(),
                   config.getBaudRate()));
         obdTriplet = new OBDTriplet(vehicleGroup, config.getSerialDevice(),
             config.getBaudRate());

@@ -47,8 +47,8 @@ public class Config {
   String hostname;         // e.g. 192.168.1.30
   String logPrefix;        // e.g. my Ion
   Integer port=35000;      // e.g. 35000
-  Integer timeout;         // e.g. 500 (for 1/2 sec)
-  Boolean debug=false;      // e.g. true
+  Integer timeout=250;     // e.g. 500 (for 1/2 sec)
+  Boolean debug=false;     // e.g. true
   private static Map<ConfigMode,Config> configs=new HashMap<ConfigMode,Config>();
 
   public DeviceType getDeviceType() {
