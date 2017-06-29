@@ -398,7 +398,7 @@ public class TestELM327 extends TestOBDII {
     if (debug)
       System.out.println(json);
   }*/
-
+  
   @Test
   public void testSTM() throws Exception {
     // simulated=false;
@@ -454,6 +454,17 @@ public class TestELM327 extends TestOBDII {
       // TODO we might also need a minimum timeout
       // assertTrue("Timeout too low - simulator broken?",con.getTimeout() >4);
     }
+  }
+  
+  @Test
+  public void testSimulatorFromElmLogFile() {
+    String[] fileNames = {
+        // "Triplet_2017-04-17_151817.log",
+        "Triplet_2017-04-17_104141.log", "Triplet_2017-04-15_192134.log",
+        "Triplet_2017-04-15_132733.log", "Triplet_2017-04-14_191849.log",
+        "capture_chg_1104.txt" };
+    for (String fileName : fileNames) {
+    }   
   }
 
   /**

@@ -20,6 +20,7 @@
  */
 package com.bitplan.obdii.elm327;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,7 @@ public class ELM327SimulatorConnection extends ELM327 implements ResponseHandler
   private String canprotcode;
   private String canprot;
   private String ecu;
+  private File elmLogFile;
   
   /**
    * constructor
@@ -257,6 +259,14 @@ public class ELM327SimulatorConnection extends ELM327 implements ResponseHandler
     }
     monitors.clear();
 
+  }
+
+  /**
+   * set the elm Simulator Log file to be used 
+   * @param file
+   */
+  public void setFile(File file) {
+    this.elmLogFile=file;
   }
 
 }
