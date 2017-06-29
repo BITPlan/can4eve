@@ -124,5 +124,17 @@ public class TaskLaunch<T> {
     launch.start();
     return launch;
   }
+  
+  /**
+   * call a void
+   * @param callable
+   * @return the TaskLaunch
+   */
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  public static TaskLaunch start(Callable<Void> callable) {
+    TaskLaunch<Void> launch = new TaskLaunch(callable, Void.class);
+    launch.start();
+    return launch;
+  }
 
 }

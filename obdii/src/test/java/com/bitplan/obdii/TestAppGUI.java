@@ -211,7 +211,8 @@ public class TestAppGUI {
     // https://stackoverflow.com/questions/30089593/java-fx-lambda-for-task-interface
     TaskLaunch<Integer> launch = TaskLaunch.start(()->increment(),Integer.class);
     try {
-      Thread.sleep(20);
+      while(counter<=10)
+        Thread.sleep(20);
     } catch (InterruptedException e) {
       //
     }
