@@ -306,7 +306,7 @@ public class GenericDialog {
       @Override
       public void handle(final ActionEvent e) {
         GenericDialog.sendReport(softwareVersion, "can4eve issue",
-            "There seems to be trouble with the exception:\n"+exceptionText);
+            "There seems to be trouble with the exception:\n" + exceptionText);
       }
     });
 
@@ -343,13 +343,11 @@ public class GenericDialog {
   public static void showAlert(String title, String headerText, String content,
       AlertType alertType) {
     // make sure the showAndWait is on the FX thread - even if a little later:-)
-    Platform.runLater(() -> {
-      Alert alert = new Alert(alertType);
-      alert.setTitle(title);
-      alert.setHeaderText(headerText);
-      alert.setContentText(content);
-      alert.showAndWait();
-    });
+    Alert alert = new Alert(alertType);
+    alert.setTitle(title);
+    alert.setHeaderText(headerText);
+    alert.setContentText(content);
+    alert.showAndWait();
   }
 
 }

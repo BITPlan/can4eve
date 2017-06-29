@@ -483,12 +483,33 @@
 			},
 			{
 				"id": "vehicleMenu",
-				"title": "Vehicle",
-				"shortCut": "V",
+				"title": "Car",
+				"shortCut": "C",
 				"menuItems": [{
 						"id": "vehicleMenuItem",
 						"title": "Details",
 						"shortCut": "D"
+					}
+				]
+			},
+			{
+				"id": "viewMenu",
+				"title": "View",
+				"shortCut": "V",
+				"menuItems": [{
+						"id": "historyViewMenuItem",
+						"title": "History",
+						"shortCut": "H"
+					},
+					{
+						"id": "settingsViewMenuItem",
+						"title": "Settings",
+						"shortCut": "S"
+					},
+					{
+						"id": "monitorViewMenuItem",
+						"title": "OBD",
+						"shortCut": "O"
 					}
 				]
 			},

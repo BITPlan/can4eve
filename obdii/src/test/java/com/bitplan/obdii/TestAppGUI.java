@@ -20,13 +20,14 @@
  */
 package com.bitplan.obdii;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Ignore;
@@ -48,8 +49,6 @@ import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.javafx.JFXCanCellStatePlot;
 import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
 
-import javafx.concurrent.Task;
-
 /**
  * test the descriptive application gui
  * 
@@ -61,7 +60,7 @@ public class TestAppGUI {
   public void testAppGUI() throws Exception {
     App app = App.getInstance();
     assertNotNull(app);
-    assertEquals(5, app.getMainMenu().getSubMenus().size());
+    assertEquals(6, app.getMainMenu().getSubMenus().size());
     assertEquals(2, app.getGroups().size());
     int[] expected = { 3, 9 };
     int i = 0;

@@ -60,6 +60,13 @@ public class I18n {
   public static final String OBDMENU="obdMenu"; //OBD
   public static final String SAVEMENUITEM="saveMenuItem"; //Save
   public static final String OPENMENUITEM="openMenuItem"; //Open
+  public static final String SORRY = "sorry";
+  public static final String WEARESORRY = "weAreSorry";
+  public static final String NOTIMPLEMENTEDYET = "notImplementedYet";
+  public static final String SETTINGSVIEWMENUITEM="settingsViewMenuItem"; //Settings.
+  public static final String VIEWMENU="viewMenu"; //View
+  public static final String HISTORYVIEWMENUITEM="historyViewMenuItem"; //History
+  public static final String MONITORVIEWMENUITEM="monitorViewMenuItem"; //OBD
 
   /**
    * Translate the given text

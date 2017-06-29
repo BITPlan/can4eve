@@ -291,6 +291,14 @@ public class JavaFXDisplay extends WaitableApp
       }
     }
   }
+  
+  /**
+   * show a message that the given feature is not implemented yet
+   * @param feature - i18n string code of feature e.g. menuItem
+   */
+  public void notImplemented(String feature) {
+    GenericDialog.showAlert(I18n.get(I18n.SORRY), I18n.get(I18n.WEARESORRY), I18n.get(feature)+" "+I18n.get(I18n.NOTIMPLEMENTEDYET));
+  }
 
   @Override
   public void handle(ActionEvent event) {
@@ -299,6 +307,12 @@ public class JavaFXDisplay extends WaitableApp
       if (source instanceof MenuItem) {
         MenuItem menuItem = (MenuItem) source;
         switch (menuItem.getId()) {
+        case I18n.SAVEMENUITEM:
+          notImplemented(I18n.SAVEMENUITEM);
+          break;
+        case I18n.OPENMENUITEM:
+          notImplemented(I18n.OPENMENUITEM);
+          break;
         case I18n.QUITMENUITEM:
           close();
           break;
@@ -333,6 +347,15 @@ public class JavaFXDisplay extends WaitableApp
           break;
         case I18n.VEHICLEMENUITEM:
           showVehicle();
+          break;
+        case I18n.HISTORYVIEWMENUITEM:
+          notImplemented(I18n.HISTORYVIEWMENUITEM);
+          break;
+        case I18n.SETTINGSVIEWMENUITEM:
+          notImplemented(I18n.SETTINGSMENUITEM);
+          break;
+        case I18n.MONITORVIEWMENUITEM:
+          notImplemented(I18n.MONITORVIEWMENUITEM);
           break;
         default:
           LOGGER.log(Level.WARNING, "unhandled menu item " + menuItem.getId()
