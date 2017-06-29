@@ -36,6 +36,11 @@ import com.bitplan.elm327.Packet;
 import com.bitplan.elm327.PacketImpl;
 import com.bitplan.elm327.ResponseHandler;
 
+/**
+ * reader for ELM327 raw log files
+ * @author wf
+ *
+ */
 public class LogReader {
   public static boolean debug = false;
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii");
@@ -43,9 +48,9 @@ public class LogReader {
   private ResponseHandler responseHandler;
 
   int index = 0;
-  SimpleDateFormat captureDateFormatter = new SimpleDateFormat(
+  static SimpleDateFormat captureDateFormatter = new SimpleDateFormat(
       "yyyy-MM-dd hh:mm:ss a");
-  SimpleDateFormat logDateFormatter = new SimpleDateFormat(
+  static SimpleDateFormat logDateFormatter = new SimpleDateFormat(
       "yyyy-MM-dd hh:mm:ss.SSS");
   private ZipFile zipFile;
 
@@ -64,31 +69,68 @@ public class LogReader {
   }
 
   /**
-	 * construct a Log Reader for the given logFile
-	 * 
-	 * @param logFile
-	 * @param responseHandler
-   * @throws Exception 
+   * construct a Log Reader for the given logFile
+   * 
+   * @param logFile
+   * @param responseHandler
+   * @throws Exception
    */
-	public LogReader(File logFile, ResponseHandler responseHandler)
-			throws Exception {
-		// this.logFile = logFile;
-		this.responseHandler = responseHandler;
-		InputStream inputStream;
-		if (logFile.getName().endsWith(".zip")) {
-		  zipFile = new ZipFile(logFile);
-	    Enumeration<? extends ZipEntry> entries = zipFile.entries();
-	    if (entries.hasMoreElements()) {
-	      ZipEntry entry = entries.nextElement();
+  public LogReader(File logFile, ResponseHandler responseHandler)
+      throws Exception {
+    // this.logFile = logFile;
+    this.responseHandler = responseHandler;
+    InputStream inputStream;
+    if (logFile.getName().endsWith(".zip")) {
+      zipFile = new ZipFile(logFile);
+      Enumeration<? extends ZipEntry> entries = zipFile.entries();
+      if (entries.hasMoreElements()) {
+        ZipEntry entry = entries.nextElement();
         inputStream = zipFile.getInputStream(entry);
-	    } else {
-	      throw new RuntimeException("No zip content in "+logFile.getName());
-	    }
-		} else {
-		inputStream= new FileInputStream(logFile);
-		}
-		logReader = new BufferedReader(new InputStreamReader(inputStream));		
-	}
+      } else {
+        throw new RuntimeException("No zip content in " + logFile.getName());
+      }
+    } else {
+      inputStream = new FileInputStream(logFile);
+    }
+    logReader = new BufferedReader(new InputStreamReader(inputStream));
+  }
+
+  /**
+   * get a packet from the given line
+   * 
+   * @param line
+   * @return a Packet
+   * @throws Exception
+   */
+  public static Packet lineAsPacket(String line) throws Exception {
+    String tsVal = ""; // timestamp raw string value
+    String canLine = null;
+    int len = line.length();
+    if (len == 43) {
+      String[] parts = line.split(",");
+      tsVal = parts[0].replace("\"", "");
+      canLine = parts[1];
+      Date timeStamp = captureDateFormatter.parse(tsVal);
+      String pid = canLine.substring(0, 3);
+      StringBuffer buf = new StringBuffer();
+      buf.append(pid);
+      buf.append(" 8 ");
+      for (int i = 3; i < canLine.length(); i += 2) {
+        buf.append(canLine.charAt(i));
+        buf.append(canLine.charAt(i + 1));
+        buf.append(" ");
+      }
+      Packet p = new PacketImpl(buf.toString(), timeStamp);
+      return p;
+    } else if (line.startsWith("20")) {
+      tsVal = line.substring(0, 23);
+      Date timeStamp = logDateFormatter.parse(tsVal);
+      canLine = line.substring(24) + "\n";
+      Packet p = new PacketImpl(canLine, timeStamp);
+      return p;
+    }
+    return null;
+  }
 
   /**
    * read the given logfile
@@ -97,43 +139,17 @@ public class LogReader {
    */
   public void read(LogListener logListener) throws Exception {
     String line; // a line read
-    String tsVal = ""; // timestamp raw string value
     int count = 0;
-    int len = 0;
-    String canLine = null;
     while ((line = logReader.readLine()) != null) {
       count++;
-      len = line.length();
-      if (len == 43) {
-        String[] parts = line.split(",");
-        tsVal = parts[0].replace("\"", "");
-        canLine = parts[1];
-        Date timeStamp = captureDateFormatter.parse(tsVal);
-        String pid = canLine.substring(0, 3);
-        StringBuffer buf = new StringBuffer();
-        buf.append(pid);
-        buf.append(" 8 ");
-        for (int i = 3; i < canLine.length(); i += 2) {
-          buf.append(canLine.charAt(i));
-          buf.append(canLine.charAt(i + 1));
-          buf.append(" ");
-        }
-        Packet p=new PacketImpl(buf.toString(), timeStamp);
+      Packet p = lineAsPacket(line);
+      if (p != null)
         this.responseHandler.handleResponse(p);
-      } else if (line.startsWith("20")) {
-        tsVal = line.substring(0, 23);
-        Date timeStamp = logDateFormatter.parse(tsVal);
-        canLine = line.substring(24) + "\n";
-        Packet p=new PacketImpl(canLine, timeStamp);
-        this.responseHandler.handleResponse(p);
-      } else {
-        // ignore
-      }
-      if (!logListener.onUpdate(line, len, index, count))
+      if (!logListener.onUpdate(line, line.length(), index, count))
         break;
     }
     logReader.close();
-    if (zipFile!=null)
+    if (zipFile != null)
       zipFile.close();
     index++;
   }

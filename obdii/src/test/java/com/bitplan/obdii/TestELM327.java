@@ -24,18 +24,29 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -97,10 +108,11 @@ public class TestELM327 extends TestOBDII {
    * @throws Exception
    */
   public ELM327 getSimulation() throws Exception {
-    ELM327 elm327 = ElmSimulator.getSimulation(getVehicleGroup(),debug,SIMULATOR_TIMEOUT);
+    ELM327 elm327 = ElmSimulator.getSimulation(getVehicleGroup(), debug,
+        SIMULATOR_TIMEOUT);
     return elm327;
   }
-  
+
   public class DummySoftwareVersion implements SoftwareVersion {
 
     @Override
@@ -122,6 +134,7 @@ public class TestELM327 extends TestOBDII {
     public String getSupportEMail() {
       return "support@bitplan.com";
     }
+
     @Override
     public String getSupportEMailPreamble() {
       return "Dear can4eve support\n";
@@ -155,12 +168,14 @@ public class TestELM327 extends TestOBDII {
 
   /**
    * get the Display
+   * 
    * @return
    * @throws Exception
    */
   private JavaFXDisplay getDisplay() throws Exception {
     Translator.initialize("en");
-    JavaFXDisplay jfxDisplay = new JFXTripletDisplay(App.getInstance(),new DummySoftwareVersion(), new OBDMain());
+    JavaFXDisplay jfxDisplay = new JFXTripletDisplay(App.getInstance(),
+        new DummySoftwareVersion(), new OBDMain());
     return jfxDisplay;
   }
 
@@ -322,8 +337,8 @@ public class TestELM327 extends TestOBDII {
     String limit = "--limit=" + frameLimit;
     if (debug)
       debugArg = "--debug";
-    String args[] = { debugArg, "--host=" + host, "--port=" + port,
-       "--monitor", "--display=JavaFX", limit };
+    String args[] = { debugArg, "--host=" + host, "--port=" + port, "--monitor",
+        "--display=JavaFX", limit };
     int exitCode = obdMain.maininstance(args);
     assertEquals(0, exitCode);
   }
@@ -338,7 +353,8 @@ public class TestELM327 extends TestOBDII {
     File logRoot = new File("/tmp/Ion");
     logRoot.mkdirs();
     String args[] = { "--host=localhost", "--port=" + ElmSimulator.DEFAULT_PORT,
-       "--monitor", "--display=JavaFX", limit, "--log=" + logRoot.getAbsolutePath() };
+        "--monitor", "--display=JavaFX", limit,
+        "--log=" + logRoot.getAbsolutePath() };
     obdMain.maininstance(args);
   }
 
@@ -357,48 +373,26 @@ public class TestELM327 extends TestOBDII {
     obdMain.maininstance(args);
   }
 
-  /*@Ignore
-   to create initial JSON 
-  public void testAppGUI() throws Exception {
-    prepareOBDTriplet(simulated, debug);
-    App app = new App();
-    app.setName("CanTriplet");
-    Menu menu=new Menu();
-    app.setMainMenu(menu);
-    Menu fileMenu=new Menu();
-    fileMenu.setId("fileMenu");
-    fileMenu.setTitle("File");
-    fileMenu.setShortCut("F");
-    MenuItem fileQuit=new MenuItem();
-    fileQuit.setId("quitMenuItem");
-    fileQuit.setTitle("Quit");
-    fileQuit.setShortCut("Q");
-    fileMenu.getMenuItems().add(fileQuit);
-    menu.getSubMenus().add(fileMenu);
-    Form form = new Form();
-    app.getForms().add(form);
-    form.setTitle("data 1");
-    for (SwingLabelField sfield : display.fields) {
-      if (!sfield.title.startsWith("Raw")) {
-        Field field = new Field();
-        field.setTitle(sfield.title);
-        field.setLabelSize(sfield.labelSize);
-        field.setFieldSize(sfield.fieldSize);
-        field.setFormat(sfield.format);
-        form.getFields().add(field);
-        if (form.getFields().size() >= 27) {
-          form = new Form();
-          app.getForms().add(form);
-          form.setTitle("data " + app.getForms().size());
-        }
-      }
-    }
-    String json = app.asJson();
-    debug=true;
-    if (debug)
-      System.out.println(json);
-  }*/
-  
+  /*
+   * @Ignore to create initial JSON public void testAppGUI() throws Exception {
+   * prepareOBDTriplet(simulated, debug); App app = new App();
+   * app.setName("CanTriplet"); Menu menu=new Menu(); app.setMainMenu(menu);
+   * Menu fileMenu=new Menu(); fileMenu.setId("fileMenu");
+   * fileMenu.setTitle("File"); fileMenu.setShortCut("F"); MenuItem fileQuit=new
+   * MenuItem(); fileQuit.setId("quitMenuItem"); fileQuit.setTitle("Quit");
+   * fileQuit.setShortCut("Q"); fileMenu.getMenuItems().add(fileQuit);
+   * menu.getSubMenus().add(fileMenu); Form form = new Form();
+   * app.getForms().add(form); form.setTitle("data 1"); for (SwingLabelField
+   * sfield : display.fields) { if (!sfield.title.startsWith("Raw")) { Field
+   * field = new Field(); field.setTitle(sfield.title);
+   * field.setLabelSize(sfield.labelSize); field.setFieldSize(sfield.fieldSize);
+   * field.setFormat(sfield.format); form.getFields().add(field); if
+   * (form.getFields().size() >= 27) { form = new Form();
+   * app.getForms().add(form); form.setTitle("data " + app.getForms().size()); }
+   * } } String json = app.asJson(); debug=true; if (debug)
+   * System.out.println(json); }
+   */
+
   @Test
   public void testSTM() throws Exception {
     // simulated=false;
@@ -415,7 +409,7 @@ public class TestELM327 extends TestOBDII {
     int frameLimit = 150;
     obdTriplet.STMMonitor(display, obdTriplet.getCANValues(), frameLimit);
     obdTriplet.close();
-    Platform.runLater(() ->display.close());
+    Platform.runLater(() -> display.close());
     if (!simulated) {
       assertTrue(logFile.exists());
       List<String> logLines = FileUtils.readLines(logFile, "UTF-8");
@@ -455,16 +449,95 @@ public class TestELM327 extends TestOBDII {
       // assertTrue("Timeout too low - simulator broken?",con.getTimeout() >4);
     }
   }
-  
+
+  /**
+   * random access log file reader
+   * 
+   * @author wf
+   *
+   */
+  public class RandomAccessLogReader {
+    private ZipFile zipFile;
+
+    File elmLogFile;
+
+    private Date startDate;
+
+    /**
+     * create me based on a (potentially zipped) file
+     * 
+     * @param file
+     * @throws Exception
+     */
+    public RandomAccessLogReader(File logFile) throws Exception {
+      if (logFile.getName().endsWith(".zip")) {
+        File unzipped = new File(logFile.getParentFile(), "unzipped");
+        zipFile = new ZipFile(logFile);
+        Enumeration<? extends ZipEntry> entries = zipFile.entries();
+        if (entries.hasMoreElements()) {
+          ZipEntry entry = entries.nextElement();
+          if (!entry.isDirectory()) {
+            if (!unzipped.isDirectory()) {
+              unzipped.mkdir();
+            }
+            elmLogFile = new File(unzipped, entry.getName());
+            InputStream in = zipFile.getInputStream(entry);
+            OutputStream out = new FileOutputStream(elmLogFile);
+            IOUtils.copy(in, out);
+            IOUtils.closeQuietly(in);
+            out.close();
+          }
+        }
+      } else {
+        elmLogFile = logFile;
+      }
+    }
+
+    /**
+     * get the start Date of the logFile
+     * 
+     * @return
+     * @throws Exception 
+     */
+    public Date getStartDate() throws Exception {
+      if (startDate == null) {
+        FileInputStream inputStream = new FileInputStream(elmLogFile);
+        BufferedReader logReader = new BufferedReader(
+            new InputStreamReader(inputStream));
+        String line = null;
+        while ((line = logReader.readLine()) != null) {
+          Packet p = LogReader.lineAsPacket(line);
+          if (p != null) {
+            startDate = p.getTime();
+            break;
+          } // if
+        } // while
+        logReader.close();
+      }
+      return startDate;
+    }
+  }
+
   @Test
-  public void testSimulatorFromElmLogFile() {
+  public void testSimulatorFromElmLogFile() throws Exception {
     String[] fileNames = {
         // "Triplet_2017-04-17_151817.log",
         "Triplet_2017-04-17_104141.log", "Triplet_2017-04-15_192134.log",
         "Triplet_2017-04-15_132733.log", "Triplet_2017-04-14_191849.log",
         "capture_chg_1104.txt" };
+    String startDates[]={"2017-04-17 10:41:41.208",
+        "2017-04-15 07:21:34.780",
+        "2017-04-15 01:27:33.954",
+        "2017-04-14 07:18:49.409",
+        "2012-11-04 07:01:34.000"};
+    int index=0;
     for (String fileName : fileNames) {
-    }   
+      File logCAN = new File("src/test/data/" + fileName + ".zip");
+      assertTrue("" + logCAN.getPath() + " should exist", logCAN.exists());
+      RandomAccessLogReader logReader = new RandomAccessLogReader(logCAN);
+      String startDate=LogReader.logDateFormatter.format(logReader.getStartDate());
+      assertEquals(startDates[index++],startDate);
+    }
   }
 
   /**
@@ -475,8 +548,8 @@ public class TestELM327 extends TestOBDII {
   @Test
   public void testPIDs() throws Exception {
     final int slow = 0;
-    //boolean withHistory = false;
-    //final int slow=20; // msecs for slower motion
+    // boolean withHistory = false;
+    // final int slow=20; // msecs for slower motion
     boolean withHistory = true;
     // debug=true;
     // prepareOBDTriplet(true);
@@ -513,15 +586,15 @@ public class TestELM327 extends TestOBDII {
               // ignore
             }
           }
-          if (count % (updates*10) == 0) {
-            Platform.runLater(()->display.selectRandomTab());
+          if (count % (updates * 10) == 0) {
+            Platform.runLater(() -> display.selectRandomTab());
             if (debug)
               LOGGER.log(Level.INFO,
                   String.format("%6d (%6d): %s", count, len, line));
           }
           if (count > max[index]) {
             if (display != null)
-                display.close();
+              display.close();
             return false;
           }
           return true;
@@ -658,30 +731,31 @@ public class TestELM327 extends TestOBDII {
     tripRounds.integrate(rpm1, date1, rpm2, date2, 1 / 60000.0);
     assertEquals(50.0, tripRounds.getValueItem().getValue(), 0.1);
   }
-  
+
   /**
-   * test creating a report according to 
+   * test creating a report according to
    * https://github.com/BITPlan/can4eve/issues/4
-   * @throws Exception 
+   * 
+   * @throws Exception
    */
   @Test
   public void testReport() throws Exception {
-    //debug=true;
+    // debug=true;
     this.prepareOBDTriplet(simulated, debug);
     obdTriplet.initOBD();
     File reportFile = File.createTempFile("report", ".csv");
-    //obdTriplet.debug=true;
-    obdTriplet.report(display,reportFile.getAbsolutePath(),45);
+    // obdTriplet.debug=true;
+    obdTriplet.report(display, reportFile.getAbsolutePath(), 45);
     assertTrue(reportFile.exists());
     List<String> lines = FileUtils.readLines(reportFile, "UTF-8");
-    //debug=true;
+    // debug=true;
     if (debug) {
-      for (String line:lines) {
+      for (String line : lines) {
         System.out.println(line);
       }
     }
     // FIXME - the timing should be more precise
-    assertTrue(lines.size()>5);
+    assertTrue(lines.size() > 5);
     reportFile.delete();
   }
 }
