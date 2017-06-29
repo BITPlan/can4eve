@@ -497,6 +497,11 @@
 				"title": "View",
 				"shortCut": "V",
 				"menuItems": [{
+						"id": "monitorViewMenuItem",
+						"title": "OBD",
+						"shortCut": "O"
+					},
+					{
 						"id": "historyViewMenuItem",
 						"title": "History",
 						"shortCut": "H"
@@ -505,12 +510,8 @@
 						"id": "settingsViewMenuItem",
 						"title": "Settings",
 						"shortCut": "S"
-					},
-					{
-						"id": "monitorViewMenuItem",
-						"title": "OBD",
-						"shortCut": "O"
 					}
+					
 				]
 			},
 			{
