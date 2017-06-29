@@ -42,6 +42,7 @@ import com.bitplan.can4eve.gui.swing.Translator;
  */
 public class TestI18n {
   static boolean show = false;
+  static boolean showError=true;
 
   /**
    * check the given text whether it is available as a translate
@@ -56,7 +57,7 @@ public class TestI18n {
       translated = I18n.get(text);
     } catch (Throwable th) {
       translated = "";
-      if (show)
+      if (show || showError)
         System.out.println(text + "=" + translated);
       errors++;
     }

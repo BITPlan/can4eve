@@ -31,6 +31,7 @@ public class I18n {
   public static final String INVALID_CONFIGURATION="invalid_configuration";
   public static final String NEWLANGUAGE_RESTART="newlanguage_restart"; //To get the full effect of the change a restart of the application is necessary!
   public static final String ABOUTMENUITEM="aboutMenuItem"; //About
+  public static final String HELPMENUITEM="helpMenuItem"; //can4eve Hilfe
   public static final String STARTMENUITEM="startMenuItem"; //Start
   public static final String APPNAME="appName"; //can4eve
   public static final String HELPMENU="helpMenu"; //Help 

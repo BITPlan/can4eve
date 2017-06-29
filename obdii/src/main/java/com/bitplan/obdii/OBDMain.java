@@ -228,8 +228,12 @@ public class OBDMain extends Main implements OBDApp {
   public ELM327 stop() throws Exception {
     // stop monitoring;
     obdTriplet.setMonitoring(false);
-    if (elm != null)
-      elm.reinitCommunication(config.getTimeout());
+    if (elm != null) {
+      int ltimeout=timeout;
+      if (config!=null)
+        ltimeout=config.getTimeout();
+      elm.reinitCommunication(ltimeout);
+    }
     return elm;
   }
 

@@ -1,6 +1,8 @@
 {
 	"name": "CanTriplet",
+	"home": "http://can4eve.bitplan.com",
 	"feedback": "https://github.com/BITPlan/can4eve/issues",
+	"help": "http://can4eve.bitplan.com/index.php/Help",
 	"groups": [{
 			"id": "preferencesGroup",
 			"forms": [{
@@ -498,6 +500,11 @@
 						"id": "aboutMenuItem",
 						"title": "About",
 						"shortCut": "A"
+					},
+					{
+						"id": "helpMenuItem",
+						"title": "can4eve help",
+						"shortCut": "C"
 					},
 					{
 						"id": "feedbackMenuItem",

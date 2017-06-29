@@ -38,7 +38,9 @@ import com.google.gson.GsonBuilder;
  */
 public class App {
   String name;
+  String home;
   String feedback;
+  String help;
   private List<Group> groups = new ArrayList<Group>();
 
   private Map<String,Group> groupById=new HashMap<String,Group>();
@@ -52,12 +54,28 @@ public class App {
     this.name = name;
   }
 
+  public String getHome() {
+    return home;
+  }
+
+  public void setHome(String home) {
+    this.home = home;
+  }
+
   public String getFeedback() {
     return feedback;
   }
 
   public void setFeedback(String feedback) {
     this.feedback = feedback;
+  }
+
+  public String getHelp() {
+    return help;
+  }
+
+  public void setHelp(String help) {
+    this.help = help;
   }
 
   public static void setInstance(App instance) {

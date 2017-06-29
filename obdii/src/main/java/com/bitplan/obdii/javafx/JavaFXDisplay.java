@@ -45,10 +45,8 @@ import com.bitplan.can4eve.gui.swing.JLink;
 import com.bitplan.can4eve.gui.swing.Translator;
 import com.bitplan.can4eve.util.TaskLaunch;
 import com.bitplan.elm327.Config;
-import com.bitplan.elm327.ELM327;
 import com.bitplan.elm327.Config.ConfigMode;
 import com.bitplan.obdii.CANValueDisplay;
-import com.bitplan.obdii.ErrorHandler;
 import com.bitplan.obdii.I18n;
 import com.bitplan.obdii.LabelField;
 import com.bitplan.obdii.OBDApp;
@@ -277,6 +275,7 @@ public class JavaFXDisplay extends WaitableApp
   public void setupSpecial() {
     this.setMenuItemDisable(I18n.HALTMENUITEM, true);
   }
+
   /**
    * set the disable state of the menu item with the given id
    * 
@@ -299,61 +298,43 @@ public class JavaFXDisplay extends WaitableApp
       Object source = event.getSource();
       if (source instanceof MenuItem) {
         MenuItem menuItem = (MenuItem) source;
-        if ("quitMenuItem".equals(menuItem.getId())) {
+        switch (menuItem.getId()) {
+        case I18n.QUITMENUITEM:
           close();
-        } else if ("aboutMenuItem".equals(menuItem.getId())) {
+          break;
+        case I18n.ABOUTMENUITEM:
+          TaskLaunch.start(()->showLink(App.getInstance().getHome()));
           showAbout();
-        } else if ("feedbackMenuItem".equals(menuItem.getId())) {
+          break;
+        case I18n.HELPMENUITEM:
+          TaskLaunch.start(()->showLink(App.getInstance().getHelp()));
+          break;
+        case I18n.FEEDBACKMENUITEM: 
           GenericDialog.sendReport(softwareVersion,
               softwareVersion.getName() + " feedback", "...");
-        } else if ("bugReportMenuItem".equals(menuItem.getId())) {
-          createIssue();
-        } else if ("settingsMenuItem".equals(menuItem.getId())) {
+        break;
+        case I18n.BUGREPORTMENUITEM:
+          TaskLaunch.start(()->showLink(App.getInstance().getFeedback()));
+          break;
+        case I18n.SETTINGSMENUITEM:
           showSettings(false);
-        } else if (I18n.STARTMENUITEM.equals(menuItem.getId())) {
-          setWatchDogState("⚙", I18n.get(I18n.MONITORING));
-          setMenuItemDisable(I18n.STARTMENUITEM, true);
-          setMenuItemDisable(I18n.TESTMENUITEM, true);
-          setMenuItemDisable(I18n.HALTMENUITEM, false);
-          monitortask = new Task<Void>() {
-            @Override
-            public Void call() {
-              try {
-                obdApp.start();
-              } catch (Exception e) {
-                handle(e);
-              }
-              return null;
-            }
-          };
-          new Thread(monitortask).start();
-        } else if (I18n.HALTMENUITEM.equals(menuItem.getId())) {
-          if (monitortask != null) {
-            // TODO use better symbol e.g. icon
-            setWatchDogState("X", I18n.get(I18n.HALTED));
-            setMenuItemDisable(I18n.STARTMENUITEM, false);
-            setMenuItemDisable(I18n.TESTMENUITEM, false);
-            setMenuItemDisable(I18n.HALTMENUITEM, true);
-            Task<Void> task = new Task<Void>() {
-              @Override
-              public Void call() {
-                try {
-                  obdApp.stop();
-                } catch (Exception e) {
-                  handle(e);
-                }
-                return null;
-              }
-            };
-            new Thread(task).start();
-          }
-        } else if (I18n.TESTMENUITEM.equals(menuItem.getId())) {
+          break;
+        case I18n.STARTMENUITEM:
+          startMonitoring();
+          break;
+        case I18n.HALTMENUITEM:
+          stopMonitoring();
+          break;
+        case I18n.TESTMENUITEM:
           showSettings(true);
-        } else if ("preferencesMenuItem".equals(menuItem.getId())) {
+          break;
+        case I18n.PREFERENCESMENUITEM:
           showPreferences();
-        } else if ("vehicleMenuItem".equals(menuItem.getId())) {
+          break;
+        case I18n.VEHICLEMENUITEM:
           showVehicle();
-        } else {
+          break;
+        default:
           LOGGER.log(Level.WARNING, "unhandled menu item " + menuItem.getId()
               + ":" + menuItem.getText());
         }
@@ -361,6 +342,53 @@ public class JavaFXDisplay extends WaitableApp
     } catch (Exception e) {
       handle(e);
     }
+  }
+
+  /**
+   * stop the monitoring
+   */
+  private void stopMonitoring() {
+    if (monitortask == null)
+      return;
+    // TODO use better symbol e.g. icon
+    setWatchDogState("X", I18n.get(I18n.HALTED));
+    setMenuItemDisable(I18n.STARTMENUITEM, false);
+    setMenuItemDisable(I18n.TESTMENUITEM, false);
+    setMenuItemDisable(I18n.HALTMENUITEM, true);
+    Task<Void> task = new Task<Void>() {
+      @Override
+      public Void call() {
+        try {
+          obdApp.stop();
+        } catch (Exception e) {
+          handle(e);
+        }
+        return null;
+      }
+    };
+    new Thread(task).start();
+  }
+
+  /**
+   * start the monitoring
+   */
+  private void startMonitoring() {
+    setWatchDogState("⚙", I18n.get(I18n.MONITORING));
+    setMenuItemDisable(I18n.STARTMENUITEM, true);
+    setMenuItemDisable(I18n.TESTMENUITEM, true);
+    setMenuItemDisable(I18n.HALTMENUITEM, false);
+    monitortask = new Task<Void>() {
+      @Override
+      public Void call() {
+        try {
+          obdApp.start();
+        } catch (Exception e) {
+          handle(e);
+        }
+        return null;
+      }
+    };
+    new Thread(monitortask).start();
   }
 
   /**
@@ -403,18 +431,18 @@ public class JavaFXDisplay extends WaitableApp
     String headerText = softwareVersion.getName() + " "
         + softwareVersion.getVersion();
     GenericDialog.showAlert("About", headerText, softwareVersion.getUrl());
-
   }
 
   /**
-   * browse to the issue page
+   * browse to the link page
    */
-  public void createIssue() {
+  public Void showLink(String link) {
     try {
-      JLink.open(App.getInstance().getFeedback());
+      JLink.open(link);
     } catch (Exception e) {
-      ErrorHandler.handle(e);
+      handle(e);
     }
+    return null;
   }
 
   /**
