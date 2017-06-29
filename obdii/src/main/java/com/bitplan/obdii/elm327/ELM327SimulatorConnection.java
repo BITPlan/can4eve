@@ -207,7 +207,7 @@ public class ELM327SimulatorConnection extends ELM327 implements ResponseHandler
         } else if (command.startsWith("STFAP")) {
           outputWithPrompt("OK");      
         } else if (command.equals("STM")) {  
-          Monitor monitor = new Monitor(this, isHeader(), isLength());
+          Monitor monitor = new Monitor(this, isHeader(), isLength(), this.elmLogFile);
           monitor.start();
           monitors.add(monitor);
         } else if (command.equals("2101")) {

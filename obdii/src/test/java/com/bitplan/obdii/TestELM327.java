@@ -28,25 +28,18 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -63,6 +56,8 @@ import com.bitplan.elm327.Connection;
 import com.bitplan.elm327.Packet;
 import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.obdii.elm327.ElmSimulator;
+import com.bitplan.obdii.elm327.LogReader;
+import com.bitplan.obdii.elm327.RandomAccessLogReader;
 import com.bitplan.obdii.javafx.JavaFXDisplay;
 import com.bitplan.triplet.OBDTriplet;
 
@@ -450,74 +445,6 @@ public class TestELM327 extends TestOBDII {
     }
   }
 
-  /**
-   * random access log file reader
-   * 
-   * @author wf
-   *
-   */
-  public class RandomAccessLogReader {
-    private ZipFile zipFile;
-
-    File elmLogFile;
-
-    private Date startDate;
-
-    /**
-     * create me based on a (potentially zipped) file
-     * 
-     * @param file
-     * @throws Exception
-     */
-    public RandomAccessLogReader(File logFile) throws Exception {
-      if (logFile.getName().endsWith(".zip")) {
-        File unzipped = new File(logFile.getParentFile(), "unzipped");
-        zipFile = new ZipFile(logFile);
-        Enumeration<? extends ZipEntry> entries = zipFile.entries();
-        if (entries.hasMoreElements()) {
-          ZipEntry entry = entries.nextElement();
-          if (!entry.isDirectory()) {
-            if (!unzipped.isDirectory()) {
-              unzipped.mkdir();
-            }
-            elmLogFile = new File(unzipped, entry.getName());
-            InputStream in = zipFile.getInputStream(entry);
-            OutputStream out = new FileOutputStream(elmLogFile);
-            IOUtils.copy(in, out);
-            IOUtils.closeQuietly(in);
-            out.close();
-          }
-        }
-      } else {
-        elmLogFile = logFile;
-      }
-    }
-
-    /**
-     * get the start Date of the logFile
-     * 
-     * @return
-     * @throws Exception 
-     */
-    public Date getStartDate() throws Exception {
-      if (startDate == null) {
-        FileInputStream inputStream = new FileInputStream(elmLogFile);
-        BufferedReader logReader = new BufferedReader(
-            new InputStreamReader(inputStream));
-        String line = null;
-        while ((line = logReader.readLine()) != null) {
-          Packet p = LogReader.lineAsPacket(line);
-          if (p != null) {
-            startDate = p.getTime();
-            break;
-          } // if
-        } // while
-        logReader.close();
-      }
-      return startDate;
-    }
-  }
-
   @Test
   public void testSimulatorFromElmLogFile() throws Exception {
     String[] fileNames = {
@@ -525,18 +452,22 @@ public class TestELM327 extends TestOBDII {
         "Triplet_2017-04-17_104141.log", "Triplet_2017-04-15_192134.log",
         "Triplet_2017-04-15_132733.log", "Triplet_2017-04-14_191849.log",
         "capture_chg_1104.txt" };
-    String startDates[]={"2017-04-17 10:41:41.208",
-        "2017-04-15 07:21:34.780",
-        "2017-04-15 01:27:33.954",
-        "2017-04-14 07:18:49.409",
-        "2012-11-04 07:01:34.000"};
-    int index=0;
+    String startDates[] = { "2017-04-17 10:41:42.157",
+        "2017-04-15 07:21:35.965", "2017-04-15 01:27:33.966",
+        "2017-04-14 07:18:49.433", "2012-11-04 07:01:34.000" };
+    int index = 0;
     for (String fileName : fileNames) {
       File logCAN = new File("src/test/data/" + fileName + ".zip");
       assertTrue("" + logCAN.getPath() + " should exist", logCAN.exists());
       RandomAccessLogReader logReader = new RandomAccessLogReader(logCAN);
-      String startDate=LogReader.logDateFormatter.format(logReader.getStartDate());
-      assertEquals(startDates[index++],startDate);
+      String startDate = LogReader.logDateFormatter
+          .format(logReader.getStartDate());
+      //System.out.println(startDate);
+      assertEquals(startDates[index++], startDate);
+      Packet packet = logReader.getPacket(1000);
+      //System.out.println(packet.getData());
+      String endDate=LogReader.logDateFormatter.format(logReader.getEndDate());
+      // System.out.println(endDate);
     }
   }
 

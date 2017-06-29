@@ -18,7 +18,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bitplan.obdii;
+package com.bitplan.obdii.elm327;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -38,6 +38,7 @@ import com.bitplan.elm327.ResponseHandler;
 
 /**
  * reader for ELM327 raw log files
+ * 
  * @author wf
  *
  */
@@ -48,9 +49,9 @@ public class LogReader {
   private ResponseHandler responseHandler;
 
   int index = 0;
-  static SimpleDateFormat captureDateFormatter = new SimpleDateFormat(
+  public static SimpleDateFormat captureDateFormatter = new SimpleDateFormat(
       "yyyy-MM-dd hh:mm:ss a");
-  static SimpleDateFormat logDateFormatter = new SimpleDateFormat(
+  public static SimpleDateFormat logDateFormatter = new SimpleDateFormat(
       "yyyy-MM-dd hh:mm:ss.SSS");
   private ZipFile zipFile;
 
@@ -106,28 +107,35 @@ public class LogReader {
     String tsVal = ""; // timestamp raw string value
     String canLine = null;
     int len = line.length();
-    if (len == 43) {
-      String[] parts = line.split(",");
-      tsVal = parts[0].replace("\"", "");
-      canLine = parts[1];
-      Date timeStamp = captureDateFormatter.parse(tsVal);
-      String pid = canLine.substring(0, 3);
-      StringBuffer buf = new StringBuffer();
-      buf.append(pid);
-      buf.append(" 8 ");
-      for (int i = 3; i < canLine.length(); i += 2) {
-        buf.append(canLine.charAt(i));
-        buf.append(canLine.charAt(i + 1));
-        buf.append(" ");
-      }
-      Packet p = new PacketImpl(buf.toString(), timeStamp);
-      return p;
-    } else if (line.startsWith("20")) {
+
+    if (line.startsWith("20")) {
       tsVal = line.substring(0, 23);
       Date timeStamp = logDateFormatter.parse(tsVal);
       canLine = line.substring(24) + "\n";
-      Packet p = new PacketImpl(canLine, timeStamp);
-      return p;
+      if (canLine.length() > 5) {
+        Packet p = new PacketImpl(canLine, timeStamp);
+        return p;
+      }
+    } else if (len >= 42 && len <= 44) {
+      String[] parts = line.split(",");
+      if (parts.length == 2) {
+        tsVal = parts[0].replace("\"", "");
+        canLine = parts[1];
+        Date timeStamp = captureDateFormatter.parse(tsVal);
+        String pid = canLine.substring(0, 3);
+        StringBuffer buf = new StringBuffer();
+        buf.append(pid);
+        buf.append(" 8 ");
+        for (int i = 3; i < canLine.length(); i += 2) {
+          buf.append(canLine.charAt(i));
+          buf.append(canLine.charAt(i + 1));
+          buf.append(" ");
+        }
+        Packet p = new PacketImpl(buf.toString(), timeStamp);
+        return p;
+      }
+    } else {
+      // LOGGER.log(Level.INFO, "len: " + len);
     }
     return null;
   }
