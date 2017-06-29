@@ -577,13 +577,18 @@ public class OBDTriplet extends OBDHandler {
         latestHistoryUpdate = showHistory(display, now);
       }
       long msecs = now.getTime() - latestUpdate.getTime();
+      // every second
       if (msecs >= 1000) {
         long updates = totalUpdates - latestTotalUpdates;
         double fps = 1000.0 * updates / msecs;
+        display.updateField("#", totalUpdates,(int) totalUpdates);
         display.updateField("fps", fps, ++fpsUpdateCount);
         display.updateField("# of bufferOverruns", super.bufferOverruns,
             fpsUpdateCount);
-        display.updateField("OBDII", this.getElm327().getDescription(), 1);
+        display.updateField("OBDII id", this.getElm327().getId(), 1);
+        display.updateField("OBDII description", this.getElm327().getDescription(), 1);
+        display.updateField("OBDII firmware", this.getElm327().getFirmwareId(), 1);
+        display.updateField("OBDII hardware", this.getElm327().getHardwareId(), 1);
         latestTotalUpdates = totalUpdates;
         latestUpdate = now;
       }

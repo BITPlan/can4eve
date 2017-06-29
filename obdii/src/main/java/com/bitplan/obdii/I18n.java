@@ -56,6 +56,10 @@ public class I18n {
   public static final String BUGREPORTMENUITEM="bugReportMenuItem"; //create Bugreport ...
   public static final String MONITORING = "monitoring";
   public static final String HALTED = "halted";
+  public static final String OBDMENU="obdMenu"; //OBD
+  public static final String SAVEMENUITEM="saveMenuItem"; //Save
+  public static final String OPENMENUITEM="openMenuItem"; //Open
+
   /**
    * Translate the given text
    * @param text - the text to translate

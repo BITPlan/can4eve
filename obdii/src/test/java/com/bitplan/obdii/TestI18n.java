@@ -30,6 +30,9 @@ import java.util.ResourceBundle;
 
 import org.junit.Test;
 
+import com.bitplan.can4eve.gui.App;
+import com.bitplan.can4eve.gui.Menu;
+import com.bitplan.can4eve.gui.MenuItem;
 import com.bitplan.can4eve.gui.swing.Translator;
 
 /**
@@ -38,7 +41,62 @@ import com.bitplan.can4eve.gui.swing.Translator;
  *
  */
 public class TestI18n {
-  static boolean show=false;
+  static boolean show = false;
+
+  /**
+   * check the given text whether it is available as a translate
+   * 
+   * @param text
+   * @return 0 if translated 1 if not
+   */
+  public int checkText(String text) {
+    String translated;
+    int errors = 0;
+    try {
+      translated = I18n.get(text);
+    } catch (Throwable th) {
+      translated = "";
+      if (show)
+        System.out.println(text + "=" + translated);
+      errors++;
+    }
+    return errors;
+  }
+
+  /**
+   * check the translation of the given menu
+   * 
+   * @param menu
+   *          - the menu to check
+   * @return - the number of errors
+   */
+  public int checkMenu(Menu menu) {
+    int errors = 0;
+    List<Menu> submenus = menu.getSubMenus();
+    if (submenus.size()==0)
+      errors += checkText(menu.getId());
+    for (Menu submenu : submenus) {
+      errors += checkMenu(submenu);
+    }
+    for (MenuItem menuItem:menu.getMenuItems()) {
+      errors+=checkText(menuItem.getId());
+    }
+    return errors;
+  }
+
+  @Test
+  public void testMenuTranslated() throws Exception {
+    App app = App.getInstance();
+    String locales[] = { "en", "de" };
+    int errors = 0;
+    for (String locale : locales) {
+      Translator.initialize(locale);
+      if (show)
+        System.out.println("# locale " + locale);
+      errors += checkMenu(app.getMainMenu());
+    }
+    assertEquals(0, errors);
+  }
 
   /**
    * check the translations
@@ -48,50 +106,44 @@ public class TestI18n {
    */
   @Test
   public void testi18nFieldsTranslated() throws Exception {
-  
+
     String locales[] = { "en", "de" };
-    int errors=0;
+    int errors = 0;
     for (String locale : locales) {
       Translator.initialize(locale);
       if (show)
-        System.out.println("# locale "+locale);
+        System.out.println("# locale " + locale);
       for (Field field : I18n.class.getFields()) {
         String text = (String) field.get(null);
-        String translated;
-        try {
-          translated = Translator.translate(text);
-        } catch (Throwable th) {
-          translated = "";
-          if (show)
-            System.out.println(text + "=" + translated);
-          errors++;
-        }
+        errors += checkText(text);
       }
     }
-    assertEquals(0,errors);
+    assertEquals(0, errors);
   }
-  
+
   @Test
   public void testPropertiesAreFields() throws Exception {
-    boolean show=true;
+    boolean show = true;
     String locales[] = { "en", "de" };
     List<String> fieldList = new ArrayList<String>();
     for (Field field : I18n.class.getFields()) {
       fieldList.add(field.getName());
     }
-    int errors=0;
+    int errors = 0;
     for (String locale : locales) {
       ResourceBundle bundle = Translator.initialize(locale);
       Enumeration<String> keys = bundle.getKeys();
       while (keys.hasMoreElements()) {
-        String key=keys.nextElement();
+        String key = keys.nextElement();
         if (!fieldList.contains(key.toUpperCase())) {
           errors++;
           if (show)
-            System.out.println("  public static final String "+key.toUpperCase()+"=\""+key+"\"; //"+bundle.getString(key));
+            System.out
+                .println("  public static final String " + key.toUpperCase()
+                    + "=\"" + key + "\"; //" + bundle.getString(key));
         }
       }
     }
-    assertEquals(0,errors);
+    assertEquals(0, errors);
   }
 }

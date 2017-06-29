@@ -140,10 +140,32 @@
 							"fieldSize": 40
 						},
 						{
-							"title": "OBDII",
+							"id": "OBDII id",
+							"title": "id",
 							"format": "%s",
 							"labelSize": 5,
 							"fieldSize": 15
+						},
+						{
+							"id": "OBDII description",
+							"title": "description",
+							"format": "%s",
+							"labelSize": 15,
+							"fieldSize": 25
+						},
+						{
+							"id": "OBDII firmware",
+							"title": "firmware",
+							"format": "%s"
+					    },{
+							"id": "OBDII hardware",
+							"title": "hardware",
+							"format": "%s"
+						},
+						{
+							"title": "#",
+							"format": "%8.0f",
+							"type": "Integer"
 						},
 						{
 							"title": "fps",
@@ -402,6 +424,28 @@
 				"shortCut": "F",
 				"menuItems": [
 				{
+						"id": "openMenuItem",
+						"title": "Open",
+						"shortCut": "O"
+				},
+				{
+						"id": "saveMenuItem",
+						"title": "Save",
+						"shortCut": "S"
+				},
+					{
+						"id": "quitMenuItem",
+						"title": "Quit",
+						"shortCut": "Q"
+					}
+				]
+			},
+			{
+				"id": "obdMenu",
+				"title": "OBD",
+				"shortCut": "O",
+				"menuItems": [
+				{
 						"id": "startMenuItem",
 						"title": "Start",
 						"shortCut": "S"
@@ -415,11 +459,6 @@
 						"id": "testMenuItem",
 						"title": "Test",
 						"shortCut": "T"
-					},
-					{
-						"id": "quitMenuItem",
-						"title": "Quit",
-						"shortCut": "Q"
 					}
 				]
 			},

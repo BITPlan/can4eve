@@ -24,7 +24,7 @@ package com.bitplan.elm327;
  * communication to ELM327 devices
  * see e.g. https://www.sparkfun.com/datasheets/Widgets/ELM327_AT_Commands.pdf
  */
-public interface ELM327 extends Restartable,Debugable {
+public interface ELM327 extends ELM327Device,Restartable,Debugable {
     // Connection to delegate most of the work to
     public Connection getCon() ;
     public void setCon(Connection con);
@@ -40,29 +40,7 @@ public interface ELM327 extends Restartable,Debugable {
 
     public void initOBD2(long timeOutMsecs) throws Exception;
 
-    /**
-     * get the ID of the Device as returned by the ATI command
-     * @return - the device id e.g. ELM327 v1.3a
-     */
-    public String getId();
-
-    /**
-     * get the description of the Device as returned by the AT @1 command
-     * @returns the description e.g SCANTOOL.NET LLC
-     */
-    public String getDescription();
-
-    /**
-     * get the id of the device as returned by the AT @2 command
-     * @return the device id
-     */
-    public String getDeviceId();
-
     public String getCarVoltage();
-
-    public String getHardwareId();
-
-    public String getFirmwareId();
 
     public boolean isHeader();
 

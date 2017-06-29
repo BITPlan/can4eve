@@ -20,13 +20,13 @@
  */
 package com.bitplan.obdii;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Ignore;
@@ -43,9 +43,12 @@ import com.bitplan.can4eve.gui.javafx.GenericDialog;
 import com.bitplan.can4eve.gui.javafx.SampleApp;
 import com.bitplan.can4eve.json.JsonManager;
 import com.bitplan.can4eve.json.JsonManagerImpl;
+import com.bitplan.can4eve.util.TaskLaunch;
 import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.javafx.JFXCanCellStatePlot;
 import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
+
+import javafx.concurrent.Task;
 
 /**
  * test the descriptive application gui
@@ -58,7 +61,7 @@ public class TestAppGUI {
   public void testAppGUI() throws Exception {
     App app = App.getInstance();
     assertNotNull(app);
-    assertEquals(4, app.getMainMenu().getSubMenus().size());
+    assertEquals(5, app.getMainMenu().getSubMenus().size());
     assertEquals(2, app.getGroups().size());
     int[] expected = { 3, 9 };
     int i = 0;
@@ -179,7 +182,40 @@ public class TestAppGUI {
       throw new Exception("a problem!");
     } catch (Throwable th) {
       String exceptionText=GenericDialog.getStackTraceText(th);
-      //GenericDialog.sendReport("support@bitplan.com", "testSupportMail", exceptionText);
+      // needs software version to work!
+      GenericDialog.sendReport(null, "testSupportMail", exceptionText);
     } 
+  }
+  
+  Integer counter=0;
+  boolean running=false;
+  public Integer increment() {
+    running=true;
+    while (running) {
+      counter++;
+      try {
+        Thread.sleep(1);
+      } catch (InterruptedException e) {
+      }
+    }
+    return counter;
+  }
+  /**
+   * @throws Exception 
+   */
+  @SuppressWarnings("unchecked")
+  @Test
+  public void testTaskLaunch() throws Exception {
+    com.sun.javafx.application.PlatformImpl.startup(() -> {
+    });
+    // https://stackoverflow.com/questions/30089593/java-fx-lambda-for-task-interface
+    TaskLaunch<Integer> launch = TaskLaunch.start(()->increment(),Integer.class);
+    try {
+      Thread.sleep(20);
+    } catch (InterruptedException e) {
+      //
+    }
+    running=false;
+    assertTrue(launch.getTask().get()>10);
   }
 }

@@ -20,14 +20,12 @@
  */
 package com.bitplan.elm327;
 
-import com.bitplan.csv.CSVUtil;
-
 /**
  * Created by wf on 03.06.17.
  *
  */
 
-public class ELM327Impl implements ELM327 {
+public class ELM327Impl extends ELM327DeviceImpl implements ELM327 {
   public static long INIT_TIMEOUT = 150; // intialization operates with a faster
                                          // timeout
   Connection con;
@@ -37,37 +35,9 @@ public class ELM327Impl implements ELM327 {
   boolean echo;
   boolean sendLineFeed;
   boolean debug;
-  boolean useable;
-  boolean STN=false;
-
-  // id as returned by AT I
-  String id;
-
-  // description as returned by AT @1
-  String description;
-
-  // device id as returned by AT @2
-  String deviceId;
 
   String carVoltage;
-  String hardwareId;
-  String firmwareId;
-
-  @Override
-  public String getId() {
-    return id;
-  }
-
-  @Override
-  public String getDescription() {
-    return description;
-  }
-
-  @Override
-  public String getDeviceId() {
-    return deviceId;
-  }
-
+  
   public boolean isEcho() {
     return echo;
   }
@@ -88,13 +58,6 @@ public class ELM327Impl implements ELM327 {
     return carVoltage;
   }
 
-  public String getHardwareId() {
-    return hardwareId;
-  }
-
-  public String getFirmwareId() {
-    return firmwareId;
-  }
 
   public boolean isHeader() {
     return header;
@@ -115,14 +78,6 @@ public class ELM327Impl implements ELM327 {
   @Override
   public boolean isDebug() {
     return con.isDebug();
-  }
-
-  public boolean isUsable() {
-    return useable;
-  }
-
-  public boolean isSTN() {
-    return STN;
   }
 
   /**
@@ -302,42 +257,8 @@ public class ELM327Impl implements ELM327 {
   }
   
   /**
-   * get the info for the device
+   * initialize the OBD
    */
-  public String getInfo() {
-    String info="No useable ELM327 device could be detected";
-    if (useable) {
-      info="useable ELM327 compatible device detected";
-    }
-      
-    if (id!=null) {
-      info+="\n"+id;
-    }
-    if (description!=null) {
-      info+="\n"+this.getDescription();
-    }
-    if (STN) {
-      info+="\nthis device is using the recommended STN chip";
-      info+="\n"+this.firmwareId;
-      info+="\n"+this.hardwareId;
-    }
-    return info;
-  }
-  
-  /**
-   * get my CSV description
-   * @return a CSV snippet
-   */
-  public String asCSV() {
-    String csv="";
-    csv+=CSVUtil.csv("id",this.getId());
-    csv+=CSVUtil.csv("description",this.getDescription());
-    csv+=CSVUtil.csv("firmwareId",this.getFirmwareId());
-    csv+=CSVUtil.csv("hardwareId", this.getHardwareId());
-    return csv;
-  }
-
-
   public void initOBD2() throws Exception {
     initOBD2(INIT_TIMEOUT);
   }
