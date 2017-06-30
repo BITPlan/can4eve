@@ -426,17 +426,17 @@
 				"shortCut": "F",
 				"menuItems": [
 				{
-						"id": "openMenuItem",
+						"id": "fileOpenMenuItem",
 						"title": "Open",
 						"shortCut": "O"
 				},
 				{
-						"id": "saveMenuItem",
+						"id": "fileSaveMenuItem",
 						"title": "Save",
 						"shortCut": "S"
 				},
 					{
-						"id": "quitMenuItem",
+						"id": "fileQuitMenuItem",
 						"title": "Quit",
 						"shortCut": "Q"
 					}
@@ -448,17 +448,17 @@
 				"shortCut": "O",
 				"menuItems": [
 				{
-						"id": "startMenuItem",
+						"id": "obdStartMenuItem",
 						"title": "Start",
 						"shortCut": "S"
 					},
 					{
-						"id": "haltMenuItem",
+						"id": "obdHaltMenuItem",
 						"title": "Halt",
 						"shortCut": "H"
 					},
 					{
-						"id": "testMenuItem",
+						"id": "obdTestMenuItem",
 						"title": "Test",
 						"shortCut": "T"
 					}
@@ -469,12 +469,12 @@
 				"title": "Settings",
 				"shortCut": "F",
 				"menuItems": [{
-						"id": "settingsMenuItem",
+						"id": "settingsSettingsMenuItem",
 						"title": "OBDII",
 						"shortCut": "O"
 					},
 					{
-						"id": "preferencesMenuItem",
+						"id": "settingsPreferencesMenuItem",
 						"title": "Preferences",
 						"shortCut": "P"
 					}
@@ -497,17 +497,17 @@
 				"title": "View",
 				"shortCut": "V",
 				"menuItems": [{
-						"id": "monitorViewMenuItem",
+						"id": "viewMonitorViewMenuItem",
 						"title": "OBD",
 						"shortCut": "O"
 					},
 					{
-						"id": "historyViewMenuItem",
+						"id": "viewHistoryViewMenuItem",
 						"title": "History",
 						"shortCut": "H"
 					},
 					{
-						"id": "settingsViewMenuItem",
+						"id": "viewSettingsViewMenuItem",
 						"title": "Settings",
 						"shortCut": "S"
 					}
@@ -519,22 +519,22 @@
 				"title": "Help",
 				"shortCut": "H",
 				"menuItems": [{
-						"id": "aboutMenuItem",
+						"id": "helpAboutMenuItem",
 						"title": "About",
 						"shortCut": "A"
 					},
 					{
-						"id": "helpMenuItem",
+						"id": "helpHelpMenuItem",
 						"title": "can4eve help",
 						"shortCut": "C"
 					},
 					{
-						"id": "feedbackMenuItem",
+						"id": "helpFeedbackMenuItem",
 						"title": "send Feedback",
 						"shortCut": "F"
 					},
 					{
-						"id": "bugReportMenuItem",
+						"id": "helpBugReportMenuItem",
 						"title": "create BugReport",
 						"shortCut": "B"
 					}

@@ -20,6 +20,7 @@
  */
 package com.bitplan.obdii.javafx;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,6 +53,7 @@ import com.bitplan.obdii.LabelField;
 import com.bitplan.obdii.OBDApp;
 import com.bitplan.obdii.Preferences;
 import com.bitplan.obdii.Preferences.LangChoice;
+import com.bitplan.obdii.elm327.ElmSimulator;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -71,6 +73,7 @@ import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -273,7 +276,21 @@ public class JavaFXDisplay extends WaitableApp
    * special setup non in generic description
    */
   public void setupSpecial() {
-    this.setMenuItemDisable(I18n.HALTMENUITEM, true);
+    this.setMenuItemDisable(I18n.OBD_HALT_MENU_ITEM, true);
+    // File / Open
+    MenuItem fileOpenMenuItem=getMenuItem(I18n.FILE_OPEN_MENU_ITEM);
+    fileOpenMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(final ActionEvent e) {
+        FileChooser fileChooser = new FileChooser();
+        if (Config.getInstance()!=null)
+          fileChooser.setInitialDirectory(new File(Config.getInstance().getLogPrefix()));
+        File file = fileChooser.showOpenDialog(stage);
+        if (file != null) {
+          ElmSimulator.fileName=file.getAbsolutePath();
+        } // if
+      } // handle
+    });
   }
 
   /**
@@ -283,21 +300,37 @@ public class JavaFXDisplay extends WaitableApp
    * @param state
    */
   public void setMenuItemDisable(String id, boolean state) {
+    MenuItem menuItem = getMenuItem(id);
+    if (menuItem != null)
+      menuItem.setDisable(state);
+  }
+
+  /**
+   * get the menu item with the given id
+   * 
+   * @param id
+   * @return the menu item
+   */
+  public MenuItem getMenuItem(String id) {
     for (Menu menu : this.menuBar.getMenus()) {
       for (MenuItem menuItem : menu.getItems()) {
         if (id.equals(menuItem.getId())) {
-          menuItem.setDisable(state);
+          return menuItem;
         }
       }
     }
+    return null;
   }
-  
+
   /**
    * show a message that the given feature is not implemented yet
-   * @param feature - i18n string code of feature e.g. menuItem
+   * 
+   * @param feature
+   *          - i18n string code of feature e.g. menuItem
    */
   public void notImplemented(String feature) {
-    GenericDialog.showAlert(I18n.get(I18n.SORRY), I18n.get(I18n.WEARESORRY), I18n.get(feature)+" "+I18n.get(I18n.NOTIMPLEMENTEDYET));
+    GenericDialog.showAlert(I18n.get(I18n.SORRY), I18n.get(I18n.WE_ARE_SORRY),
+        I18n.get(feature) + " " + I18n.get(I18n.NOT_IMPLEMENTED_YET));
   }
 
   @Override
@@ -307,55 +340,55 @@ public class JavaFXDisplay extends WaitableApp
       if (source instanceof MenuItem) {
         MenuItem menuItem = (MenuItem) source;
         switch (menuItem.getId()) {
-        case I18n.SAVEMENUITEM:
-          notImplemented(I18n.SAVEMENUITEM);
+        case I18n.FILE_SAVE_MENU_ITEM:
+          notImplemented(I18n.FILE_SAVE_MENU_ITEM);
           break;
-        case I18n.OPENMENUITEM:
-          notImplemented(I18n.OPENMENUITEM);
+        case I18n.FILE_OPEN_MENU_ITEM:
+          notImplemented(I18n.FILE_OPEN_MENU_ITEM);
           break;
-        case I18n.QUITMENUITEM:
+        case I18n.FILE_QUIT_MENU_ITEM:
           close();
           break;
-        case I18n.ABOUTMENUITEM:
-          TaskLaunch.start(()->showLink(App.getInstance().getHome()));
+        case I18n.HELP_ABOUT_MENU_ITEM:
+          TaskLaunch.start(() -> showLink(App.getInstance().getHome()));
           showAbout();
           break;
-        case I18n.HELPMENUITEM:
-          TaskLaunch.start(()->showLink(App.getInstance().getHelp()));
+        case I18n.HELP_HELP_MENU_ITEM:
+          TaskLaunch.start(() -> showLink(App.getInstance().getHelp()));
           break;
-        case I18n.FEEDBACKMENUITEM: 
+        case I18n.HELP_FEEDBACK_MENU_ITEM:
           GenericDialog.sendReport(softwareVersion,
               softwareVersion.getName() + " feedback", "...");
-        break;
-        case I18n.BUGREPORTMENUITEM:
-          TaskLaunch.start(()->showLink(App.getInstance().getFeedback()));
           break;
-        case I18n.SETTINGSMENUITEM:
+        case I18n.HELP_BUG_REPORT_MENU_ITEM:
+          TaskLaunch.start(() -> showLink(App.getInstance().getFeedback()));
+          break;
+        case I18n.SETTINGS_SETTINGS_MENU_ITEM:
           showSettings(false);
           break;
-        case I18n.STARTMENUITEM:
+        case I18n.OBD_START_MENU_ITEM:
           startMonitoring();
           break;
-        case I18n.HALTMENUITEM:
+        case I18n.OBD_HALT_MENU_ITEM:
           stopMonitoring();
           break;
-        case I18n.TESTMENUITEM:
+        case I18n.OBD_TEST_MENU_ITEM:
           showSettings(true);
           break;
-        case I18n.PREFERENCESMENUITEM:
+        case I18n.SETTINGS_PREFERENCES_MENU_ITEM:
           showPreferences();
           break;
-        case I18n.VEHICLEMENUITEM:
+        case I18n.VEHICLE_MENU_ITEM:
           showVehicle();
           break;
-        case I18n.HISTORYVIEWMENUITEM:
-          notImplemented(I18n.HISTORYVIEWMENUITEM);
+        case I18n.VIEW_HISTORY_VIEW_MENU_ITEM:
+          notImplemented(I18n.VIEW_HISTORY_VIEW_MENU_ITEM);
           break;
-        case I18n.SETTINGSVIEWMENUITEM:
-          notImplemented(I18n.SETTINGSMENUITEM);
+        case I18n.VIEW_SETTINGS_VIEW_MENU_ITEM:
+          notImplemented(I18n.SETTINGS_SETTINGS_MENU_ITEM);
           break;
-        case I18n.MONITORVIEWMENUITEM:
-          notImplemented(I18n.MONITORVIEWMENUITEM);
+        case I18n.VIEW_MONITOR_VIEW_MENU_ITEM:
+          notImplemented(I18n.VIEW_MONITOR_VIEW_MENU_ITEM);
           break;
         default:
           LOGGER.log(Level.WARNING, "unhandled menu item " + menuItem.getId()
@@ -375,9 +408,9 @@ public class JavaFXDisplay extends WaitableApp
       return;
     // TODO use better symbol e.g. icon
     setWatchDogState("X", I18n.get(I18n.HALTED));
-    setMenuItemDisable(I18n.STARTMENUITEM, false);
-    setMenuItemDisable(I18n.TESTMENUITEM, false);
-    setMenuItemDisable(I18n.HALTMENUITEM, true);
+    setMenuItemDisable(I18n.OBD_START_MENU_ITEM, false);
+    setMenuItemDisable(I18n.OBD_TEST_MENU_ITEM, false);
+    setMenuItemDisable(I18n.OBD_HALT_MENU_ITEM, true);
     Task<Void> task = new Task<Void>() {
       @Override
       public Void call() {
@@ -397,9 +430,9 @@ public class JavaFXDisplay extends WaitableApp
    */
   private void startMonitoring() {
     setWatchDogState("⚙", I18n.get(I18n.MONITORING));
-    setMenuItemDisable(I18n.STARTMENUITEM, true);
-    setMenuItemDisable(I18n.TESTMENUITEM, true);
-    setMenuItemDisable(I18n.HALTMENUITEM, false);
+    setMenuItemDisable(I18n.OBD_START_MENU_ITEM, true);
+    setMenuItemDisable(I18n.OBD_TEST_MENU_ITEM, true);
+    setMenuItemDisable(I18n.OBD_HALT_MENU_ITEM, false);
     monitortask = new Task<Void>() {
       @Override
       public Void call() {

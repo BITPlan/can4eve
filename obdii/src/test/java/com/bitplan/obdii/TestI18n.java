@@ -42,7 +42,18 @@ import com.bitplan.can4eve.gui.swing.Translator;
  */
 public class TestI18n {
   static boolean show = false;
-  static boolean showError=true;
+  static boolean showError = true;
+
+  /**
+   * get the underscored version of the given identifier
+   * @param identifier
+   * @return - the underscored identifier
+   */
+  public static String asUnderScore(String identifier) {
+    String underScoredIdentifier = identifier
+        .replaceAll("(.)(\\p{Upper})", "$1_$2").toUpperCase();
+    return underScoredIdentifier;
+  }
 
   /**
    * check the given text whether it is available as a translate
@@ -74,13 +85,13 @@ public class TestI18n {
   public int checkMenu(Menu menu) {
     int errors = 0;
     List<Menu> submenus = menu.getSubMenus();
-    if (submenus.size()==0)
+    if (submenus.size() == 0)
       errors += checkText(menu.getId());
     for (Menu submenu : submenus) {
       errors += checkMenu(submenu);
     }
-    for (MenuItem menuItem:menu.getMenuItems()) {
-      errors+=checkText(menuItem.getId());
+    for (MenuItem menuItem : menu.getMenuItems()) {
+      errors += checkText(menuItem.getId());
     }
     return errors;
   }
@@ -136,11 +147,12 @@ public class TestI18n {
       Enumeration<String> keys = bundle.getKeys();
       while (keys.hasMoreElements()) {
         String key = keys.nextElement();
-        if (!fieldList.contains(key.toUpperCase())) {
+        String constantName=asUnderScore(key);
+        if (!fieldList.contains(constantName)) {
           errors++;
           if (show)
             System.out
-                .println("  public static final String " + key.toUpperCase()
+                .println("  public static final String " + constantName
                     + "=\"" + key + "\"; //" + bundle.getString(key));
         }
       }

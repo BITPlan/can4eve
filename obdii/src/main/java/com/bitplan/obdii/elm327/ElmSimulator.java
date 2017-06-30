@@ -59,7 +59,7 @@ public class ElmSimulator extends Main {
   
   @Option(name = "-f", aliases = {
   "-file" }, usage = "file\ntthe log file to use for simulation")
-  String fileName = null;
+  public static String fileName = null;
 
   public static int SIMULATOR_TIMEOUT = 50; // Simulator should be quick 2 msecs is
   // feasible

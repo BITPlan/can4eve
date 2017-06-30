@@ -214,7 +214,8 @@ public class Monitor extends Thread {
         } else {
           try {
             Packet p = logReader.nextPacket();
-            sample = p.getData();
+            if (p!=null)
+              sample = p.getData();
           } catch (Exception e) {
             ErrorHandler.handle(e);
           }

@@ -184,7 +184,7 @@ public class OBDMain extends Main implements OBDApp {
       break;
     }
     if (obdTriplet == null) {
-      throw new Exception(Translator.translate(I18n.INVALID_CONFIGURATION));
+      throw new Exception(I18n.get(I18n.INVALID_CONFIGURATION));
     }
     // the simulator is pre started and timeout and debug set
     // all other devices are configured here

@@ -185,6 +185,18 @@ public class Config {
   }
 
   /**
+   * get the instance
+   * @return
+   */
+  public static Config getInstance() {
+    try {
+      return Config.getInstance(ConfigMode.Preferences);
+    } catch (FileNotFoundException e) {
+      return null;
+    }
+  }
+  
+  /**
    * get the 
    * @param configMode 
    * @return
