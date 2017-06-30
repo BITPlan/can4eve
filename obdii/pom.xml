@@ -59,6 +59,12 @@
 			<artifactId>controlsfx</artifactId>
 			<version>8.40.12</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/eu.hansolo/Medusa -->
+		<dependency>
+			<groupId>eu.hansolo</groupId>
+			<artifactId>Medusa</artifactId>
+			<version>7.9</version>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
 		<!-- Circular FifoBuffer -->
 		<dependency>
