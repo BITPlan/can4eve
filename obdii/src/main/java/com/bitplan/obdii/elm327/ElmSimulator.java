@@ -197,7 +197,7 @@ public class ElmSimulator extends Main {
     if (debug)
       con.setLog(new LogImpl());
     con.start();
-    int WAIT_ALIVE=80;  // 40 failed 2017-06-27 on travis to wait 10 msecs is not enough for jenkins on capri
+    int WAIT_ALIVE=160;  // 80 failed 2017-06-30 on travis to wait 10 msecs is not enough for jenkins on capri
     
     Thread.sleep(WAIT_ALIVE); 
     if (!elm327.getCon().isAlive()) {
