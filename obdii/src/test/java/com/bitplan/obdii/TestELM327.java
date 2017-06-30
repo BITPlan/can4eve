@@ -389,6 +389,8 @@ public class TestELM327 extends TestOBDII {
     // simulated=false;
     // Monitor.debug=true;
     // debug=true;
+    // FIXME - proper  handling of ElmSimulator files
+    ElmSimulator.fileName=null;
     prepareOBDTriplet(simulated, debug);
     obdTriplet.initOBD();
     File logRoot = new File("src/test/data");
