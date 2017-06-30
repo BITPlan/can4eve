@@ -34,7 +34,7 @@ import java.util.logging.SimpleFormatter;
 import java.io.File;
 
 /**
- * Logging and exceptiion handling
+ * Logging and exception handling
  */
 public class LogImpl implements Log {
     protected static Logger LOGGER = Logger.getLogger("com.bitplan.elm327");

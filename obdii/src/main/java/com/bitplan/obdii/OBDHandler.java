@@ -328,9 +328,8 @@ public abstract class OBDHandler implements ResponseHandler {
   public void logWrite(PrintWriter pLogWriter, Packet response) {
     // if logging is enabled
     if (pLogWriter != null) {
-      Date ts=new Date(response.getTimeStamp());
       pLogWriter.println(
-          timeStampIsoDateFormatter.format(ts) + " " + response.getData());
+          timeStampIsoDateFormatter.format(response.getTime()) + " " + response.getData());
       pLogWriter.flush();
     }
   }

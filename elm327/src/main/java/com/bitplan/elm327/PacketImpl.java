@@ -38,6 +38,9 @@ public class PacketImpl implements Packet {
 
     static SimpleDateFormat isoDateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     
+    /**
+     * construct me
+     */
     public PacketImpl() {
         this.updateTimeStamp();
         valid=false;
