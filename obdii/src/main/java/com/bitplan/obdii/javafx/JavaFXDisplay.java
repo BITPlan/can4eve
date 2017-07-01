@@ -297,7 +297,12 @@ public class JavaFXDisplay extends WaitableApp
       public void handle(final ActionEvent e) {
         FileChooser fileChooser = new FileChooser();
         if (Config.getInstance()!=null)
-          fileChooser.setInitialDirectory(new File(Config.getInstance().getLogPrefix()));
+          try {
+            fileChooser.setInitialDirectory(new File(Preferences.getInstance().getLogDirectory()));
+          } catch (Exception e1) {
+            // TODO Auto-generated catch block
+            
+          }
         File file = fileChooser.showOpenDialog(stage);
         if (file != null) {
           ElmSimulator.fileName=file.getAbsolutePath();
@@ -412,7 +417,7 @@ public class JavaFXDisplay extends WaitableApp
         }
       }
     } catch (Exception e) {
-      handle(e);
+      handleException(e);
     }
   }
 
@@ -433,7 +438,7 @@ public class JavaFXDisplay extends WaitableApp
         try {
           obdApp.stop();
         } catch (Exception e) {
-          handle(e);
+          handleException(e);
         }
         return null;
       }
@@ -455,7 +460,7 @@ public class JavaFXDisplay extends WaitableApp
         try {
           obdApp.start();
         } catch (Exception e) {
-          handle(e);
+          handleException(e);
         }
         return null;
       }
@@ -479,7 +484,7 @@ public class JavaFXDisplay extends WaitableApp
    * 
    * @param th
    */
-  private void handle(Throwable th) {
+  private void handleException(Throwable th) {
     Platform.runLater(() -> GenericDialog.showException((I18n.get(I18n.ERROR)),
         I18n.get(I18n.PROBLEM_OCCURED), th, softwareVersion));
   }
@@ -512,7 +517,7 @@ public class JavaFXDisplay extends WaitableApp
     try {
       JLink.open(link);
     } catch (Exception e) {
-      handle(e);
+      handleException(e);
     }
     return null;
   }

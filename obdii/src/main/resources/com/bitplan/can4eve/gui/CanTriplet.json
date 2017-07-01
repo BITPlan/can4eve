@@ -58,11 +58,6 @@
 							"hint": "display debugging information for the device",
 							"format": "%s",
 							"type": "Boolean"
-						},
-						{
-							"title": "logPrefix",
-							"hint": "the prefix to use for logfiles",
-							"format": "%s"
 						}
 					]
 				},
@@ -90,6 +85,19 @@
 							"hint": "output debugging information for the application",
 							"format": "%s",
 							"type": "Boolean"
+						},
+						{
+							"title": "logPrefix",
+							"hint": "the prefix to use for logfiles",
+							"format": "%s"
+						}
+						,
+						{
+							"title": "logDirectory",
+							"hint": "the directory in which to store logfiles",
+							"format": "%s",
+							"type": "Directory",
+							"fieldSize": 60
 						}
 					]
 				},

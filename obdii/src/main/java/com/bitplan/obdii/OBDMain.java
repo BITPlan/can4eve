@@ -21,7 +21,6 @@
 package com.bitplan.obdii;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.net.Socket;
 import java.util.logging.Level;
 
@@ -229,9 +228,9 @@ public class OBDMain extends Main implements OBDApp {
     // stop monitoring;
     obdTriplet.setMonitoring(false);
     if (elm != null) {
-      int ltimeout=timeout;
-      if (config!=null)
-        ltimeout=config.getTimeout();
+      int ltimeout = timeout;
+      if (config != null)
+        ltimeout = config.getTimeout();
       elm.reinitCommunication(ltimeout);
     }
     return elm;
@@ -245,11 +244,7 @@ public class OBDMain extends Main implements OBDApp {
    */
   public Config getConfig() {
     if (config == null) {
-      try {
-        config = Config.getInstance(ConfigMode.Preferences);
-      } catch (FileNotFoundException e) {
-        // ignore
-      }
+      config = Config.getInstance(ConfigMode.Preferences);
       if (config == null) {
         config = new Config();
         if (device != null) {
@@ -332,7 +327,7 @@ public class OBDMain extends Main implements OBDApp {
     obd = new OBDMain();
     int result = obd.maininstance(args);
     if (!testMode) {
-      LOGGER.log(Level.INFO,"System exit "+result);
+      LOGGER.log(Level.INFO, "System exit " + result);
       System.exit(result);
     }
   }

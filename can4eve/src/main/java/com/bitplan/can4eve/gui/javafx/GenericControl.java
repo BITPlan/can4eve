@@ -38,6 +38,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TextFormatter.Change;
 import javafx.scene.control.Tooltip;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -60,6 +61,7 @@ public class GenericControl {
   private CheckBox checkBox;
   protected Stage stage;
   private FileChooser fileChooser;
+  private DirectoryChooser directoryChooser;
   public static final boolean debug = false;
 
   public Control getControl() {
@@ -79,28 +81,30 @@ public class GenericControl {
   public GenericControl(Stage stage, Field field) {
     this.stage = stage;
     this.field = field;
-    if (field.getType() == null || "Integer".equals(field.getType())
-        || "File".equals(field.getType())) {
+    String fieldType = field.getType();
+    if (fieldType == null || "Integer".equals(fieldType)
+        || "File".equals(fieldType) || "Directory".equals(fieldType)) {
       textField = new TextField();
       textField.setPromptText(field.getTitle());
-      if (field.getFieldSize()!=null) {
+      if (field.getFieldSize() != null) {
         // heuristic correction of columns specified in generic description
-        // versus Java FX interpretation - the columns are too wide as of 2017-06-28
-        int columnCount=field.getFieldSize()*4/6;
-        if (columnCount>0)
+        // versus Java FX interpretation - the columns are too wide as of
+        // 2017-06-28
+        int columnCount = field.getFieldSize() * 4 / 6;
+        if (columnCount > 0)
           textField.setPrefColumnCount(columnCount);
       }
       control = textField;
-    } else if ("Choice".equals(field.getType())) {
+    } else if ("Choice".equals(fieldType)) {
       choiceBox = new ChoiceBox<String>();
       choiceBox.getItems().addAll(field.getChoices().split(","));
       control = choiceBox;
-    } else if ("Boolean".equals(field.getType())) {
+    } else if ("Boolean".equals(fieldType)) {
       checkBox = new CheckBox();
       control = checkBox;
     }
     // force numeric content for integer fields
-    if ("Integer".equals(field.getType())) {
+    if ("Integer".equals(fieldType)) {
       // force numeric content
       // https://stackoverflow.com/a/36436243/1497139
       UnaryOperator<Change> filter = change -> {
@@ -115,16 +119,23 @@ public class GenericControl {
       TextFormatter<String> textFormatter = new TextFormatter<>(filter);
       textField.setTextFormatter(textFormatter);
     }
-    if ("File".equals(field.getType())) {
-      setFileChooser(new FileChooser());
+    //
+    if ("File".equals(fieldType) || ("Directory").equals(fieldType)) {
+      if ("File".equals(fieldType))
+        setFileChooser(new FileChooser());
+      else
+        setDirectoryChooser(new DirectoryChooser());
       button = new Button("...");
       button.setOnAction(new EventHandler<ActionEvent>() {
         @Override
         public void handle(final ActionEvent e) {
-          File file = getFileChooser().showOpenDialog(stage);
+          File file;
+          if ("File".equals(fieldType))
+            file = getFileChooser().showOpenDialog(stage);
+          else
+            file = getDirectoryChooser().showDialog(stage);
           if (file != null) {
             textField.setText(file.getPath());
-            ;
           }
         }
       });
@@ -228,6 +239,14 @@ public class GenericControl {
 
   public void setFileChooser(FileChooser fileChooser) {
     this.fileChooser = fileChooser;
+  }
+
+  public DirectoryChooser getDirectoryChooser() {
+    return directoryChooser;
+  }
+
+  public void setDirectoryChooser(DirectoryChooser directoryChooser) {
+    this.directoryChooser = directoryChooser;
   }
 
 }

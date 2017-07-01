@@ -397,7 +397,7 @@ public class TestELM327 extends TestOBDII {
     File logFile = null;
     if (!simulated) {
       Config config = Config.getInstance(ConfigMode.Test);
-      logFile = obdTriplet.logResponses(logRoot, config.getLogPrefix());
+      logFile = obdTriplet.logResponses(logRoot, "testLogs");
     }
     int frameLimit = 150;
     obdTriplet.STMMonitor(display, obdTriplet.getCANValues(), frameLimit);

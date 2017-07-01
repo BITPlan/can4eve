@@ -38,18 +38,24 @@ import com.google.gson.GsonBuilder;
  *
  */
 public class Config {
-  public enum ConfigMode {Test,Preferences}
-  public enum DeviceType {USB,Bluetooth,Network,Simulator}
-  DeviceType deviceType;   // e.g. USB
-  String serialDevice;     // e.g. cu.usbserial-113010822821 on MacOSx
-  Integer baudRate=38400;  // e.g. 115200
-  Boolean direct=false;    // e.g. true if the device needs no serial configuration
-  String hostname;         // e.g. 192.168.1.30
-  String logPrefix;        // e.g. my Ion
-  Integer port=35000;      // e.g. 35000
-  Integer timeout=250;     // e.g. 500 (for 1/2 sec)
-  Boolean debug=false;     // e.g. true
-  private static Map<ConfigMode,Config> configs=new HashMap<ConfigMode,Config>();
+  public enum ConfigMode {
+    Test, Preferences
+  }
+
+  public enum DeviceType {
+    USB, Bluetooth, Network, Simulator
+  }
+
+  DeviceType deviceType; // e.g. USB
+  String serialDevice; // e.g. cu.usbserial-113010822821 on MacOSx
+  Integer baudRate = 38400; // e.g. 115200
+  Boolean direct = false; // e.g. true if the device needs no serial
+                          // configuration
+  String hostname; // e.g. 192.168.1.30
+  Integer port = 35000; // e.g. 35000
+  Integer timeout = 250; // e.g. 500 (for 1/2 sec)
+  Boolean debug = false; // e.g. true
+  private static Map<ConfigMode, Config> configs = new HashMap<ConfigMode, Config>();
 
   public DeviceType getDeviceType() {
     return deviceType;
@@ -115,16 +121,9 @@ public class Config {
     return debug;
   }
 
-  public String getLogPrefix() {
-    return logPrefix;
-  }
-
-  public void setLogPrefix(String logPrefix) {
-    this.logPrefix = logPrefix;
-  }
-
   /**
    * get the Gson
+   * 
    * @return
    */
   public static Gson getGson() {
@@ -143,73 +142,80 @@ public class Config {
     String json = getGson().toJson(this);
     return json;
   }
-  
+
   /**
-   * get the Config directory 
+   * get the Config directory
+   * 
    * @return the config directory
    */
   public static File getConfigDirectory() {
     String home = System.getProperty("user.home");
-    File configDirectory=new File(home+"/.can4eve/");
+    File configDirectory = new File(home + "/.can4eve/");
     return configDirectory;
   }
-  
+
   /**
    * get the config file
-   * @param configMode 
+   * 
+   * @param configMode
    * @return
    */
   public static File getConfigFile(ConfigMode configMode) {
-    String filename="obdii";
+    String filename = "obdii";
     switch (configMode) {
     case Test:
-      filename="testobdii";
+      filename = "testobdii";
     default:
       break;
     }
-    String configFilename =filename+".json";
-    File configFile = new File(getConfigDirectory(),configFilename);
+    String configFilename = filename + ".json";
+    File configFile = new File(getConfigDirectory(), configFilename);
     return configFile;
   }
-  
+
   /**
    * save the settings
+   * 
    * @throws Exception
    */
   public void save(ConfigMode configMode) throws Exception {
-    File configFile=getConfigFile(configMode);
+    File configFile = getConfigFile(configMode);
     // create the config directory if it does not exist yet
     if (!configFile.getParentFile().isDirectory())
       configFile.getParentFile().mkdirs();
-    FileUtils.writeStringToFile(configFile, this.asJson(),"UTF-8");
+    FileUtils.writeStringToFile(configFile, this.asJson(), "UTF-8");
   }
 
   /**
    * get the instance
+   * 
    * @return
    */
   public static Config getInstance() {
-    try {
-      return Config.getInstance(ConfigMode.Preferences);
-    } catch (FileNotFoundException e) {
-      return null;
-    }
+    return Config.getInstance(ConfigMode.Preferences);
   }
-  
+
   /**
-   * get the 
-   * @param configMode 
+   * get the
+   * 
+   * @param configMode
    * @return
    * @throws FileNotFoundException
    */
-  public static Config getInstance(ConfigMode configMode) throws FileNotFoundException {
-    Config instance=configs.get(configMode);
+  public static Config getInstance(ConfigMode configMode) {
+    Config instance = configs.get(configMode);
     if (instance == null) {
-      File configFile=getConfigFile(configMode);
+      File configFile = getConfigFile(configMode);
       if (configFile.canRead()) {
-        FileReader jsonReader = new FileReader(configFile);
-        instance = getGson().fromJson(jsonReader, Config.class);
-        configs.put(configMode, instance);
+        FileReader jsonReader;
+        try {
+          jsonReader = new FileReader(configFile);
+          instance = getGson().fromJson(jsonReader, Config.class);
+          configs.put(configMode, instance);
+        } catch (FileNotFoundException e) {
+          new RuntimeException("this can't happen - canRead "
+              + configFile.getName() + " but FileNotFoundException");
+        }
       }
     }
     return instance;
@@ -217,30 +223,32 @@ public class Config {
 
   /**
    * get me as a map
+   * 
    * @return
    */
   @SuppressWarnings("unchecked")
-  public Map<String,Object> asMap() {
-    Map<String,Object> map=new HashMap<String,Object>();
-    map = (Map<String,Object>) getGson().fromJson(this.asJson(), map.getClass());
+  public Map<String, Object> asMap() {
+    Map<String, Object> map = new HashMap<String, Object>();
+    map = (Map<String, Object>) getGson().fromJson(this.asJson(),
+        map.getClass());
     return map;
   }
 
   /**
    * set my values from the given map
+   * 
    * @param map
    */
   public void fromMap(Map<String, Object> map) {
-    String dType=(String)map.get("deviceType");
-    if (dType!=null)
-      this.deviceType=DeviceType.valueOf(dType);
-    this.hostname=(String) map.get("hostname");
-    this.port=(Integer) map.get("port");
-    this.serialDevice=(String) map.get("serialDevice");
-    this.baudRate=(Integer) map.get("baudRate");
-    this.timeout=(Integer) map.get("timeout");
-    this.direct=(Boolean)map.get("direct");
-    this.debug=(Boolean)map.get("debug");
-    this.logPrefix=(String) map.get("logPrefix");
+    String dType = (String) map.get("deviceType");
+    if (dType != null)
+      this.deviceType = DeviceType.valueOf(dType);
+    this.hostname = (String) map.get("hostname");
+    this.port = (Integer) map.get("port");
+    this.serialDevice = (String) map.get("serialDevice");
+    this.baudRate = (Integer) map.get("baudRate");
+    this.timeout = (Integer) map.get("timeout");
+    this.direct = (Boolean) map.get("direct");
+    this.debug = (Boolean) map.get("debug");
   }
 }
