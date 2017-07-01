@@ -191,6 +191,9 @@ public class ElmSimulator extends Main {
     ElmSimulator elm327Simulator = ElmSimulator.getInstance();
     elm327Simulator.debug = debug;
     ServerSocket serverSocket = elm327Simulator.getServerSocket();
+    if (serverSocket==null) {
+      throw new Exception("could not get a server socket for port ");
+    }
     Socket clientSocket = new Socket("localhost", serverSocket.getLocalPort());
     Connection con = elm327.getCon();
     con.connect(clientSocket);

@@ -42,7 +42,6 @@ public class SampleApp extends WaitableApp {
    * @param region
    */
   public SampleApp(String title, Region region) {
-
     this.title = title;
     this.region = region;
   }

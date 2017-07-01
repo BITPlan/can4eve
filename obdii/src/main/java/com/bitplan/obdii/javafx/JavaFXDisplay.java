@@ -102,6 +102,11 @@ public class JavaFXDisplay extends WaitableApp
 
   private Label watchDogLabel;
   private Task<Void> monitortask;
+
+  private Tab clockTab;
+
+  private ClockPane clockPane;
+
   public static final boolean debug = false;
 
   /**
@@ -276,7 +281,15 @@ public class JavaFXDisplay extends WaitableApp
    * special setup non in generic description
    */
   public void setupSpecial() {
+    // TODO - restyle and rename me - then filter connection tab
+    clockTab=new Tab("Clocks");
+    clockPane=new ClockPane();
+    clockTab.setContent(clockPane);
+    this.tabPane.getTabs().add(0, clockTab);
+    // disable menu items
     this.setMenuItemDisable(I18n.OBD_HALT_MENU_ITEM, true);
+    
+    // add menu actions
     // File / Open
     MenuItem fileOpenMenuItem=getMenuItem(I18n.FILE_OPEN_MENU_ITEM);
     fileOpenMenuItem.setOnAction(new EventHandler<ActionEvent>() {
@@ -291,6 +304,9 @@ public class JavaFXDisplay extends WaitableApp
         } // if
       } // handle
     });
+   
+    //statusBar.getRightItems().add(clock);
+ 
   }
 
   /**

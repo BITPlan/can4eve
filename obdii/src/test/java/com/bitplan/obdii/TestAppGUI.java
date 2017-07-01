@@ -42,10 +42,14 @@ import com.bitplan.can4eve.gui.App;
 import com.bitplan.can4eve.gui.Group;
 import com.bitplan.can4eve.gui.javafx.GenericDialog;
 import com.bitplan.can4eve.gui.javafx.SampleApp;
+import com.bitplan.can4eve.gui.javafx.WaitableApp;
+import com.bitplan.can4eve.gui.swing.Translator;
 import com.bitplan.can4eve.json.JsonManager;
 import com.bitplan.can4eve.json.JsonManagerImpl;
 import com.bitplan.can4eve.util.TaskLaunch;
 import com.bitplan.obdii.Preferences.LangChoice;
+import com.bitplan.obdii.javafx.ClockPane;
+import com.bitplan.obdii.javafx.ClockPane.Watch;
 import com.bitplan.obdii.javafx.JFXCanCellStatePlot;
 import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
 
@@ -56,6 +60,7 @@ import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
  *
  */
 public class TestAppGUI {
+  public static final int SHOW_TIME=4000;
   @Test
   public void testAppGUI() throws Exception {
     App app = App.getInstance();
@@ -156,7 +161,25 @@ public class TestAppGUI {
         valuePlot.getBarChart());
     sampleApp.show();
     sampleApp.waitOpen();
-    Thread.sleep(5000);
+    Thread.sleep(SHOW_TIME);
+    sampleApp.close();
+  }
+  
+  @Test
+  public void testClockPanel() throws Exception {
+    WaitableApp.toolkitInit();
+    Translator.initialize(Preferences.getInstance().getLanguage().name());
+    ClockPane clockPane=new ClockPane();
+    clockPane.setWatch(Watch.Charging,1320*1000);
+    clockPane.setWatch(Watch.Parking,390*1000);
+    SampleApp sampleApp=new SampleApp("Clocks",clockPane);
+    sampleApp.show();
+    sampleApp.waitOpen();
+    for (int i=0;i<(SHOW_TIME/1000*2);i++) {
+      Thread.sleep(1000);
+      clockPane.setWatch(Watch.Moving,i*1000+300*1000);
+    }
+    sampleApp.close();
   }
 
   @Test
@@ -171,7 +194,7 @@ public class TestAppGUI {
     SampleApp sampleApp = new SampleApp("SOC/RR", valuePlot.getLineChart());
     sampleApp.show();
     sampleApp.waitOpen();
-    Thread.sleep(5000);
+    Thread.sleep(SHOW_TIME);
   }
 
   @Ignore
@@ -205,8 +228,7 @@ public class TestAppGUI {
   @SuppressWarnings("unchecked")
   @Test
   public void testTaskLaunch() throws Exception {
-    com.sun.javafx.application.PlatformImpl.startup(() -> {
-    });
+    WaitableApp.toolkitInit();
     // https://stackoverflow.com/questions/30089593/java-fx-lambda-for-task-interface
     TaskLaunch<Integer> launch = TaskLaunch.start(()->increment(),Integer.class);
     try {

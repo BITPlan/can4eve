@@ -68,6 +68,11 @@ public class I18n {
   public static final String VIEW_HISTORY_VIEW_MENU_ITEM="viewHistoryViewMenuItem"; //History
   public static final String VIEW_SETTINGS_VIEW_MENU_ITEM="viewSettingsViewMenuItem"; //Settings.
   public static final String VIEW_MONITOR_VIEW_MENU_ITEM="viewMonitorViewMenuItem"; //OBD
+  public static final String WATCH_PARKING = "watchParking";
+  public static final String WATCH_MOVING = "watchMoving";
+  public static final String WATCH_CHARGING = "watchCharging";
+  public static final String WATCH_TOTAL = "watchTotal";
+  public static final String WATCH_TIME = "watchTime";
 
   /**
    * Translate the given text
