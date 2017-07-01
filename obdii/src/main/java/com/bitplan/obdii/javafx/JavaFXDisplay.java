@@ -74,7 +74,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 /**
@@ -224,28 +223,23 @@ public class JavaFXDisplay extends WaitableApp
     stage.setTitle(
         softwareVersion.getName() + " " + softwareVersion.getVersion());
     this.stage = stage;
-    Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
     root = new VBox();
-    double screenWidth = primScreenBounds.getWidth();
-    double screenHeight = primScreenBounds.getHeight();
     int screenPercent;
     try {
       screenPercent = Preferences.getInstance().getScreenPercent();
     } catch (Exception e) {
       screenPercent = 100;
     }
-    double sceneWidth = screenWidth * screenPercent / 100.0;
-    double sceneHeight = screenHeight * screenPercent / 100.0;
-
-    Scene scene = new Scene(root, sceneWidth, sceneHeight);
+    Rectangle2D sceneBounds=super.getSceneBounds(screenPercent,2,3);
+    Scene scene = new Scene(root, sceneBounds.getWidth(), sceneBounds.getHeight());
     scene.setFill(Color.OLDLACE);
     createMenuBar(scene);
     stage.setScene(scene);
     setup(app);
     setupSpecial();
+    stage.setX(sceneBounds.getMinX());
+    stage.setY(sceneBounds.getMinY());
     stage.show();
-    stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2);
-    stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 4);
     available = true;
   }
 

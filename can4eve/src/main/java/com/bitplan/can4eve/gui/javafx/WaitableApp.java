@@ -24,6 +24,8 @@ import com.bitplan.can4eve.gui.Display;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Rectangle2D;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 /**
@@ -53,11 +55,28 @@ public abstract class WaitableApp extends Application implements Display {
     }
   }
 
+  /**
+   * get SceneBounds
+   * @param screenPercent
+   * @return
+   */
+  public Rectangle2D getSceneBounds(int screenPercent, int xDiv, int yDiv) {
+    Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
+    double screenWidth = primScreenBounds.getWidth();
+    double screenHeight = primScreenBounds.getHeight();
+    double sceneWidth = screenWidth * screenPercent / 100.0;
+    double sceneHeight = screenHeight * screenPercent / 100.0;
+    double x=(primScreenBounds.getWidth() - sceneWidth) / xDiv;
+    double y=(primScreenBounds.getHeight() - sceneHeight) / yDiv;
+    Rectangle2D sceneBounds = new Rectangle2D(x,y,sceneWidth,sceneHeight);
+    return sceneBounds;
+  }
+
   @Override
   public void start(Stage stage) {
     this.stage = stage;
   }
-  
+
   public Stage getStage() {
     return stage;
   }

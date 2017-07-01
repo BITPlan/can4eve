@@ -20,7 +20,9 @@
  */
 package com.bitplan.can4eve.gui.javafx;
 
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
@@ -33,6 +35,9 @@ import javafx.stage.Stage;
 public class SampleApp extends WaitableApp {
   private String title;
   private Region region;
+  private int screenPercent;
+  private int divX;
+  private int divY;
 
   /**
    * construct the given Sample App
@@ -41,16 +46,34 @@ public class SampleApp extends WaitableApp {
    * @param region
    */
   public SampleApp(String title, Region region) {
-    this.title = title;
-    this.region = region;
+    this(title,region,67,2,2);
+  }
+
+  /**
+   * construct me
+   * @param title
+   * @param region
+   * @param screenPercent
+   * @param divX
+   * @param divY
+   */
+  public SampleApp(String title, Region region, int screenPercent,int divX,int divY) {
+    this.title=title;
+    this.region=region;
+    this.screenPercent=screenPercent;
+    this.divX=divX;
+    this.divY=divY;
   }
 
   @Override
   public void start(Stage stage) {
     super.start(stage);
     stage.setTitle(title);
-    Scene scene = new Scene(region, 800, 600);
+    Rectangle2D sceneBounds=super.getSceneBounds(screenPercent,divX,divY);
+    Scene scene = new Scene(region, sceneBounds.getWidth(), sceneBounds.getHeight());
     stage.setScene(scene);
+    stage.setX(sceneBounds.getMinX());
+    stage.setY(sceneBounds.getMinY());
     stage.show();
   }
 

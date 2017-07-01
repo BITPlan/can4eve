@@ -23,12 +23,14 @@
 			<artifactId>commons-collections4</artifactId>
 			<version>4.1</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/eu.hansolo/SteelSeries -->
+		<!-- https://mvnrepository.com/artifact/eu.hansolo/SteelSeries 
+		we are using JavaFX Medusa now
 		<dependency>
 			<groupId>eu.hansolo</groupId>
 			<artifactId>SteelSeries</artifactId>
 			<version>3.9.30</version>
 		</dependency>
+		-->
 	</dependencies>
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>

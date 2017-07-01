@@ -55,6 +55,7 @@ import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
 
 import eu.hansolo.OverviewDemo;
 import eu.hansolo.medusa.GaugeBuilder;
+import eu.hansolo.medusa.GaugeDesign;
 import eu.hansolo.medusa.LcdDesign;
 import eu.hansolo.medusa.LcdFont;
 import eu.hansolo.medusa.Marker;
@@ -62,12 +63,15 @@ import eu.hansolo.medusa.Section;
 import eu.hansolo.medusa.TickLabelLocation;
 import eu.hansolo.medusa.TickLabelOrientation;
 import eu.hansolo.medusa.TickMarkType;
+import eu.hansolo.medusa.FGauge;
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.Gauge.NeedleSize;
+import eu.hansolo.medusa.GaugeDesign.GaugeBackground;
 import eu.hansolo.medusa.Marker.MarkerType;
 import javafx.application.Platform;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
 /**
  * test the descriptive application gui
@@ -201,9 +205,9 @@ public class TestAppGUI {
     GridPane pane=new GridPane();
     Gauge gauge = GaugeBuilder.create()
         .minValue(0)
-        .maxValue(1)
-        .tickLabelDecimals(1)
-        .decimals(2)
+        .maxValue(100)
+        .tickLabelDecimals(0)
+        .decimals(1)
         .autoScale(true)
         .animated(true)
         //.backgroundPaint(Color.TRANSPARENT)
@@ -215,9 +219,9 @@ public class TestAppGUI {
         .ledVisible(true)
         .ledBlinking(true)
         .sectionsVisible(true)
-        .sections(new Section(0.5, 0.75, Color.rgb(139, 195, 102, 0.5)))
+        .sections(new Section(75, 100, Color.rgb(139, 195, 102, 0.5)))
         .areasVisible(true)
-        .areas(new Section(0.75, 1.0, Color.rgb(234, 83, 79, 0.5)))
+        .areas(new Section(0.00, 25, Color.rgb(234, 83, 79, 0.5)))
         .majorTickMarkColor(Color.MAGENTA)
         //.minorTickMarkColor(Color.rgb(0, 175, 248))
         .majorTickMarkType(TickMarkType.TRAPEZOID)
@@ -234,9 +238,9 @@ public class TestAppGUI {
         //.tickLabelsVisible(true)
         .tickLabelSections(new Section(0.1, 0.3, Color.rgb(0, 175, 248)))
         //.tickLabelSectionsVisible(true)
-        .title("Title")
+        .title("SOC")
         //.titleColor(Color.rgb(223, 223, 223))
-        .unit("Unit")
+        .unit("%")
         .lcdDesign(LcdDesign.SECTIONS)
         .lcdVisible(true)
         .lcdFont(LcdFont.STANDARD)
@@ -244,14 +248,20 @@ public class TestAppGUI {
         //.valueColor(Color.rgb(223, 223, 223))
         .needleSize(NeedleSize.THICK)
         .build();
-    pane.add(gauge, 0,0);
+    FGauge framedGauge = new FGauge(gauge, GaugeDesign.ENZO, GaugeBackground.DARK_GRAY);
+
+    pane.add(framedGauge, 0,0);
     double value = 85.0;
-    SampleApp sampleApp=new SampleApp("Gauge",pane);
+    SampleApp sampleApp=new SampleApp("Gauge",pane,67,2,2);  
     sampleApp.show();
     sampleApp.waitOpen();
-    while (sampleApp.getStage().isShowing()) {
+    Stage stage = sampleApp.getStage();
+    framedGauge.prefWidthProperty().bind(stage.widthProperty());
+    framedGauge.prefHeightProperty().bind(stage.heightProperty());
+   
+    while (stage.isShowing()) {
       Thread.sleep(15);
-      final double gaugeValue=value/100;
+      final double gaugeValue=value;
       Platform.runLater(()->gauge.setValue(gaugeValue));
       value = value - 0.1;
       if (value < 45)
@@ -289,6 +299,7 @@ public class TestAppGUI {
     sampleApp.show();
     sampleApp.waitOpen();
     Thread.sleep(SHOW_TIME);
+    sampleApp.close();
   }
 
   @Ignore
