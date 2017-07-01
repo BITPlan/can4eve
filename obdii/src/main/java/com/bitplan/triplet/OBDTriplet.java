@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -53,6 +54,11 @@ import com.bitplan.obdii.JFXTripletDisplay;
 import com.bitplan.obdii.OBDHandler;
 import com.bitplan.obdii.PIDResponse;
 import com.bitplan.obdii.elm327.ELM327;
+import com.bitplan.obdii.javafx.JavaFXDisplay;
+
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ObservableValue;
 
 /**
  * Handles OBD II communication for the Triplet cars Mitsubishi i-Miev, Peugeot
@@ -62,7 +68,8 @@ import com.bitplan.obdii.elm327.ELM327;
  *
  */
 public class OBDTriplet extends OBDHandler {
-
+  // property trial
+  public IntegerProperty rpmProperty=new SimpleIntegerProperty();
   // car parameters
   DoubleValue accelerator;
   BooleanValue blinkerLeft;
@@ -446,6 +453,8 @@ public class OBDTriplet extends OBDHandler {
         this.tripOdo.setValue(tripRounds.getValueItem().getValue() * kmPerRound,
             timeStamp);
       }
+      // tries binding
+      this.rpmProperty.setValue(rpmValue);
       rpm.setValue(rpmValue, timeStamp);
       if (speed.getValueItem().isAvailable()) {
         rpmSpeed.setValue(speed.getValueItem().getValue() * 1000.0 / 60
@@ -687,6 +696,12 @@ public class OBDTriplet extends OBDHandler {
    * @param display
    */
   public void startDisplay(final CANValueDisplay display) {
+    // TODO make this more systematic
+    if (display instanceof JavaFXDisplay) {
+      Map<String, ObservableValue<?>> canProperties=new HashMap<String, ObservableValue<?>>();
+      canProperties.put("rpm", this.rpmProperty);
+      ((JavaFXDisplay)display).bind(canProperties);
+    }
     displayexecutor = Executors.newSingleThreadScheduledExecutor();
     displayTask = new Runnable() {
       public void run() {

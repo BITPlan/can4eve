@@ -54,21 +54,22 @@ import com.bitplan.obdii.javafx.JFXCanCellStatePlot;
 import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
 
 import eu.hansolo.OverviewDemo;
+import eu.hansolo.medusa.FGauge;
+import eu.hansolo.medusa.Gauge;
+import eu.hansolo.medusa.Gauge.NeedleSize;
 import eu.hansolo.medusa.GaugeBuilder;
 import eu.hansolo.medusa.GaugeDesign;
+import eu.hansolo.medusa.GaugeDesign.GaugeBackground;
 import eu.hansolo.medusa.LcdDesign;
 import eu.hansolo.medusa.LcdFont;
 import eu.hansolo.medusa.Marker;
+import eu.hansolo.medusa.Marker.MarkerType;
 import eu.hansolo.medusa.Section;
 import eu.hansolo.medusa.TickLabelLocation;
 import eu.hansolo.medusa.TickLabelOrientation;
 import eu.hansolo.medusa.TickMarkType;
-import eu.hansolo.medusa.FGauge;
-import eu.hansolo.medusa.Gauge;
-import eu.hansolo.medusa.Gauge.NeedleSize;
-import eu.hansolo.medusa.GaugeDesign.GaugeBackground;
-import eu.hansolo.medusa.Marker.MarkerType;
-import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -251,20 +252,20 @@ public class TestAppGUI {
     FGauge framedGauge = new FGauge(gauge, GaugeDesign.ENZO, GaugeBackground.DARK_GRAY);
 
     pane.add(framedGauge, 0,0);
-    double value = 85.0;
+
+    DoubleProperty dproperty=new SimpleDoubleProperty(85.0);
+    
     SampleApp sampleApp=new SampleApp("Gauge",pane,67,2,2);  
     sampleApp.show();
     sampleApp.waitOpen();
     Stage stage = sampleApp.getStage();
     framedGauge.prefWidthProperty().bind(stage.widthProperty());
     framedGauge.prefHeightProperty().bind(stage.heightProperty());
-   
+    gauge.valueProperty().bind(dproperty);
     while (stage.isShowing()) {
       Thread.sleep(15);
-      final double gaugeValue=value;
-      Platform.runLater(()->gauge.setValue(gaugeValue));
-      value = value - 0.1;
-      if (value < 45)
+      dproperty.setValue(dproperty.getValue()-0.1);
+      if (dproperty.getValue() < 45)
         sampleApp.close();;
     }
   }

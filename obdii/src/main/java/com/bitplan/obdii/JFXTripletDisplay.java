@@ -22,6 +22,7 @@ package com.bitplan.obdii;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
@@ -33,6 +34,7 @@ import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
 import com.bitplan.obdii.javafx.JavaFXDisplay;
 
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 //import javafx.embed.swing.SwingNode;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.Region;

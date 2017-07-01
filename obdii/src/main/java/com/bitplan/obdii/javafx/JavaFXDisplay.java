@@ -56,11 +56,13 @@ import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.elm327.ElmSimulator;
 
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 //import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -105,6 +107,12 @@ public class JavaFXDisplay extends WaitableApp
   private Tab clockTab;
 
   private ClockPane clockPane;
+
+  private DashBoardPane dashBoardPane;
+
+  private Tab dashBoardTab;
+
+  private Map<String, ObservableValue<?>> canProperties;
 
   public static final boolean debug = false;
 
@@ -230,8 +238,9 @@ public class JavaFXDisplay extends WaitableApp
     } catch (Exception e) {
       screenPercent = 100;
     }
-    Rectangle2D sceneBounds=super.getSceneBounds(screenPercent,2,3);
-    Scene scene = new Scene(root, sceneBounds.getWidth(), sceneBounds.getHeight());
+    Rectangle2D sceneBounds = super.getSceneBounds(screenPercent, 2, 3);
+    Scene scene = new Scene(root, sceneBounds.getWidth(),
+        sceneBounds.getHeight());
     scene.setFill(Color.OLDLACE);
     createMenuBar(scene);
     stage.setScene(scene);
@@ -272,40 +281,68 @@ public class JavaFXDisplay extends WaitableApp
   }
 
   /**
+   * add a tab
+   * 
+   * @param index
+   * @param title
+   * @param content
+   * @return
+   */
+  public Tab addTab(int index, String title, Node content) {
+    Tab tab = new Tab(title);
+    tab.setContent(content);
+    this.tabPane.getTabs().add(index, tab);
+    return tab;
+  }
+
+  /**
+   * set binding
+   * 
+   * @param canProperties
+   */
+  @SuppressWarnings("unchecked")
+  public void bind(Map<String, ObservableValue<?>> canProperties) {
+    this.canProperties = canProperties;
+    dashBoardPane.getRpmGauge().valueProperty().bind(
+        (ObservableValue<? extends Number>) this.canProperties.get("rpm"));
+  }
+
+  /**
    * special setup non in generic description
    */
   public void setupSpecial() {
-    // TODO - restyle and rename me - then filter connection tab
-    clockTab=new Tab("Clocks");
-    clockPane=new ClockPane();
-    clockTab.setContent(clockPane);
-    this.tabPane.getTabs().add(0, clockTab);
+    clockPane = new ClockPane();
+    // TODO i18n
+    clockTab = addTab(0, "Clocks", clockPane);
+    dashBoardPane = new DashBoardPane();
+    dashBoardTab = addTab(0, "DashBoard", dashBoardPane);
     // disable menu items
     this.setMenuItemDisable(I18n.OBD_HALT_MENU_ITEM, true);
-    
+
     // add menu actions
     // File / Open
-    MenuItem fileOpenMenuItem=getMenuItem(I18n.FILE_OPEN_MENU_ITEM);
+    MenuItem fileOpenMenuItem = getMenuItem(I18n.FILE_OPEN_MENU_ITEM);
     fileOpenMenuItem.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(final ActionEvent e) {
         FileChooser fileChooser = new FileChooser();
-        if (Config.getInstance()!=null)
+        if (Config.getInstance() != null)
           try {
-            fileChooser.setInitialDirectory(new File(Preferences.getInstance().getLogDirectory()));
+            fileChooser.setInitialDirectory(
+                new File(Preferences.getInstance().getLogDirectory()));
           } catch (Exception e1) {
             // TODO Auto-generated catch block
-            
+
           }
         File file = fileChooser.showOpenDialog(stage);
         if (file != null) {
-          ElmSimulator.fileName=file.getAbsolutePath();
+          ElmSimulator.fileName = file.getAbsolutePath();
         } // if
       } // handle
     });
-   
-    //statusBar.getRightItems().add(clock);
- 
+
+    // statusBar.getRightItems().add(clock);
+
   }
 
   /**
