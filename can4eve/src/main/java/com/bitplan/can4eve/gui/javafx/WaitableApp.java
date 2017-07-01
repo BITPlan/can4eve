@@ -57,6 +57,14 @@ public abstract class WaitableApp extends Application implements Display {
   public void start(Stage stage) {
     this.stage = stage;
   }
+  
+  public Stage getStage() {
+    return stage;
+  }
+
+  public void setStage(Stage stage) {
+    this.stage = stage;
+  }
 
   /**
    * wait for close

@@ -41,4 +41,11 @@ public interface StopWatch {
   
   // halt the stopwatch
   public void halt();
+  
+  /**
+   * set the active status of this stopWatch
+   * @param active
+   */
+  public void setActive(boolean active);
+  public boolean isActive();
 }

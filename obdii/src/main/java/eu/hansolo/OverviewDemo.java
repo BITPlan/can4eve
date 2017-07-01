@@ -673,6 +673,16 @@ public class OverviewDemo extends Application {
     }
 
     @Override public void start(Stage stage) {
+      GridPane demoPane = getDemoPane();
+      Scene scene = new Scene(demoPane);
+
+      stage.setTitle("Medusa Gauges and Clocks");
+      stage.setScene(scene);
+      stage.show();
+      startTimer(demoPane);
+    }
+    
+    public GridPane getDemoPane() {
         GridPane pane = new GridPane();
         pane.add(framedGauge1, 0, 0);
         pane.add(framedGauge2, 1, 0);
@@ -731,13 +741,9 @@ public class OverviewDemo extends Application {
             pane.getRowConstraints().add(new RowConstraints(MIN_CELL_SIZE, PREF_CELL_SIZE, MAX_CELL_SIZE));
         }
         pane.setBackground(new Background(new BackgroundFill(Color.rgb(90, 90, 90), CornerRadii.EMPTY, Insets.EMPTY)));
-
-        Scene scene = new Scene(pane);
-
-        stage.setTitle("Medusa Gauges and Clocks");
-        stage.setScene(scene);
-        stage.show();
-
+        return pane;
+    }
+    public void startTimer(GridPane pane) {
         timer.start();
 
         // Calculate number of nodes

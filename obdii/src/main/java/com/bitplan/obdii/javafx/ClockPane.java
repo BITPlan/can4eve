@@ -25,14 +25,12 @@ import java.net.URL;
 import com.bitplan.can4eve.gui.swing.Translator;
 import com.bitplan.can4eve.states.StopWatch;
 import com.bitplan.obdii.I18n;
-import com.bitplan.obdii.javafx.ClockPane.Watch;
 
-import eu.hansolo.medusa.ClockBuilder;
-import eu.hansolo.medusa.LcdDesign;
 import eu.hansolo.medusa.Clock;
 import eu.hansolo.medusa.Clock.ClockSkinType;
+import eu.hansolo.medusa.ClockBuilder;
+import eu.hansolo.medusa.LcdDesign;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
 
 /*
  * Clock display
@@ -61,9 +59,9 @@ public class ClockPane extends javafx.scene.layout.GridPane {
         I18n.get(I18n.WATCH_CHARGING), I18n.get(I18n.WATCH_PARKING),
         I18n.get(I18n.WATCH_TOTAL) };
     watches = new JFXStopWatch[Watch.values().length];
-    int index = 0;
     for (Watch watch : Watch.values()) {
-      JFXStopWatch stopWatch = new JFXStopWatch(I18n.get("watch" + watch.name()));
+      int index=watch.ordinal();
+      JFXStopWatch stopWatch = new JFXStopWatch(titles[index]);
       stopWatch.halt();
       stopWatch.reset();
       watches[index] = stopWatch;
@@ -72,6 +70,7 @@ public class ClockPane extends javafx.scene.layout.GridPane {
       if (iconUrl != null) {
         stopWatch.setIcon(new ImageView(iconUrl.toString()));
       }
+      stopWatch.setActive(false);
       if (index < Watch.Total.ordinal()) {
         this.add(stopWatch.getIcon(), 2 * index, 1);
         this.add(stopWatch.get(), 2 * index + 1, 1);
@@ -101,6 +100,9 @@ public class ClockPane extends javafx.scene.layout.GridPane {
    */
   public void setWatch(Watch watchType, long mSecs) {
     StopWatch watch=getWatch(watchType);
+    for (Watch lwatch : Watch.values()) {
+      getWatch(lwatch).setActive(watchType==lwatch || watchType==Watch.Total);
+    }
     watch.setTime(mSecs);
     StopWatch total=getWatch(Watch.Total);
     total.setTime(getWatch(Watch.Parking).getTime()+getWatch(Watch.Moving).getTime()+getWatch(Watch.Charging).getTime());

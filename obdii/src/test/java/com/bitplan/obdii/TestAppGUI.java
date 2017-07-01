@@ -53,6 +53,22 @@ import com.bitplan.obdii.javafx.ClockPane.Watch;
 import com.bitplan.obdii.javafx.JFXCanCellStatePlot;
 import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
 
+import eu.hansolo.OverviewDemo;
+import eu.hansolo.medusa.GaugeBuilder;
+import eu.hansolo.medusa.LcdDesign;
+import eu.hansolo.medusa.LcdFont;
+import eu.hansolo.medusa.Marker;
+import eu.hansolo.medusa.Section;
+import eu.hansolo.medusa.TickLabelLocation;
+import eu.hansolo.medusa.TickLabelOrientation;
+import eu.hansolo.medusa.TickMarkType;
+import eu.hansolo.medusa.Gauge;
+import eu.hansolo.medusa.Gauge.NeedleSize;
+import eu.hansolo.medusa.Marker.MarkerType;
+import javafx.application.Platform;
+import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
+
 /**
  * test the descriptive application gui
  * 
@@ -163,6 +179,84 @@ public class TestAppGUI {
     sampleApp.waitOpen();
     Thread.sleep(SHOW_TIME);
     sampleApp.close();
+  }
+  
+  @Test
+  public void testMedusa() throws InterruptedException {
+    WaitableApp.toolkitInit();
+    OverviewDemo demo=new OverviewDemo();
+    demo.init();
+    GridPane demoPane=demo.getDemoPane();
+    SampleApp sampleApp=new SampleApp("Controls",demoPane);
+    sampleApp.show();
+    sampleApp.waitOpen();
+    demo.startTimer(demoPane);
+    Thread.sleep(SHOW_TIME);
+    sampleApp.close();
+  }
+  
+  @Test
+  public void testGauge() throws InterruptedException {
+    WaitableApp.toolkitInit();
+    GridPane pane=new GridPane();
+    Gauge gauge = GaugeBuilder.create()
+        .minValue(0)
+        .maxValue(1)
+        .tickLabelDecimals(1)
+        .decimals(2)
+        .autoScale(true)
+        .animated(true)
+        //.backgroundPaint(Color.TRANSPARENT)
+        //.borderPaint(Color.LIGHTGRAY)
+        //.knobColor(Color.rgb(0, 90, 120))
+        .shadowsEnabled(true)
+        //.tickLabelColor(Color.rgb(0, 175, 248))
+        //.ledColor(Color.rgb(0, 175, 248))
+        .ledVisible(true)
+        .ledBlinking(true)
+        .sectionsVisible(true)
+        .sections(new Section(0.5, 0.75, Color.rgb(139, 195, 102, 0.5)))
+        .areasVisible(true)
+        .areas(new Section(0.75, 1.0, Color.rgb(234, 83, 79, 0.5)))
+        .majorTickMarkColor(Color.MAGENTA)
+        //.minorTickMarkColor(Color.rgb(0, 175, 248))
+        .majorTickMarkType(TickMarkType.TRAPEZOID)
+        .mediumTickMarkType(TickMarkType.DOT)
+        .minorTickMarkType(TickMarkType.LINE)
+        .tickLabelOrientation(TickLabelOrientation.ORTHOGONAL)
+        .tickMarkSections(new Section(0.25, 0.5, Color.rgb(241, 161, 71)))
+        .tickMarkSectionsVisible(true)
+        .markers(new Marker(0.5, "", Color.CYAN, MarkerType.TRIANGLE))
+        .markersVisible(true)
+        //.majorTickMarksVisible(true)
+        //.minorTickMarksVisible(true)
+        .tickLabelLocation(TickLabelLocation.INSIDE)
+        //.tickLabelsVisible(true)
+        .tickLabelSections(new Section(0.1, 0.3, Color.rgb(0, 175, 248)))
+        //.tickLabelSectionsVisible(true)
+        .title("Title")
+        //.titleColor(Color.rgb(223, 223, 223))
+        .unit("Unit")
+        .lcdDesign(LcdDesign.SECTIONS)
+        .lcdVisible(true)
+        .lcdFont(LcdFont.STANDARD)
+        //.unitColor(Color.rgb(223, 223, 223))
+        //.valueColor(Color.rgb(223, 223, 223))
+        .needleSize(NeedleSize.THICK)
+        .build();
+    pane.add(gauge, 0,0);
+    double value = 85.0;
+    SampleApp sampleApp=new SampleApp("Gauge",pane);
+    sampleApp.show();
+    sampleApp.waitOpen();
+    while (sampleApp.getStage().isShowing()) {
+      Thread.sleep(15);
+      final double gaugeValue=value/100;
+      Platform.runLater(()->gauge.setValue(gaugeValue));
+      value = value - 0.1;
+      if (value < 45)
+        sampleApp.close();;
+    }
   }
   
   @Test

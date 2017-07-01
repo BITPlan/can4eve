@@ -33,7 +33,6 @@ import javafx.stage.Stage;
 public class SampleApp extends WaitableApp {
   private String title;
   private Region region;
-  private Stage stage;
 
   /**
    * construct the given Sample App
@@ -44,14 +43,6 @@ public class SampleApp extends WaitableApp {
   public SampleApp(String title, Region region) {
     this.title = title;
     this.region = region;
-  }
-
-  public Stage getStage() {
-    return stage;
-  }
-
-  public void setStage(Stage stage) {
-    this.stage = stage;
   }
 
   @Override
