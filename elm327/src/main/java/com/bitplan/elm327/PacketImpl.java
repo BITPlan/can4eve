@@ -28,119 +28,125 @@ import java.util.Date;
  */
 
 public class PacketImpl implements Packet {
-    Date time;
-    long timeStamp;
-    String data;
-    boolean valid;
+  Date time;
+  long timeStamp;
+  String data;
+  boolean valid;
 
-    Packet request;
-    Packet response;
+  Packet request;
+  Packet response;
 
-    static SimpleDateFormat isoDateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-    
-    /**
-     * construct me
-     */
-    public PacketImpl() {
-        this.updateTimeStamp();
-        valid=false;
-    }
+  static SimpleDateFormat getIsoDateFormatter() {
+    // SimpleDateFormat is not thread safe!
+    return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+  }
 
-    /**
-     * construct me
-     * @param data
-     * @param time - the time of the data
-     */
-    public PacketImpl(String data, Date time) {
-      this.time=time;
-      this.data=data;
-    }
+  /**
+   * construct me
+   */
+  public PacketImpl() {
+    this.updateTimeStamp();
+    valid = false;
+  }
 
-    @Override
-    public long getTimeStamp() {
-        return timeStamp;
-    }
-    
-    @Override
-    public Date getTime() {
-      return time;
-    }
+  /**
+   * construct me
+   * 
+   * @param data
+   * @param time
+   *          - the time of the data
+   */
+  public PacketImpl(String data, Date time) {
+    this.time = time;
+    this.data = data;
+  }
 
-    @Override
-    public Packet getRequest() {
-        return request;
-    }
+  @Override
+  public long getTimeStamp() {
+    return timeStamp;
+  }
 
-    @Override
-    public void setRequest(Packet request) {
-        this.request = request;
-    }
+  @Override
+  public Date getTime() {
+    return time;
+  }
 
-    @Override
-    public Packet getResponse() {
-        return response;
-    }
+  @Override
+  public Packet getRequest() {
+    return request;
+  }
 
-    @Override
-    public void setResponse(Packet response) {
-        this.response = response;
-    }
+  @Override
+  public void setRequest(Packet request) {
+    this.request = request;
+  }
 
-    @Override
-    public boolean isTimeOut() {
-        return data == null;
-    }
+  @Override
+  public Packet getResponse() {
+    return response;
+  }
 
-    public boolean isValid() {
-      return valid;
-    }
+  @Override
+  public void setResponse(Packet response) {
+    this.response = response;
+  }
 
-    public void setValid(boolean valid) {
-      this.valid = valid;
-    }
+  @Override
+  public boolean isTimeOut() {
+    return data == null;
+  }
 
-    @Override
-    public String getRawData() {
-        return data;
-    }
+  public boolean isValid() {
+    return valid;
+  }
 
-    @Override
-    public String getData() {
-        if (data==null)
-            return null;
-        return data.replace(">","").trim();
-    }
+  public void setValid(boolean valid) {
+    this.valid = valid;
+  }
 
-    public void setData(String data) {
-        this.data = data;
-    }
+  @Override
+  public String getRawData() {
+    return data;
+  }
 
-    @Override
-    public void updateTimeStamp() {
-        timeStamp = System.nanoTime();
-        time=new Date();
-    }
+  @Override
+  public String getData() {
+    if (data == null)
+      return null;
+    return data.replace(">", "").trim();
+  }
 
-    @Override
-    public long getResponseTime() {
-        long result = (getResponse().getTimeStamp() - getRequest().getTimeStamp()) / 1000000;
-        return result;
-    }
-    
-    /**
-     * return me as a string
-     * @return
-     */
-    public String asString() {
-      String ts="";
-      synchronized(this) {
-        // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6231579
-        ts=isoDateFormatter.format(time);
-      }
-      String result="null";
-      if (response!=null)
-        result=String.format("%s (%s): %s",ts,getData(),response.getData());
-      return result;
-    }
+  public void setData(String data) {
+    this.data = data;
+  }
+
+  @Override
+  public void updateTimeStamp() {
+    timeStamp = System.nanoTime();
+    time = new Date();
+  }
+
+  @Override
+  public long getResponseTime() {
+    long result = (getResponse().getTimeStamp() - getRequest().getTimeStamp())
+        / 1000000;
+    return result;
+  }
+
+  /**
+   * return me as a string
+   * 
+   * @return
+   */
+  public String asString() {
+    String ts = "";
+
+    // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6231579
+    ts = getIsoDateFormatter().format(time);
+    String result = "null";
+    if (response != null)
+      result = String.format("%s (%s): %s", ts, getData(), response.getData());
+    return result;
+  }
 
 }
