@@ -639,7 +639,8 @@ public class OBDTriplet extends OBDHandler {
     display.updateField("date", nowStr, ++dateUpdateCount);
     long totalUpdates = 0;
     long msecsRunning=now.getTime()-displayStart.getTime();
-    this.msecsRunningProperty.set(msecsRunning);
+    if (msecsRunningProperty!=null)
+      this.msecsRunningProperty.setValue(msecsRunning);
     for (CANValue<?> canValue : this.getCANValues()) {
       if (canValue.isDisplay()) {
         display.updateCanValueField(canValue);
@@ -772,20 +773,24 @@ public class OBDTriplet extends OBDHandler {
    * @param display
    */
   public void startDisplay(final CANValueDisplay display) {
+    if (displayexecutor!=null) {
+      throw new IllegalStateException("display already started!");
+    }
     // TODO make this more systematic
-    if (display instanceof JavaFXDisplay) {
+    if (display instanceof JFXTripletDisplay) {
       Map<String,ObservableValue<?>> canBindings=new HashMap<String,ObservableValue<?>>();
+      canBindings.put("msecs",this.msecsRunningProperty);
       for (CANProperty canProperty:canProperties.values()) {
         canBindings.put(canProperty.canValue.canInfo.getName(), canProperty.property);
       }
-      ((JavaFXDisplay) display).bind(canBindings);
+      ((JFXTripletDisplay) display).bind(canBindings);
     }
     displayexecutor = Executors.newSingleThreadScheduledExecutor();
+    displayStart=new Date();
     displayTask = new Runnable() {
       public void run() {
         // Invoke method(s) to do the work
         try {
-          displayStart=new Date();
           showValues(display);
         } catch (Exception e) {
           ErrorHandler.handle(e);
@@ -803,6 +808,7 @@ public class OBDTriplet extends OBDHandler {
   private void stopDisplay() {
     if (displayexecutor != null) {
       displayexecutor.shutdown();
+      displayexecutor=null;
     }
   }
 

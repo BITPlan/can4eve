@@ -56,8 +56,11 @@ import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.elm327.ElmSimulator;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.IntegerBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 //import javafx.embed.swing.JFXPanel;
@@ -108,13 +111,13 @@ public class JavaFXDisplay extends WaitableApp
 
   private Tab clockTab;
 
-  private ClockPane clockPane;
+  protected ClockPane clockPane;
 
-  private DashBoardPane dashBoardPane;
+  protected DashBoardPane dashBoardPane;
 
   private Tab dashBoardTab;
 
-  private Map<String, ObservableValue<?>> canProperties;
+  protected Map<String, ObservableValue<?>> canProperties;
 
   public static final boolean debug = false;
 
@@ -298,23 +301,11 @@ public class JavaFXDisplay extends WaitableApp
   }
 
   /**
-   * set binding
-   * 
-   * @param canProperties
-   */
-  @SuppressWarnings("unchecked")
-  public void bind(Map<String, ObservableValue<?>> canProperties) {
-    this.canProperties = canProperties;
-    bind(dashBoardPane.getRpmGauge().valueProperty(),this.canProperties.get("RPM"));
-    bind(dashBoardPane.getRpmSpeedGauge().valueProperty(),this.canProperties.get("RPMSpeed"));
-  }
-
-  /**
    * bind the to values
    * @param value
    * @param valueTo
    */
-  private void bind(Property value,
+  protected void bind(Property value,
       ObservableValue valueTo) {
     if (valueTo!=null) {
       value.bind(valueTo);

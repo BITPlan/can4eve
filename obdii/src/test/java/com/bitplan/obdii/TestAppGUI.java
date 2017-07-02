@@ -68,9 +68,12 @@ import eu.hansolo.medusa.Section;
 import eu.hansolo.medusa.TickLabelLocation;
 import eu.hansolo.medusa.TickLabelOrientation;
 import eu.hansolo.medusa.TickMarkType;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.LongBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -352,5 +355,22 @@ public class TestAppGUI {
     }
     running=false;
     assertTrue(launch.getTask().get()>10);
+  }
+  
+  long calledEffect=0;
+  private LongBinding keepBinding;
+  public long callMe(long value) {
+    calledEffect=value+1;
+    return calledEffect;
+  }
+  
+  @Test
+  public void testBinding() {
+    WaitableApp.toolkitInit();
+    SimpleLongProperty lp = new SimpleLongProperty(); 
+    lp.setValue(4711);
+    keepBinding=Bindings.createLongBinding(()->callMe(lp.get()),lp);
+    lp.setValue(1);
+    assertEquals(2,keepBinding.get());
   }
 }

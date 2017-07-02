@@ -107,4 +107,14 @@ public class ClockPane extends javafx.scene.layout.GridPane {
     StopWatch total=getWatch(Watch.Total);
     total.setTime(getWatch(Watch.Parking).getTime()+getWatch(Watch.Moving).getTime()+getWatch(Watch.Charging).getTime());
   }
+
+  /**
+   * update the milliseconds
+   * @param msecs
+   * @return the milliseconds
+   */
+  public long updateMsecs(long msecs) {
+    setWatch(Watch.Parking,msecs/1000);
+    return msecs;
+  }
 }
