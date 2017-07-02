@@ -315,6 +315,11 @@ public abstract class CANValue<ValueType> {
       return "";
   }
 
+  /**
+   * IntegerValue
+   * @author wf
+   *
+   */
   public static class IntegerValue extends CANValue<Integer> {
     public IntegerValue(CANInfo canInfo) {
       super(canInfo, Integer.class);
@@ -394,6 +399,11 @@ public abstract class CANValue<ValueType> {
     }
   }
 
+  /**
+   * BooleanValue
+   * @author wf
+   *
+   */
   public static class BooleanValue extends CANValue<Boolean> {
 
     private String trueSymbol;
@@ -418,6 +428,11 @@ public abstract class CANValue<ValueType> {
     }
   }
 
+  /**
+   * String Value
+   * @author wf
+   *
+   */
   public static class StringValue extends CANValue<String> {
 
     public StringValue(CANInfo canInfo) {

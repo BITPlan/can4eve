@@ -318,6 +318,7 @@ public class JavaFXDisplay extends WaitableApp
     dashBoardTab = addTab(0, "DashBoard", dashBoardPane);
     // disable menu items
     this.setMenuItemDisable(I18n.OBD_HALT_MENU_ITEM, true);
+    this.setMenuItemDisable(I18n.FILE_SAVE_MENU_ITEM, true);
 
     // add menu actions
     // File / Open
@@ -437,7 +438,7 @@ public class JavaFXDisplay extends WaitableApp
           notImplemented(I18n.VIEW_HISTORY_VIEW_MENU_ITEM);
           break;
         case I18n.VIEW_SETTINGS_VIEW_MENU_ITEM:
-          notImplemented(I18n.SETTINGS_SETTINGS_MENU_ITEM);
+          notImplemented(I18n.VIEW_SETTINGS_VIEW_MENU_ITEM);
           break;
         case I18n.VIEW_MONITOR_VIEW_MENU_ITEM:
           notImplemented(I18n.VIEW_MONITOR_VIEW_MENU_ITEM);

@@ -23,6 +23,7 @@ package com.bitplan.triplet;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Constructor;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -246,7 +247,8 @@ public class OBDTriplet extends OBDHandler {
     speed = new IntegerValue(getCanInfo("Speed"));
     rpmSpeed = new DoubleValue(getCanInfo("RPMSpeed"));
     motortemp = new IntegerValue(getCanInfo("MotorTemp"));
-    rpm = new IntegerValue(getCanInfo("RPM"));
+    rpm= this.<IntegerValue,Integer> createCanValue("RPM",IntegerValue.class);
+    //rpm = new IntegerValue(getCanInfo("RPM"));
     SOC = new DoubleValue(getCanInfo("SOC"));
     cellCount = new IntegerValue(getCanInfo("CellCount"));
     VIN = new VINValue(getCanInfo("VIN"));
@@ -275,6 +277,25 @@ public class OBDTriplet extends OBDHandler {
         this.parkingLight, this.headLight, this.highBeam, this.cellTemperature,
         this.cellVoltage };
     top = topArray;
+  }
+
+  /**
+   * create a canValue for the given id and clazz
+   * @param id
+   * @param clazz
+   * @return - the new CanValue
+   */
+  public <CT extends CANValue<T>,T> CT createCanValue(String id, Class<CT> clazz)  {
+    CANInfo canInfo = getCanInfo(id);
+    Constructor<CT> cons;
+    CT canValue=null;
+    try {
+      cons = clazz.getConstructor(CANInfo.class);
+      canValue = cons.newInstance(canInfo);
+    } catch (Exception e) {
+      LOGGER.log(Level.SEVERE, e.getMessage());
+    }
+    return canValue;
   }
 
   /**

@@ -34,7 +34,6 @@ public class CANInfo {
   String unit;
   String type;
 
-  
   int historyValuesPerMinute;
   int maxIndex;
   
