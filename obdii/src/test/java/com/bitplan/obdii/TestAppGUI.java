@@ -264,7 +264,6 @@ public class TestAppGUI {
       dproperty.setValue(dproperty.getValue() - 0.1);
       if (dproperty.getValue() < 45)
         sampleApp.close();
-      ;
     }
   }
 
