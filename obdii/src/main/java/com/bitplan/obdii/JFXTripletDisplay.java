@@ -34,7 +34,6 @@ import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
 import com.bitplan.obdii.javafx.JavaFXDisplay;
 
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.value.ObservableValue;
 //import javafx.embed.swing.SwingNode;
@@ -144,8 +143,7 @@ public class JFXTripletDisplay extends JavaFXDisplay {
     bind(dashBoardPane.getRpmSpeedGauge().valueProperty(),this.canProperties.get("RPMSpeed"));
     SimpleLongProperty msecsProperty = (SimpleLongProperty) this.canProperties.get("msecs");
     if (msecsProperty!=null) {
-      Bindings.createLongBinding( () -> 
-      super.clockPane.updateMsecs(msecsProperty.get()), msecsProperty );
+      msecsProperty.addListener((obs, oldValue, newValue) -> super.clockPane.updateMsecs(newValue));
     }
   }
 

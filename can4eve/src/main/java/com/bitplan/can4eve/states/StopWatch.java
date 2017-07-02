@@ -32,7 +32,7 @@ public interface StopWatch {
    */
   public void setTime(long mSecs);
   /**
-   * get the time 
+   * get the time in msecs
    */
   public long getTime();
   
@@ -48,4 +48,10 @@ public interface StopWatch {
    */
   public void setActive(boolean active);
   public boolean isActive();
+  
+  /**
+   * get my ISO representation
+   * @return
+   */
+  String asIsoDateStr();
 }

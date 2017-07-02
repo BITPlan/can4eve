@@ -46,12 +46,14 @@ import com.bitplan.can4eve.gui.javafx.WaitableApp;
 import com.bitplan.can4eve.gui.swing.Translator;
 import com.bitplan.can4eve.json.JsonManager;
 import com.bitplan.can4eve.json.JsonManagerImpl;
+import com.bitplan.can4eve.states.StopWatch;
 import com.bitplan.can4eve.util.TaskLaunch;
 import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.javafx.ClockPane;
 import com.bitplan.obdii.javafx.ClockPane.Watch;
 import com.bitplan.obdii.javafx.JFXCanCellStatePlot;
 import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
+import com.bitplan.obdii.javafx.JFXStopWatch;
 
 import eu.hansolo.OverviewDemo;
 import eu.hansolo.medusa.FGauge;
@@ -71,7 +73,6 @@ import eu.hansolo.medusa.TickMarkType;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.LongBinding;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.Property;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.scene.layout.GridPane;
@@ -85,7 +86,8 @@ import javafx.stage.Stage;
  *
  */
 public class TestAppGUI {
-  public static final int SHOW_TIME=4000;
+  public static final int SHOW_TIME = 4000;
+
   @Test
   public void testAppGUI() throws Exception {
     App app = App.getInstance();
@@ -189,46 +191,39 @@ public class TestAppGUI {
     Thread.sleep(SHOW_TIME);
     sampleApp.close();
   }
-  
+
   @Test
   public void testMedusa() throws InterruptedException {
     WaitableApp.toolkitInit();
-    OverviewDemo demo=new OverviewDemo();
+    OverviewDemo demo = new OverviewDemo();
     demo.init();
-    GridPane demoPane=demo.getDemoPane();
-    SampleApp sampleApp=new SampleApp("Controls",demoPane);
+    GridPane demoPane = demo.getDemoPane();
+    SampleApp sampleApp = new SampleApp("Controls", demoPane);
     sampleApp.show();
     sampleApp.waitOpen();
     demo.startTimer(demoPane);
     Thread.sleep(SHOW_TIME);
     sampleApp.close();
   }
-  
+
   @Test
   public void testGauge() throws InterruptedException {
     WaitableApp.toolkitInit();
-    GridPane pane=new GridPane();
-    Gauge gauge = GaugeBuilder.create()
-        .minValue(0)
-        .maxValue(100)
-        .tickLabelDecimals(0)
-        .decimals(1)
-        .autoScale(true)
-        .animated(true)
-        //.backgroundPaint(Color.TRANSPARENT)
-        //.borderPaint(Color.LIGHTGRAY)
-        //.knobColor(Color.rgb(0, 90, 120))
+    GridPane pane = new GridPane();
+    Gauge gauge = GaugeBuilder.create().minValue(0).maxValue(100)
+        .tickLabelDecimals(0).decimals(1).autoScale(true).animated(true)
+        // .backgroundPaint(Color.TRANSPARENT)
+        // .borderPaint(Color.LIGHTGRAY)
+        // .knobColor(Color.rgb(0, 90, 120))
         .shadowsEnabled(true)
-        //.tickLabelColor(Color.rgb(0, 175, 248))
-        //.ledColor(Color.rgb(0, 175, 248))
-        .ledVisible(true)
-        .ledBlinking(true)
-        .sectionsVisible(true)
+        // .tickLabelColor(Color.rgb(0, 175, 248))
+        // .ledColor(Color.rgb(0, 175, 248))
+        .ledVisible(true).ledBlinking(true).sectionsVisible(true)
         .sections(new Section(75, 100, Color.rgb(139, 195, 102, 0.5)))
         .areasVisible(true)
         .areas(new Section(0.00, 25, Color.rgb(234, 83, 79, 0.5)))
         .majorTickMarkColor(Color.MAGENTA)
-        //.minorTickMarkColor(Color.rgb(0, 175, 248))
+        // .minorTickMarkColor(Color.rgb(0, 175, 248))
         .majorTickMarkType(TickMarkType.TRAPEZOID)
         .mediumTickMarkType(TickMarkType.DOT)
         .minorTickMarkType(TickMarkType.LINE)
@@ -237,29 +232,27 @@ public class TestAppGUI {
         .tickMarkSectionsVisible(true)
         .markers(new Marker(0.5, "", Color.CYAN, MarkerType.TRIANGLE))
         .markersVisible(true)
-        //.majorTickMarksVisible(true)
-        //.minorTickMarksVisible(true)
+        // .majorTickMarksVisible(true)
+        // .minorTickMarksVisible(true)
         .tickLabelLocation(TickLabelLocation.INSIDE)
-        //.tickLabelsVisible(true)
+        // .tickLabelsVisible(true)
         .tickLabelSections(new Section(0.1, 0.3, Color.rgb(0, 175, 248)))
-        //.tickLabelSectionsVisible(true)
+        // .tickLabelSectionsVisible(true)
         .title("SOC")
-        //.titleColor(Color.rgb(223, 223, 223))
-        .unit("%")
-        .lcdDesign(LcdDesign.SECTIONS)
-        .lcdVisible(true)
+        // .titleColor(Color.rgb(223, 223, 223))
+        .unit("%").lcdDesign(LcdDesign.SECTIONS).lcdVisible(true)
         .lcdFont(LcdFont.STANDARD)
-        //.unitColor(Color.rgb(223, 223, 223))
-        //.valueColor(Color.rgb(223, 223, 223))
-        .needleSize(NeedleSize.THICK)
-        .build();
-    FGauge framedGauge = new FGauge(gauge, GaugeDesign.ENZO, GaugeBackground.DARK_GRAY);
+        // .unitColor(Color.rgb(223, 223, 223))
+        // .valueColor(Color.rgb(223, 223, 223))
+        .needleSize(NeedleSize.THICK).build();
+    FGauge framedGauge = new FGauge(gauge, GaugeDesign.ENZO,
+        GaugeBackground.DARK_GRAY);
 
-    pane.add(framedGauge, 0,0);
+    pane.add(framedGauge, 0, 0);
 
-    DoubleProperty dproperty=new SimpleDoubleProperty(85.0);
-    
-    SampleApp sampleApp=new SampleApp("Gauge",pane,67,2,2);  
+    DoubleProperty dproperty = new SimpleDoubleProperty(85.0);
+
+    SampleApp sampleApp = new SampleApp("Gauge", pane, 67, 2, 2);
     sampleApp.show();
     sampleApp.waitOpen();
     Stage stage = sampleApp.getStage();
@@ -268,25 +261,26 @@ public class TestAppGUI {
     gauge.valueProperty().bind(dproperty);
     while (stage.isShowing()) {
       Thread.sleep(15);
-      dproperty.setValue(dproperty.getValue()-0.1);
+      dproperty.setValue(dproperty.getValue() - 0.1);
       if (dproperty.getValue() < 45)
-        sampleApp.close();;
+        sampleApp.close();
+      ;
     }
   }
-  
+
   @Test
   public void testClockPanel() throws Exception {
     WaitableApp.toolkitInit();
     Translator.initialize(Preferences.getInstance().getLanguage().name());
-    ClockPane clockPane=new ClockPane();
-    clockPane.setWatch(Watch.Charging,1320*1000);
-    clockPane.setWatch(Watch.Parking,390*1000);
-    SampleApp sampleApp=new SampleApp("Clocks",clockPane);
+    ClockPane clockPane = new ClockPane();
+    clockPane.setWatch(Watch.Charging, 1320 * 1000);
+    clockPane.setWatch(Watch.Parking, 390 * 1000);
+    SampleApp sampleApp = new SampleApp("Clocks", clockPane);
     sampleApp.show();
     sampleApp.waitOpen();
-    for (int i=0;i<(SHOW_TIME/1000*2);i++) {
+    for (int i = 0; i < (SHOW_TIME / 1000 * 2); i++) {
       Thread.sleep(1000);
-      clockPane.setWatch(Watch.Moving,i*1000+300*1000);
+      clockPane.setWatch(Watch.Moving, i * 1000 + 300 * 1000);
     }
     sampleApp.close();
   }
@@ -306,11 +300,21 @@ public class TestAppGUI {
     Thread.sleep(SHOW_TIME);
     sampleApp.close();
   }
-  
+
   @Test
-  public void testPropertyT() {
-    Property<Number> dp;
-    dp=new SimpleDoubleProperty();
+  public void testStopWatch()  {
+    WaitableApp.toolkitInit();
+    StopWatch stopWatch = new JFXStopWatch("test");
+    stopWatch.halt();
+    stopWatch.reset();
+    //System.out.println(stopWatch.asIsoDateStr());
+    // assertEquals(0l,stopWatch.getTime());
+    long times[] = { 90000*1000,7200000,0,2000, 500, 1000, 2000 };
+    for (long time : times) {
+      stopWatch.setTime(time);
+      // System.out.println(stopWatch.asIsoDateStr());
+      assertEquals(time, stopWatch.getTime());
+    }
   }
 
   @Ignore
@@ -319,16 +323,17 @@ public class TestAppGUI {
     try {
       throw new Exception("a problem!");
     } catch (Throwable th) {
-      String exceptionText=GenericDialog.getStackTraceText(th);
+      String exceptionText = GenericDialog.getStackTraceText(th);
       // needs software version to work!
       GenericDialog.sendReport(null, "testSupportMail", exceptionText);
-    } 
+    }
   }
-  
-  Integer counter=0;
-  boolean running=false;
+
+  Integer counter = 0;
+  boolean running = false;
+
   public Integer increment() {
-    running=true;
+    running = true;
     while (running) {
       counter++;
       try {
@@ -338,40 +343,44 @@ public class TestAppGUI {
     }
     return counter;
   }
+
   /**
-   * @throws Exception 
+   * @throws Exception
    */
   @SuppressWarnings("unchecked")
   @Test
   public void testTaskLaunch() throws Exception {
     WaitableApp.toolkitInit();
     // https://stackoverflow.com/questions/30089593/java-fx-lambda-for-task-interface
-    TaskLaunch<Integer> launch = TaskLaunch.start(()->increment(),Integer.class);
+    TaskLaunch<Integer> launch = TaskLaunch.start(() -> increment(),
+        Integer.class);
     try {
-      while(counter<=10)
+      while (counter <= 10)
         Thread.sleep(20);
     } catch (InterruptedException e) {
       //
     }
-    running=false;
-    assertTrue(launch.getTask().get()>10);
+    running = false;
+    assertTrue(launch.getTask().get() > 10);
   }
-  
-  long calledEffect=0;
+
+  long calledEffect = 0;
   private LongBinding keepBinding;
-  public long callMe(long value) {
-    calledEffect=value+1;
+
+  public long callMe(Number newValue) {
+    calledEffect = newValue.longValue() + 1;
     return calledEffect;
   }
-  
+
   @Test
   public void testBinding() {
-    WaitableApp.toolkitInit();
-    SimpleLongProperty lp = new SimpleLongProperty(); 
+    // WaitableApp.toolkitInit();
+    SimpleLongProperty lp = new SimpleLongProperty();
     lp.setValue(4711);
-    keepBinding=Bindings.createLongBinding(()->callMe(lp.get()),lp);
+    keepBinding = Bindings.createLongBinding(() -> callMe(lp.get()), lp);
+    lp.addListener((obs, oldValue, newValue) -> callMe(newValue));
     lp.setValue(1);
-    //assertEquals(2,calledEffect);
-    assertEquals(2,keepBinding.get());
+    assertEquals(2, calledEffect);
+    assertEquals(2, keepBinding.get());
   }
 }

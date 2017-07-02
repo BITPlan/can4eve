@@ -23,9 +23,9 @@ package com.bitplan.obdii.javafx;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
-import javafx.application.Platform;
-import javafx.scene.image.ImageView;
 import com.bitplan.can4eve.gui.swing.Translator;
 import com.bitplan.can4eve.states.StopWatch;
 
@@ -33,6 +33,7 @@ import eu.hansolo.medusa.Clock;
 import eu.hansolo.medusa.Clock.ClockSkinType;
 import eu.hansolo.medusa.ClockBuilder;
 import eu.hansolo.medusa.LcdDesign;
+import javafx.scene.image.ImageView;
 
 /**
  * as Stop Watch
@@ -53,10 +54,13 @@ public class JFXStopWatch implements StopWatch {
    * @param title
    */
   public JFXStopWatch(String title) {
+    Locale locale = Translator.getCurrentLocale();
+    if (locale==null)
+      locale=Locale.getDefault();
     stopWatch = ClockBuilder.create().skinType(ClockSkinType.LCD)
         .lcdDesign(LcdDesign.GRAY).title(title).titleVisible(true)
         .secondsVisible(true).alarmsEnabled(true).dateVisible(false)
-        .running(true).locale(Translator.getCurrentLocale()).build();
+        .running(true).locale(locale).build();
   }
 
   public ImageView getIcon() {
@@ -75,6 +79,11 @@ public class JFXStopWatch implements StopWatch {
   public Clock get() {
     return stopWatch;
   }
+  
+  public String asIsoDateStr() {
+    String isoDateStr=stopWatch.getTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+    return isoDateStr;
+  }
 
   /**
    * set the time to the given milliSeconds
@@ -88,14 +97,23 @@ public class JFXStopWatch implements StopWatch {
     LocalDateTime localDateTime = LocalDateTime.ofEpochSecond(epochSecond,
         nanoOfSecond, zoneoffset);
     ZonedDateTime time = ZonedDateTime.of(localDateTime, zoneoffset);
-    Platform.runLater(() -> stopWatch.setTime(time));
+    stopWatch.setTime(time);
   }
 
   @Override
-  public long getTime() {
+  public long getTime() {    
     ZonedDateTime time = stopWatch.getTime();
-    long mSecs = (time.getHour() * 3600 + time.getMinute() * 60
-        + time.getSecond() + time.getNano() / 1000000) * 1000;
+    long mSecs =((time.getDayOfMonth()-1)*86400+time.getHour()*3600+time.getMinute()*60+time.getSecond())*1000+time.getNano()/1000000;
+    /*
+    int offset=time.getOffset().getTotalSeconds();
+    System.out.println(" d:"+(time.getDayOfMonth()-1));
+    System.out.println(" h:"+time.getHour());
+    System.out.println(" m:"+time.getMinute());
+    System.out.println(" s:"+time.getSecond());
+    System.out.println(" n:"+time.getNano());
+    System.out.println(" o:"+offset);
+    System.out.println("ms:"+mSecs);
+    */
     return mSecs;
   }
 
@@ -103,7 +121,7 @@ public class JFXStopWatch implements StopWatch {
    * reset the given clock
    */
   public void reset() {
-    setTime(0);
+    setTime(0l);
   }
 
   /**

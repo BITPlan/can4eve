@@ -73,6 +73,8 @@ public class Translator {
    * @return - the locale
    */
   public static Locale getCurrentLocale() {
+    if (resourceBundle==null)
+      return null;
     return resourceBundle.getLocale();
   }
 
