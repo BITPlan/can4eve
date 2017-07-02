@@ -327,7 +327,7 @@ public class OBDMain extends Main implements OBDApp {
     obd = new OBDMain();
     int result = obd.maininstance(args);
     if (!testMode) {
-      LOGGER.log(Level.INFO, "System exit " + result);
+      //LOGGER.log(Level.INFO, "System exit " + result);
       System.exit(result);
     }
   }

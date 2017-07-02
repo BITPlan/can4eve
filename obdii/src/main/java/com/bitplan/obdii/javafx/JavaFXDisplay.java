@@ -56,11 +56,7 @@ import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.elm327.ElmSimulator;
 
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.IntegerBinding;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 //import javafx.embed.swing.JFXPanel;
