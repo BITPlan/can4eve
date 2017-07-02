@@ -35,9 +35,6 @@ import com.bitplan.obdii.javafx.JavaFXDisplay;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.IntegerBinding;
-import javafx.beans.binding.LongBinding;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.value.ObservableValue;
 //import javafx.embed.swing.SwingNode;

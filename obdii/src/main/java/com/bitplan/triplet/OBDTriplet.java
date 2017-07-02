@@ -54,7 +54,6 @@ import com.bitplan.obdii.JFXTripletDisplay;
 import com.bitplan.obdii.OBDHandler;
 import com.bitplan.obdii.PIDResponse;
 import com.bitplan.obdii.elm327.ELM327;
-import com.bitplan.obdii.javafx.JavaFXDisplay;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -638,9 +637,11 @@ public class OBDTriplet extends OBDHandler {
     String nowStr = isoDateFormatter.format(now);
     display.updateField("date", nowStr, ++dateUpdateCount);
     long totalUpdates = 0;
-    long msecsRunning=now.getTime()-displayStart.getTime();
-    if (msecsRunningProperty!=null)
-      this.msecsRunningProperty.setValue(msecsRunning);
+    if (displayStart!=null) {
+      long msecsRunning=now.getTime()-displayStart.getTime();
+      if (msecsRunningProperty!=null)
+        this.msecsRunningProperty.setValue(msecsRunning);
+    }
     for (CANValue<?> canValue : this.getCANValues()) {
       if (canValue.isDisplay()) {
         display.updateCanValueField(canValue);
