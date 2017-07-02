@@ -70,6 +70,7 @@ import eu.hansolo.medusa.Section;
 import eu.hansolo.medusa.TickLabelLocation;
 import eu.hansolo.medusa.TickLabelOrientation;
 import eu.hansolo.medusa.TickMarkType;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.LongBinding;
 import javafx.beans.property.DoubleProperty;
@@ -261,7 +262,7 @@ public class TestAppGUI {
     gauge.valueProperty().bind(dproperty);
     while (stage.isShowing()) {
       Thread.sleep(15);
-      dproperty.setValue(dproperty.getValue() - 0.1);
+      Platform.runLater( () -> dproperty.setValue(dproperty.getValue() - 0.1));
       if (dproperty.getValue() < 45)
         sampleApp.close();
     }
