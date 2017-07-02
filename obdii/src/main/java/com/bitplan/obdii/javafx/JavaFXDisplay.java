@@ -56,6 +56,8 @@ import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.elm327.ElmSimulator;
 
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 //import javafx.embed.swing.JFXPanel;
@@ -303,10 +305,20 @@ public class JavaFXDisplay extends WaitableApp
   @SuppressWarnings("unchecked")
   public void bind(Map<String, ObservableValue<?>> canProperties) {
     this.canProperties = canProperties;
-    dashBoardPane.getRpmGauge().valueProperty().bind(
-        (ObservableValue<? extends Number>) this.canProperties.get("RPM"));
-    dashBoardPane.getRpmSpeedGauge().valueProperty().bind(
-        (ObservableValue<? extends Number>) this.canProperties.get("RPMSpeed"));
+    bind(dashBoardPane.getRpmGauge().valueProperty(),this.canProperties.get("RPM"));
+    bind(dashBoardPane.getRpmSpeedGauge().valueProperty(),this.canProperties.get("RPMSpeed"));
+  }
+
+  /**
+   * bind the to values
+   * @param value
+   * @param valueTo
+   */
+  private void bind(Property value,
+      ObservableValue valueTo) {
+    if (valueTo!=null) {
+      value.bind(valueTo);
+    }
   }
 
   /**

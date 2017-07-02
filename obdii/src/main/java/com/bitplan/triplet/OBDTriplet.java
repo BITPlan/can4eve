@@ -59,6 +59,7 @@ import com.bitplan.obdii.javafx.JavaFXDisplay;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.value.ObservableValue;
 
 /**
@@ -110,6 +111,7 @@ public class OBDTriplet extends OBDHandler {
   // meter per Round // FIXME - is vehicle dependen and needs to be configured
   private double kmPerRound = 0.261 / 1000.0;
   private CANValue<?>[] top;
+  private SimpleLongProperty msecsRunningProperty;
 
   public boolean isWithHistory() {
     return withHistory;
@@ -353,6 +355,8 @@ public class OBDTriplet extends OBDHandler {
       getCanRawValues().put(pid.getPid(), new CANRawValue(pidInfo));
     }
     VIN.activate();
+    // properties
+    msecsRunningProperty=new SimpleLongProperty();
   }
 
   /**
@@ -635,7 +639,7 @@ public class OBDTriplet extends OBDHandler {
     display.updateField("date", nowStr, ++dateUpdateCount);
     long totalUpdates = 0;
     long msecsRunning=now.getTime()-displayStart.getTime();
-    
+    this.msecsRunningProperty.set(msecsRunning);
     for (CANValue<?> canValue : this.getCANValues()) {
       if (canValue.isDisplay()) {
         display.updateCanValueField(canValue);
