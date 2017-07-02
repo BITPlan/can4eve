@@ -304,7 +304,9 @@ public class JavaFXDisplay extends WaitableApp
   public void bind(Map<String, ObservableValue<?>> canProperties) {
     this.canProperties = canProperties;
     dashBoardPane.getRpmGauge().valueProperty().bind(
-        (ObservableValue<? extends Number>) this.canProperties.get("rpm"));
+        (ObservableValue<? extends Number>) this.canProperties.get("RPM"));
+    dashBoardPane.getRpmSpeedGauge().valueProperty().bind(
+        (ObservableValue<? extends Number>) this.canProperties.get("RPMSpeed"));
   }
 
   /**

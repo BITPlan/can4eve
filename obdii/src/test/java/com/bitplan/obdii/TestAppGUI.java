@@ -69,6 +69,7 @@ import eu.hansolo.medusa.TickLabelLocation;
 import eu.hansolo.medusa.TickLabelOrientation;
 import eu.hansolo.medusa.TickMarkType;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -301,6 +302,12 @@ public class TestAppGUI {
     sampleApp.waitOpen();
     Thread.sleep(SHOW_TIME);
     sampleApp.close();
+  }
+  
+  @Test
+  public void testPropertyT() {
+    Property<Number> dp;
+    dp=new SimpleDoubleProperty();
   }
 
   @Ignore

@@ -40,8 +40,18 @@ import javafx.scene.paint.Color;
  */
 public class DashBoardPane extends javafx.scene.layout.GridPane {
   
-  private FGauge framedGauge;
+  private FGauge framedRPMGauge;
   private Gauge rpmGauge;
+  private Gauge rpmSpeedGauge;
+  public Gauge getRpmSpeedGauge() {
+    return rpmSpeedGauge;
+  }
+
+  public void setRpmSpeedGauge(Gauge rpmSpeedGauge) {
+    this.rpmSpeedGauge = rpmSpeedGauge;
+  }
+
+  private FGauge framedRPMSpeedGauge;
 
   public Gauge getRpmGauge() {
     return rpmGauge;
@@ -61,9 +71,7 @@ public class DashBoardPane extends javafx.scene.layout.GridPane {
         .animated(true)
         .shadowsEnabled(true)
         .sectionsVisible(true)
-        .sections(new Section(5000, 6000, Color.rgb(139, 195, 102, 0.5)))
-        .areasVisible(true)
-        .areas(new Section(0.00, 25, Color.rgb(234, 83, 79, 0.5)))
+        .sections(new Section(5000, 6000, Color.rgb(195, 139, 102, 0.5)))
         .majorTickMarkColor( Color.rgb(241, 161, 71))
         //.minorTickMarkColor(Color.rgb(0, 175, 248))
         .majorTickMarkType(TickMarkType.TRAPEZOID)
@@ -71,16 +79,39 @@ public class DashBoardPane extends javafx.scene.layout.GridPane {
         .minorTickMarkType(TickMarkType.LINE)
         .tickLabelLocation(TickLabelLocation.INSIDE)
         .title("RPM")
-        //.titleColor(Color.rgb(223, 223, 223))
         .unit("")
         .lcdDesign(LcdDesign.SECTIONS)
         .lcdVisible(true)
         .lcdFont(LcdFont.STANDARD)
-        //.unitColor(Color.rgb(223, 223, 223))
-        //.valueColor(Color.rgb(223, 223, 223))
         .needleSize(NeedleSize.THICK)
         .build();
-    framedGauge = new FGauge(rpmGauge, GaugeDesign.ENZO, GaugeBackground.DARK_GRAY);
-    this.add(framedGauge,0,0);
+    rpmSpeedGauge = GaugeBuilder.create()
+        .minValue(0)
+        .maxValue(140)
+        .tickLabelDecimals(0)
+        .decimals(3)
+        .autoScale(true)
+        .animated(true)
+        .shadowsEnabled(true)
+        .sectionsVisible(true)
+        .sections(new Section(100, 140, Color.rgb(195, 139, 102, 0.5)))
+        .majorTickMarkColor( Color.rgb(241, 161, 71))
+        //.minorTickMarkColor(Color.rgb(0, 175, 248))
+        .majorTickMarkType(TickMarkType.TRAPEZOID)
+        .mediumTickMarkType(TickMarkType.DOT)
+        .minorTickMarkType(TickMarkType.LINE)
+        .tickLabelLocation(TickLabelLocation.INSIDE)
+        .title("RPMSpeed")
+        .unit("km/h")
+        .lcdDesign(LcdDesign.SECTIONS)
+        .lcdVisible(true)
+        .lcdFont(LcdFont.STANDARD)
+        .needleSize(NeedleSize.THICK)
+        .build();
+    framedRPMGauge = new FGauge(rpmGauge, GaugeDesign.ENZO, GaugeBackground.DARK_GRAY);
+    this.add(framedRPMGauge,0,0);
+ 
+    framedRPMSpeedGauge = new FGauge(rpmSpeedGauge, GaugeDesign.ENZO, GaugeBackground.DARK_GRAY);
+    this.add(framedRPMSpeedGauge,1,0);
   }
 }

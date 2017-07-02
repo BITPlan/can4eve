@@ -23,7 +23,6 @@ package com.bitplan.triplet;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.Constructor;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,7 +56,8 @@ import com.bitplan.obdii.PIDResponse;
 import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.obdii.javafx.JavaFXDisplay;
 
-import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
 
@@ -69,8 +69,7 @@ import javafx.beans.value.ObservableValue;
  *
  */
 public class OBDTriplet extends OBDHandler {
-  // property trial
-  public IntegerProperty rpmProperty=new SimpleIntegerProperty();
+  public static Map<String, CANProperty> canProperties=new HashMap<String,CANProperty>();
   // car parameters
   DoubleValue accelerator;
   BooleanValue blinkerLeft;
@@ -135,7 +134,7 @@ public class OBDTriplet extends OBDHandler {
     super(vehicleGroup);
     postConstruct();
   }
-  
+
   /**
    * construct me from a serial Device
    * 
@@ -143,7 +142,7 @@ public class OBDTriplet extends OBDHandler {
    * @param file
    * @param baudRate
    */
-  public OBDTriplet(VehicleGroup vehicleGroup,String device, int baudRate) {
+  public OBDTriplet(VehicleGroup vehicleGroup, String device, int baudRate) {
     super(vehicleGroup, device, baudRate);
     postConstruct();
   }
@@ -187,11 +186,12 @@ public class OBDTriplet extends OBDHandler {
 
   /**
    * create me with a preconfigured elm (e.g. simulator)
+   * 
    * @param vehicleGroup
    * @param elm
    */
   public OBDTriplet(VehicleGroup vehicleGroup, ELM327 elm) {
-    super(vehicleGroup,elm);
+    super(vehicleGroup, elm);
     postConstruct();
   }
 
@@ -201,22 +201,23 @@ public class OBDTriplet extends OBDHandler {
    * @param canInfoName
    * @return
    */
-  public static CANInfo getCanInfo(VehicleGroup vg,String canInfoName) {
+  public static CANInfo getCanInfo(VehicleGroup vg, String canInfoName) {
     CANInfo canInfo = vg.getCANInfoByName(canInfoName);
     if (canInfo == null)
       throw new RuntimeException("Misconfigured canValue " + canInfoName
           + " missing canInfo in vehicle Group " + vg.getName());
     return canInfo;
   }
-  
+
   /**
    * get the canInfo for the given CanInfo name
+   * 
    * @param canInfoName
    * @return
    */
   private CANInfo getCanInfo(String canInfoName) {
     VehicleGroup vg = this.getElm327().getVehicleGroup();
-    CANInfo canInfo=OBDTriplet.getCanInfo(vg, canInfoName);
+    CANInfo canInfo = OBDTriplet.getCanInfo(vg, canInfoName);
     return canInfo;
   }
 
@@ -224,6 +225,7 @@ public class OBDTriplet extends OBDHandler {
    * initialize the CanValues
    */
   public void initCanValues() {
+    VehicleGroup vg = this.getElm327().getVehicleGroup();
     // car parameters
     accelerator = new DoubleValue(getCanInfo("Accelerator"));
     blinkerLeft = new BooleanValue(getCanInfo("BlinkerLeft"), "◀", "");
@@ -246,9 +248,10 @@ public class OBDTriplet extends OBDHandler {
     key = new BooleanValue(getCanInfo("Key"), "◉✔", "❌◎");
     speed = new IntegerValue(getCanInfo("Speed"));
     rpmSpeed = new DoubleValue(getCanInfo("RPMSpeed"));
+    addCanProperty(rpmSpeed,new SimpleDoubleProperty());
     motortemp = new IntegerValue(getCanInfo("MotorTemp"));
-    rpm= this.<IntegerValue,Integer> createCanValue("RPM",IntegerValue.class);
-    //rpm = new IntegerValue(getCanInfo("RPM"));
+    rpm = new IntegerValue(getCanInfo("RPM"));
+    addCanProperty(rpm,new SimpleIntegerProperty());
     SOC = new DoubleValue(getCanInfo("SOC"));
     cellCount = new IntegerValue(getCanInfo("CellCount"));
     VIN = new VINValue(getCanInfo("VIN"));
@@ -279,24 +282,61 @@ public class OBDTriplet extends OBDHandler {
     top = topArray;
   }
 
-  /**
-   * create a canValue for the given id and clazz
-   * @param id
-   * @param clazz
-   * @return - the new CanValue
-   */
-  public <CT extends CANValue<T>,T> CT createCanValue(String id, Class<CT> clazz)  {
-    CANInfo canInfo = getCanInfo(id);
-    Constructor<CT> cons;
-    CT canValue=null;
-    try {
-      cons = clazz.getConstructor(CANInfo.class);
-      canValue = cons.newInstance(canInfo);
-    } catch (Exception e) {
-      LOGGER.log(Level.SEVERE, e.getMessage());
+  public class CANProperty<CT extends CANValue<T>,T> {
+    CT canValue;
+    Property<T>property;
+    /**
+     * construct me
+     * @param canValue
+     * @param property
+     */
+    public CANProperty(CT canValue, Property<T> property) {
+      this.canValue=canValue;
+      this.property=property;
     }
-    return canValue;
+    public CANProperty(DoubleValue canValue, SimpleDoubleProperty property) {
+      this.canValue=(CT)canValue;
+      this.property=(Property<T>)property;
+    }
+    public CANProperty(IntegerValue canValue,
+        SimpleIntegerProperty property) {
+      this.canValue=(CT)canValue;
+      this.property=(Property<T>)property;
+    }
+    /**
+     * set the value for CANValue and property
+     * @param value - the value to set
+     * @param timeStamp
+     */
+    public void setValue(T value, Date timeStamp) {
+      canValue.setValue(value, timeStamp);
+      property.setValue(value);
+    }
   }
+  
+  /**
+   * add a CAN Property
+   * @param canValue - the can Value
+   * @param property - the Property
+   */
+  private <CT extends CANValue<T>,T> void addCanProperty(CT canValue,
+      Property<T>property) {
+    CANProperty<CT,T> canProperty=new CANProperty<CT,T>(canValue,property);
+    canProperties.put(canValue.canInfo.getName(), canProperty);
+  }
+
+  private void addCanProperty(DoubleValue canValue,
+      SimpleDoubleProperty property) {
+    CANProperty<DoubleValue,Double> canProperty=new CANProperty<DoubleValue,Double>(canValue,property);
+    canProperties.put(canValue.canInfo.getName(), canProperty);   
+  }
+  
+  private void addCanProperty(IntegerValue canValue,
+      SimpleIntegerProperty property) {
+    CANProperty<IntegerValue,Integer> canProperty=new CANProperty<IntegerValue,Integer>(canValue,property);
+    canProperties.put(canValue.canInfo.getName(), canProperty);       
+  }
+
 
   /**
    * things to do / initialize after I a was constructed
@@ -475,11 +515,13 @@ public class OBDTriplet extends OBDHandler {
             timeStamp);
       }
       // tries binding
-      this.rpmProperty.setValue(rpmValue);
-      rpm.setValue(rpmValue, timeStamp);
+      this.canProperties.get("RPM").setValue(rpmValue,timeStamp);
       if (speed.getValueItem().isAvailable()) {
-        rpmSpeed.setValue(speed.getValueItem().getValue() * 1000.0 / 60
-            / rpm.getValueItem().getValue(), timeStamp);
+        // m per round
+        // speed.getValueItem().getValue() * 1000.0 / 60
+        // / rpm.getValueItem().getValue()
+        double rpmSpeed=this.rpm.getValue()*this.kmPerRound*60;
+        this.canProperties.get("RPMSpeed").setValue(rpmSpeed, timeStamp);
       }
       break;
     case "Odometer_Speed":
@@ -574,6 +616,7 @@ public class OBDTriplet extends OBDHandler {
   int dateUpdateCount = 0;
   int fpsUpdateCount = 0;
   Date latestUpdate;
+  Date displayStart;
   long latestTotalUpdates;
   private ScheduledExecutorService displayexecutor;
   private Runnable displayTask;
@@ -591,6 +634,8 @@ public class OBDTriplet extends OBDHandler {
     String nowStr = isoDateFormatter.format(now);
     display.updateField("date", nowStr, ++dateUpdateCount);
     long totalUpdates = 0;
+    long msecsRunning=now.getTime()-displayStart.getTime();
+    
     for (CANValue<?> canValue : this.getCANValues()) {
       if (canValue.isDisplay()) {
         display.updateCanValueField(canValue);
@@ -611,14 +656,17 @@ public class OBDTriplet extends OBDHandler {
       if (msecs >= 1000) {
         long updates = totalUpdates - latestTotalUpdates;
         double fps = 1000.0 * updates / msecs;
-        display.updateField("#", totalUpdates,(int) totalUpdates);
+        display.updateField("#", totalUpdates, (int) totalUpdates);
         display.updateField("fps", fps, ++fpsUpdateCount);
         display.updateField("# of bufferOverruns", super.bufferOverruns,
             fpsUpdateCount);
         display.updateField("OBDII id", this.getElm327().getId(), 1);
-        display.updateField("OBDII description", this.getElm327().getDescription(), 1);
-        display.updateField("OBDII firmware", this.getElm327().getFirmwareId(), 1);
-        display.updateField("OBDII hardware", this.getElm327().getHardwareId(), 1);
+        display.updateField("OBDII description",
+            this.getElm327().getDescription(), 1);
+        display.updateField("OBDII firmware", this.getElm327().getFirmwareId(),
+            1);
+        display.updateField("OBDII hardware", this.getElm327().getHardwareId(),
+            1);
         latestTotalUpdates = totalUpdates;
         latestUpdate = now;
       }
@@ -627,6 +675,7 @@ public class OBDTriplet extends OBDHandler {
 
   /**
    * show the history
+   * 
    * @param display
    * @param now
    * @return the now value
@@ -634,7 +683,8 @@ public class OBDTriplet extends OBDHandler {
   private Date showHistory(CANValueDisplay display, Date now) {
     if (display instanceof JFXTripletDisplay) {
       final JFXTripletDisplay tripletDisplay = (JFXTripletDisplay) display;
-      tripletDisplay.updateHistory(SOC,range,"SOC/RR over time","time","SOC/RR");
+      tripletDisplay.updateHistory(SOC, range, "SOC/RR over time", "time",
+          "SOC/RR");
     }
     return now;
   }
@@ -647,8 +697,9 @@ public class OBDTriplet extends OBDHandler {
   }
 
   /**
-   * set the ELM327 to filter the given canValues in preparation
-   * of an AT STM command
+   * set the ELM327 to filter the given canValues in preparation of an AT STM
+   * command
+   * 
    * @param canValues
    * @throws Exception
    */
@@ -671,7 +722,7 @@ public class OBDTriplet extends OBDHandler {
       lelm.sendCommand("STFAP " + pidId + ",FFF", "OK");
     }
   }
-  
+
   /**
    * start the STM Monitoring
    * 
@@ -707,7 +758,7 @@ public class OBDTriplet extends OBDHandler {
     }
     this.stopDisplay();
     if (debug) {
-      LOGGER.log(Level.INFO,"STM finished");
+      LOGGER.log(Level.INFO, "STM finished");
     }
   }
 
@@ -719,15 +770,18 @@ public class OBDTriplet extends OBDHandler {
   public void startDisplay(final CANValueDisplay display) {
     // TODO make this more systematic
     if (display instanceof JavaFXDisplay) {
-      Map<String, ObservableValue<?>> canProperties=new HashMap<String, ObservableValue<?>>();
-      canProperties.put("rpm", this.rpmProperty);
-      ((JavaFXDisplay)display).bind(canProperties);
+      Map<String,ObservableValue<?>> canBindings=new HashMap<String,ObservableValue<?>>();
+      for (CANProperty canProperty:canProperties.values()) {
+        canBindings.put(canProperty.canValue.canInfo.getName(), canProperty.property);
+      }
+      ((JavaFXDisplay) display).bind(canBindings);
     }
     displayexecutor = Executors.newSingleThreadScheduledExecutor();
     displayTask = new Runnable() {
       public void run() {
         // Invoke method(s) to do the work
         try {
+          displayStart=new Date();
           showValues(display);
         } catch (Exception e) {
           ErrorHandler.handle(e);
@@ -749,7 +803,8 @@ public class OBDTriplet extends OBDHandler {
   }
 
   /**
-   * delegate the initialization of the OBD device 
+   * delegate the initialization of the OBD device
+   * 
    * @throws Exception
    */
   public void initOBD() throws Exception {
@@ -776,11 +831,12 @@ public class OBDTriplet extends OBDHandler {
    * @param display
    * @param reportFileName
    *          - the filename to use
-   * @param frameLimit - the maximum number of frame to read
+   * @param frameLimit
+   *          - the maximum number of frame to read
    * @throws Exception
    */
-  public void report(CANValueDisplay display, String reportFileName, long frameLimit)
-      throws Exception {
+  public void report(CANValueDisplay display, String reportFileName,
+      long frameLimit) throws Exception {
     File reportFile = new File(reportFileName);
     PrintWriter printWriter = new PrintWriter(reportFile);
     this.getElm327().identify();
@@ -794,7 +850,7 @@ public class OBDTriplet extends OBDHandler {
       this.STMMonitor(display, canValues, frameLimit);
       for (CANValue<?> canValue : top) {
         if (debug)
-          LOGGER.log(Level.INFO,"canValue:"+canValue.canInfo.getTitle());
+          LOGGER.log(Level.INFO, "canValue:" + canValue.canInfo.getTitle());
         printWriter.write(canValue.asCSV());
       }
     } else {
