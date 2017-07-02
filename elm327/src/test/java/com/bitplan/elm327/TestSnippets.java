@@ -24,6 +24,11 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+/**
+ * test snippet handling
+ * @author wf
+ *
+ */
 public class TestSnippets {
    
   @Test

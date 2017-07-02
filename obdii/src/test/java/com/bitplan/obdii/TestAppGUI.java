@@ -371,6 +371,7 @@ public class TestAppGUI {
     lp.setValue(4711);
     keepBinding=Bindings.createLongBinding(()->callMe(lp.get()),lp);
     lp.setValue(1);
+    //assertEquals(2,calledEffect);
     assertEquals(2,keepBinding.get());
   }
 }

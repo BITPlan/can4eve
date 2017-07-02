@@ -9,7 +9,7 @@
 	<artifactId>com.bitplan.can4eve.can4eve</artifactId>
 	<packaging>jar</packaging>
 	<name>com.bitplan.can4eve.can4eve</name>
-	<description>Can4Eve Swing application</description>
+	<description>Can4Eve JavaFX application</description>
 	<dependencies>
 		<dependency>
 			<groupId>com.bitplan.can4eve</groupId>
