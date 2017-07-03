@@ -116,6 +116,10 @@ public class JavaFXDisplay extends WaitableApp
 
   protected Map<String, ObservableValue<?>> canProperties;
 
+  protected ChargePane chargePane;
+
+  private Tab chargeTab;
+
   public static final boolean debug = false;
 
   /**
@@ -326,9 +330,11 @@ public class JavaFXDisplay extends WaitableApp
   public void setupSpecial(TabPane tabPane) {
     clockPane = new ClockPane();
     // TODO i18n
-    clockTab = addTab(tabPane, 0, "Clocks", clockPane);
     dashBoardPane = new DashBoardPane();
+    chargePane=new ChargePane();
+    chargeTab=addTab(tabPane,0,"SOC",chargePane);
     dashBoardTab = addTab(tabPane, 0, "DashBoard", dashBoardPane);
+    clockTab = addTab(tabPane, 0, "Clocks", clockPane);
     // disable menu items
     this.setMenuItemDisable(I18n.OBD_HALT_MENU_ITEM, true);
     this.setMenuItemDisable(I18n.FILE_SAVE_MENU_ITEM, true);

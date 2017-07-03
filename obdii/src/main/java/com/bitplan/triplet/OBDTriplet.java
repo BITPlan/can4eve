@@ -254,6 +254,7 @@ public class OBDTriplet extends OBDHandler {
     rpm = new IntegerValue(getCanInfo("RPM"));
     addCanProperty(rpm,new SimpleIntegerProperty());
     SOC = new DoubleValue(getCanInfo("SOC"));
+    addCanProperty(SOC,new SimpleDoubleProperty());
     cellCount = new IntegerValue(getCanInfo("CellCount"));
     VIN = new VINValue(getCanInfo("VIN"));
     VIN2 = new VINValue(getCanInfo("VIN"));
@@ -554,7 +555,9 @@ public class OBDTriplet extends OBDHandler {
       break;
 
     case "SOC":
-      SOC.setValue(((pr.d[1]) - 10) / 2.0, timeStamp);
+      // state of charging in %
+      double soc=((pr.d[1]) - 10) / 2.0;
+      this.canProperties.get("SOC").setValue(soc, timeStamp);
       break;
 
     case "VIN":

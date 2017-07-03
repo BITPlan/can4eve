@@ -143,6 +143,9 @@ public class JFXTripletDisplay extends JavaFXDisplay {
       bind(dashBoardPane.getRpmGauge().valueProperty(),this.canProperties.get("RPM"));
       bind(dashBoardPane.getRpmSpeedGauge().valueProperty(),this.canProperties.get("RPMSpeed"));
     }
+    if (chargePane!=null) {
+      bind(chargePane.getSOCGauge().valueProperty(),this.canProperties.get("SOC"));
+    }
     SimpleLongProperty msecsProperty = (SimpleLongProperty) this.canProperties.get("msecs");
     if (msecsProperty!=null && clockPane!=null) {
       msecsProperty.addListener((obs, oldValue, newValue) -> super.clockPane.updateMsecs(newValue));

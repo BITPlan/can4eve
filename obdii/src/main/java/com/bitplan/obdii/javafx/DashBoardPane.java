@@ -53,6 +53,7 @@ public class DashBoardPane extends javafx.scene.layout.GridPane {
 
   private FGauge framedRPMSpeedGauge;
 
+
   public Gauge getRpmGauge() {
     return rpmGauge;
   }
@@ -89,7 +90,7 @@ public class DashBoardPane extends javafx.scene.layout.GridPane {
         .minValue(0)
         .maxValue(140)
         .tickLabelDecimals(0)
-        .decimals(3)
+        .decimals(1)
         .autoScale(true)
         .animated(true)
         .shadowsEnabled(true)
@@ -108,10 +109,14 @@ public class DashBoardPane extends javafx.scene.layout.GridPane {
         .lcdFont(LcdFont.STANDARD)
         .needleSize(NeedleSize.THICK)
         .build();
+    
+    
+    
     framedRPMGauge = new FGauge(rpmGauge, GaugeDesign.ENZO, GaugeBackground.DARK_GRAY);
     this.add(framedRPMGauge,0,0);
  
     framedRPMSpeedGauge = new FGauge(rpmSpeedGauge, GaugeDesign.ENZO, GaugeBackground.DARK_GRAY);
     this.add(framedRPMSpeedGauge,1,0);
+    
   }
 }

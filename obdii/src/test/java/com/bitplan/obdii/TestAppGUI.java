@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Ignore;
@@ -49,6 +51,7 @@ import com.bitplan.can4eve.json.JsonManagerImpl;
 import com.bitplan.can4eve.states.StopWatch;
 import com.bitplan.can4eve.util.TaskLaunch;
 import com.bitplan.obdii.Preferences.LangChoice;
+import com.bitplan.obdii.javafx.ChargePane;
 import com.bitplan.obdii.javafx.ClockPane;
 import com.bitplan.obdii.javafx.ClockPane.Watch;
 import com.bitplan.obdii.javafx.JFXCanCellStatePlot;
@@ -88,7 +91,8 @@ import javafx.stage.Stage;
  */
 public class TestAppGUI {
   public static final int SHOW_TIME = 4000;
-
+  protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii");
+  
   @Test
   public void testAppGUI() throws Exception {
     App app = App.getInstance();
@@ -284,6 +288,26 @@ public class TestAppGUI {
     }
     sampleApp.close();
   }
+  
+  @Test
+  public void testChargePanel() throws Exception {
+    WaitableApp.toolkitInit();
+    Translator.initialize(Preferences.getInstance().getLanguage().name());
+    ChargePane chargePane = new ChargePane();
+    chargePane.getSOCGauge().setValue(50);
+    SampleApp sampleApp = new SampleApp("Charge", chargePane);
+    sampleApp.show();
+    sampleApp.waitOpen();
+    int loops=SHOW_TIME / 50 * 2;
+    for (int i = 0; i < loops; i++) {
+      Thread.sleep(50);
+      double newValue=50-(25*i/loops);
+      // LOGGER.log(Level.INFO, "new value "+newValue);
+      chargePane.getSOCGauge().setValue(newValue);
+    }
+    sampleApp.close();
+  }
+  
 
   @Test
   public void testLineChartJavaFx() throws Exception {
