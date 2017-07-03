@@ -410,6 +410,7 @@ public class JavaFXDisplay extends WaitableApp
           notImplemented(I18n.FILE_SAVE_MENU_ITEM);
           break;
         case I18n.FILE_OPEN_MENU_ITEM:
+          // this can't happen 
           notImplemented(I18n.FILE_OPEN_MENU_ITEM);
           break;
         case I18n.FILE_QUIT_MENU_ITEM:

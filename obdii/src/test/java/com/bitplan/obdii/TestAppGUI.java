@@ -95,7 +95,7 @@ public class TestAppGUI {
     assertNotNull(app);
     assertEquals(6, app.getMainMenu().getSubMenus().size());
     assertEquals(3, app.getGroups().size());
-    int[] expected = { 3, 9 };
+    int[] expected = { 3, 8,  1 };
     int i = 0;
     for (Group group : app.getGroups()) {
       assertEquals(expected[i++], group.getForms().size());
