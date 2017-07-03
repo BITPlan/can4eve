@@ -505,7 +505,7 @@
           "name": "RPMSpeed",
           "title": "RPM Speed",
           "description": "Speed from RPM",
-          "format": "%6.3f m/r",
+          "format": "%6.1f km/h",
           "type": "DoubleValue",
           "historyValuesPerMinute": 20,
           "maxIndex": 0

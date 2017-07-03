@@ -59,6 +59,7 @@ public class I18n {
   public static final String HALTED = "halted";
   public static final String OBD_MENU="obdMenu"; //OBD
   public static final String OBD_START_MENU_ITEM="obdStartMenuItem"; //Start
+  public static final String OBD_START_WITH_LOG_MENU_ITEM="obdStartWithLogMenuItem"; //Start with Log
   public static final String OBD_HALT_MENU_ITEM="obdHaltMenuItem"; //Halt
   public static final String OBD_TEST_MENU_ITEM="obdTestMenuItem"; //Test
   public static final String SORRY = "sorry";
@@ -73,6 +74,7 @@ public class I18n {
   public static final String WATCH_CHARGING = "watchCharging";
   public static final String WATCH_TOTAL = "watchTotal";
   public static final String WATCH_TIME = "watchTime";
+  //public static final String SOC = "SOC";
 
   /**
    * Translate the given text

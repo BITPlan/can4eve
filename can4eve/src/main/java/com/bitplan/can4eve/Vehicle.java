@@ -42,6 +42,44 @@ public class Vehicle implements JsonAble{
   String model;
   String group;
   String picture;
+  Integer mmPerRound;
+  public String getNickName() {
+    return nickName;
+  }
+  public void setNickName(String nickName) {
+    this.nickName = nickName;
+  }
+  public String getVIN() {
+    return VIN;
+  }
+  public void setVIN(String vIN) {
+    VIN = vIN;
+  }
+  public String getModel() {
+    return model;
+  }
+  public void setModel(String model) {
+    this.model = model;
+  }
+  public String getGroup() {
+    return group;
+  }
+  public void setGroup(String group) {
+    this.group = group;
+  }
+  public String getPicture() {
+    return picture;
+  }
+  public void setPicture(String picture) {
+    this.picture = picture;
+  }
+ 
+  public Integer getMmPerRound() {
+    return mmPerRound;
+  }
+  public void setMmPerRound(Integer mmPerRound) {
+    this.mmPerRound = mmPerRound;
+  }
   @Override
   public void reinit() {
     
@@ -52,6 +90,7 @@ public class Vehicle implements JsonAble{
     this.model=(String)map.get("model");
     this.group=(String)map.get("group");
     this.VIN=(String)map.get("VIN");
+    this.mmPerRound=(Integer)map.get("mmPerRound");
   }
   
   static Vehicle instance;

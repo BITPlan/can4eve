@@ -320,6 +320,8 @@ public class JavaFXDisplay extends WaitableApp
    */
   protected void bind(Property value, ObservableValue valueTo) {
     if (valueTo != null) {
+      if (value.isBound())
+        throw new IllegalStateException("value is already bound");
       value.bind(valueTo);
     }
   }
@@ -440,7 +442,10 @@ public class JavaFXDisplay extends WaitableApp
           showSettings(false);
           break;
         case I18n.OBD_START_MENU_ITEM:
-          startMonitoring();
+          startMonitoring(false);
+          break;
+        case I18n.OBD_START_WITH_LOG_MENU_ITEM:
+          startMonitoring(true);
           break;
         case I18n.OBD_HALT_MENU_ITEM:
           stopMonitoring();
@@ -482,6 +487,7 @@ public class JavaFXDisplay extends WaitableApp
     // TODO use better symbol e.g. icon
     setWatchDogState("X", I18n.get(I18n.HALTED));
     setMenuItemDisable(I18n.OBD_START_MENU_ITEM, false);
+    setMenuItemDisable(I18n.OBD_START_WITH_LOG_MENU_ITEM, false);
     setMenuItemDisable(I18n.OBD_TEST_MENU_ITEM, false);
     setMenuItemDisable(I18n.OBD_HALT_MENU_ITEM, true);
     Task<Void> task = new Task<Void>() {
@@ -500,17 +506,19 @@ public class JavaFXDisplay extends WaitableApp
 
   /**
    * start the monitoring
+   * @param  
    */
-  private void startMonitoring() {
+  private void startMonitoring(boolean withLog) {
     setWatchDogState("⚙", I18n.get(I18n.MONITORING));
     setMenuItemDisable(I18n.OBD_START_MENU_ITEM, true);
+    setMenuItemDisable(I18n.OBD_START_WITH_LOG_MENU_ITEM, true);
     setMenuItemDisable(I18n.OBD_TEST_MENU_ITEM, true);
     setMenuItemDisable(I18n.OBD_HALT_MENU_ITEM, false);
     monitortask = new Task<Void>() {
       @Override
       public Void call() {
         try {
-          obdApp.start();
+          obdApp.start(withLog);
         } catch (Exception e) {
           handleException(e);
         }

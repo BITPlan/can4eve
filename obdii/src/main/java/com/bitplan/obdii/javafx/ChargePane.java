@@ -20,6 +20,8 @@
  */
 package com.bitplan.obdii.javafx;
 
+import com.bitplan.obdii.I18n;
+
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.GaugeBuilder;
 import eu.hansolo.medusa.Gauge.SkinType;
@@ -44,14 +46,21 @@ public class ChargePane extends GridPane {
     SOCGauge = sOCGauge;
   }
 
+  /**
+   * 
+   */
   public ChargePane() {
-    setSOCGauge(GaugeBuilder.create().skinType(SkinType.LEVEL).title("SOC")
+    setSOCGauge(GaugeBuilder.create().skinType(SkinType.BATTERY).title("SOC")
         .titleColor(Color.WHITE).animated(true).gradientBarEnabled(true)
         .minValue(0)
         .maxValue(100)
+        .tickLabelDecimals(1)
+        .decimals(1)
+        //.title(I18n.get(I18n.SOC))
+        .titleColor(Color.WHITE)
         .gradientBarStops(new Stop(0.0, Color.RED),
-            new Stop(25, Color.ORANGE), new Stop(50, Color.YELLOW),
-            new Stop(75, Color.YELLOWGREEN), new Stop(100, Color.LIME))
+            new Stop(0.25, Color.ORANGE), new Stop(0.50, Color.YELLOW),
+            new Stop(0.75, Color.YELLOWGREEN), new Stop(1.0, Color.LIME))
         .build());
     
     this.add(getSOCGauge(), 0,0);

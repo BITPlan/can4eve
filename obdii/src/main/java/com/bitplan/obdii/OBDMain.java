@@ -26,10 +26,12 @@ import java.util.logging.Level;
 
 import org.kohsuke.args4j.Option;
 
+import com.bitplan.can4eve.Vehicle;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.gui.App;
 import com.bitplan.can4eve.gui.Display;
 import com.bitplan.can4eve.gui.swing.Translator;
+import com.bitplan.can4eve.util.TaskLaunch;
 import com.bitplan.elm327.Config;
 import com.bitplan.elm327.Config.ConfigMode;
 import com.bitplan.elm327.Config.DeviceType;
@@ -76,7 +78,7 @@ public class OBDMain extends Main implements OBDApp {
   protected long frameLimit = 500 * 4800; // some 1 1/2 hours at 500fps
 
   @Option(name = "-l", aliases = {
-      "--log" }, usage = "log\nthe logfile to write")
+      "--log" }, usage = "log\nthe logdirectory to use")
   String logFileName;
 
   enum DisplayChoice {
@@ -185,6 +187,12 @@ public class OBDMain extends Main implements OBDApp {
     if (obdTriplet == null) {
       throw new Exception(I18n.get(I18n.INVALID_CONFIGURATION));
     }
+    Vehicle vehicle=Vehicle.getInstance();
+    if (vehicle!=null) {
+      obdTriplet.setMmPerRound(vehicle.getMmPerRound());
+    } else {
+      obdTriplet.setMmPerRound(261); // Ion TODO get value from vehicleGroup?   
+    }
     // the simulator is pre started and timeout and debug set
     // all other devices are configured here
     if (config.getDeviceType() != DeviceType.Simulator) {
@@ -203,14 +211,21 @@ public class OBDMain extends Main implements OBDApp {
   }
 
   @Override
-  public ELM327 start() throws Exception {
+  public ELM327 start(boolean withLog) throws Exception {
     if (elm == null)
       prepareOBD(getConfig());
     // make can Values available
     obdTriplet.setUpCanValues();
 
-    if (this.logFileName != null) {
-      obdTriplet.logResponses(new File(logFileName), "Triplet");
+    if (withLog) {
+      if (this.logFileName != null) {
+        obdTriplet.logResponses(new File(logFileName), vehicleGroup.getName());
+      } else {
+        Preferences pref=Preferences.getInstance();
+        if (pref!=null) {
+          obdTriplet.logResponses(new File(pref.logDirectory), pref.logPrefix);
+        }
+      }
     }
     if (this.reportFileName != null) {
       obdTriplet.report(canValueDisplay, reportFileName, frameLimit);
@@ -296,13 +311,13 @@ public class OBDMain extends Main implements OBDApp {
       default:
       }
       if (this.monitor) {
-        // FIXME this is not a run later but potentially a new thread
-        Platform.runLater(() -> {
+        TaskLaunch.start(()-> {
           try {
-            start();
+            start(this.logFileName!=null);
           } catch (Exception e) {
             ErrorHandler.handle(e);
           }
+          return null;
         });
       } else {
         // run GUI

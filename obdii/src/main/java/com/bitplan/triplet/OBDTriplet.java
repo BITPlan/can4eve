@@ -59,6 +59,7 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 
 /**
@@ -107,17 +108,25 @@ public class OBDTriplet extends OBDHandler {
   public DoubleValue steeringWheelPosition;
   public DoubleValue steeringWheelMovement;
   ShifterPositionValue shifterPositionValue;
-  // meter per Round // FIXME - is vehicle dependen and needs to be configured
-  private double kmPerRound = 0.261 / 1000.0;
   private CANValue<?>[] top;
   private SimpleLongProperty msecsRunningProperty;
-
+  private SimpleObjectProperty vehicleStateProperty;
+  double mmPerRound=261; // TODO do we need a default?
+  
   public boolean isWithHistory() {
     return withHistory;
   }
 
   public void setWithHistory(boolean withHistory) {
     this.withHistory = withHistory;
+  }
+
+  public double getMmPerRound() {
+    return mmPerRound;
+  }
+
+  public void setMmPerRound(double mmPerRound) {
+    this.mmPerRound = mmPerRound;
   }
 
   public boolean isMonitoring() {
@@ -327,12 +336,22 @@ public class OBDTriplet extends OBDHandler {
     canProperties.put(canValue.canInfo.getName(), canProperty);
   }
 
+  /**
+   * add a double Value property
+   * @param canValue
+   * @param property
+   */
   private void addCanProperty(DoubleValue canValue,
       SimpleDoubleProperty property) {
     CANProperty<DoubleValue,Double> canProperty=new CANProperty<DoubleValue,Double>(canValue,property);
     canProperties.put(canValue.canInfo.getName(), canProperty);   
   }
   
+  /**
+   * add an integer Value property
+   * @param canValue
+   * @param property
+   */
   private void addCanProperty(IntegerValue canValue,
       SimpleIntegerProperty property) {
     CANProperty<IntegerValue,Integer> canProperty=new CANProperty<IntegerValue,Integer>(canValue,property);
@@ -357,6 +376,7 @@ public class OBDTriplet extends OBDHandler {
     VIN.activate();
     // properties
     msecsRunningProperty=new SimpleLongProperty();
+    vehicleStateProperty=new SimpleObjectProperty();
   }
 
   /**
@@ -515,7 +535,7 @@ public class OBDTriplet extends OBDHandler {
             rpm.getValueItem().getTimeStamp(), Math.abs(rpmValue), timeStamp,
             1 / 60000.0);
         // calc distance based on rounds
-        this.tripOdo.setValue(tripRounds.getValueItem().getValue() * kmPerRound,
+        this.tripOdo.setValue(tripRounds.getValueItem().getValue() * mmPerRound/1000000.0,
             timeStamp);
       }
       // tries binding
@@ -524,7 +544,7 @@ public class OBDTriplet extends OBDHandler {
         // m per round
         // speed.getValueItem().getValue() * 1000.0 / 60
         // / rpm.getValueItem().getValue()
-        double rpmSpeed=this.rpm.getValue()*this.kmPerRound*60;
+        double rpmSpeed=this.rpm.getValue()*this.mmPerRound*60/1000000.0;
         this.canProperties.get("RPMSpeed").setValue(rpmSpeed, timeStamp);
       }
       break;
@@ -557,6 +577,8 @@ public class OBDTriplet extends OBDHandler {
     case "SOC":
       // state of charging in %
       double soc=((pr.d[1]) - 10) / 2.0;
+      // FIXME - workaround for binding timing issue
+      soc=soc-Math.random()*0.001;
       this.canProperties.get("SOC").setValue(soc, timeStamp);
       break;
 
@@ -785,7 +807,10 @@ public class OBDTriplet extends OBDHandler {
       Map<String,ObservableValue<?>> canBindings=new HashMap<String,ObservableValue<?>>();
       canBindings.put("msecs",this.msecsRunningProperty);
       for (CANProperty canProperty:canProperties.values()) {
-        canBindings.put(canProperty.canValue.canInfo.getName(), canProperty.property);
+        String name=canProperty.canValue.canInfo.getName();
+        if (debug)
+          LOGGER.log(Level.INFO,"binding "+name);
+        canBindings.put(name, canProperty.property);
       }
       ((JFXTripletDisplay) display).bind(canBindings);
     }

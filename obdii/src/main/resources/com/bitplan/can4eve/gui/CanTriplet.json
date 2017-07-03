@@ -112,12 +112,6 @@
 							"fieldSize": 40
 						},
 						{
-							"title": "VIN",
-							"format": "%s",
-							"labelSize": 10,
-							"fieldSize": 40
-						},
-						{
 							"title": "group",
 							"format": "%s",
 							"labelSize": 10,
@@ -132,8 +126,20 @@
 							"fieldSize": 40,
 							"type": "Choice",
 							"choices": "Mitsubishi i-Miev,Citroën C-Zero,Peugeot Ion"
+						},
+						{
+							"title": "VIN",
+							"format": "%s",
+							"labelSize": 10,
+							"fieldSize": 40
+						},
+						
+						{
+							"title": "mmPerRound",
+							"format": "%3d",
+							"type": "Integer",
+							"fieldSize": 5
 						}
-
 					]
 				}
 			]
@@ -464,6 +470,11 @@
 						"id": "obdStartMenuItem",
 						"title": "Start",
 						"shortCut": "S"
+					},
+					{
+						"id": "obdStartWithLogMenuItem",
+						"title": "Start with Log",
+						"shortCut": "L"
 					},
 					{
 						"id": "obdHaltMenuItem",

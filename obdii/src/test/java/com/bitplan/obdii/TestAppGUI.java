@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
@@ -294,16 +293,18 @@ public class TestAppGUI {
     WaitableApp.toolkitInit();
     Translator.initialize(Preferences.getInstance().getLanguage().name());
     ChargePane chargePane = new ChargePane();
-    chargePane.getSOCGauge().setValue(50);
+    SimpleDoubleProperty sd=new SimpleDoubleProperty();
+    chargePane.getSOCGauge().valueProperty().bind(sd);
+    sd.setValue(100);
     SampleApp sampleApp = new SampleApp("Charge", chargePane);
     sampleApp.show();
     sampleApp.waitOpen();
     int loops=SHOW_TIME / 50 * 2;
     for (int i = 0; i < loops; i++) {
       Thread.sleep(50);
-      double newValue=50-(25*i/loops);
+      double newValue=100-(95*i/loops);
       // LOGGER.log(Level.INFO, "new value "+newValue);
-      chargePane.getSOCGauge().setValue(newValue);
+      sd.setValue(newValue);
     }
     sampleApp.close();
   }
