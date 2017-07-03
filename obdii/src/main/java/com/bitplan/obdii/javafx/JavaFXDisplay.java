@@ -34,6 +34,7 @@ import org.controlsfx.control.StatusBar;
 
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.SoftwareVersion;
+import com.bitplan.can4eve.Vehicle;
 import com.bitplan.can4eve.gui.App;
 import com.bitplan.can4eve.gui.Form;
 import com.bitplan.can4eve.gui.Group;
@@ -524,13 +525,16 @@ public class JavaFXDisplay extends WaitableApp
 
   /**
    * show the vehicle Dialog
+   * @throws Exception 
    */
-  private void showVehicle() {
+  private void showVehicle() throws Exception {
+    Vehicle vehicle=Vehicle.getInstance();
     GenericDialog vehicleDialog = new GenericDialog(stage,
         app.getFormById("preferencesGroup", "vehicleForm"));
-    Optional<Map<String, Object>> result = vehicleDialog.show();
+    Optional<Map<String, Object>> result = vehicleDialog.show(vehicle.asMap());
     if (result.isPresent()) {
-
+      vehicle.fromMap(result.get());
+      vehicle.save();
     }
   }
 

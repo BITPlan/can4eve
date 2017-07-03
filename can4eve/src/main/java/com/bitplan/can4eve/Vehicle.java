@@ -20,18 +20,67 @@
  */
 package com.bitplan.can4eve;
 
+import java.io.File;
+import java.util.Map;
+
+import com.bitplan.can4eve.json.JsonAble;
+import com.bitplan.can4eve.json.JsonManager;
+import com.bitplan.can4eve.json.JsonManagerImpl;
+
 /**
  * Vehicle description
  * @author wf
  *
  */
-public class Vehicle {
+public class Vehicle implements JsonAble{
   public enum State {
     Moving, Charging, Parking, Unknown
   };
+  
   String nickName;
   String VIN;
   String model;
-  String vehicleGroup;
+  String group;
   String picture;
+  @Override
+  public void reinit() {
+    
+  }
+  @Override
+  public void fromMap(Map<String, Object> map) {
+    this.nickName=(String) map.get("nickName");
+    this.model=(String)map.get("model");
+    this.group=(String)map.get("group");
+    this.VIN=(String)map.get("VIN");
+  }
+  
+  static Vehicle instance;
+
+  /**
+   * get the vehicle Group of this Vehicle
+   * @return
+   * @throws Exception
+   */
+  public VehicleGroup getVehicleGroup() throws Exception {
+    VehicleGroup vehicleGroup=VehicleGroup.get(group);
+    return vehicleGroup;
+  }
+  
+  /**
+   * get an instance of the Vehicle
+   * 
+   * @return - the instance
+   * @throws Exception
+   */
+  public static Vehicle getInstance() throws Exception {
+    if (instance == null) {
+      File jsonFile = JsonAble.getJsonFile(Vehicle.class.getSimpleName());
+      JsonManager<Vehicle> jmVehicle = new JsonManagerImpl<Vehicle>(
+          Vehicle.class);
+      instance = jmVehicle.fromJsonFile(jsonFile);
+      if (instance == null)
+        instance = new Vehicle();
+    }
+    return instance;
+  }
 }
