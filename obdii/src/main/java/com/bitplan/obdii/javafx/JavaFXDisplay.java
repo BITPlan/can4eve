@@ -96,8 +96,8 @@ public class JavaFXDisplay extends WaitableApp
   private MenuBar menuBar;
 
   private VBox root;
-  private TabPane tabPane;
-
+  String activeView = null;
+  private Map<String, TabPane> tabPaneByView = new HashMap<String, TabPane>();
   private Map<String, GenericControl> controls;
   protected boolean available;
 
@@ -190,6 +190,7 @@ public class JavaFXDisplay extends WaitableApp
    * @return - the activeTab
    */
   public Tab getActiveTab() {
+    TabPane tabPane = getActiveTabPane();
     if (tabPane == null)
       return null;
     SingleSelectionModel<Tab> smodel = tabPane.getSelectionModel();
@@ -246,20 +247,17 @@ public class JavaFXDisplay extends WaitableApp
     scene.setFill(Color.OLDLACE);
     createMenuBar(scene);
     stage.setScene(scene);
+    setUpStatusBar();
     setup(app);
-    setupSpecial();
+    this.setActiveTabPane("mainGroup");
+    setupSpecial(getActiveTabPane());
     stage.setX(sceneBounds.getMinX());
     stage.setY(sceneBounds.getMinY());
     stage.show();
     available = true;
   }
 
-  /**
-   * setup the Application
-   * 
-   * @param app
-   */
-  private void setup(App app) {
+  private void setUpStatusBar() {
     statusBar = new StatusBar();
     watchDogLabel = new Label();
     watchDogLabel.setTextFill(Color.web("808080"));
@@ -267,44 +265,57 @@ public class JavaFXDisplay extends WaitableApp
     this.setWatchDogState("?", "-");
     statusBar.getLeftItems().add(watchDogLabel);
     root.getChildren().add(statusBar);
-    tabPane = new TabPane();
-    tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
+  }
+
+  /**
+   * setup the given Application 
+   * adds tabPanes to the tabPaneByView map
+   * 
+   * @param app
+   */
+  private void setup(App app) {
     controls = new HashMap<String, GenericControl>();
-    Group mainGroup = app.getGroupById("mainGroup");
-    for (Form form : mainGroup.getForms()) {
-      Tab tab = new Tab();
-      tab.setText(form.getTitle());
-      GenericPanel panel = new GenericPanel(stage, form);
-      controls.putAll(panel.controls);
-      tab.setContent(panel);
-      tabPane.getTabs().add(tab);
+    for (Group group : app.getGroups()) {
+      TabPane tabPane = new TabPane();
+      tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
+
+      for (Form form : group.getForms()) {
+        Tab tab = new Tab();
+        tab.setText(form.getTitle());
+        GenericPanel panel = new GenericPanel(stage, form);
+        controls.putAll(panel.controls);
+        tab.setContent(panel);
+        tabPane.getTabs().add(tab);
+      }
+      this.tabPaneByView.put(group.getId(), tabPane);
     }
-    root.getChildren().add(tabPane);
   }
 
   /**
    * add a tab
    * 
+   * @param the
+   *          TabPane to add a Tab to
    * @param index
    * @param title
    * @param content
    * @return
    */
-  public Tab addTab(int index, String title, Node content) {
+  public Tab addTab(TabPane tabPane, int index, String title, Node content) {
     Tab tab = new Tab(title);
     tab.setContent(content);
-    this.tabPane.getTabs().add(index, tab);
+    tabPane.getTabs().add(index, tab);
     return tab;
   }
 
   /**
    * bind the to values
+   * 
    * @param value
    * @param valueTo
    */
-  protected void bind(Property value,
-      ObservableValue valueTo) {
-    if (valueTo!=null) {
+  protected void bind(Property value, ObservableValue valueTo) {
+    if (valueTo != null) {
       value.bind(valueTo);
     }
   }
@@ -312,12 +323,12 @@ public class JavaFXDisplay extends WaitableApp
   /**
    * special setup non in generic description
    */
-  public void setupSpecial() {
+  public void setupSpecial(TabPane tabPane) {
     clockPane = new ClockPane();
     // TODO i18n
-    clockTab = addTab(0, "Clocks", clockPane);
+    clockTab = addTab(tabPane, 0, "Clocks", clockPane);
     dashBoardPane = new DashBoardPane();
-    dashBoardTab = addTab(0, "DashBoard", dashBoardPane);
+    dashBoardTab = addTab(tabPane, 0, "DashBoard", dashBoardPane);
     // disable menu items
     this.setMenuItemDisable(I18n.OBD_HALT_MENU_ITEM, true);
     this.setMenuItemDisable(I18n.FILE_SAVE_MENU_ITEM, true);
@@ -437,13 +448,13 @@ public class JavaFXDisplay extends WaitableApp
           showVehicle();
           break;
         case I18n.VIEW_HISTORY_VIEW_MENU_ITEM:
-          notImplemented(I18n.VIEW_HISTORY_VIEW_MENU_ITEM);
+          this.setActiveTabPane("historyGroup");
           break;
         case I18n.VIEW_SETTINGS_VIEW_MENU_ITEM:
-          notImplemented(I18n.VIEW_SETTINGS_VIEW_MENU_ITEM);
+          this.setActiveTabPane("preferencesGroup");
           break;
         case I18n.VIEW_MONITOR_VIEW_MENU_ITEM:
-          notImplemented(I18n.VIEW_MONITOR_VIEW_MENU_ITEM);
+          this.setActiveTabPane("mainGroup");
           break;
         default:
           LOGGER.log(Level.WARNING, "unhandled menu item " + menuItem.getId()
@@ -525,10 +536,11 @@ public class JavaFXDisplay extends WaitableApp
 
   /**
    * show the vehicle Dialog
-   * @throws Exception 
+   * 
+   * @throws Exception
    */
   private void showVehicle() throws Exception {
-    Vehicle vehicle=Vehicle.getInstance();
+    Vehicle vehicle = Vehicle.getInstance();
     GenericDialog vehicleDialog = new GenericDialog(stage,
         app.getFormById("preferencesGroup", "vehicleForm"));
     Optional<Map<String, Object>> result = vehicleDialog.show(vehicle.asMap());
@@ -638,12 +650,35 @@ public class JavaFXDisplay extends WaitableApp
    * select a random tab
    */
   public void selectRandomTab() {
+    TabPane tabPane = getActiveTabPane();
     if (tabPane != null) {
       SingleSelectionModel<Tab> smodel = tabPane.getSelectionModel();
       Random random = new Random();
       int tabIndex = random.nextInt(tabPane.getTabs().size());
       smodel.select(tabIndex);
     }
+  }
+  
+  /**
+   * (re) set the active tab  Pane
+   * @param groupId
+   */
+  public void setActiveTabPane(String groupId) {
+    TabPane tabPane=this.getActiveTabPane();
+    if (tabPane!=null) {
+      root.getChildren().remove(tabPane);
+    }
+    this.activeView=groupId;
+    root.getChildren().add(getActiveTabPane());
+  }
+
+  /**
+   * get the active Tab Pane
+   * @return - the active Tab Pane
+   */
+  private TabPane getActiveTabPane() {
+    TabPane activeTabPane=this.tabPaneByView.get(this.activeView);
+    return activeTabPane;
   }
 
 }

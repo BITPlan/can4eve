@@ -16,7 +16,7 @@
 							"format": "%s",
 							"type": "Choice",
 							"choices": "USB,Bluetooth,Network,Simulator"
-					  },{
+						}, {
 							"title": "hostname",
 							"hint": "hostname or IP address",
 							"format": "%s",
@@ -72,15 +72,15 @@
 							"format": "%s",
 							"type": "Choice",
 							"choices": "en,de"
-					  },
-					  {
+						},
+						{
 							"title": "screenPercent",
 							"label": "% of Screen",
 							"hint": "percentage of display to be used 100=Fullscreen",
 							"format": "%s",
 							"type": "Integer"
-					  },
-					  {
+						},
+						{
 							"title": "debug",
 							"hint": "output debugging information for the application",
 							"format": "%s",
@@ -90,8 +90,7 @@
 							"title": "logPrefix",
 							"hint": "the prefix to use for logfiles",
 							"format": "%s"
-						}
-						,
+						},
 						{
 							"title": "logDirectory",
 							"hint": "the directory in which to store logfiles",
@@ -167,7 +166,7 @@
 							"id": "OBDII firmware",
 							"title": "firmware",
 							"format": "%s"
-					    },{
+						}, {
 							"id": "OBDII hardware",
 							"title": "hardware",
 							"format": "%s"
@@ -413,18 +412,26 @@
 				{
 					"title": "Cell Voltage",
 					"fields": [{
-						"title": "Cell Voltage",
-						"fieldKind": "Plot"
-					}]
-				},
-				{
+							"title": "Cell Voltage",
+							"fieldKind": "Plot"
+						}
+
+					]
+				}
+			]
+		},
+		{
+			"id": "historyGroup",
+			"forms": [{
+				"title": "SOC/RR",
+				"fields": [{
 					"title": "history",
 					"fields": [{
 						"title": "history",
 						"fieldKind": "Plot"
 					}]
-				}
-			]
+				}]
+			}]
 		}
 	],
 	"mainMenu": {
@@ -432,17 +439,16 @@
 				"id": "fileMenu",
 				"title": "File",
 				"shortCut": "F",
-				"menuItems": [
-				{
+				"menuItems": [{
 						"id": "fileOpenMenuItem",
 						"title": "Open",
 						"shortCut": "O"
-				},
-				{
+					},
+					{
 						"id": "fileSaveMenuItem",
 						"title": "Save",
 						"shortCut": "S"
-				},
+					},
 					{
 						"id": "fileQuitMenuItem",
 						"title": "Quit",
@@ -454,8 +460,7 @@
 				"id": "obdMenu",
 				"title": "OBD",
 				"shortCut": "O",
-				"menuItems": [
-				{
+				"menuItems": [{
 						"id": "obdStartMenuItem",
 						"title": "Start",
 						"shortCut": "S"
@@ -486,7 +491,7 @@
 						"title": "Preferences",
 						"shortCut": "P"
 					}
-					
+
 				]
 			},
 			{
@@ -494,11 +499,10 @@
 				"title": "Car",
 				"shortCut": "C",
 				"menuItems": [{
-						"id": "vehicleMenuItem",
-						"title": "Details",
-						"shortCut": "D"
-					}
-				]
+					"id": "vehicleMenuItem",
+					"title": "Details",
+					"shortCut": "D"
+				}]
 			},
 			{
 				"id": "viewMenu",
@@ -519,7 +523,7 @@
 						"title": "Settings",
 						"shortCut": "S"
 					}
-					
+
 				]
 			},
 			{
