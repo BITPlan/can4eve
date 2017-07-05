@@ -20,11 +20,9 @@
  */
 package com.bitplan.obdii.javafx;
 
-import com.bitplan.obdii.I18n;
-
 import eu.hansolo.medusa.Gauge;
-import eu.hansolo.medusa.GaugeBuilder;
 import eu.hansolo.medusa.Gauge.SkinType;
+import eu.hansolo.medusa.GaugeBuilder;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Stop;

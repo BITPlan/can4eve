@@ -66,6 +66,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -332,7 +333,8 @@ public class JavaFXDisplay extends WaitableApp
   public void setupSpecial(TabPane tabPane) {
     clockPane = new ClockPane();
     // TODO i18n
-    dashBoardPane = new DashBoardPane();
+    // FIXME max RPM from Vehicle
+    dashBoardPane = new DashBoardPane(9200);
     chargePane=new ChargePane();
     chargeTab=addTab(tabPane,0,"SOC",chargePane);
     dashBoardTab = addTab(tabPane, 0, "DashBoard", dashBoardPane);
@@ -363,7 +365,14 @@ public class JavaFXDisplay extends WaitableApp
       } // handle
     });
 
-    // statusBar.getRightItems().add(clock);
+    Button button = new Button("fullScreen");
+    button.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent e) {
+        stage.setFullScreen(!stage.isFullScreen());
+      }
+    });
+    statusBar.getRightItems().add(button);
 
   }
 

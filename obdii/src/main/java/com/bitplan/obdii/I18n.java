@@ -77,6 +77,8 @@ public class I18n {
   //public static final String SOC = "SOC";
   public static final String RPM = "rpm";
   public static final String RPM_SPEED = "rpmSpeed";
+  public static final String RPM_MAX="rpmMax";
+  public static final String RPM_AVG="rpmAvg";
 
   /**
    * Translate the given text

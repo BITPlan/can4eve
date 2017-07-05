@@ -427,6 +427,7 @@ public class OverviewDemo extends Application {
                               .skinType(SkinType.SIMPLE_DIGITAL)
                               .foregroundBaseColor(Color.rgb(0, 249, 222))
                               .barColor(Color.rgb(0, 249, 222))
+                              .title("Simple Digital")
                               .unit("KPH")
                               .animated(true)
                               .build();

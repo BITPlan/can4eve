@@ -25,6 +25,7 @@ import com.bitplan.obdii.I18n;
 import eu.hansolo.medusa.FGauge;
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.Gauge.NeedleSize;
+import eu.hansolo.medusa.Gauge.SkinType;
 import eu.hansolo.medusa.GaugeBuilder;
 import eu.hansolo.medusa.GaugeDesign;
 import eu.hansolo.medusa.GaugeDesign.GaugeBackground;
@@ -33,18 +34,23 @@ import eu.hansolo.medusa.LcdFont;
 import eu.hansolo.medusa.Section;
 import eu.hansolo.medusa.TickLabelLocation;
 import eu.hansolo.medusa.TickMarkType;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 
 /**
  * an experimental DashBoard
+ * 
  * @author wf
  *
  */
 public class DashBoardPane extends javafx.scene.layout.GridPane {
-  
+
   private FGauge framedRPMGauge;
   private Gauge rpmGauge;
   private Gauge rpmSpeedGauge;
+
   public Gauge getRpmSpeedGauge() {
     return rpmSpeedGauge;
   }
@@ -54,7 +60,8 @@ public class DashBoardPane extends javafx.scene.layout.GridPane {
   }
 
   private FGauge framedRPMSpeedGauge;
-
+  public Gauge rpm;
+  public Gauge rpmSpeed;
 
   public Gauge getRpmGauge() {
     return rpmGauge;
@@ -64,59 +71,76 @@ public class DashBoardPane extends javafx.scene.layout.GridPane {
     this.rpmGauge = rpmGauge;
   }
 
-  public DashBoardPane() {
-    rpmGauge = GaugeBuilder.create()
-        .minValue(0)
-        .maxValue(8800)
-        .tickLabelDecimals(0)
-        .decimals(0)
-        .autoScale(true)
-        .animated(true)
-        .shadowsEnabled(true)
-        .sectionsVisible(true)
-        .sections(new Section(5000, 6000, Color.rgb(195, 139, 102, 0.5)))
-        .majorTickMarkColor( Color.rgb(241, 161, 71))
-        //.minorTickMarkColor(Color.rgb(0, 175, 248))
+  public DashBoardPane(int maxValue) {
+    rpmGauge = GaugeBuilder.create().minValue(0)
+        // FIXME use value from Vehicle definition
+        .maxValue(maxValue).tickLabelDecimals(0).decimals(0).autoScale(true)
+        .animated(true).shadowsEnabled(true).sectionsVisible(true)
+        // FIXME use value form Vehicle definition
+        .sections(new Section(maxValue*80/100, maxValue, Color.rgb(195, 139, 102, 0.5)))
+        .majorTickMarkColor(Color.rgb(241, 161, 71))
+        // .minorTickMarkColor(Color.rgb(0, 175, 248))
         .majorTickMarkType(TickMarkType.TRAPEZOID)
         .mediumTickMarkType(TickMarkType.DOT)
         .minorTickMarkType(TickMarkType.LINE)
-        .tickLabelLocation(TickLabelLocation.INSIDE)
-        .title(I18n.get(I18n.RPM))
-        .unit("")
-        .lcdDesign(LcdDesign.SECTIONS)
-        .lcdVisible(true)
-        .lcdFont(LcdFont.STANDARD)
-        .needleSize(NeedleSize.THICK)
-        .build();
-    rpmSpeedGauge = GaugeBuilder.create()
-        .minValue(0)
-        .maxValue(140)
-        .tickLabelDecimals(0)
-        .decimals(1)
-        .autoScale(true)
-        .animated(true)
-        .shadowsEnabled(true)
-        .sectionsVisible(true)
+        .tickLabelLocation(TickLabelLocation.INSIDE).title(I18n.get(I18n.RPM))
+        .unit("").lcdDesign(LcdDesign.SECTIONS).lcdVisible(true)
+        .lcdFont(LcdFont.STANDARD).needleSize(NeedleSize.THICK).build();
+    rpmSpeedGauge = GaugeBuilder.create().minValue(0).maxValue(140)
+        .tickLabelDecimals(0).decimals(1).autoScale(true).animated(true)
+        .shadowsEnabled(true).sectionsVisible(true)
         .sections(new Section(100, 140, Color.rgb(195, 139, 102, 0.5)))
-        .majorTickMarkColor( Color.rgb(241, 161, 71))
-        //.minorTickMarkColor(Color.rgb(0, 175, 248))
+        .majorTickMarkColor(Color.rgb(241, 161, 71))
+        // .minorTickMarkColor(Color.rgb(0, 175, 248))
         .majorTickMarkType(TickMarkType.TRAPEZOID)
         .mediumTickMarkType(TickMarkType.DOT)
         .minorTickMarkType(TickMarkType.LINE)
         .tickLabelLocation(TickLabelLocation.INSIDE)
-        .title(I18n.get(I18n.RPM_SPEED))
-        .unit("km/h")
-        .lcdDesign(LcdDesign.SECTIONS)
-        .lcdVisible(true)
-        .lcdFont(LcdFont.STANDARD)
-        .needleSize(NeedleSize.THICK)
-        .build();
-    
-    framedRPMGauge = new FGauge(rpmGauge, GaugeDesign.ENZO, GaugeBackground.DARK_GRAY);
-    this.add(framedRPMGauge,0,0);
- 
-    framedRPMSpeedGauge = new FGauge(rpmSpeedGauge, GaugeDesign.ENZO, GaugeBackground.DARK_GRAY);
-    this.add(framedRPMSpeedGauge,1,0);
-    
+        .title(I18n.get(I18n.RPM_SPEED)).unit("km/h")
+        .lcdDesign(LcdDesign.SECTIONS).lcdVisible(true)
+        .lcdFont(LcdFont.STANDARD).needleSize(NeedleSize.THICK).build();
+
+    rpm = GaugeBuilder.create().skinType(SkinType.LCD).animated(true)
+        .minMeasuredValueVisible(false).decimals(0).tickLabelDecimals(0)
+        .title(I18n.get(I18n.RPM)).unit(I18n.get(I18n.RPM))
+        .lcdDesign(LcdDesign.GRAY).build();
+
+    rpmSpeed = GaugeBuilder.create().skinType(SkinType.LCD)
+        .minMeasuredValueVisible(false).animated(true).decimals(0)
+        .tickLabelDecimals(0).title(I18n.get(I18n.RPM_SPEED)).unit("km/h")
+        .lcdDesign(LcdDesign.GRAY).build();
+
+    framedRPMGauge = new FGauge(rpmGauge, GaugeDesign.ENZO,
+        GaugeBackground.DARK_GRAY);
+    this.add(framedRPMGauge, 0, 0);
+
+    framedRPMSpeedGauge = new FGauge(rpmSpeedGauge, GaugeDesign.ENZO,
+        GaugeBackground.DARK_GRAY);
+    this.add(framedRPMSpeedGauge, 1, 0);
+
+    this.add(rpm, 0, 1);
+    this.add(rpmSpeed, 1, 1);
+    fixRowSizes(84,16);
+    fixColumnSizes(50,50);
+  }
+
+  public void fixColumnSizes(int ... colWidths) {
+    // Setting columns size in percent
+    for (int colWidth:colWidths) {
+      ColumnConstraints column = new ColumnConstraints();
+      column.setPercentWidth(colWidth);
+      getColumnConstraints().add(column);
+    }
+  }
+  public void fixRowSizes(int ...rowWidths) {  
+    for (int rowWidth:rowWidths) {
+      RowConstraints rowc=new RowConstraints();
+      rowc.setPercentHeight(rowWidth);
+      getRowConstraints().add(rowc);
+    }
+
+    // grid.setPrefSize(WINDOW_WIDTH, WINDOW_HEIGHT); // Default width and
+    // height
+    this.setMaxSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
   }
 }
