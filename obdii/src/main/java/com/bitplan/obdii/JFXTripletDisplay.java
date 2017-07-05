@@ -141,10 +141,12 @@ public class JFXTripletDisplay extends JavaFXDisplay {
     this.canProperties = canProperties;
     if (dashBoardPane!=null) {
       bind(dashBoardPane.getRpmGauge().valueProperty(),this.canProperties.get("RPM"));
-      bind(dashBoardPane.rpm.valueProperty(),this.canProperties.get("RPM"));
+      bind(dashBoardPane.rpmMax.valueProperty(),this.canProperties.get("RPM-max"));
+      bind(dashBoardPane.rpmAvg.valueProperty(),this.canProperties.get("RPM-avg"));
       
       bind(dashBoardPane.getRpmSpeedGauge().valueProperty(),this.canProperties.get("RPMSpeed"));
-      bind(dashBoardPane.rpmSpeed.valueProperty(),this.canProperties.get("RPMSpeed"));
+      bind(dashBoardPane.rpmSpeedMax.valueProperty(),this.canProperties.get("RPMSpeed-max"));
+      bind(dashBoardPane.rpmSpeedAvg.valueProperty(),this.canProperties.get("RPMSpeed-avg"));
     }
     if (chargePane!=null) {
       bind(chargePane.getSOCGauge().valueProperty(),this.canProperties.get("SOC"));

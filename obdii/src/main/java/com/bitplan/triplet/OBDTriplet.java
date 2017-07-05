@@ -111,7 +111,7 @@ public class OBDTriplet extends OBDHandler {
   private CANValue<?>[] top;
   private SimpleLongProperty msecsRunningProperty;
   private SimpleObjectProperty vehicleStateProperty;
-  double mmPerRound=261; // TODO do we need a default?
+  Integer mmPerRound=261; // TODO do we need a default?
   
   public boolean isWithHistory() {
     return withHistory;
@@ -121,11 +121,11 @@ public class OBDTriplet extends OBDHandler {
     this.withHistory = withHistory;
   }
 
-  public double getMmPerRound() {
+  public Integer getMmPerRound() {
     return mmPerRound;
   }
 
-  public void setMmPerRound(double mmPerRound) {
+  public void setMmPerRound(Integer mmPerRound) {
     this.mmPerRound = mmPerRound;
   }
 
@@ -293,9 +293,18 @@ public class OBDTriplet extends OBDHandler {
     top = topArray;
   }
 
+  /**
+   * generic JavaFX CANProperty
+   * @author wf
+   *
+   * @param <CT>
+   * @param <T>
+   */
   public class CANProperty<CT extends CANValue<T>,T> {
     CT canValue;
     Property<T>property;
+    Property<T>max;
+    Property<T>avg;
     /**
      * construct me
      * @param canValue
@@ -308,11 +317,15 @@ public class OBDTriplet extends OBDHandler {
     public CANProperty(DoubleValue canValue, SimpleDoubleProperty property) {
       this.canValue=(CT)canValue;
       this.property=(Property<T>)property;
+      this.avg=(Property<T>) new SimpleDoubleProperty();
+      this.max=(Property<T>) new SimpleDoubleProperty();
     }
     public CANProperty(IntegerValue canValue,
         SimpleIntegerProperty property) {
       this.canValue=(CT)canValue;
       this.property=(Property<T>)property;
+      this.avg=(Property<T>) new SimpleIntegerProperty();
+      this.max=(Property<T>) new SimpleIntegerProperty();
     }
     /**
      * set the value for CANValue and property
@@ -322,6 +335,20 @@ public class OBDTriplet extends OBDHandler {
     public void setValue(T value, Date timeStamp) {
       canValue.setValue(value, timeStamp);
       property.setValue(value);
+      if (canValue instanceof DoubleValue) {
+        DoubleValue dv=(DoubleValue) canValue;
+        if (dv.getMax()!=null)
+          max.setValue((T) dv.getMax());
+        if (dv.getAvg()!=null)
+          avg.setValue((T) dv.getAvg());
+      }
+      if (canValue instanceof IntegerValue) {
+        IntegerValue iv=(IntegerValue) canValue;
+        if (iv.getMax()!=null)
+          max.setValue((T) iv.getMax());
+        if (iv.getAvg()!=null)
+          avg.setValue((T) iv.getAvg());
+      }
     }
   }
   
@@ -341,6 +368,7 @@ public class OBDTriplet extends OBDHandler {
    * @param canValue
    * @param property
    */
+  @SuppressWarnings("unchecked")
   private void addCanProperty(DoubleValue canValue,
       SimpleDoubleProperty property) {
     CANProperty<DoubleValue,Double> canProperty=new CANProperty<DoubleValue,Double>(canValue,property);
@@ -811,6 +839,8 @@ public class OBDTriplet extends OBDHandler {
         if (debug)
           LOGGER.log(Level.INFO,"binding "+name);
         canBindings.put(name, canProperty.property);
+        canBindings.put(name+"-max",canProperty.max);
+        canBindings.put(name+"-avg",canProperty.avg);
       }
       ((JFXTripletDisplay) display).bind(canBindings);
     }

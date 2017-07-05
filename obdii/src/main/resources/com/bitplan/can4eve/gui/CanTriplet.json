@@ -133,10 +133,15 @@
 							"labelSize": 10,
 							"fieldSize": 40
 						},
-						
 						{
-							"title": "mmPerRound",
-							"format": "%3d",
+							"title": "maxSpeed",
+							"format": "%5d km/h",
+							"type": "Integer",
+							"fieldSize": 3
+						},	
+						{
+							"title": "maxRPM",
+							"format": "%5d",
 							"type": "Integer",
 							"fieldSize": 5
 						}

@@ -187,10 +187,9 @@ public class OBDMain extends Main implements OBDApp {
     }
     Vehicle vehicle=Vehicle.getInstance();
     if (vehicle!=null) {
-      obdTriplet.setMmPerRound(vehicle.getMmPerRound());
-    } else {
-      obdTriplet.setMmPerRound(261); // Ion TODO get value from vehicleGroup?   
-    }
+      if (vehicle.getMmPerRound()!=null)
+        obdTriplet.setMmPerRound(vehicle.getMmPerRound());
+    } 
     // the simulator is pre started and timeout and debug set
     // all other devices are configured here
     if (config.getDeviceType() != DeviceType.Simulator) {

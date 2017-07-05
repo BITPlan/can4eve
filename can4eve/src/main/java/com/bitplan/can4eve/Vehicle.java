@@ -43,6 +43,8 @@ public class Vehicle implements JsonAble{
   String group;
   String picture;
   Integer mmPerRound;
+  Integer maxSpeed; // km/h
+  Integer maxRPM; // round per minute
   public String getNickName() {
     return nickName;
   }
@@ -80,6 +82,32 @@ public class Vehicle implements JsonAble{
   public void setMmPerRound(Integer mmPerRound) {
     this.mmPerRound = mmPerRound;
   }
+  public Integer getMaxRPM() {
+    return maxRPM;
+  }
+  public void setMaxRPM(Integer maxRPM) {
+    this.maxRPM = maxRPM;
+    if (this.maxSpeed!=null)
+      calcMMPerRound();
+  }
+  private void calcMMPerRound() {
+    // maxRpm = rounds / min 
+    // rounds/min * 60 = round / hour
+    // maxSpeed = km / hour
+    // ==> maxRPM*60 / maxSpeed = round/km
+    // ==> maxSpeed/maxRPM/60 = km/round
+    // ==> maxSpeed/maxRPM/60*1000000 = mm /round
+    this.mmPerRound=1000000*maxSpeed/maxRPM/60;
+  }
+  
+  public Integer getMaxSpeed() {
+    return maxSpeed;
+  }
+  public void setMaxSpeed(Integer maxSpeed) {
+    this.maxSpeed = maxSpeed;
+    if (this.maxRPM!=null)
+      calcMMPerRound();
+  }
   @Override
   public void reinit() {
     
@@ -91,6 +119,8 @@ public class Vehicle implements JsonAble{
     this.group=(String)map.get("group");
     this.VIN=(String)map.get("VIN");
     this.mmPerRound=(Integer)map.get("mmPerRound");
+    this.maxRPM=(Integer)map.get("maxRPM");
+    this.maxSpeed=(Integer)map.get("maxSpeed");
   }
   
   static Vehicle instance;

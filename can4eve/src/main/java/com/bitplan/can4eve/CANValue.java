@@ -321,8 +321,51 @@ public abstract class CANValue<ValueType> {
    *
    */
   public static class IntegerValue extends CANValue<Integer> {
+    Integer min;
+    Integer max;
+    Integer avg;
+    long sum=0;
+    int count=0;
     public IntegerValue(CANInfo canInfo) {
       super(canInfo, Integer.class);
+    }
+    public Integer getMin() {
+      return min;
+    }
+    public void setMin(Integer min) {
+      this.min = min;
+    }
+    public Integer getMax() {
+      return max;
+    }
+    public void setMax(Integer max) {
+      this.max = max;
+    }
+    public Integer getAvg() {
+      if (count==0)
+        return null;
+      return (int) (sum/count);
+    }
+    /**
+     * set the Value and calc min and max while at it
+     */
+    public void setValue(int index, Integer value, Date timeStamp) {
+      super.setValue(index, value, timeStamp);
+      if (value!=null) {
+        count++;
+        sum+=value;
+      }
+      if (min==null)
+        min=value;
+      else
+        if (value<min) {
+          min=value;
+        }
+      if (max==null) 
+        max=value;
+      if (value>max) {
+        max=value;
+      }
     }
   }
 
@@ -334,6 +377,9 @@ public abstract class CANValue<ValueType> {
   public static class DoubleValue extends CANValue<Double> {
     Double min;
     Double max;
+    Double avg;
+    double sum=0.0;
+    long count=0;
     
     public DoubleValue(CANInfo canInfo) {
       super(canInfo, Double.class);
@@ -354,12 +400,22 @@ public abstract class CANValue<ValueType> {
     public void setMax(Double max) {
       this.max = max;
     }
+    
+    public Double getAvg() {
+      if (count==0)
+        return null;
+      return sum/count;
+    }
 
     /**
      * set the Value and calc min and max while at it
      */
     public void setValue(int index, Double value, Date timeStamp) {
       super.setValue(index, value, timeStamp);
+      if (value!=null) {
+        count++;
+        sum+=value;
+      }
       if (min==null)
         min=value;
       else
@@ -372,7 +428,6 @@ public abstract class CANValue<ValueType> {
         max=value;
       }
     }
-    
 
     /**
      * calc the numerical integral and add it
@@ -397,6 +452,7 @@ public abstract class CANValue<ValueType> {
       double newIntegral = this.valueItem.value + area;
       this.setValue(newIntegral, newTimeStamp);
     }
+
   }
 
   /**
