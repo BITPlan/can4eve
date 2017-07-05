@@ -63,6 +63,15 @@ public class SampleApp extends WaitableApp {
     this.divX=divX;
     this.divY=divY;
   }
+  
+  public static SampleApp createAndShow(String title,Region region,int showTimeMSecs) throws Exception {
+    SampleApp sampleApp = new SampleApp(title, region);
+    sampleApp.show();
+    sampleApp.waitOpen();
+    Thread.sleep(showTimeMSecs);
+    sampleApp.close();
+    return sampleApp;
+  }
 
   @Override
   public void start(Stage stage) {

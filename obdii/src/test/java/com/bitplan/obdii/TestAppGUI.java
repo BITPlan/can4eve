@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -78,7 +79,11 @@ import javafx.beans.binding.LongBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleLongProperty;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -91,14 +96,14 @@ import javafx.stage.Stage;
 public class TestAppGUI {
   public static final int SHOW_TIME = 4000;
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii");
-  
+
   @Test
   public void testAppGUI() throws Exception {
     App app = App.getInstance();
     assertNotNull(app);
     assertEquals(6, app.getMainMenu().getSubMenus().size());
     assertEquals(3, app.getGroups().size());
-    int[] expected = { 3, 8,  1 };
+    int[] expected = { 3, 8, 1 };
     int i = 0;
     for (Group group : app.getGroups()) {
       assertEquals(expected[i++], group.getForms().size());
@@ -265,7 +270,7 @@ public class TestAppGUI {
     gauge.valueProperty().bind(dproperty);
     while (stage.isShowing()) {
       Thread.sleep(15);
-      Platform.runLater( () -> dproperty.setValue(dproperty.getValue() - 0.1));
+      Platform.runLater(() -> dproperty.setValue(dproperty.getValue() - 0.1));
       if (dproperty.getValue() < 45)
         sampleApp.close();
     }
@@ -287,28 +292,27 @@ public class TestAppGUI {
     }
     sampleApp.close();
   }
-  
+
   @Test
   public void testChargePanel() throws Exception {
     WaitableApp.toolkitInit();
     Translator.initialize(Preferences.getInstance().getLanguage().name());
     ChargePane chargePane = new ChargePane();
-    SimpleDoubleProperty sd=new SimpleDoubleProperty();
+    SimpleDoubleProperty sd = new SimpleDoubleProperty();
     chargePane.getSOCGauge().valueProperty().bind(sd);
     sd.setValue(100);
     SampleApp sampleApp = new SampleApp("Charge", chargePane);
     sampleApp.show();
     sampleApp.waitOpen();
-    int loops=SHOW_TIME / 50 * 2;
+    int loops = SHOW_TIME / 50 * 2;
     for (int i = 0; i < loops; i++) {
       Thread.sleep(50);
-      double newValue=100-(95*i/loops);
+      double newValue = 100 - (95 * i / loops);
       // LOGGER.log(Level.INFO, "new value "+newValue);
       sd.setValue(newValue);
     }
     sampleApp.close();
   }
-  
 
   @Test
   public void testLineChartJavaFx() throws Exception {
@@ -326,15 +330,40 @@ public class TestAppGUI {
     sampleApp.close();
   }
 
+  public static ArrayList<Node> getAllNodes(Parent root) {
+    ArrayList<Node> nodes = new ArrayList<Node>();
+    addAllDescendents(root, nodes);
+    return nodes;
+  }
+
+  private static void addAllDescendents(Parent parent, ArrayList<Node> nodes) {
+    for (Node node : parent.getChildrenUnmodifiable()) {
+      nodes.add(node);
+      if (node instanceof Parent)
+        addAllDescendents((Parent) node, nodes);
+    }
+  }
+
   @Test
-  public void testStopWatch()  {
+  public void testFXML() throws Exception {
+    WaitableApp.toolkitInit();
+    Parent root = FXMLLoader.load(
+        getClass().getResource("/com/bitplan/can4eve/gui/connection.fxml"));
+    assertNotNull(root);
+    ArrayList<Node> nodes = getAllNodes(root);
+    assertEquals(8, nodes.size());
+    SampleApp.createAndShow("FXML", (Region) root, SHOW_TIME*3);
+  }
+
+  @Test
+  public void testStopWatch() {
     WaitableApp.toolkitInit();
     StopWatch stopWatch = new JFXStopWatch("test");
     stopWatch.halt();
     stopWatch.reset();
-    //System.out.println(stopWatch.asIsoDateStr());
+    // System.out.println(stopWatch.asIsoDateStr());
     // assertEquals(0l,stopWatch.getTime());
-    long times[] = { 90000*1000,7200000,0,2000, 500, 1000, 2000 };
+    long times[] = { 90000 * 1000, 7200000, 0, 2000, 500, 1000, 2000 };
     for (long time : times) {
       stopWatch.setTime(time);
       // System.out.println(stopWatch.asIsoDateStr());

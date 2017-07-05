@@ -43,8 +43,6 @@ import com.bitplan.obdii.elm327.ElmSimulator;
 import com.bitplan.obdii.javafx.JavaFXDisplay;
 import com.bitplan.triplet.OBDTriplet;
 
-import javafx.application.Platform;
-
 /**
  * main class for OBD connection to CAN bus of one of the Triplet cars
  * Mitsubishi i-MIEV, Peugeot Ion, Citroen C-Zero
