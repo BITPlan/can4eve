@@ -24,7 +24,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -352,7 +351,7 @@ public class TestAppGUI {
     assertNotNull(root);
     ArrayList<Node> nodes = getAllNodes(root);
     assertEquals(8, nodes.size());
-    SampleApp.createAndShow("FXML", (Region) root, SHOW_TIME*3);
+    SampleApp.createAndShow("FXML", (Region) root, SHOW_TIME);
   }
 
   @Test

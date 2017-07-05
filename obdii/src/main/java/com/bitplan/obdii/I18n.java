@@ -75,6 +75,8 @@ public class I18n {
   public static final String WATCH_TOTAL = "watchTotal";
   public static final String WATCH_TIME = "watchTime";
   //public static final String SOC = "SOC";
+  public static final String RPM = "rpm";
+  public static final String RPM_SPEED = "rpmSpeed";
 
   /**
    * Translate the given text

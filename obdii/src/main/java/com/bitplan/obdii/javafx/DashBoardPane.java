@@ -20,6 +20,8 @@
  */
 package com.bitplan.obdii.javafx;
 
+import com.bitplan.obdii.I18n;
+
 import eu.hansolo.medusa.FGauge;
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.Gauge.NeedleSize;
@@ -79,7 +81,7 @@ public class DashBoardPane extends javafx.scene.layout.GridPane {
         .mediumTickMarkType(TickMarkType.DOT)
         .minorTickMarkType(TickMarkType.LINE)
         .tickLabelLocation(TickLabelLocation.INSIDE)
-        .title("RPM")
+        .title(I18n.get(I18n.RPM))
         .unit("")
         .lcdDesign(LcdDesign.SECTIONS)
         .lcdVisible(true)
@@ -102,15 +104,13 @@ public class DashBoardPane extends javafx.scene.layout.GridPane {
         .mediumTickMarkType(TickMarkType.DOT)
         .minorTickMarkType(TickMarkType.LINE)
         .tickLabelLocation(TickLabelLocation.INSIDE)
-        .title("RPMSpeed")
+        .title(I18n.get(I18n.RPM_SPEED))
         .unit("km/h")
         .lcdDesign(LcdDesign.SECTIONS)
         .lcdVisible(true)
         .lcdFont(LcdFont.STANDARD)
         .needleSize(NeedleSize.THICK)
         .build();
-    
-    
     
     framedRPMGauge = new FGauge(rpmGauge, GaugeDesign.ENZO, GaugeBackground.DARK_GRAY);
     this.add(framedRPMGauge,0,0);
