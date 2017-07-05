@@ -65,7 +65,7 @@ public class DashBoardPane extends javafx.scene.layout.GridPane {
   public DashBoardPane() {
     rpmGauge = GaugeBuilder.create()
         .minValue(0)
-        .maxValue(6000)
+        .maxValue(8800)
         .tickLabelDecimals(0)
         .decimals(0)
         .autoScale(true)
