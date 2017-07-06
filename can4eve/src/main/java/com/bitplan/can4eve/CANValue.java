@@ -29,7 +29,6 @@ import org.apache.commons.collections4.queue.CircularFifoQueue;
 
 import com.bitplan.csv.CSVUtil;
 
-
 /**
  * base class for all PidValues
  * 
@@ -43,6 +42,7 @@ public abstract class CANValue<ValueType> {
 
   /**
    * a value to be stored
+   * 
    * @author wf
    *
    * @param <ValueType>
@@ -51,22 +51,27 @@ public abstract class CANValue<ValueType> {
     boolean available = false;
     ValueType value;
     Date timeStamp;
-    
+
     public boolean isAvailable() {
       return available;
     }
+
     public void setAvailable(boolean available) {
       this.available = available;
     }
+
     public ValueType getValue() {
       return value;
     }
+
     public void setValue(ValueType value) {
       this.value = value;
     }
+
     public Date getTimeStamp() {
       return timeStamp;
     }
+
     public void setTimeStamp(Date timeStamp) {
       this.timeStamp = timeStamp;
     }
@@ -184,6 +189,7 @@ public abstract class CANValue<ValueType> {
 
   /**
    * add a valueItem to the history
+   * 
    * @param currentItem
    */
   private void addToHistory(ValueItem<ValueType> currentItem) {
@@ -199,6 +205,7 @@ public abstract class CANValue<ValueType> {
 
   /**
    * get the value Item
+   * 
    * @param i
    * @return the item
    */
@@ -289,7 +296,7 @@ public abstract class CANValue<ValueType> {
     try {
       result = String.format(canInfo.getFormat(), value);
     } catch (Throwable th) {
-      ErrorHandler.handle(th, this.canInfo.getTitle()+"='"+value+"'");
+      ErrorHandler.handle(th, this.canInfo.getTitle() + "='" + value + "'");
     }
     return result;
   }
@@ -305,18 +312,18 @@ public abstract class CANValue<ValueType> {
     else
       return "-";
   }
-  
+
   public String asCSV() {
     if (this.valueItem.available) {
-      String csv=CSVUtil.csv(this.canInfo.title, asString());
+      String csv = CSVUtil.csv(this.canInfo.title, asString());
       return csv;
-    }
-    else
+    } else
       return "";
   }
 
   /**
    * IntegerValue
+   * 
    * @author wf
    *
    */
@@ -324,53 +331,60 @@ public abstract class CANValue<ValueType> {
     Integer min;
     Integer max;
     Integer avg;
-    long sum=0;
-    int count=0;
+    long sum = 0;
+    int count = 0;
+
     public IntegerValue(CANInfo canInfo) {
       super(canInfo, Integer.class);
     }
+
     public Integer getMin() {
       return min;
     }
+
     public void setMin(Integer min) {
       this.min = min;
     }
+
     public Integer getMax() {
       return max;
     }
+
     public void setMax(Integer max) {
       this.max = max;
     }
+
     public Integer getAvg() {
-      if (count==0)
+      if (count == 0)
         return null;
-      return (int) (sum/count);
+      return (int) (sum / count);
     }
+
     /**
      * set the Value and calc min and max while at it
      */
     public void setValue(int index, Integer value, Date timeStamp) {
       super.setValue(index, value, timeStamp);
-      if (value==null)
+      if (value == null)
         return;
       count++;
-      sum+=value;
-      if (min==null) {
-        min=value;
-      } else {
-        if (value<min) {
-          min=value;
-        }
-      if (max==null) 
-        max=value;
-      if (value>max) {
-        max=value;
+      sum += value;
+      if (min == null) {
+        min = value;
+      } else if (value < min) {
+        min = value;
+      }
+      if (max == null) {
+        max = value;
+      } else if (value > max) {
+        max = value;
       }
     }
   }
 
   /**
    * Double Values
+   * 
    * @author wf
    *
    */
@@ -378,13 +392,13 @@ public abstract class CANValue<ValueType> {
     Double min;
     Double max;
     Double avg;
-    double sum=0.0;
-    long count=0;
-    
+    double sum = 0.0;
+    long count = 0;
+
     public DoubleValue(CANInfo canInfo) {
       super(canInfo, Double.class);
     }
-    
+
     public Double getMin() {
       return min;
     }
@@ -400,11 +414,11 @@ public abstract class CANValue<ValueType> {
     public void setMax(Double max) {
       this.max = max;
     }
-    
+
     public Double getAvg() {
-      if (count==0)
+      if (count == 0)
         return null;
-      return sum/count;
+      return sum / count;
     }
 
     /**
@@ -412,19 +426,19 @@ public abstract class CANValue<ValueType> {
      */
     public void setValue(int index, Double value, Date timeStamp) {
       super.setValue(index, value, timeStamp);
-      if (value==null) return;
+      if (value == null)
+        return;
       count++;
-      sum+=value;
-      if (min==null)
-        min=value;
-      else
-        if (value<min) {
-          min=value;
-        }
-      if (max==null) 
-        max=value;
-      if (value>max) {
-        max=value;
+      sum += value;
+      if (min == null)
+        min = value;
+      else if (value < min) {
+        min = value;
+      }
+      if (max == null)
+        max = value;
+      if (value > max) {
+        max = value;
       }
     }
 
@@ -456,6 +470,7 @@ public abstract class CANValue<ValueType> {
 
   /**
    * BooleanValue
+   * 
    * @author wf
    *
    */
@@ -485,6 +500,7 @@ public abstract class CANValue<ValueType> {
 
   /**
    * String Value
+   * 
    * @author wf
    *
    */
@@ -495,7 +511,7 @@ public abstract class CANValue<ValueType> {
     }
 
   }
- 
+
   /**
    * Raw Value
    * 
