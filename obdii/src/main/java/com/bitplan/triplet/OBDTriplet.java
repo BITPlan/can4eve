@@ -604,8 +604,17 @@ public class OBDTriplet extends OBDHandler {
       ShifterPosition newShifterPosition = new ShifterPosition(pr.d[0]);
       shifterPositionValue.setValue(newShifterPosition, timeStamp);
       if (newShifterPosition.shiftPosition==ShiftPosition.P) {
-        // are we charging?
         this.vehicleStateProperty.set(Vehicle.State.Parking); 
+        // are we charging?
+        if (this.acvolts.getValueItem().isAvailable() && this.acvolts.getValue()>50) {
+          // AC charging
+          this.vehicleStateProperty.set(Vehicle.State.Charging);
+        }
+        // DC charging
+        // FIXME is 1 amp the minimum?
+        if (this.dcamps.getValueItem().isAvailable() && this.dcvolts.getValue()>1.0) {
+          this.vehicleStateProperty.set(Vehicle.State.Charging);
+        }
       } else {
         this.vehicleStateProperty.set(Vehicle.State.Moving);
       }

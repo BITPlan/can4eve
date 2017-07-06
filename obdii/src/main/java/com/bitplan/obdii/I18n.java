@@ -66,6 +66,7 @@ public class I18n {
   public static final String WE_ARE_SORRY = "weAreSorry";
   public static final String NOT_IMPLEMENTED_YET = "notImplementedYet";
   public static final String VIEW_MENU="viewMenu"; //View
+  public static final String VIEW_DASHBOARD_VIEW_MENU_ITEM="viewDashboardViewMenuItem"; //Dashboard
   public static final String VIEW_HISTORY_VIEW_MENU_ITEM="viewHistoryViewMenuItem"; //History
   public static final String VIEW_SETTINGS_VIEW_MENU_ITEM="viewSettingsViewMenuItem"; //Settings.
   public static final String VIEW_MONITOR_VIEW_MENU_ITEM="viewMonitorViewMenuItem"; //OBD
@@ -82,6 +83,10 @@ public class I18n {
   public static final String RPM_SPEED_MAX = "rpmSpeedMax";
   public static final String RPM_SPEED_AVG = "rpmSpeedAvg";
   public static final String REV_COUNT= "revCount";
+  public static final String CLOCKS = "clocks";
+  public static final String SOC = "soc";
+  public static final String DASH_BOARD = "dashBoard";
+  public static final String FULL_SCREEN = "fullScreen";
 
   /**
    * Translate the given text

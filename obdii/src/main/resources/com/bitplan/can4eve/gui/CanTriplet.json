@@ -525,6 +525,10 @@
 				"title": "View",
 				"shortCut": "V",
 				"menuItems": [{
+						"id": "viewDashboardViewMenuItem",
+						"title": "Dashboard",
+						"shortCut": "D"
+					},{
 						"id": "viewMonitorViewMenuItem",
 						"title": "OBD",
 						"shortCut": "O"

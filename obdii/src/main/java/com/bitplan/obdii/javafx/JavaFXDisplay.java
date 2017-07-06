@@ -123,6 +123,8 @@ public class JavaFXDisplay extends WaitableApp
 
   public static final boolean debug = false;
 
+  private static final String DASH_BOARD_GROUP = "dashBoardGroup";
+
   /**
    * construct me from an abstract application description and a software
    * version
@@ -254,8 +256,9 @@ public class JavaFXDisplay extends WaitableApp
     stage.setScene(scene);
     setUpStatusBar();
     setup(app);
-    this.setActiveTabPane("mainGroup");
-    setupSpecial(getActiveTabPane());
+    TabPane dashboardPane=this.addTabPane(DASH_BOARD_GROUP);  
+    this.setActiveTabPane(DASH_BOARD_GROUP);
+    setupSpecial(dashboardPane);
     stage.setX(sceneBounds.getMinX());
     stage.setY(sceneBounds.getMinY());
     stage.show();
@@ -273,6 +276,18 @@ public class JavaFXDisplay extends WaitableApp
   }
 
   /**
+   * add a tabPane with the given group Id
+   * @param groupId
+   * @return - the tabPane
+   */
+  public TabPane addTabPane(String groupId) {
+    TabPane tabPane = new TabPane();
+    tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
+    this.tabPaneByView.put(groupId, tabPane);
+    return tabPane;
+  }
+  
+  /**
    * setup the given Application 
    * adds tabPanes to the tabPaneByView map
    * 
@@ -281,9 +296,7 @@ public class JavaFXDisplay extends WaitableApp
   private void setup(App app) {
     controls = new HashMap<String, GenericControl>();
     for (Group group : app.getGroups()) {
-      TabPane tabPane = new TabPane();
-      tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
-
+      TabPane tabPane=this.addTabPane(group.getId());
       for (Form form : group.getForms()) {
         Tab tab = new Tab();
         tab.setText(form.getTitle());
@@ -292,7 +305,6 @@ public class JavaFXDisplay extends WaitableApp
         tab.setContent(panel);
         tabPane.getTabs().add(tab);
       }
-      this.tabPaneByView.put(group.getId(), tabPane);
     }
   }
 
@@ -336,9 +348,9 @@ public class JavaFXDisplay extends WaitableApp
     // FIXME max RPM from Vehicle
     dashBoardPane = new DashBoardPane(9200);
     chargePane=new ChargePane();
-    chargeTab=addTab(tabPane,0,"SOC",chargePane);
-    dashBoardTab = addTab(tabPane, 0, "DashBoard", dashBoardPane);
-    clockTab = addTab(tabPane, 0, "Clocks", clockPane);
+    chargeTab=addTab(tabPane,0,I18n.get(I18n.SOC),chargePane);
+    dashBoardTab = addTab(tabPane, 0, I18n.get(I18n.DASH_BOARD), dashBoardPane);
+    clockTab = addTab(tabPane, 0, I18n.get(I18n.CLOCKS), clockPane);
     // disable menu items
     this.setMenuItemDisable(I18n.OBD_HALT_MENU_ITEM, true);
     this.setMenuItemDisable(I18n.FILE_SAVE_MENU_ITEM, true);
@@ -365,7 +377,7 @@ public class JavaFXDisplay extends WaitableApp
       } // handle
     });
 
-    Button button = new Button("fullScreen");
+    Button button = new Button(I18n.get(I18n.FULL_SCREEN));
     button.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
@@ -467,6 +479,9 @@ public class JavaFXDisplay extends WaitableApp
           break;
         case I18n.VEHICLE_MENU_ITEM:
           showVehicle();
+          break;
+        case I18n.VIEW_DASHBOARD_VIEW_MENU_ITEM:
+          this.setActiveTabPane(DASH_BOARD_GROUP);
           break;
         case I18n.VIEW_HISTORY_VIEW_MENU_ITEM:
           this.setActiveTabPane("historyGroup");
@@ -688,12 +703,15 @@ public class JavaFXDisplay extends WaitableApp
    * @param groupId
    */
   public void setActiveTabPane(String groupId) {
-    TabPane tabPane=this.getActiveTabPane();
-    if (tabPane!=null) {
-      root.getChildren().remove(tabPane);
+    TabPane oldtabPane=this.getActiveTabPane();
+    if (oldtabPane!=null) {
+      root.getChildren().remove(oldtabPane);
     }
     this.activeView=groupId;
-    root.getChildren().add(getActiveTabPane());
+    TabPane newTabPane=getActiveTabPane();
+    if (newTabPane==null)
+      throw new IllegalStateException("tab Pane with groupId "+groupId+" missing");
+    root.getChildren().add(newTabPane);
   }
 
   /**

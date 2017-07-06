@@ -44,6 +44,9 @@ public class ClockPane extends ConstrainedGridPane {
 
   private Clock clock;
   private JFXStopWatch[] watches;
+  // relative msecs Values
+  private long[] msecsStart;
+  private Watch currentWatch; 
 
   /**
    * create the Clock Pane
@@ -61,12 +64,14 @@ public class ClockPane extends ConstrainedGridPane {
         I18n.get(I18n.WATCH_CHARGING), I18n.get(I18n.WATCH_PARKING),
         I18n.get(I18n.WATCH_TOTAL) };
     watches = new JFXStopWatch[Watch.values().length];
+    this.msecsStart=new long[Watch.values().length];
     for (Watch watch : Watch.values()) {
       int index = watch.ordinal();
       JFXStopWatch stopWatch = new JFXStopWatch(titles[index]);
       stopWatch.halt();
       stopWatch.reset();
       watches[index] = stopWatch;
+      msecsStart[index] =0;
       String icon = icons[index];
       URL iconUrl = this.getClass().getResource("/icons/" + icon + ".png");
       if (iconUrl != null) {
@@ -140,6 +145,16 @@ public class ClockPane extends ConstrainedGridPane {
         break;
       }
     }
+    // is this a watch switch?
+    if (currentWatch==null || lWatch!=currentWatch) {
+      JFXStopWatch lStopWatch = this.getWatch(lWatch);
+      // remember start time - current time 
+      // when this value is substract the new time will be relative to the current
+      // msecs but keep what was on the stopWatch
+      this.msecsStart[lWatch.ordinal()]=newValue.longValue()-lStopWatch.getTime();
+    }
+    long mSecsDiff=newValue.longValue()-this.msecsStart[lWatch.ordinal()];
     setWatch(lWatch, newValue.longValue());
+    currentWatch=lWatch;
   }
 }
