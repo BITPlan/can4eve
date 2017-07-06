@@ -125,18 +125,20 @@ public class ClockPane extends ConstrainedGridPane {
    */
   public void updateMsecs(Number newValue, State vehicleState) {
     Watch lWatch = Watch.Parking;
-    switch (vehicleState) {
-    case Parking:
-      lWatch = Watch.Parking;
-      break;
-    case Moving:
-      lWatch = Watch.Moving;
-      break;
-    case Charging:
-      lWatch = Watch.Charging;
-      break;
-    default:
-      break;
+    if (vehicleState != null) {
+      switch (vehicleState) {
+      case Parking:
+        lWatch = Watch.Parking;
+        break;
+      case Moving:
+        lWatch = Watch.Moving;
+        break;
+      case Charging:
+        lWatch = Watch.Charging;
+        break;
+      default:
+        break;
+      }
     }
     setWatch(lWatch, newValue.longValue());
   }
