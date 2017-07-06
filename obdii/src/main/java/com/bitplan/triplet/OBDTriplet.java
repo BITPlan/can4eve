@@ -842,7 +842,10 @@ public class OBDTriplet extends OBDHandler {
     // TODO make this more systematic
     if (display instanceof JFXTripletDisplay) {
       Map<String,ObservableValue<?>> canBindings=new HashMap<String,ObservableValue<?>>();
+      // fixed bindings
       canBindings.put("msecs",this.msecsRunningProperty);
+      canBindings.put("vehicleState", this.vehicleStateProperty);
+      // property based bindings
       for (CANProperty canProperty:canProperties.values()) {
         String name=canProperty.canValue.canInfo.getName();
         if (debug)
@@ -865,6 +868,7 @@ public class OBDTriplet extends OBDHandler {
         }
       }
     };
+    // FIXME make configurable
     // update meter value every 200 milliseconds
     displayexecutor.scheduleAtFixedRate(displayTask, 0, 200,
         TimeUnit.MILLISECONDS);

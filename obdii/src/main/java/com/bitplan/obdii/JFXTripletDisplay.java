@@ -28,6 +28,7 @@ import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.CANValue.IntegerValue;
 import com.bitplan.can4eve.SoftwareVersion;
+import com.bitplan.can4eve.Vehicle.State;
 import com.bitplan.can4eve.gui.App;
 import com.bitplan.obdii.javafx.JFXCanCellStatePlot;
 import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
@@ -151,9 +152,12 @@ public class JFXTripletDisplay extends JavaFXDisplay {
     if (chargePane!=null) {
       bind(chargePane.getSOCGauge().valueProperty(),this.canProperties.get("SOC"));
     }
-    SimpleLongProperty msecsProperty = (SimpleLongProperty) this.canProperties.get("msecs");
-    if (msecsProperty!=null && clockPane!=null) {
-      msecsProperty.addListener((obs, oldValue, newValue) -> super.clockPane.updateMsecs(newValue));
+    if (clockPane!=null) {
+      ObservableValue<?> vehicleState = this.canProperties.get("vehicleState");
+      SimpleLongProperty msecsProperty = (SimpleLongProperty) this.canProperties.get("msecs");
+      if (vehicleState!=null && msecsProperty!=null) {
+        msecsProperty.addListener((obs, oldValue, newValue) -> super.clockPane.updateMsecs(newValue,(State) vehicleState.getValue()));
+      }
     }
   }
 

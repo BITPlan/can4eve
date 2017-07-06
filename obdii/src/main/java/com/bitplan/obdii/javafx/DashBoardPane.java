@@ -34,6 +34,8 @@ import eu.hansolo.medusa.LcdFont;
 import eu.hansolo.medusa.Section;
 import eu.hansolo.medusa.TickLabelLocation;
 import eu.hansolo.medusa.TickMarkType;
+import javafx.geometry.Pos;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 
 /**
@@ -127,20 +129,27 @@ public class DashBoardPane extends ConstrainedGridPane {
     framedRPMGauge = new FGauge(rpmGauge, GaugeDesign.ENZO,
         GaugeBackground.DARK_GRAY);
     this.add(framedRPMGauge, 0, 0);
-
+    
+    GridPane rpmPane=new GridPane();
+    rpmPane.add(rpmMax, 0, 0);
+    rpmPane.add(rpmAvg, 1, 0);
+    rpmPane.setAlignment(Pos.CENTER);
+    this.add(rpmPane, 0, 1);
+ 
     framedRPMSpeedGauge = new FGauge(rpmSpeedGauge, GaugeDesign.ENZO,
         GaugeBackground.DARK_GRAY);
     this.add(framedRPMSpeedGauge, 1, 0);
-
-    this.add(rpmMax, 0, 1);
-    this.add(rpmAvg, 0, 2);
-      
-    this.add(rpmSpeedMax, 1, 1);
-    this.add(rpmSpeedAvg, 1, 2);
+    
+    GridPane rpmSpeedPane=new GridPane();
+    rpmSpeedPane.add(rpmSpeedMax, 0, 0);
+    rpmSpeedPane.add(rpmSpeedAvg, 1, 0);
+    rpmSpeedPane.setAlignment(Pos.CENTER);
+    this.add(rpmSpeedPane, 1, 1);
+    
+    
     // 75= 80 - 5% (5% for extra gap)
-    fixRowSizes(6,75,10,10);
-    fixColumnSizes(4,50, 50);
+    fixRowSizes(6,87,13);
+    fixColumnSizes(4,50,50);
   }
 
-  
 }

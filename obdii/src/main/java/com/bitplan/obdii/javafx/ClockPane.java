@@ -22,6 +22,7 @@ package com.bitplan.obdii.javafx;
 
 import java.net.URL;
 
+import com.bitplan.can4eve.Vehicle.State;
 import com.bitplan.can4eve.gui.swing.Translator;
 import com.bitplan.can4eve.states.StopWatch;
 import com.bitplan.obdii.I18n;
@@ -50,10 +51,10 @@ public class ClockPane extends ConstrainedGridPane {
   public ClockPane() {
     // add a normal running clock
     clock = ClockBuilder.create().skinType(ClockSkinType.LCD)
-        .lcdDesign(LcdDesign.GRAY).title(I18n.get(I18n.WATCH_TIME)).titleVisible(true)
-        .secondsVisible(true).alarmsEnabled(false).dateVisible(true)
-        .running(true).autoNightMode(true).locale(Translator.getCurrentLocale())
-        .build();
+        .lcdDesign(LcdDesign.GRAY).title(I18n.get(I18n.WATCH_TIME))
+        .titleVisible(true).secondsVisible(true).alarmsEnabled(false)
+        .dateVisible(true).running(true).autoNightMode(true)
+        .locale(Translator.getCurrentLocale()).build();
 
     String[] icons = { "car", "plug", "parking", "total" };
     String[] titles = { I18n.get(I18n.WATCH_MOVING),
@@ -61,7 +62,7 @@ public class ClockPane extends ConstrainedGridPane {
         I18n.get(I18n.WATCH_TOTAL) };
     watches = new JFXStopWatch[Watch.values().length];
     for (Watch watch : Watch.values()) {
-      int index=watch.ordinal();
+      int index = watch.ordinal();
       JFXStopWatch stopWatch = new JFXStopWatch(titles[index]);
       stopWatch.halt();
       stopWatch.reset();
@@ -73,16 +74,16 @@ public class ClockPane extends ConstrainedGridPane {
       }
       stopWatch.setActive(false);
       if (index < Watch.Total.ordinal()) {
-        BorderPane pane = wrapImageView(stopWatch.getIcon()); 
+        BorderPane pane = wrapImageView(stopWatch.getIcon());
         this.add(pane, 0, index);
-        this.add(stopWatch.get(), 1,index);
+        this.add(stopWatch.get(), 1, index);
       }
       index++;
     }
     this.add(clock, 2, 0);
     this.add(getWatch(Watch.Total).get(), 2, 1);
-    fixRowSizes(4,33,33,33);
-    fixColumnSizes(4,20,40,40);
+    fixRowSizes(4, 33, 33, 33);
+    fixColumnSizes(4, 20, 40, 40);
   }
 
   /**
@@ -99,24 +100,44 @@ public class ClockPane extends ConstrainedGridPane {
 
   /**
    * set the given watch
+   * 
    * @param watchType
    * @param mSecs
    */
   public void setWatch(Watch watchType, long mSecs) {
-    StopWatch watch=getWatch(watchType);
+    StopWatch watch = getWatch(watchType);
     for (Watch lwatch : Watch.values()) {
-      getWatch(lwatch).setActive(watchType==lwatch || watchType==Watch.Total);
+      getWatch(lwatch)
+          .setActive(watchType == lwatch || watchType == Watch.Total);
     }
     watch.setTime(mSecs);
-    StopWatch total=getWatch(Watch.Total);
-    total.setTime((getWatch(Watch.Parking).getTime()+getWatch(Watch.Moving).getTime()+getWatch(Watch.Charging).getTime()));
+    StopWatch total = getWatch(Watch.Total);
+    total.setTime(
+        (getWatch(Watch.Parking).getTime() + getWatch(Watch.Moving).getTime()
+            + getWatch(Watch.Charging).getTime()));
   }
 
   /**
    * update the milliseconds
+   * 
    * @param newValue
+   * @param vehicleState
    */
-  public void updateMsecs(Number newValue) {
-    setWatch(Watch.Parking,newValue.longValue());
+  public void updateMsecs(Number newValue, State vehicleState) {
+    Watch lWatch = Watch.Parking;
+    switch (vehicleState) {
+    case Parking:
+      lWatch = Watch.Parking;
+      break;
+    case Moving:
+      lWatch = Watch.Moving;
+      break;
+    case Charging:
+      lWatch = Watch.Charging;
+      break;
+    default:
+      break;
+    }
+    setWatch(lWatch, newValue.longValue());
   }
 }

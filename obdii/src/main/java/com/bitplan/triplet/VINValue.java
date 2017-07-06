@@ -66,7 +66,6 @@ public class VINValue extends CANValue<String> {
     }
     if (parts == 3) {
       String vin = vinPart[0] + vinPart[1] + vinPart[2];
-      // TODO add decoding of VIN
       // zb. VF31 N ZKZ Z B U 8XXXXX
       /*
        * VF71 und VF31 PSA
