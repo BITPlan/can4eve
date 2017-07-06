@@ -612,7 +612,7 @@ public class OBDTriplet extends OBDHandler {
         }
         // DC charging
         // FIXME is 1 amp the minimum?
-        if (this.dcamps.getValueItem().isAvailable() && this.dcvolts.getValue()>1.0) {
+        if (this.dcamps.getValueItem().isAvailable() && this.dcamps.getValue()>1.0) {
           this.vehicleStateProperty.set(Vehicle.State.Charging);
         }
       } else {
