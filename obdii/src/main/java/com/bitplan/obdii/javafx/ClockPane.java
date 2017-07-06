@@ -148,13 +148,16 @@ public class ClockPane extends ConstrainedGridPane {
     // is this a watch switch?
     if (currentWatch==null || lWatch!=currentWatch) {
       JFXStopWatch lStopWatch = this.getWatch(lWatch);
-      // remember start time - current time 
-      // when this value is substract the new time will be relative to the current
+      // stopWatch may have time ts e.g. 10 secs
+      // msecs might be 30 secs
+      // then  remember stopWatch time - mecs time which would be 20 secs 
+      // when this value is substracted the new time will be relative to the current
       // msecs but keep what was on the stopWatch
+      // e.g when msecs is at 40 secs the new time will be 20 secs which is the expected 10 secs more
       this.msecsStart[lWatch.ordinal()]=newValue.longValue()-lStopWatch.getTime();
     }
     long mSecsDiff=newValue.longValue()-this.msecsStart[lWatch.ordinal()];
-    setWatch(lWatch, newValue.longValue());
+    setWatch(lWatch, mSecsDiff);
     currentWatch=lWatch;
   }
 }
