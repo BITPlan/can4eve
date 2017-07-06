@@ -351,13 +351,13 @@ public abstract class CANValue<ValueType> {
      */
     public void setValue(int index, Integer value, Date timeStamp) {
       super.setValue(index, value, timeStamp);
-      if (value!=null) {
-        count++;
-        sum+=value;
-      }
-      if (min==null)
+      if (value==null)
+        return;
+      count++;
+      sum+=value;
+      if (min==null) {
         min=value;
-      else
+      } else {
         if (value<min) {
           min=value;
         }
@@ -412,10 +412,9 @@ public abstract class CANValue<ValueType> {
      */
     public void setValue(int index, Double value, Date timeStamp) {
       super.setValue(index, value, timeStamp);
-      if (value!=null) {
-        count++;
-        sum+=value;
-      }
+      if (value==null) return;
+      count++;
+      sum+=value;
       if (min==null)
         min=value;
       else
