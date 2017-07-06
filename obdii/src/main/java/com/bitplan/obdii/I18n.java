@@ -87,7 +87,10 @@ public class I18n {
   public static final String SOC = "soc";
   public static final String DASH_BOARD = "dashBoard";
   public static final String FULL_SCREEN = "fullScreen";
-
+  public static final String PART_SCREEN = "partScreen";
+  public static final String HIDE_MENU = "hideMenu";
+  public static final String SHOW_MENU = "showMenu";
+  
   /**
    * Translate the given text
    * @param text - the text to translate

@@ -59,6 +59,7 @@ import com.bitplan.obdii.elm327.ElmSimulator;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 //import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
@@ -120,6 +121,8 @@ public class JavaFXDisplay extends WaitableApp
   protected ChargePane chargePane;
 
   private Tab chargeTab;
+
+  private Scene scene;
 
   public static final boolean debug = false;
 
@@ -216,6 +219,20 @@ public class JavaFXDisplay extends WaitableApp
   }
 
   /**
+   * remove or add the menuBar
+   * @param scene
+   * @param pMenuBar 
+   */
+  public void toggleMenuBar(Scene scene, MenuBar pMenuBar) {
+    ObservableList<Node> rootChilds = ((VBox) scene.getRoot()).getChildren();
+    if (rootChilds.contains(pMenuBar))
+      rootChilds.remove(pMenuBar);
+    else
+      rootChilds.add(0,pMenuBar);
+
+  }
+
+  /**
    * create the Menu Bar
    * 
    * @param scene
@@ -232,7 +249,7 @@ public class JavaFXDisplay extends WaitableApp
         menu.getItems().add(menuItem);
       }
     }
-    ((VBox) scene.getRoot()).getChildren().addAll(menuBar);
+    toggleMenuBar(scene,menuBar);
   }
 
   @Override
@@ -249,14 +266,14 @@ public class JavaFXDisplay extends WaitableApp
       screenPercent = 100;
     }
     Rectangle2D sceneBounds = super.getSceneBounds(screenPercent, 2, 3);
-    Scene scene = new Scene(root, sceneBounds.getWidth(),
+    scene = new Scene(root, sceneBounds.getWidth(),
         sceneBounds.getHeight());
     scene.setFill(Color.OLDLACE);
     createMenuBar(scene);
     stage.setScene(scene);
     setUpStatusBar();
     setup(app);
-    TabPane dashboardPane=this.addTabPane(DASH_BOARD_GROUP);  
+    TabPane dashboardPane = this.addTabPane(DASH_BOARD_GROUP);
     this.setActiveTabPane(DASH_BOARD_GROUP);
     setupSpecial(dashboardPane);
     stage.setX(sceneBounds.getMinX());
@@ -277,6 +294,7 @@ public class JavaFXDisplay extends WaitableApp
 
   /**
    * add a tabPane with the given group Id
+   * 
    * @param groupId
    * @return - the tabPane
    */
@@ -286,17 +304,16 @@ public class JavaFXDisplay extends WaitableApp
     this.tabPaneByView.put(groupId, tabPane);
     return tabPane;
   }
-  
+
   /**
-   * setup the given Application 
-   * adds tabPanes to the tabPaneByView map
+   * setup the given Application adds tabPanes to the tabPaneByView map
    * 
    * @param app
    */
   private void setup(App app) {
     controls = new HashMap<String, GenericControl>();
     for (Group group : app.getGroups()) {
-      TabPane tabPane=this.addTabPane(group.getId());
+      TabPane tabPane = this.addTabPane(group.getId());
       for (Form form : group.getForms()) {
         Tab tab = new Tab();
         tab.setText(form.getTitle());
@@ -347,8 +364,8 @@ public class JavaFXDisplay extends WaitableApp
     // TODO i18n
     // FIXME max RPM from Vehicle
     dashBoardPane = new DashBoardPane(9200);
-    chargePane=new ChargePane();
-    chargeTab=addTab(tabPane,0,I18n.get(I18n.SOC),chargePane);
+    chargePane = new ChargePane();
+    chargeTab = addTab(tabPane, 0, I18n.get(I18n.SOC), chargePane);
     dashBoardTab = addTab(tabPane, 0, I18n.get(I18n.DASH_BOARD), dashBoardPane);
     clockTab = addTab(tabPane, 0, I18n.get(I18n.CLOCKS), clockPane);
     // disable menu items
@@ -377,14 +394,27 @@ public class JavaFXDisplay extends WaitableApp
       } // handle
     });
 
-    Button button = new Button(I18n.get(I18n.FULL_SCREEN));
-    button.setOnAction(new EventHandler<ActionEvent>() {
+    Button fullScreenButton = new Button(I18n.get(I18n.FULL_SCREEN));
+    fullScreenButton.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
         stage.setFullScreen(!stage.isFullScreen());
+        fullScreenButton.setText(stage.isFullScreen()
+            ? I18n.get(I18n.PART_SCREEN) : I18n.get(I18n.FULL_SCREEN));
       }
     });
-    statusBar.getRightItems().add(button);
+    Button hideMenuButton = new Button(I18n.get(I18n.HIDE_MENU));
+    hideMenuButton.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent e) {
+        toggleMenuBar(scene,menuBar);
+        menuBar.setVisible(!menuBar.isVisible());
+        hideMenuButton.setText(menuBar.isVisible() ? I18n.get(I18n.HIDE_MENU)
+            : I18n.get(I18n.SHOW_MENU));
+      }
+    });
+    statusBar.getRightItems().add(hideMenuButton);
+    statusBar.getRightItems().add(fullScreenButton);
 
   }
 
@@ -439,7 +469,7 @@ public class JavaFXDisplay extends WaitableApp
           notImplemented(I18n.FILE_SAVE_MENU_ITEM);
           break;
         case I18n.FILE_OPEN_MENU_ITEM:
-          // this can't happen 
+          // this can't happen
           notImplemented(I18n.FILE_OPEN_MENU_ITEM);
           break;
         case I18n.FILE_QUIT_MENU_ITEM:
@@ -530,7 +560,8 @@ public class JavaFXDisplay extends WaitableApp
 
   /**
    * start the monitoring
-   * @param  
+   * 
+   * @param
    */
   private void startMonitoring(boolean withLog) {
     setWatchDogState("⚙", I18n.get(I18n.MONITORING));
@@ -697,29 +728,32 @@ public class JavaFXDisplay extends WaitableApp
       smodel.select(tabIndex);
     }
   }
-  
+
   /**
-   * (re) set the active tab  Pane
+   * (re) set the active tab Pane
+   * 
    * @param groupId
    */
   public void setActiveTabPane(String groupId) {
-    TabPane oldtabPane=this.getActiveTabPane();
-    if (oldtabPane!=null) {
+    TabPane oldtabPane = this.getActiveTabPane();
+    if (oldtabPane != null) {
       root.getChildren().remove(oldtabPane);
     }
-    this.activeView=groupId;
-    TabPane newTabPane=getActiveTabPane();
-    if (newTabPane==null)
-      throw new IllegalStateException("tab Pane with groupId "+groupId+" missing");
+    this.activeView = groupId;
+    TabPane newTabPane = getActiveTabPane();
+    if (newTabPane == null)
+      throw new IllegalStateException(
+          "tab Pane with groupId " + groupId + " missing");
     root.getChildren().add(newTabPane);
   }
 
   /**
    * get the active Tab Pane
+   * 
    * @return - the active Tab Pane
    */
   private TabPane getActiveTabPane() {
-    TabPane activeTabPane=this.tabPaneByView.get(this.activeView);
+    TabPane activeTabPane = this.tabPaneByView.get(this.activeView);
     return activeTabPane;
   }
 

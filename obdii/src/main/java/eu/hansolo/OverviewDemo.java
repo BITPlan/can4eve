@@ -150,7 +150,6 @@ public class OverviewDemo extends Application {
                              .lcdVisible(true)
                              .lcdFont(LcdFont.STANDARD)
                              //.unitColor(Color.rgb(223, 223, 223))
-                             //.valueColor(Color.rgb(223, 223, 223))
                              .needleSize(NeedleSize.THICK)
                              .build();
 

@@ -56,6 +56,7 @@ import com.bitplan.obdii.javafx.ClockPane.Watch;
 import com.bitplan.obdii.javafx.JFXCanCellStatePlot;
 import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
 import com.bitplan.obdii.javafx.JFXStopWatch;
+import com.bitplan.obdii.javafx.LCDPane;
 
 import eu.hansolo.OverviewDemo;
 import eu.hansolo.medusa.FGauge;
@@ -176,6 +177,13 @@ public class TestAppGUI {
    * }
    */
 
+  @Test
+  public void testLCDPane() throws Exception {
+    WaitableApp.toolkitInit();
+    LCDPane lcdPane=new LCDPane(2,2,200,30,LcdFont.LCD,"r1c1","r1c2","r2c1","r2c2");
+    SampleApp.createAndShow("LCDPane", lcdPane, SHOW_TIME*4);
+  }
+  
   @Test
   public void testBarChartJavaFx() throws Exception {
     VehicleGroup vg = VehicleGroup.get("triplet");
