@@ -46,6 +46,7 @@ import com.bitplan.can4eve.CANValue.IntegerValue;
 import com.bitplan.can4eve.CANValue.StringValue;
 import com.bitplan.can4eve.ErrorHandler;
 import com.bitplan.can4eve.Pid;
+import com.bitplan.can4eve.Vehicle;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.csv.CSVUtil;
 import com.bitplan.elm327.Connection;
@@ -54,6 +55,7 @@ import com.bitplan.obdii.JFXTripletDisplay;
 import com.bitplan.obdii.OBDHandler;
 import com.bitplan.obdii.PIDResponse;
 import com.bitplan.obdii.elm327.ELM327;
+import com.bitplan.triplet.ShifterPosition.ShiftPosition;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -110,6 +112,7 @@ public class OBDTriplet extends OBDHandler {
   ShifterPositionValue shifterPositionValue;
   private CANValue<?>[] top;
   private SimpleLongProperty msecsRunningProperty;
+  // vehicleState
   private SimpleObjectProperty vehicleStateProperty;
   Integer mmPerRound=261; // TODO do we need a default?
   
@@ -600,6 +603,12 @@ public class OBDTriplet extends OBDHandler {
     case "ShifterPosition":
       ShifterPosition newShifterPosition = new ShifterPosition(pr.d[0]);
       shifterPositionValue.setValue(newShifterPosition, timeStamp);
+      if (newShifterPosition.shiftPosition==ShiftPosition.P) {
+        // are we charging?
+        this.vehicleStateProperty.set(Vehicle.State.Parking); 
+      } else {
+        this.vehicleStateProperty.set(Vehicle.State.Moving);
+      }
       break;
 
     case "SOC":

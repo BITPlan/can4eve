@@ -81,7 +81,7 @@ public class I18n {
   public static final String RPM_AVG="rpmAvg";
   public static final String RPM_SPEED_MAX = "rpmSpeedMax";
   public static final String RPM_SPEED_AVG = "rpmSpeedAvg";
-  public static final String REV_COUNTER = "revCount";
+  public static final String REV_COUNT= "revCount";
 
   /**
    * Translate the given text

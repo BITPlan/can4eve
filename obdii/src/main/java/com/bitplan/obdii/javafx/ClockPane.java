@@ -31,11 +31,12 @@ import eu.hansolo.medusa.Clock.ClockSkinType;
 import eu.hansolo.medusa.ClockBuilder;
 import eu.hansolo.medusa.LcdDesign;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 
 /*
  * Clock display
  */
-public class ClockPane extends javafx.scene.layout.GridPane {
+public class ClockPane extends ConstrainedGridPane {
   public enum Watch {
     Moving, Charging, Parking, Total
   };
@@ -72,13 +73,16 @@ public class ClockPane extends javafx.scene.layout.GridPane {
       }
       stopWatch.setActive(false);
       if (index < Watch.Total.ordinal()) {
-        this.add(stopWatch.getIcon(), 2 * index, 1);
-        this.add(stopWatch.get(), 2 * index + 1, 1);
+        BorderPane pane = wrapImageView(stopWatch.getIcon()); 
+        this.add(pane, 0, index);
+        this.add(stopWatch.get(), 1,index);
       }
       index++;
     }
-    this.add(clock, 1, 0);
-    this.add(getWatch(Watch.Total).get(), 3, 0);
+    this.add(clock, 2, 0);
+    this.add(getWatch(Watch.Total).get(), 2, 1);
+    fixRowSizes(4,33,33,33);
+    fixColumnSizes(4,20,40,40);
   }
 
   /**

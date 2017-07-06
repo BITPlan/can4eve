@@ -33,7 +33,7 @@ import javafx.scene.paint.Stop;
  * @author wf
  *
  */
-public class ChargePane extends GridPane {
+public class ChargePane extends ConstrainedGridPane {
   private Gauge SOCGauge;
 
   public Gauge getSOCGauge() {
@@ -62,5 +62,7 @@ public class ChargePane extends GridPane {
         .build());
     
     this.add(getSOCGauge(), 0,0);
+    this.fixColumnSizes(4, 100);
+    this.fixRowSizes(4, 100);
   }
 }

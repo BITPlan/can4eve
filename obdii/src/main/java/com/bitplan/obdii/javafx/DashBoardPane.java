@@ -34,9 +34,6 @@ import eu.hansolo.medusa.LcdFont;
 import eu.hansolo.medusa.Section;
 import eu.hansolo.medusa.TickLabelLocation;
 import eu.hansolo.medusa.TickMarkType;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 
 /**
@@ -45,7 +42,7 @@ import javafx.scene.paint.Color;
  * @author wf
  *
  */
-public class DashBoardPane extends javafx.scene.layout.GridPane {
+public class DashBoardPane extends ConstrainedGridPane {
 
   private FGauge framedRPMGauge;
   private Gauge rpmGauge;
@@ -86,7 +83,7 @@ public class DashBoardPane extends javafx.scene.layout.GridPane {
         .majorTickMarkType(TickMarkType.TRAPEZOID)
         .mediumTickMarkType(TickMarkType.DOT)
         .minorTickMarkType(TickMarkType.LINE)
-        .tickLabelLocation(TickLabelLocation.INSIDE).title(I18n.get(I18n.REV_COUNTER))
+        .tickLabelLocation(TickLabelLocation.INSIDE).title(I18n.get(I18n.REV_COUNT))
         .unit(I18n.get(I18n.RPM)).lcdDesign(LcdDesign.SECTIONS).lcdVisible(true)
         .lcdFont(LcdFont.STANDARD).needleSize(NeedleSize.THICK).build();
     
@@ -140,28 +137,10 @@ public class DashBoardPane extends javafx.scene.layout.GridPane {
       
     this.add(rpmSpeedMax, 1, 1);
     this.add(rpmSpeedAvg, 1, 2);
-    fixRowSizes(80,10,10);
-    fixColumnSizes(50, 50);
+    // 75= 80 - 5% (5% for extra gap)
+    fixRowSizes(6,75,10,10);
+    fixColumnSizes(4,50, 50);
   }
 
-  public void fixColumnSizes(int... colWidths) {
-    // Setting columns size in percent
-    for (int colWidth : colWidths) {
-      ColumnConstraints column = new ColumnConstraints();
-      column.setPercentWidth(colWidth);
-      getColumnConstraints().add(column);
-    }
-  }
-
-  public void fixRowSizes(int... rowWidths) {
-    for (int rowWidth : rowWidths) {
-      RowConstraints rowc = new RowConstraints();
-      rowc.setPercentHeight(rowWidth);
-      getRowConstraints().add(rowc);
-    }
-
-    // grid.setPrefSize(WINDOW_WIDTH, WINDOW_HEIGHT); // Default width and
-    // height
-    this.setMaxSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
-  }
+  
 }
