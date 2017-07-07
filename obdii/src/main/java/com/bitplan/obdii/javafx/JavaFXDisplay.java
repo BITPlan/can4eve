@@ -351,7 +351,7 @@ public class JavaFXDisplay extends WaitableApp
   protected void bind(Property value, ObservableValue valueTo) {
     if (valueTo != null) {
       if (value.isBound())
-        throw new IllegalStateException("value is already bound");
+        LOGGER.log(Level.WARNING,"value is already bound");
       value.bind(valueTo);
     }
   }
