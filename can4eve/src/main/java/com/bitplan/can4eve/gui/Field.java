@@ -36,6 +36,8 @@ public class Field {
   String format;
   int labelSize;
   int fieldSize;
+  Integer gridX;
+  Integer gridY;
   public String getTitle() {
     return title;
   }
@@ -89,6 +91,30 @@ public class Field {
   }
   public void setFieldSize(int fieldSize) {
     this.fieldSize = fieldSize;
+  }
+  /**
+   * @return the gridX
+   */
+  public Integer getGridX() {
+    return gridX;
+  }
+  /**
+   * @param gridX the gridX to set
+   */
+  public void setGridX(Integer gridX) {
+    this.gridX = gridX;
+  }
+  /**
+   * @return the gridY
+   */
+  public Integer getGridY() {
+    return gridY;
+  }
+  /**
+   * @param gridY the gridY to set
+   */
+  public void setGridY(Integer gridY) {
+    this.gridY = gridY;
   }
   public String getFormat() {
     return format;

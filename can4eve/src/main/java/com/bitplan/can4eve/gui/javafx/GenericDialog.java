@@ -93,15 +93,22 @@ public class GenericDialog {
     Map<String, GenericControl> controls = new HashMap<String, GenericControl>();
     for (com.bitplan.can4eve.gui.Field field : form.getFields()) {
       GenericControl gcontrol = GenericControl.create(stage, field);
-      grid.add(gcontrol.label, 0, ypos);
+      int x=0;
+      int y=ypos;
+      if (field.getGridX()!=null)
+        x=field.getGridX();
+      if (field.getGridY()!=null)
+        y=field.getGridY();
+      grid.add(gcontrol.label, x, y);
       if (gcontrol.control != null) {
-        grid.add(gcontrol.control, 1, ypos);
+        grid.add(gcontrol.control, x+1, y);
       }
       if (gcontrol.button != null) {
-        grid.add(gcontrol.button, 2, ypos);
+        grid.add(gcontrol.button, x+2, y);
       }
+      if (field.getGridY()==null)
+        ypos++;
       controls.put(field.getId(), gcontrol);
-      ypos++;
     }
     return controls;
   }
