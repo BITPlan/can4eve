@@ -285,27 +285,27 @@ public class OBDTriplet extends OBDHandler {
     blinkerLeft = addValue(new BooleanValue(getCanInfo("BlinkerLeft"), "◀", ""));
     blinkerRight = addValue(new BooleanValue(getCanInfo("BlinkerRight"), "▶", ""));
     batteryCapacity = addValue(new DoubleValue(getCanInfo("BatteryCapacity")));
-    doorOpen = new BooleanValue(getCanInfo("DoorOpen"), "●", "");
-    parkingLight = new BooleanValue(getCanInfo("ParkingLight"), "●", "");
-    headLight = new BooleanValue(getCanInfo("HeadLight"), "●", "");
-    highBeam = new BooleanValue(getCanInfo("HighBeam"), "●", "");
+    doorOpen = addValue(new BooleanValue(getCanInfo("DoorOpen"), "●", ""));
+    parkingLight = addValue(new BooleanValue(getCanInfo("ParkingLight"), "●", ""));
+    headLight = addValue(new BooleanValue(getCanInfo("HeadLight"), "●", ""));
+    highBeam = addValue(new BooleanValue(getCanInfo("HighBeam"), "●", ""));
 
-    breakPedal = new DoubleValue(getCanInfo("BreakPedal"));
-    breakPressed = new BooleanValue(getCanInfo("BreakPressed"), "⬇", "");
-    cellTemperature = new DoubleValue(getCanInfo("CellTemperature"));
-    cellVoltage = new DoubleValue(getCanInfo("CellVoltage"));
-    chargertemp = new IntegerValue(getCanInfo("ChargerTemp"));
+    breakPedal = addValue(new DoubleValue(getCanInfo("BreakPedal")));
+    breakPressed = addValue(new BooleanValue(getCanInfo("BreakPressed"), "⬇", ""));
+    cellTemperature = addValue(new DoubleValue(getCanInfo("CellTemperature")));
+    cellVoltage = addValue(new DoubleValue(getCanInfo("CellVoltage")));
+    chargertemp = addValue(new IntegerValue(getCanInfo("ChargerTemp")));
     range = addValue(new IntegerValue(getCanInfo("Range")));
     odometer = addValue(new IntegerValue(getCanInfo("Odometer")));
-    tripRounds = new DoubleValue(getCanInfo("TripRounds"));
+    tripRounds = addValue(new DoubleValue(getCanInfo("TripRounds")));
     tripOdo = addValue(new DoubleValue(getCanInfo("TripOdo")));
-    key = new BooleanValue(getCanInfo("Key"), "◉✔", "❌◎");
-    speed = new IntegerValue(getCanInfo("Speed"));
+    key = addValue(new BooleanValue(getCanInfo("Key"), "◉✔", "❌◎"));
+    speed = addValue(new IntegerValue(getCanInfo("Speed")));
     rpmSpeed = addValue(new DoubleValue(getCanInfo("RPMSpeed")));
-    motortemp = new IntegerValue(getCanInfo("MotorTemp"));
+    motortemp = addValue(new IntegerValue(getCanInfo("MotorTemp")));
     rpm = addValue(new IntegerValue(getCanInfo("RPM")));
     SOC = addValue(new DoubleValue(getCanInfo("SOC")));
-    cellCount = new IntegerValue(getCanInfo("CellCount"));
+    cellCount = addValue(new IntegerValue(getCanInfo("CellCount")));
     VIN = new VINValue(getCanInfo("VIN"));
     VIN2 = new VINValue(getCanInfo("VIN"));
     acamps = addValue(new DoubleValue(getCanInfo("ACAmps")));
@@ -314,8 +314,8 @@ public class OBDTriplet extends OBDHandler {
     dcvolts = addValue(new DoubleValue(getCanInfo("DCVolts")));
     climateValue = new ClimateValue(getCanInfo("Climate"));
     ventDirection = new StringValue(getCanInfo("VentDirection"));
-    steeringWheelPosition = new DoubleValue(
-        getCanInfo("SteeringWheelPosition"));
+    steeringWheelPosition = addValue(new DoubleValue(
+        getCanInfo("SteeringWheelPosition")));
     steeringWheelMovement = new DoubleValue(
         getCanInfo("SteeringWheelMovement"));
     shifterPositionValue = new ShifterPositionValue(
@@ -620,7 +620,7 @@ public class OBDTriplet extends OBDHandler {
             rpm.getValueItem().getTimeStamp(), Math.abs(rpmValue), timeStamp,
             1 / 60000.0);
         // calc distance based on rounds
-        this.tripOdo.setValue(tripRounds.getValueItem().getValue() * mmPerRound/1000000.0,
+        setValue("TripOdo",tripRounds.getValueItem().getValue() * mmPerRound/1000000.0,
             timeStamp);
       }
       setValue("RPM",rpmValue,timeStamp);
@@ -633,12 +633,11 @@ public class OBDTriplet extends OBDHandler {
       }
       break;
     case "Odometer_Speed":
-      odometer.setValue(pr.d[2] * 65536 + pr.d[3] * 256 + pr.d[4], timeStamp);
-      int speedNum = pr.d[1];
+      setValue("Odometer",pr.d[2] * 65536 + pr.d[3] * 256 + pr.d[4], timeStamp);
+      Integer speedNum = pr.d[1];
       if (speedNum == 255)
-        speed.setValue(null, timeStamp);
-      else
-        speed.setValue(speedNum, timeStamp);
+        speedNum=null;
+      setValue("Speed",speedNum, timeStamp);
       break;
     case "Range": // 0x346
       Integer rangeNum = pr.d[7];
