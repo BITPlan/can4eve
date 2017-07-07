@@ -151,6 +151,11 @@ public class JFXTripletDisplay extends JavaFXDisplay {
     }
     if (chargePane!=null) {
       bind(chargePane.getSOCGauge().valueProperty(),this.canProperties.get("SOC"));
+      bind(chargePane.getGaugeRR().valueProperty(),this.canProperties.get("Range"));
+      bind(chargePane.getGaugeACAmps().valueProperty(),this.canProperties.get("ACAmps"));
+      bind(chargePane.getGaugeACVolts().valueProperty(),this.canProperties.get("ACVolts"));
+      bind(chargePane.getGaugeDCAmps().valueProperty(),this.canProperties.get("DCAmps"));
+      bind(chargePane.getGaugeDCVolts().valueProperty(),this.canProperties.get("DCVolts"));
     }
     if (clockPane!=null) {
       ObservableValue<?> vehicleState = this.canProperties.get("vehicleState");

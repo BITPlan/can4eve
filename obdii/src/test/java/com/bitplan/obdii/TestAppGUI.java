@@ -189,7 +189,7 @@ public class TestAppGUI {
       }
     }
     LCDPane lcdPane=new LCDPane(rows,cols,250,30,LcdFont.STANDARD,"rpm",texts);
-    SampleApp.createAndShow("LCDPane", lcdPane, SHOW_TIME*4);
+    SampleApp.createAndShow("LCDPane", lcdPane, SHOW_TIME);
   }
   
   @Test

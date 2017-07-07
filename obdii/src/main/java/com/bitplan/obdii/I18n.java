@@ -90,6 +90,16 @@ public class I18n {
   public static final String PART_SCREEN = "partScreen";
   public static final String HIDE_MENU = "hideMenu";
   public static final String SHOW_MENU = "showMenu";
+  public static final String RR = "rr";
+  public static final String KM = "km";
+  public static final String AMPS = "amps";
+  public static final String AC_AMPS = "acAmps";
+  public static final String AC_VOLTS = "acVolts";
+  public static final String VOLTS = "volts";
+  public static final String DC_VOLTS="dcVolts";
+  public static final String DC_AMPS ="dcAmps";
+  public static final String KMH = "kmh";
+  
   
   /**
    * Translate the given text
