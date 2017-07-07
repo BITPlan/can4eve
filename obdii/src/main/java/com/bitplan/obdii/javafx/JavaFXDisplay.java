@@ -124,6 +124,9 @@ public class JavaFXDisplay extends WaitableApp
   private Tab chargeTab;
   private Scene scene;
 
+  private Tab odoTab;
+
+  private Map<String, GenericPanel> panels=new HashMap<String,GenericPanel>();
 
 
   public static final boolean debug = false;
@@ -320,6 +323,7 @@ public class JavaFXDisplay extends WaitableApp
         Tab tab = new Tab();
         tab.setText(form.getTitle());
         GenericPanel panel = new GenericPanel(stage, form);
+        panels.put(form.getId(),panel);
         controls.putAll(panel.controls);
         tab.setContent(panel);
         tabPane.getTabs().add(tab);
@@ -364,7 +368,7 @@ public class JavaFXDisplay extends WaitableApp
   public void setupSpecial(TabPane tabPane) {
     clockPane = new ClockPane();
     odoPane=new OdoPane();
-    Tab odoTab = addTab(tabPane, 0, I18n.get(I18n.ODO_INFO), chargePane);
+    odoTab = addTab(tabPane, 0, I18n.get(I18n.ODO_INFO), odoPane);
     dashBoardPane = new DashBoardPane(9200);
     chargePane = new ChargePane();
     chargeTab = addTab(tabPane, 0, I18n.get(I18n.SOC), chargePane);

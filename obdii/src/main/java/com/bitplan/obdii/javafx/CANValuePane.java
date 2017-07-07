@@ -46,10 +46,11 @@ public class CANValuePane extends ConstrainedGridPane {
    * @param col
    * @param row
    */
-  public void addGauge(String canInfo, Gauge gauge,int col,
+  public Gauge addGauge(String canInfo, Gauge gauge,int col,
       int row) {
     this.add(gauge, col, row);
     gaugeMap.put(canInfo, gauge);
+    return gauge;
   }
   
   /**
@@ -59,9 +60,10 @@ public class CANValuePane extends ConstrainedGridPane {
    * @param col
    * @param row
    */
-  public void addGauge(String canInfo,String i18nTitle, String i18nUnit, int col, int row) {
+  public Gauge addGauge(String canInfo,String i18nTitle, String i18nUnit, int col, int row) {
     Gauge gauge = LcdGauge.create(i18nTitle, i18nUnit);
     addGauge(canInfo,gauge,col,row);
+    return gauge;
   }
   
 }
