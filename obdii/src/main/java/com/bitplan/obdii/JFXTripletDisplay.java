@@ -148,7 +148,7 @@ public class JFXTripletDisplay extends JavaFXDisplay {
   public void bind(Map<String, ObservableValue<?>> canProperties) {
     this.canProperties = canProperties;
     // bind values by name
-    CANValuePane[] canValuePanes = { chargePane };
+    CANValuePane[] canValuePanes = { chargePane,odoPane };
     for (CANValuePane canValuePane : canValuePanes) {
       if (canValuePane != null) {
         for (Entry<String, Gauge> gaugeEntry : canValuePane.getGaugeMap()

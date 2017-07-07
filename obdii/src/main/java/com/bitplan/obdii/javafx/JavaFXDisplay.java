@@ -119,10 +119,12 @@ public class JavaFXDisplay extends WaitableApp
   protected Map<String, ObservableValue<?>> canProperties;
 
   protected ChargePane chargePane;
-
+  protected OdoPane odoPane;
+  
   private Tab chargeTab;
-
   private Scene scene;
+
+
 
   public static final boolean debug = false;
 
@@ -361,8 +363,8 @@ public class JavaFXDisplay extends WaitableApp
    */
   public void setupSpecial(TabPane tabPane) {
     clockPane = new ClockPane();
-    // TODO i18n
-    // FIXME max RPM from Vehicle
+    odoPane=new OdoPane();
+    Tab odoTab = addTab(tabPane, 0, I18n.get(I18n.ODO_INFO), chargePane);
     dashBoardPane = new DashBoardPane(9200);
     chargePane = new ChargePane();
     chargeTab = addTab(tabPane, 0, I18n.get(I18n.SOC), chargePane);

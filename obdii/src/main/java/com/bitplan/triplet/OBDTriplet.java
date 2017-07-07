@@ -296,9 +296,9 @@ public class OBDTriplet extends OBDHandler {
     cellVoltage = new DoubleValue(getCanInfo("CellVoltage"));
     chargertemp = new IntegerValue(getCanInfo("ChargerTemp"));
     range = addValue(new IntegerValue(getCanInfo("Range")));
-    odometer = new IntegerValue(getCanInfo("Odometer"));
+    odometer = addValue(new IntegerValue(getCanInfo("Odometer")));
     tripRounds = new DoubleValue(getCanInfo("TripRounds"));
-    tripOdo = new DoubleValue(getCanInfo("TripOdo"));
+    tripOdo = addValue(new DoubleValue(getCanInfo("TripOdo")));
     key = new BooleanValue(getCanInfo("Key"), "◉✔", "❌◎");
     speed = new IntegerValue(getCanInfo("Speed"));
     rpmSpeed = addValue(new DoubleValue(getCanInfo("RPMSpeed")));

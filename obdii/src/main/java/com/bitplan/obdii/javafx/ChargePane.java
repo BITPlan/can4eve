@@ -37,7 +37,7 @@ import javafx.scene.paint.Stop;
 public class ChargePane extends CANValuePane {
  
   /**
-   * 
+   * charging info
    */
   public ChargePane() {
     Gauge socGauge = GaugeBuilder.create().skinType(SkinType.BATTERY).title("SOC")
