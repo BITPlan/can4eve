@@ -26,12 +26,9 @@ import eu.hansolo.LcdGauge;
 import eu.hansolo.medusa.FGauge;
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.Gauge.NeedleSize;
-import eu.hansolo.medusa.Gauge.SkinType;
 import eu.hansolo.medusa.GaugeBuilder;
 import eu.hansolo.medusa.GaugeDesign;
 import eu.hansolo.medusa.GaugeDesign.GaugeBackground;
-import eu.hansolo.medusa.LcdDesign;
-import eu.hansolo.medusa.LcdFont;
 import eu.hansolo.medusa.Section;
 import eu.hansolo.medusa.TickLabelLocation;
 import eu.hansolo.medusa.TickMarkType;
@@ -45,7 +42,7 @@ import javafx.scene.paint.Color;
  * @author wf
  *
  */
-public class DashBoardPane extends ConstrainedGridPane {
+public class DashBoardPane extends ConstrainedGridPane  {
 
   private FGauge framedRPMGauge;
   private Gauge rpmGauge;
@@ -137,7 +134,6 @@ public class DashBoardPane extends ConstrainedGridPane {
     rpmSpeedPane.add(rpmSpeedAvg, 1, 0);
     rpmSpeedPane.setAlignment(Pos.CENTER);
     this.add(rpmSpeedPane, 1, 1);
-    
     
     // 75= 80 - 5% (5% for extra gap)
     fixRowSizes(6,87,13);

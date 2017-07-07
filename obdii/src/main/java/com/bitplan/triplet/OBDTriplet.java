@@ -265,6 +265,16 @@ public class OBDTriplet extends OBDHandler {
     return booleanValue;
   }
   
+  @SuppressWarnings("unchecked")
+  private void setValue(String name, Double value, Date timeStamp) {
+    canProperties.get(name).setValue(value, timeStamp);
+  }
+  
+  @SuppressWarnings("unchecked")
+  private void setValue(String name, Integer value, Date timeStamp) {
+    canProperties.get(name).setValue(value, timeStamp);
+  }
+  
   /**
    * initialize the CanValues
    */
@@ -274,7 +284,7 @@ public class OBDTriplet extends OBDHandler {
     accelerator = addValue(new DoubleValue(getCanInfo("Accelerator")));
     blinkerLeft = addValue(new BooleanValue(getCanInfo("BlinkerLeft"), "◀", ""));
     blinkerRight = addValue(new BooleanValue(getCanInfo("BlinkerRight"), "▶", ""));
-    batteryCapacity = new DoubleValue(getCanInfo("BatteryCapacity"));
+    batteryCapacity = addValue(new DoubleValue(getCanInfo("BatteryCapacity")));
     doorOpen = new BooleanValue(getCanInfo("DoorOpen"), "●", "");
     parkingLight = new BooleanValue(getCanInfo("ParkingLight"), "●", "");
     headLight = new BooleanValue(getCanInfo("HeadLight"), "●", "");
@@ -345,6 +355,12 @@ public class OBDTriplet extends OBDHandler {
       this.canValue=canValue;
       this.property=property;
     }
+    
+    /**
+     * construct a CANProperty
+     * @param canValue
+     * @param property
+     */
     public CANProperty(DoubleValue canValue, SimpleDoubleProperty property) {
       this.canValue=(CT)canValue;
       this.property=(Property<T>)property;
@@ -399,7 +415,6 @@ public class OBDTriplet extends OBDHandler {
    * @param canValue
    * @param property
    */
-  @SuppressWarnings("unchecked")
   private void addCanProperty(DoubleValue canValue,
       SimpleDoubleProperty property) {
     CANProperty<DoubleValue,Double> canProperty=new CANProperty<DoubleValue,Double>(canValue,property);
@@ -465,13 +480,13 @@ public class OBDTriplet extends OBDHandler {
       accelerator.setValue(pr.d[2] / 250.0 * 100, timeStamp);
       break;
     case "AmpsVolts":
-      dcamps.setValue(((pr.d[2] * 256 + pr.d[3]) - 128 * 256) / 100.0,
+      setValue("DCAmps",((pr.d[2] * 256 + pr.d[3]) - 128 * 256) / 100.0,
           timeStamp);
-      dcvolts.setValue((pr.d[4] * 256 + pr.d[5]) / 10.0, timeStamp);
+      setValue("DCVolts",(pr.d[4] * 256 + pr.d[5]) / 10.0, timeStamp);
       break;
     case "ACAmpsVolts":
-      acvolts.setValue(pr.d[1] * 1.0, timeStamp);
-      acamps.setValue(pr.d[6] / 10.0, timeStamp);
+      setValue("ACVolts",pr.d[1] * 1.0, timeStamp);
+      setValue("ACAmps",pr.d[6] / 10.0, timeStamp);
       break;
     case "BatteryCapacity":
       int bindex = pr.d[0];
@@ -479,7 +494,7 @@ public class OBDTriplet extends OBDHandler {
         double ah = (pr.d[3] * 256 + pr.d[4]) / 10.0;
         // LOGGER.log(Level.INFO,String.format("Battery capacity is: %4.1f Ah",
         // ah));
-        batteryCapacity.setValue(ah, timeStamp);
+        setValue("BatteryCapacity",ah, timeStamp);
       }
       break;
     case "BreakPedal":
@@ -608,14 +623,13 @@ public class OBDTriplet extends OBDHandler {
         this.tripOdo.setValue(tripRounds.getValueItem().getValue() * mmPerRound/1000000.0,
             timeStamp);
       }
-      // tries binding
-      this.canProperties.get("RPM").setValue(rpmValue,timeStamp);
+      setValue("RPM",rpmValue,timeStamp);
       if (speed.getValueItem().isAvailable()) {
         // m per round
         // speed.getValueItem().getValue() * 1000.0 / 60
         // / rpm.getValueItem().getValue()
         double rpmSpeed=this.rpm.getValue()*this.mmPerRound*60/1000000.0;
-        this.canProperties.get("RPMSpeed").setValue(rpmSpeed, timeStamp);
+        setValue("RPMSpeed",rpmSpeed, timeStamp);
       }
       break;
     case "Odometer_Speed":
@@ -627,11 +641,10 @@ public class OBDTriplet extends OBDHandler {
         speed.setValue(speedNum, timeStamp);
       break;
     case "Range": // 0x346
-      int rangeNum = pr.d[7];
+      Integer rangeNum = pr.d[7];
       if (rangeNum == 255)
-        range.setValue(null, timeStamp);
-      else
-        range.setValue(rangeNum, timeStamp);
+        rangeNum=null;
+      setValue("Range",rangeNum, timeStamp);
       break;
     case "Steering_Wheel":
       this.steeringWheelPosition
@@ -664,7 +677,7 @@ public class OBDTriplet extends OBDHandler {
       double soc=((pr.d[1]) - 10) / 2.0;
       // FIXME - workaround for binding timing issue
       soc=soc-Math.random()*0.001;
-      this.canProperties.get("SOC").setValue(soc, timeStamp);
+      setValue("SOC",soc, timeStamp);
       break;
 
     case "VIN":

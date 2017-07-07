@@ -23,6 +23,7 @@ package com.bitplan.obdii;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
@@ -30,10 +31,12 @@ import com.bitplan.can4eve.CANValue.IntegerValue;
 import com.bitplan.can4eve.SoftwareVersion;
 import com.bitplan.can4eve.Vehicle.State;
 import com.bitplan.can4eve.gui.App;
+import com.bitplan.obdii.javafx.CANValuePane;
 import com.bitplan.obdii.javafx.JFXCanCellStatePlot;
 import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
 import com.bitplan.obdii.javafx.JavaFXDisplay;
 
+import eu.hansolo.medusa.Gauge;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.value.ObservableValue;
@@ -54,43 +57,46 @@ public class JFXTripletDisplay extends JavaFXDisplay {
    * 
    * @param app
    * @param softwareVersion
-   * @param obdApp 
+   * @param obdApp
    */
-  public JFXTripletDisplay(App app, SoftwareVersion softwareVersion, OBDApp obdApp) {
+  public JFXTripletDisplay(App app, SoftwareVersion softwareVersion,
+      OBDApp obdApp) {
     super(app, softwareVersion, obdApp);
   }
-  
+
   /**
    * update the given tab with the given region
+   * 
    * @param tab
    * @param region
    */
   private void updateTab(Tab tab, Region region) {
-    if (region!=null) {
+    if (region != null) {
       tab.setContent(region);
     }
   }
 
   /**
    * update the history
+   * 
    * @param xValue
    * @param yValue
    * @param title
    * @param xTitle
    * @param yTitle
    */
-  public void updateHistory(DoubleValue xValue, IntegerValue yValue, String title,
-      String xTitle, String yTitle) {
+  public void updateHistory(DoubleValue xValue, IntegerValue yValue,
+      String title, String xTitle, String yTitle) {
     Tab activeTab = super.getActiveTab();
-    if (activeTab==null)
+    if (activeTab == null)
       return;
     String activePanelTitle = activeTab.getText();
     if ("history".equals(activePanelTitle)) {
       List<CANValue<?>> plotValues = new ArrayList<CANValue<?>>();
       plotValues.add(xValue);
       plotValues.add(yValue);
-      final JFXCanValueHistoryPlot valuePlot = new JFXCanValueHistoryPlot(
-          title, xTitle, yTitle, plotValues);
+      final JFXCanValueHistoryPlot valuePlot = new JFXCanValueHistoryPlot(title,
+          xTitle, yTitle, plotValues);
       Platform.runLater(() -> updateTab(activeTab, valuePlot.getLineChart()));
     }
   }
@@ -104,7 +110,7 @@ public class JFXTripletDisplay extends JavaFXDisplay {
       return;
     String title = canValue.canInfo.getTitle();
     Tab activeTab = super.getActiveTab();
-    if (activeTab==null)
+    if (activeTab == null)
       return;
     String activePanelTitle = activeTab.getText();
     if (title.toLowerCase().startsWith("cell")) {
@@ -115,16 +121,17 @@ public class JFXTripletDisplay extends JavaFXDisplay {
           if ("Cell Temp".equals(activePanelTitle)) {
             DoubleValue cellTemperature = (DoubleValue) canValue;
             final JFXCanCellStatePlot cellStatePlot = new JFXCanCellStatePlot(
-                "cellTemperature", "cell", "Temperature", cellTemperature, 1.0,0.5);
-            Platform
-                .runLater(() -> updateTab(activeTab, cellStatePlot.getBarChart()));
+                "cellTemperature", "cell", "Temperature", cellTemperature, 1.0,
+                0.5);
+            Platform.runLater(
+                () -> updateTab(activeTab, cellStatePlot.getBarChart()));
           }
           if ("Cell Voltage".equals(activePanelTitle)) {
             DoubleValue cellVoltage = (DoubleValue) canValue;
             final JFXCanCellStatePlot cellStatePlot = new JFXCanCellStatePlot(
-                "cellVoltage", "cell", "Voltage", cellVoltage, 0.01,0.1);
-            Platform
-                .runLater(() -> updateTab(activeTab, cellStatePlot.getBarChart()));
+                "cellVoltage", "cell", "Voltage", cellVoltage, 0.01, 0.1);
+            Platform.runLater(
+                () -> updateTab(activeTab, cellStatePlot.getBarChart()));
           }
         }
       }
@@ -140,28 +147,39 @@ public class JFXTripletDisplay extends JavaFXDisplay {
    */
   public void bind(Map<String, ObservableValue<?>> canProperties) {
     this.canProperties = canProperties;
-    if (dashBoardPane!=null) {
-      bind(dashBoardPane.getRpmGauge().valueProperty(),this.canProperties.get("RPM"));
-      bind(dashBoardPane.rpmMax.valueProperty(),this.canProperties.get("RPM-max"));
-      bind(dashBoardPane.rpmAvg.valueProperty(),this.canProperties.get("RPM-avg"));
-      
-      bind(dashBoardPane.getRpmSpeedGauge().valueProperty(),this.canProperties.get("RPMSpeed"));
-      bind(dashBoardPane.rpmSpeedMax.valueProperty(),this.canProperties.get("RPMSpeed-max"));
-      bind(dashBoardPane.rpmSpeedAvg.valueProperty(),this.canProperties.get("RPMSpeed-avg"));
+    // bind values by name
+    CANValuePane[] canValuePanes = { chargePane };
+    for (CANValuePane canValuePane : canValuePanes) {
+      if (canValuePane != null) {
+        for (Entry<String, Gauge> gaugeEntry : canValuePane.getGaugeMap()
+            .entrySet()) {
+          bind(gaugeEntry.getValue().valueProperty(),
+              this.canProperties.get(gaugeEntry.getKey()));
+        }
+      }
     }
-    if (chargePane!=null) {
-      bind(chargePane.getSOCGauge().valueProperty(),this.canProperties.get("SOC"));
-      bind(chargePane.getGaugeRR().valueProperty(),this.canProperties.get("Range"));
-      bind(chargePane.getGaugeACAmps().valueProperty(),this.canProperties.get("ACAmps"));
-      bind(chargePane.getGaugeACVolts().valueProperty(),this.canProperties.get("ACVolts"));
-      bind(chargePane.getGaugeDCAmps().valueProperty(),this.canProperties.get("DCAmps"));
-      bind(chargePane.getGaugeDCVolts().valueProperty(),this.canProperties.get("DCVolts"));
+    if (dashBoardPane != null) {
+      bind(dashBoardPane.getRpmGauge().valueProperty(),
+          this.canProperties.get("RPM"));
+      bind(dashBoardPane.rpmMax.valueProperty(),
+          this.canProperties.get("RPM-max"));
+      bind(dashBoardPane.rpmAvg.valueProperty(),
+          this.canProperties.get("RPM-avg"));
+
+      bind(dashBoardPane.getRpmSpeedGauge().valueProperty(),
+          this.canProperties.get("RPMSpeed"));
+      bind(dashBoardPane.rpmSpeedMax.valueProperty(),
+          this.canProperties.get("RPMSpeed-max"));
+      bind(dashBoardPane.rpmSpeedAvg.valueProperty(),
+          this.canProperties.get("RPMSpeed-avg"));
     }
-    if (clockPane!=null) {
+    if (clockPane != null) {
       ObservableValue<?> vehicleState = this.canProperties.get("vehicleState");
-      SimpleLongProperty msecsProperty = (SimpleLongProperty) this.canProperties.get("msecs");
-      if (vehicleState!=null && msecsProperty!=null) {
-        msecsProperty.addListener((obs, oldValue, newValue) -> super.clockPane.updateMsecs(newValue,(State) vehicleState.getValue()));
+      SimpleLongProperty msecsProperty = (SimpleLongProperty) this.canProperties
+          .get("msecs");
+      if (vehicleState != null && msecsProperty != null) {
+        msecsProperty.addListener((obs, oldValue, newValue) -> super.clockPane
+            .updateMsecs(newValue, (State) vehicleState.getValue()));
       }
     }
   }

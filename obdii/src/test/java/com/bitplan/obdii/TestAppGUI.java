@@ -314,7 +314,9 @@ public class TestAppGUI {
     Translator.initialize(Preferences.getInstance().getLanguage().name());
     ChargePane chargePane = new ChargePane();
     SimpleDoubleProperty sd = new SimpleDoubleProperty();
-    chargePane.getSOCGauge().valueProperty().bind(sd);
+    SimpleDoubleProperty rr = new SimpleDoubleProperty();
+    chargePane.getGaugeMap().get("SOC").valueProperty().bind(sd);
+    chargePane.getGaugeMap().get("Range").valueProperty().bind(rr);
     sd.setValue(100);
     SampleApp sampleApp = new SampleApp("Charge", chargePane);
     sampleApp.show();
@@ -325,6 +327,7 @@ public class TestAppGUI {
       double newValue = 100 - (95 * i / loops);
       // LOGGER.log(Level.INFO, "new value "+newValue);
       sd.setValue(newValue);
+      rr.setValue(newValue*0.9);
     }
     sampleApp.close();
   }

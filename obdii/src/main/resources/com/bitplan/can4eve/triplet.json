@@ -67,6 +67,7 @@
           "name": "DCAmps",
           "title": "DC Amps",
           "description": "Battery Power Amps",
+          "unit": "Amps",
           "format": "%7.1f A ",
           "type": "DoubleValue",
           "historyValuesPerMinute": 30,
@@ -77,6 +78,7 @@
           "title": "DC Volts",
           "description": "Battery Current Volts",
           "format": "%5.1f V",
+          "unit": "Volts",
           "type": "DoubleValue",
           "historyValuesPerMinute": 30,
           "maxIndex": 0

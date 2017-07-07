@@ -99,6 +99,8 @@ public class I18n {
   public static final String DC_VOLTS="dcVolts";
   public static final String DC_AMPS ="dcAmps";
   public static final String KMH = "kmh";
+  public static final String PERCENT = "percent";
+  // CAN Infos
   
   
   /**

@@ -20,7 +20,6 @@
  */
 package com.bitplan.can4eve;
 
-
 /**
  * a unit of information on the CAN bus
  * @author wf
@@ -28,10 +27,10 @@ package com.bitplan.can4eve;
  */
 public class CANInfo {
   String name;
-  String title;
+  String title; // i18n title
   String description;
   String format;
-  String unit;
+  String unit; // i18n unit
   String type;
 
   int historyValuesPerMinute;
