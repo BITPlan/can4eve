@@ -25,6 +25,7 @@ import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
@@ -48,6 +49,8 @@ public class LcdField extends Control {
   public class LCDFieldSkin extends SkinBase<LcdField>
       implements Skin<LcdField> {
 
+    public boolean debug = false;
+
     /**
      * construct me
      * 
@@ -59,14 +62,36 @@ public class LcdField extends Control {
       getChildren().add(lcdField.getLcdText());
     }
 
+    public void debug(String title, double x, double y, double w, double h) {
+      System.out.println(
+          String.format("%10s: %.0f,%.0f %.0fx%.0f", title, x, y, w, h));
+    }
+
+    public void debug(String title, Control r) {
+      debug(title, r.getLayoutX(), r.getLayoutY(), r.getWidth(), r.getHeight());
+    }
+
+    public void debug(String title, Rectangle r) {
+      debug(title, r.getX(), r.getY(), r.getWidth(), r.getHeight());
+    }
+
     @Override
     public void layoutChildren(double contentX, double contentY,
         double contentWidth, double contentHeight) {
-      super.layoutChildren(contentX, contentY, contentWidth, contentHeight);
       LcdField lcdField = this.getSkinnable();
       Label lcdText = lcdField.getLcdText();
-      // lcdText.setTranslateX(-lcdField.getLcd().getWidth());
-      lcdText.setTranslateX(-contentWidth / 2);
+      // lcdField.labelResize(lcdText,contentWidth, contentHeight);
+      if (debug) {
+        debug("content", contentX, contentY, contentWidth, contentHeight);
+        // lcdText.setTranslateX(-lcdField.getLcd().getWidth()/2);
+        debug("lcd", lcdField.getLcd());
+        debug("lcdText", lcdText);
+      }
+      super.layoutChildren(contentX, contentY, contentWidth, contentHeight);
+      if (debug) {
+        debug("lcd", lcdField.getLcd());
+        debug("lcdText", lcdText);
+      }
     }
 
   }
@@ -95,11 +120,11 @@ public class LcdField extends Control {
    * 
    * @param width
    * @param height
-   * @param lcdFont 
+   * @param lcdFont
    * @param visible
    */
-  public LcdField(String text, double width, double height,
-      LcdDesign lcdDesign, LcdFont lcdFont) {
+  public LcdField(String text, double width, double height, LcdDesign lcdDesign,
+      LcdFont lcdFont) {
     lcd = createRect(width, height, lcdDesign);
     // lcd.relocate((preferredWidth - lcd.getWidth()) * 0.5, 0.44 *
     // preferredHeight);
@@ -120,8 +145,13 @@ public class LcdField extends Control {
     Color[] lcdColors = lcdDesign.getColors();
     label.setAlignment(Pos.CENTER_RIGHT);
     label.setTextFill(lcdColors[5]);
-    label.setPadding(new Insets(0, 0.05 * width, 0, 0.05 * width));
+    labelResize(label, width, height);
     return label;
+  }
+
+  private void labelResize(Label label, double width, double height) {
+    label.setPadding(new Insets(0, 0.05 * width, 0, 0.05 * width));
+    label.setPrefSize(width, height);
   }
 
   /**
@@ -189,8 +219,6 @@ public class LcdField extends Control {
         // lcdText.setFont(Fonts.robotoRegular(height));
         break;
       }
-      lcdText.setAlignment(Pos.CENTER_RIGHT);
-      lcdText.setPrefSize(width, height);
       // lcdText.setTranslateX((width - lcdText.getPrefWidth()) * 0.5);
 
     } else {
