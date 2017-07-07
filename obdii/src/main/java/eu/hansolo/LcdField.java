@@ -109,6 +109,7 @@ public class LcdField extends Control {
           new Stop(0.99, Color.rgb(77, 77, 77)),
           new Stop(1.0, Color.rgb(221, 221, 221)));
     }
+    //rect.setFill(Color.TRANSPARENT);
     rect.setFill(lcdGradient);
     rect.setStroke(lcdFramePaint);    
     rect.setArcWidth(0.0125 * height);
@@ -128,36 +129,30 @@ public class LcdField extends Control {
     if (visible) {
       switch (lcdFont) {
       case LCD:
-        // was 0.108
-        lcdText.setFont(Fonts.digital(0.108*height));
-        lcdText.setTranslateY(0.45 * height);
+        lcdText.setFont(Fonts.digital(height));
         break;
       case DIGITAL:
-        lcdText.setFont(Fonts.digitalReadout(0.105 * height));
-        lcdText.setTranslateY(0.44 * height);
+        lcdText.setFont(Fonts.digitalReadout(height));
         break;
       case DIGITAL_BOLD:
-        lcdText.setFont(Fonts.digitalReadoutBold(0.105 * height));
-        lcdText.setTranslateY(0.44 * height);
+        lcdText.setFont(Fonts.digitalReadoutBold(height));
+        //lcdText.setTranslateY(0.44 * height);
         break;
       case ELEKTRA:
-        lcdText.setFont(Fonts.elektra(0.1116 * height));
-        lcdText.setTranslateY(0.435 * height);
+        lcdText.setFont(Fonts.elektra(height));
         break;
       case STANDARD:
       default:
-        lcdText.setFont(Fonts.robotoMedium(0.09 * height));
-        lcdText.setTranslateY(0.43 * height);
+        lcdText.setFont(Fonts.robotoMedium(height));
         break;
       }
       lcdText.setAlignment(Pos.CENTER_RIGHT);
-      // 0.3, 0.014
       lcdText.setPrefSize(width, height);
-      //lcdText.setTranslateX((width - lcdText.getPrefWidth()) * 0.5);
+      // lcdText.setTranslateX((width - lcdText.getPrefWidth()) * 0.5);
 
     } else {
       lcdText.setAlignment(Pos.CENTER);
-      lcdText.setFont(Fonts.robotoMedium(height * 0.1));
+      lcdText.setFont(Fonts.robotoMedium(height));
     }
 
   }

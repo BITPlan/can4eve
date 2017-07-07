@@ -40,6 +40,13 @@ public class LCDPane extends ConstrainedGridPane {
       getChildren().add(lcdField.getLcdText());
     }
     
+    @Override
+    public void layoutChildren(double contentX, double contentY, double contentWidth, double contentHeight) {
+      super.layoutChildren(contentX, contentY, contentWidth, contentHeight);
+      LcdField lcdField = this.getSkinnable();
+      lcdField.getLcdText().setTranslateX(-contentWidth);
+    }
+    
   }
 
   /**
@@ -55,9 +62,10 @@ public class LCDPane extends ConstrainedGridPane {
     int index = 0;
     for (int row = 0; row < this.rows; row++) {
       for (int column = 0; column < columns; column++) {
+        LcdFont lcdFont=LcdFont.values()[column];
         LcdField newField = new LcdField(texts[index], width, height,lcdDesign);
         newField.setSkin(new LCDControlSkin(newField));
-        // newField.setFont(width,height,LcdFont.LCD,true);
+        newField.setFont(width,height,lcdFont,true);
         index++;
         this.add(newField, column, row);
         lcdFields.add(newField);

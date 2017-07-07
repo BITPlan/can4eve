@@ -180,15 +180,15 @@ public class TestAppGUI {
   @Test
   public void testLCDPane() throws Exception {
     WaitableApp.toolkitInit();
-    int rows=3;
-    int cols=4;
+    int cols=LcdFont.values().length;
+    int rows=5;
     String[] texts=new String[rows*cols];
     for (int row=0;row<rows;row++) {
       for (int col=0;col<cols;col++) {
-        texts[row*cols+col]=String.format("r%2d c%2d",row,col);
+        texts[row*cols+col]=String.format("%s",LcdFont.values()[col].name());
       }
     }
-    LCDPane lcdPane=new LCDPane(rows,cols,350,30,LcdDesign.STANDARD,texts);
+    LCDPane lcdPane=new LCDPane(rows,cols,350,30,LcdDesign.SECTIONS,texts);
     SampleApp.createAndShow("LCDPane", lcdPane, SHOW_TIME*4);
   }
   
