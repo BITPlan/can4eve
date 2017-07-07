@@ -63,16 +63,57 @@ public class LcdField extends Control {
    * @param visible
    */
   public LcdField(String text,
-      double preferredWidth, double preferredHeight, boolean visible) {
-    // was 0.3 * w  0.1 *h
-    setLcd(new Rectangle(preferredWidth,preferredHeight));
-    getLcd().setArcWidth(0.125 * preferredHeight);
-    getLcd().setArcHeight(0.125 * preferredHeight);
-    //getLcd().relocate((preferredWidth - getLcd().getWidth()) * 0.5, 0.44 * preferredHeight);
+      double preferredWidth, double preferredHeight, LcdDesign lcdDesign) {
+    lcd=createRect(preferredWidth,preferredHeight,lcdDesign);
+    //lcd.relocate((preferredWidth - lcd.getWidth()) * 0.5, 0.44 * preferredHeight);
+    lcdText=createLabel(preferredWidth,preferredHeight,text,lcdDesign);
+  }
+  
+  /**
+   * create the label for the given text and LCD Design
+   * @param text
+   * @param lcdDesign
+   * @return the label
+   */
+  private Label createLabel(double width, double height,String text, LcdDesign lcdDesign) {
+    Label label=new Label(text);
+    Color[] lcdColors = lcdDesign.getColors();
+    label.setAlignment(Pos.CENTER_RIGHT);
+    label.setTextFill(lcdColors[5]);
+    label.setPadding(new Insets(0, 0.05 * width, 0, 0.05 * width));
+    return label;
+  }
 
-    setLcdText(new Label(text));
-    getLcdText().setAlignment(Pos.CENTER_RIGHT);
-    getLcdText().setVisible(visible);
+  /**
+   * create a styled rectangle
+   * @param width
+   * @param height
+   * @param lcdDesign
+   * @return - the rectangle
+   */
+  public Rectangle createRect(double width, double height, LcdDesign lcdDesign) {
+    Rectangle rect=new Rectangle(width,height);
+    Color[] lcdColors = lcdDesign.getColors();
+    LinearGradient lcdGradient = new LinearGradient(0, 1, 0,
+        height - 1, false, CycleMethod.NO_CYCLE,
+        new Stop(0, lcdColors[0]), new Stop(0.03, lcdColors[1]),
+        new Stop(0.5, lcdColors[2]), new Stop(0.5, lcdColors[3]),
+        new Stop(1.0, lcdColors[4]));
+    Paint lcdFramePaint;
+    if (lcdDesign.name().startsWith("FLAT")) {
+      lcdFramePaint = Color.WHITE;
+    } else {
+      lcdFramePaint = new LinearGradient(0, 0, 0, height, false,
+          CycleMethod.NO_CYCLE, new Stop(0.0, Color.rgb(26, 26, 26)),
+          new Stop(0.01, Color.rgb(77, 77, 77)),
+          new Stop(0.99, Color.rgb(77, 77, 77)),
+          new Stop(1.0, Color.rgb(221, 221, 221)));
+    }
+    rect.setFill(lcdGradient);
+    rect.setStroke(lcdFramePaint);    
+    rect.setArcWidth(0.0125 * height);
+    rect.setArcHeight(0.0125 * height);
+    return rect;
   }
 
   /**
@@ -83,16 +124,13 @@ public class LcdField extends Control {
    * @param lcdFont
    * @param visible
    */
-  public void resize(double width, double height, LcdFont lcdFont,
-      boolean visible) {
+  public void setFont(double width, double height, LcdFont lcdFont, boolean visible) {
     if (visible) {
-      lcdText.setPadding(new Insets(0, 0.05 * width, 0, 0.05 * width));
-
       switch (lcdFont) {
       case LCD:
         // was 0.108
-        lcdText.setFont(Fonts.digital(height));
-        // lcdText.setTranslateY(0.45 * height);
+        lcdText.setFont(Fonts.digital(0.108*height));
+        lcdText.setTranslateY(0.45 * height);
         break;
       case DIGITAL:
         lcdText.setFont(Fonts.digitalReadout(0.105 * height));
@@ -120,77 +158,6 @@ public class LcdField extends Control {
     } else {
       lcdText.setAlignment(Pos.CENTER);
       lcdText.setFont(Fonts.robotoMedium(height * 0.1));
-      lcdText.setPrefSize(0.3 * width, 0.014 * height);
-      lcdText.setTranslateY(0.43 * height);
-      lcdText
-          .setTranslateX((width - lcdText.getLayoutBounds().getWidth()) * 0.5);
-    }
-
-  }
-
-  /**
-   * set the Value
-   * 
-   * @param width
-   * @param locale
-   * @param formatString
-   * @param currentValue
-   * @param visible
-   */
-  public void setValue(double width, Locale locale, String formatString,
-      double currentValue, boolean visible) {
-    lcdText.setText((String.format(locale, formatString, currentValue)));
-    if (visible) {
-      lcdText.setAlignment(Pos.CENTER_RIGHT);
-      lcdText.setTranslateX((width - lcdText.getPrefWidth()) * 0.5);
-    } else {
-      lcdText.setAlignment(Pos.CENTER);
-      lcdText
-          .setTranslateX((width - lcdText.getLayoutBounds().getWidth()) * 0.5);
-    }
-  }
-
-  /**
-   * resize based on width and height
-   * 
-   * @param width
-   * @param height
-   */
-  public void resize(double width, double height) {
-    lcd.setWidth(0.3 * width);
-    lcd.setHeight(0.1 * height);
-    lcd.setArcWidth(0.0125 * height);
-    lcd.setArcHeight(0.0125 * height);
-    lcd.relocate((width - lcd.getWidth()) * 0.5, 0.44 * height);
-  }
-
-  /**
-   * redraw me
-   * @param visible
-   * @param lcdDesign
-   */
-  public void redraw(boolean visible, LcdDesign lcdDesign) {
-    if (visible) {
-      Color[] lcdColors = lcdDesign.getColors();
-      LinearGradient lcdGradient = new LinearGradient(0, 1, 0,
-          lcd.getHeight() - 1, false, CycleMethod.NO_CYCLE,
-          new Stop(0, lcdColors[0]), new Stop(0.03, lcdColors[1]),
-          new Stop(0.5, lcdColors[2]), new Stop(0.5, lcdColors[3]),
-          new Stop(1.0, lcdColors[4]));
-      Paint lcdFramePaint;
-      if (lcdDesign.name().startsWith("FLAT")) {
-        lcdFramePaint = Color.WHITE;
-      } else {
-        lcdFramePaint = new LinearGradient(0, 0, 0, lcd.getHeight(), false,
-            CycleMethod.NO_CYCLE, new Stop(0.0, Color.rgb(26, 26, 26)),
-            new Stop(0.01, Color.rgb(77, 77, 77)),
-            new Stop(0.99, Color.rgb(77, 77, 77)),
-            new Stop(1.0, Color.rgb(221, 221, 221)));
-      }
-      lcd.setFill(lcdGradient);
-      lcd.setStroke(lcdFramePaint);
-
-      lcdText.setTextFill(lcdColors[5]);
     }
 
   }

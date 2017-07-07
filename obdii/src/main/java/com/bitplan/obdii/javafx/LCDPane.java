@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import eu.hansolo.LcdField;
+import eu.hansolo.medusa.LcdDesign;
 import eu.hansolo.medusa.LcdFont;
-import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.control.Skin;
+import javafx.scene.control.SkinBase;
 
 /**
  * a Grid of LCD Fields
@@ -23,43 +23,23 @@ public class LCDPane extends ConstrainedGridPane {
   /**
    * LCDControl Skin see
    * http://slothsoft.de/de/content/eigene-controls-mit-javafx-erstellen-tacho
+   * https://gist.github.com/jewelsea/5115901
    * 
    * @author wf
    *
    */
-  public class LCDControlSkin implements Skin<LcdField> {
-    private Group rootNode;
-    private final LcdField lcdField;
-
+  public class LCDControlSkin extends SkinBase<LcdField> implements Skin<LcdField> {
+    
+    /**
+     * construct me
+     * @param lcdField
+     */
     public LCDControlSkin(LcdField lcdField) {
-      this.lcdField = lcdField;
-    }
-
-    @Override
-    public LcdField getSkinnable() {
-      return lcdField;
-    }
-
-    @Override
-    public Node getNode() {
-      if (this.rootNode == null) {
-        this.rootNode = new Group();
-        redraw();
-      }
-      return this.rootNode;
+      super(lcdField);
+      getChildren().add(lcdField.getLcd());
+      getChildren().add(lcdField.getLcdText());
     }
     
-    public void redraw() {
-      List<Node> rootChildren = new ArrayList<Node>();
-      rootChildren.add(lcdField.getLcd());
-      rootChildren.add(lcdField.getLcdText());
-      this.rootNode.getChildren().setAll(rootChildren);
-    }
-
-    @Override
-    public void dispose() {
-      // nothing to do
-    }
   }
 
   /**
@@ -69,16 +49,15 @@ public class LCDPane extends ConstrainedGridPane {
    * @param colums
    */
   public LCDPane(int rows, int columns, double width, double height,
-      LcdFont lcdFont,String... texts) {
+      LcdDesign lcdDesign,String... texts) {
     this.rows = rows;
     this.columns = columns;
     int index = 0;
-    for (int row = 0; row < rows; row++) {
+    for (int row = 0; row < this.rows; row++) {
       for (int column = 0; column < columns; column++) {
-        boolean visible = true;
-        LcdField newField = new LcdField(texts[index], width, height, visible);
+        LcdField newField = new LcdField(texts[index], width, height,lcdDesign);
         newField.setSkin(new LCDControlSkin(newField));
-        newField.resize(width, height,lcdFont,visible);
+        // newField.setFont(width,height,LcdFont.LCD,true);
         index++;
         this.add(newField, column, row);
         lcdFields.add(newField);
