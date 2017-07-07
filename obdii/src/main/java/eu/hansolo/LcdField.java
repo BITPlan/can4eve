@@ -25,7 +25,6 @@ import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
-import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
@@ -49,7 +48,7 @@ public class LcdField extends Control {
   public class LCDFieldSkin extends SkinBase<LcdField>
       implements Skin<LcdField> {
 
-    public boolean debug = false;
+    public boolean debug = true;
 
     /**
      * construct me
@@ -59,6 +58,7 @@ public class LcdField extends Control {
     public LCDFieldSkin(LcdField lcdField) {
       super(lcdField);
       getChildren().add(lcdField.getLcd());
+      getChildren().add(lcdField.getLcdLabel());
       getChildren().add(lcdField.getLcdText());
     }
 
@@ -80,16 +80,20 @@ public class LcdField extends Control {
         double contentWidth, double contentHeight) {
       LcdField lcdField = this.getSkinnable();
       Label lcdText = lcdField.getLcdText();
+      Label lcdLabel = lcdField.getLcdLabel();
       // lcdField.labelResize(lcdText,contentWidth, contentHeight);
       if (debug) {
         debug("content", contentX, contentY, contentWidth, contentHeight);
         // lcdText.setTranslateX(-lcdField.getLcd().getWidth()/2);
         debug("lcd", lcdField.getLcd());
+        debug("lcdLabel", lcdLabel);
         debug("lcdText", lcdText);
       }
+      lcdLabel.setTranslateX(0);
       super.layoutChildren(contentX, contentY, contentWidth, contentHeight);
       if (debug) {
         debug("lcd", lcdField.getLcd());
+        debug("lcdLabel", lcdLabel);
         debug("lcdText", lcdText);
       }
     }
@@ -98,6 +102,7 @@ public class LcdField extends Control {
 
   private Rectangle lcd;
   private Label lcdText;
+  private Label lcdLabel;
 
   public Rectangle getLcd() {
     return lcd;
@@ -115,6 +120,14 @@ public class LcdField extends Control {
     this.lcdText = lcdText;
   }
 
+  public Label getLcdLabel() {
+    return lcdLabel;
+  }
+
+  public void setLcdLabel(Label lcdLabel) {
+    this.lcdLabel = lcdLabel;
+  }
+
   /**
    * construct me from a width and height
    * 
@@ -123,13 +136,12 @@ public class LcdField extends Control {
    * @param lcdFont
    * @param visible
    */
-  public LcdField(String text, double width, double height, LcdDesign lcdDesign,
+  public LcdField(String label,String text, double width, double height, LcdDesign lcdDesign,
       LcdFont lcdFont) {
     lcd = createRect(width, height, lcdDesign);
-    // lcd.relocate((preferredWidth - lcd.getWidth()) * 0.5, 0.44 *
-    // preferredHeight);
-    lcdText = createLabel(width, height, text, lcdDesign);
-    this.setFont(width, height, lcdFont, true);
+    lcdText = createLabel(width, height, text, lcdDesign,Pos.CENTER_RIGHT);
+    lcdLabel = createLabel(width,height,label,lcdDesign,Pos.BOTTOM_LEFT);
+    this.setFont(height, lcdFont, true);
   }
 
   /**
@@ -137,18 +149,25 @@ public class LcdField extends Control {
    * 
    * @param text
    * @param lcdDesign
+   * @param pos 
    * @return the label
    */
   private Label createLabel(double width, double height, String text,
-      LcdDesign lcdDesign) {
+      LcdDesign lcdDesign, Pos pos) {
     Label label = new Label(text);
     Color[] lcdColors = lcdDesign.getColors();
-    label.setAlignment(Pos.CENTER_RIGHT);
+    label.setAlignment(pos);
     label.setTextFill(lcdColors[5]);
     labelResize(label, width, height);
     return label;
   }
 
+  /**
+   * resize the label setting the insets accordingly
+   * @param label
+   * @param width
+   * @param height
+   */
   private void labelResize(Label label, double width, double height) {
     label.setPadding(new Insets(0, 0.05 * width, 0, 0.05 * width));
     label.setPrefSize(width, height);
@@ -191,12 +210,11 @@ public class LcdField extends Control {
   /**
    * resize the LcdField
    * 
-   * @param width
    * @param height
    * @param lcdFont
    * @param visible
    */
-  public void setFont(double width, double height, LcdFont lcdFont,
+  public void setFont(double height, LcdFont lcdFont,
       boolean visible) {
     if (visible) {
       switch (lcdFont) {
@@ -208,7 +226,6 @@ public class LcdField extends Control {
         break;
       case DIGITAL_BOLD:
         lcdText.setFont(Fonts.digitalReadoutBold(height));
-        // lcdText.setTranslateY(0.44 * height);
         break;
       case ELEKTRA:
         lcdText.setFont(Fonts.elektra(height));
@@ -216,16 +233,11 @@ public class LcdField extends Control {
       case STANDARD:
       default:
         lcdText.setFont(Fonts.robotoMedium(height));
-        // lcdText.setFont(Fonts.robotoRegular(height));
         break;
       }
-      // lcdText.setTranslateX((width - lcdText.getPrefWidth()) * 0.5);
-
     } else {
-      lcdText.setAlignment(Pos.CENTER);
       lcdText.setFont(Fonts.robotoMedium(height));
     }
-
   }
 
   @Override

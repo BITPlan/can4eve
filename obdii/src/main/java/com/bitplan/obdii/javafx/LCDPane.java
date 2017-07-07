@@ -6,9 +6,6 @@ import java.util.List;
 import eu.hansolo.LcdField;
 import eu.hansolo.medusa.LcdDesign;
 import eu.hansolo.medusa.LcdFont;
-import javafx.scene.control.Label;
-import javafx.scene.control.Skin;
-import javafx.scene.control.SkinBase;
 
 /**
  * a Grid of LCD Fields
@@ -28,13 +25,13 @@ public class LCDPane extends ConstrainedGridPane {
    * @param rows
    * @param colums
    */
-  public LCDPane(int rows, int cols, double width, double height,LcdFont lcdFont,String... texts) {
+  public LCDPane(int rows, int cols, double width, double height,LcdFont lcdFont,String label,String... texts) {
     this.rows = rows;
     this.cols = cols;
     int index = 0;
     for (int row = 0; row < this.rows; row++) {
       for (int col = 0; col < this.cols; col++) {
-        LcdField newField = new LcdField(texts[index], width, height,LcdDesign.SECTIONS,lcdFont);
+        LcdField newField = new LcdField(label,texts[index], width, height,LcdDesign.SECTIONS,lcdFont);
         index++;
         this.add(newField, col, row);
         lcdFields.add(newField);

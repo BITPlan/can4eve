@@ -85,6 +85,7 @@ public class Vehicle implements JsonAble{
   public Integer getMaxRPM() {
     return maxRPM;
   }
+  
   public void setMaxRPM(Integer maxRPM) {
     this.maxRPM = maxRPM;
     if (this.maxSpeed!=null)
@@ -120,7 +121,7 @@ public class Vehicle implements JsonAble{
     this.VIN=(String)map.get("VIN");
     this.mmPerRound=(Integer)map.get("mmPerRound");
     this.maxRPM=(Integer)map.get("maxRPM");
-    this.maxSpeed=(Integer)map.get("maxSpeed");
+    this.setMaxSpeed((Integer)map.get("maxSpeed")); // forces calc of mmPerRound
   }
   
   static Vehicle instance;

@@ -188,7 +188,7 @@ public class TestAppGUI {
         texts[row*cols+col]=String.format("row %2d col %2d",row,col);
       }
     }
-    LCDPane lcdPane=new LCDPane(rows,cols,250,30,LcdFont.STANDARD,texts);
+    LCDPane lcdPane=new LCDPane(rows,cols,250,30,LcdFont.STANDARD,"rpm",texts);
     SampleApp.createAndShow("LCDPane", lcdPane, SHOW_TIME*4);
   }
   
