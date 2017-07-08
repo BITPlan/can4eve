@@ -24,7 +24,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import com.bitplan.can4eve.gui.swing.Translator;
+import com.bitplan.i18n.Translator;
 
 /**
  * test the Translator

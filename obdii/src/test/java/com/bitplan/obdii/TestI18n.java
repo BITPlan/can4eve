@@ -33,7 +33,7 @@ import org.junit.Test;
 import com.bitplan.can4eve.gui.App;
 import com.bitplan.can4eve.gui.Menu;
 import com.bitplan.can4eve.gui.MenuItem;
-import com.bitplan.can4eve.gui.swing.Translator;
+import com.bitplan.i18n.Translator;
 
 /**
  * 

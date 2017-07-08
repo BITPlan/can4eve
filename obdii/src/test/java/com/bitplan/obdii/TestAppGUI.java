@@ -44,11 +44,11 @@ import com.bitplan.can4eve.gui.Group;
 import com.bitplan.can4eve.gui.javafx.GenericDialog;
 import com.bitplan.can4eve.gui.javafx.SampleApp;
 import com.bitplan.can4eve.gui.javafx.WaitableApp;
-import com.bitplan.can4eve.gui.swing.Translator;
 import com.bitplan.can4eve.json.JsonManager;
 import com.bitplan.can4eve.json.JsonManagerImpl;
 import com.bitplan.can4eve.states.StopWatch;
 import com.bitplan.can4eve.util.TaskLaunch;
+import com.bitplan.i18n.Translator;
 import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.javafx.ChargePane;
 import com.bitplan.obdii.javafx.ClockPane;
@@ -217,17 +217,12 @@ public class TestAppGUI {
   }
 
   @Test
-  public void testMedusa() throws InterruptedException {
+  public void testMedusa() throws Exception {
     WaitableApp.toolkitInit();
     OverviewDemo demo = new OverviewDemo();
     demo.init();
     GridPane demoPane = demo.getDemoPane();
-    SampleApp sampleApp = new SampleApp("Controls", demoPane);
-    sampleApp.show();
-    sampleApp.waitOpen();
-    demo.startTimer(demoPane);
-    Thread.sleep(SHOW_TIME);
-    sampleApp.close();
+    SampleApp.createAndShow("Controls", demoPane,SHOW_TIME);
   }
 
   @Test
