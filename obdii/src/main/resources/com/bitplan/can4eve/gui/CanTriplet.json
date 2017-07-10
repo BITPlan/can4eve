@@ -97,6 +97,13 @@
 							"format": "%s",
 							"type": "Directory",
 							"fieldSize": 60
+						},
+						{
+							"title": "screenShotDirectory",
+							"hint": "the directory in which to store screenShots",
+							"format": "%s",
+							"type": "Directory",
+							"fieldSize": 60
 						}
 					]
 				},

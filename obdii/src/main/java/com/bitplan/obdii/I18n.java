@@ -90,6 +90,7 @@ public class I18n {
   public static final String PART_SCREEN = "partScreen";
   public static final String HIDE_MENU = "hideMenu";
   public static final String SHOW_MENU = "showMenu";
+  public static final String SCREEN_SHOT = "screenShot";
   
   /**
    * Translate the given text

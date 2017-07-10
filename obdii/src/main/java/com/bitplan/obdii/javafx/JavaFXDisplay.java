@@ -21,7 +21,9 @@
 package com.bitplan.obdii.javafx;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -393,6 +395,31 @@ public class JavaFXDisplay extends WaitableApp
         } // if
       } // handle
     });
+    
+    Button screenShotButton = new Button(I18n.get(I18n.SCREEN_SHOT));
+    screenShotButton.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent e) {
+        Preferences prefs;
+        try {
+          prefs = Preferences.getInstance();
+          if (prefs!=null) {
+            File screenShotDirectory=new File(prefs.getScreenShotDirectory());
+            if (!screenShotDirectory.exists()&& !screenShotDirectory.isDirectory()) {
+              screenShotDirectory.mkdirs();
+            }
+            SimpleDateFormat lIsoDateFormatter = new SimpleDateFormat(
+                "yyyy-MM-dd_HHmmss");
+            String screenShotName=String.format("screenShot_%s_%s.png",
+            JavaFXDisplay.this.activeView,lIsoDateFormatter.format(new Date()));
+            File screenShotFile=new File(screenShotDirectory,screenShotName);
+
+          }
+        } catch (Exception e1) {
+          handleException(e1);
+        }
+      }
+    });
 
     Button fullScreenButton = new Button(I18n.get(I18n.FULL_SCREEN));
     fullScreenButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -403,6 +430,7 @@ public class JavaFXDisplay extends WaitableApp
             ? I18n.get(I18n.PART_SCREEN) : I18n.get(I18n.FULL_SCREEN));
       }
     });
+    
     Button hideMenuButton = new Button(I18n.get(I18n.HIDE_MENU));
     hideMenuButton.setOnAction(new EventHandler<ActionEvent>() {
       @Override
@@ -413,6 +441,7 @@ public class JavaFXDisplay extends WaitableApp
             : I18n.get(I18n.SHOW_MENU));
       }
     });
+    statusBar.getRightItems().add(screenShotButton);
     statusBar.getRightItems().add(hideMenuButton);
     statusBar.getRightItems().add(fullScreenButton);
 

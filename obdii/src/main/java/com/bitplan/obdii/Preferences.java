@@ -42,7 +42,8 @@ public class Preferences implements JsonAble {
   Boolean debug;
   int screenPercent = 100;
   String logDirectory;
-  String logPrefix;        // e.g. my Ion
+  String screenShotDirectory;
+  String logPrefix; // e.g. my Ion
 
   public LangChoice getLanguage() {
     return language;
@@ -76,6 +77,14 @@ public class Preferences implements JsonAble {
     this.logDirectory = logDirectory;
   }
 
+  public String getScreenShotDirectory() {
+    return screenShotDirectory;
+  }
+
+  public void setScreenShotDirectory(String screenShotDirectory) {
+    this.screenShotDirectory = screenShotDirectory;
+  }
+
   @Override
   public void fromMap(Map<String, Object> map) {
     String langChoiceStr = (String) map.get("language");
@@ -87,10 +96,11 @@ public class Preferences implements JsonAble {
       if (value instanceof Double)
         this.screenPercent = ((Double) value).intValue();
       else
-        this.screenPercent=(Integer)value;
+        this.screenPercent = (Integer) value;
     }
-    this.logPrefix=(String) map.get("logPrefix");
-    this.logDirectory=(String) map.get("logDirectory");
+    this.logPrefix = (String) map.get("logPrefix");
+    this.logDirectory = (String) map.get("logDirectory");
+    this.screenShotDirectory= (String) map.get("screenShotDirectory");
   }
 
   @Override
@@ -109,9 +119,11 @@ public class Preferences implements JsonAble {
   public static Preferences getInstance() throws Exception {
     if (instance == null) {
       File jsonFile = JsonAble.getJsonFile(Preferences.class.getSimpleName());
-      JsonManager<Preferences> jmPreferences = new JsonManagerImpl<Preferences>(
-          Preferences.class);
-      instance = jmPreferences.fromJsonFile(jsonFile);
+      if (jsonFile.canRead()) {
+        JsonManager<Preferences> jmPreferences = new JsonManagerImpl<Preferences>(
+            Preferences.class);
+        instance = jmPreferences.fromJsonFile(jsonFile);
+      }
       if (instance == null)
         instance = new Preferences();
     }
