@@ -128,10 +128,12 @@ public class JavaFXDisplay extends WaitableApp
 
   private Map<String, GenericPanel> panels=new HashMap<String,GenericPanel>();
 
+  private TabPane activeTabPane;
+
 
   public static final boolean debug = false;
 
-  private static final String DASH_BOARD_GROUP = "dashBoardGroup";
+  public static final String DASH_BOARD_GROUP = "dashBoardGroup";
 
   /**
    * construct me from an abstract application description and a software
@@ -165,6 +167,20 @@ public class JavaFXDisplay extends WaitableApp
 
   public void setApp(com.bitplan.can4eve.gui.App app) {
     JavaFXDisplay.app = app;
+  }
+
+  /**
+   * @return the menuBar
+   */
+  public MenuBar getMenuBar() {
+    return menuBar;
+  }
+
+  /**
+   * @param menuBar the menuBar to set
+   */
+  public void setMenuBar(MenuBar menuBar) {
+    this.menuBar = menuBar;
   }
 
   @Override
@@ -234,7 +250,6 @@ public class JavaFXDisplay extends WaitableApp
       rootChilds.remove(pMenuBar);
     else
       rootChilds.add(0,pMenuBar);
-
   }
 
   /**
@@ -243,10 +258,10 @@ public class JavaFXDisplay extends WaitableApp
    * @param scene
    */
   public void createMenuBar(Scene scene) {
-    menuBar = new MenuBar();
+    setMenuBar(new MenuBar());
     for (com.bitplan.can4eve.gui.Menu amenu : app.getMainMenu().getSubMenus()) {
       Menu menu = new Menu(i18n(amenu.getId()));
-      menuBar.getMenus().add(menu);
+      getMenuBar().getMenus().add(menu);
       for (com.bitplan.can4eve.gui.MenuItem amenuitem : amenu.getMenuItems()) {
         MenuItem menuItem = new MenuItem(i18n(amenuitem.getId()));
         menuItem.setOnAction(this);
@@ -254,7 +269,7 @@ public class JavaFXDisplay extends WaitableApp
         menu.getItems().add(menuItem);
       }
     }
-    toggleMenuBar(scene,menuBar);
+    toggleMenuBar(scene,getMenuBar());
   }
 
   @Override
@@ -413,9 +428,9 @@ public class JavaFXDisplay extends WaitableApp
     hideMenuButton.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
-        toggleMenuBar(scene,menuBar);
-        menuBar.setVisible(!menuBar.isVisible());
-        hideMenuButton.setText(menuBar.isVisible() ? I18n.get(I18n.HIDE_MENU)
+        toggleMenuBar(scene,getMenuBar());
+        getMenuBar().setVisible(!getMenuBar().isVisible());
+        hideMenuButton.setText(getMenuBar().isVisible() ? I18n.get(I18n.HIDE_MENU)
             : I18n.get(I18n.SHOW_MENU));
       }
     });
@@ -443,7 +458,7 @@ public class JavaFXDisplay extends WaitableApp
    * @return the menu item
    */
   public MenuItem getMenuItem(String id) {
-    for (Menu menu : this.menuBar.getMenus()) {
+    for (Menu menu : this.getMenuBar().getMenus()) {
       for (MenuItem menuItem : menu.getItems()) {
         if (id.equals(menuItem.getId())) {
           return menuItem;
@@ -582,6 +597,11 @@ public class JavaFXDisplay extends WaitableApp
           obdApp.start(withLog);
         } catch (Exception e) {
           handleException(e);
+          try {
+            obdApp.stop();
+          } catch (Exception e1) {
+            handleException(e1);
+          }
         }
         return null;
       }
@@ -740,17 +760,18 @@ public class JavaFXDisplay extends WaitableApp
    * 
    * @param groupId
    */
-  public void setActiveTabPane(String groupId) {
+  public TabPane setActiveTabPane(String groupId) {
     TabPane oldtabPane = this.getActiveTabPane();
     if (oldtabPane != null) {
       root.getChildren().remove(oldtabPane);
     }
     this.activeView = groupId;
-    TabPane newTabPane = getActiveTabPane();
-    if (newTabPane == null)
+    activeTabPane = getActiveTabPane();
+    if (activeTabPane == null)
       throw new IllegalStateException(
           "tab Pane with groupId " + groupId + " missing");
-    root.getChildren().add(newTabPane);
+    root.getChildren().add(activeTabPane);
+    return activeTabPane;
   }
 
   /**
@@ -758,7 +779,7 @@ public class JavaFXDisplay extends WaitableApp
    * 
    * @return - the active Tab Pane
    */
-  private TabPane getActiveTabPane() {
+  public TabPane getActiveTabPane() {
     TabPane activeTabPane = this.tabPaneByView.get(this.activeView);
     return activeTabPane;
   }

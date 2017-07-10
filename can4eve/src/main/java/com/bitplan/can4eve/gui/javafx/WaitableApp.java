@@ -158,8 +158,9 @@ public abstract class WaitableApp extends Application implements Display {
   /**
    * save me as a Png File
    * @param file
+   * @return 
    */
-  public void saveAsPng(File file) {
+  public static void saveAsPng(Stage stage,File file) {
     WritableImage image = stage.getScene().snapshot(null);
     try {
         ImageIO.write(fromFXImage(image, null), "png", file);
