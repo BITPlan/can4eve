@@ -122,9 +122,14 @@ public class TestAppGUI {
     pref.debug = true;
     pref.setLanguage(LangChoice.de);
     String json = pref.asJson();
-    // System.out.println(json);
-    assertEquals("{\n" + "  \"language\": \"de\",\n" + "  \"debug\": true,\n"
-        + "  \"screenPercent\": 100\n" + "}", json);
+    //System.out.println(json);
+    assertEquals("{\n" + 
+        "  \"language\": \"de\",\n" + 
+        "  \"debug\": true,\n" + 
+        "  \"screenPercent\": 100,\n" + 
+        "  \"logDirectory\": \"can4eveLogs\",\n" + 
+        "  \"screenShotDirectory\": \"can4eveScreenShots\"\n" + 
+        "}", json);
     JsonManager<Preferences> jmPreferences = new JsonManagerImpl<Preferences>(
         Preferences.class);
     Preferences pref2 = jmPreferences.fromJson(json);
