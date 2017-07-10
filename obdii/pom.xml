@@ -123,6 +123,63 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- Launch4 J plugin to create cross plattform java app -->
+			<plugin>
+				<groupId>com.akathist.maven.plugins.launch4j</groupId>
+				<artifactId>launch4j-maven-plugin</artifactId>
+				<version>1.7.18</version>
+				<executions>
+					<execution>
+						<id>l4j-gui</id>
+						<phase>package</phase>
+						<goals>
+							<goal>launch4j</goal>
+						</goals>
+						<configuration>
+							<dontWrapJar>true</dontWrapJar>
+							<headerType>gui</headerType>
+							<jar>com.bitplan.obdii-0.0.1-jar-with-dependencies.jar</jar>
+							<outfile>${project.build.directory}/can4eve.exe</outfile>
+							<errTitle />
+							<cmdLine />
+							<chdir />
+							<priority>normal</priority>
+							<downloadUrl>http://java.com/download</downloadUrl>
+							<supportUrl />
+							<customProcName>false</customProcName>
+							<stayAlive>false</stayAlive>
+							<manifest />
+							<icon />
+							<jre>
+								<path />
+								<minVersion>1.8.0</minVersion>
+								<maxVersion />
+								<jdkPreference>preferJre</jdkPreference>
+								<initialHeapSize>256</initialHeapSize>
+								<maxHeapSize>3000</maxHeapSize>
+							</jre>
+							<splash>
+								<file>${project.basedir}/src/main/build/Sunflower.bmp</file>
+								<waitForWindow>true</waitForWindow>
+								<timeout>60</timeout>
+								<timeoutErr>true</timeoutErr>
+							</splash>
+							<versionInfo>
+								<fileVersion>0.0.0.1</fileVersion>
+								<txtFileVersion>${project.version}</txtFileVersion>
+								<fileDescription>Can4Eve</fileDescription>
+								<copyright>BITPlan GmbH</copyright>
+								<productVersion>0.0.0.0</productVersion>
+								<txtProductVersion>${project.version}</txtProductVersion>
+								<productName>Can4Eve</productName>
+								<companyName>BITPlan GmbH</companyName>
+								<internalName>can4eve</internalName>
+								<originalFilename>can4eve.exe</originalFilename>
+							</versionInfo>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 </project>
