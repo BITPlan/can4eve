@@ -27,7 +27,9 @@
 							"title": "port",
 							"format": "%4d",
 							"type": "Integer",
-							"fieldSize": 5
+							"fieldSize": 5,
+							"gridX": 3,
+							"gridY": 1
 						},
 						{
 							"title": "serialDevice",
@@ -39,13 +41,17 @@
 						{
 							"title": "baudRate",
 							"format": "%5d",
-							"type": "Integer"
+							"type": "Integer",
+							"gridX": 3,
+							"gridY": 2
 						},
 						{
 							"title": "direct",
 							"hint": "the device needs no serial configuration",
 							"format": "%s",
-							"type": "Boolean"
+							"type": "Boolean",
+							"gridX": 5,
+							"gridY": 2
 						},
 						{
 							"title": "timeout",
@@ -57,7 +63,9 @@
 							"title": "debug",
 							"hint": "display debugging information for the device",
 							"format": "%s",
-							"type": "Boolean"
+							"type": "Boolean",
+							"gridX": 3,
+							"gridY": 3
 						}
 					]
 				},

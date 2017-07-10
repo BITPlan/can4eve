@@ -41,8 +41,8 @@ public class Preferences implements JsonAble {
   private LangChoice language = LangChoice.en;
   Boolean debug;
   int screenPercent = 100;
-  String logDirectory;
-  String screenShotDirectory;
+  String logDirectory="can4eveLogs";
+  String screenShotDirectory="can4eveScreenShots";
   String logPrefix; // e.g. my Ion
 
   public LangChoice getLanguage() {

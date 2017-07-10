@@ -68,7 +68,7 @@ public class SettingsDialog extends GenericDialog {
         Platform.runLater(()->testConnection(config));
       }
     });
-    grid.add(button, 3, controls.size() + 1);
+    grid.add(button, 2,0);
   }
 
   /**

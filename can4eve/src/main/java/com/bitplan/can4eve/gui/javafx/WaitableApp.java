@@ -20,13 +20,29 @@
  */
 package com.bitplan.can4eve.gui.javafx;
 
-import com.bitplan.can4eve.gui.Display;
+import java.awt.AlphaComposite;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.IntBuffer;
 
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.image.Image;
+import javafx.scene.image.PixelFormat;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.WritableImage;
+import javafx.scene.image.WritablePixelFormat;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+
+import javax.imageio.ImageIO;
+
+import sun.awt.image.IntegerComponentRaster;
+
+import com.bitplan.can4eve.gui.Display;
 
 /**
  * Waitable Application that does not need launch
@@ -37,6 +53,7 @@ import javafx.stage.Stage;
 public abstract class WaitableApp extends Application implements Display {
   protected Stage stage;
   static boolean toolkitStarted;
+  File screenShot=null;
 
   /**
    * allow startup without launch
@@ -137,5 +154,86 @@ public abstract class WaitableApp extends Application implements Display {
       Platform.runLater(() -> stage.close());
     this.waitClose();
   }
+  
+  /**
+   * save me as a Png File
+   * @param file
+   * @return 
+   */
+  public static void saveAsPng(Stage stage,File file) {
+    WritableImage image = stage.getScene().snapshot(null);
+    try {
+        ImageIO.write(fromFXImage(image, null), "png", file);
+    } catch (IOException e) {
+        // TODO: handle exception here
+    }
+  }
+  
+  /**
+   * Snapshots the specified JavaFX {@link Image} object and stores a
+   * copy of its pixels into a {@link BufferedImage} object, creating
+   * a new object if needed.
+   * The method will only convert a JavaFX {@code Image} that is readable
+   * as per the conditions on the
+   * {@link Image#getPixelReader() Image.getPixelReader()}
+   * method.
+   * If the {@code Image} is not readable, as determined by its
+   * {@code getPixelReader()} method, then this method will return null.
+   * If the {@code Image} is a writable, or other dynamic image, then
+   * the {@code BufferedImage} will only be set to the current state of
+   * the pixels in the image as determined by its {@link PixelReader}.
+   * Further changes to the pixels of the {@code Image} will not be
+   * reflected in the returned {@code BufferedImage}.
+   * <p>
+   * The optional {@code BufferedImage} parameter may be reused to store
+   * the copy of the pixels.
+   * A new {@code BufferedImage} will be created if the supplied object
+   * is null, is too small or of a type which the image pixels cannot
+   * be easily converted into.
+   * 
+   * @param img the JavaFX {@code Image} to be converted
+   * @param bimg an optional {@code BufferedImage} object that may be
+   *        used to store the returned pixel data
+   * @return a {@code BufferedImage} containing a snapshot of the JavaFX
+   *         {@code Image}, or null if the {@code Image} is not readable.
+   * @since JavaFX 2.2
+   */
+  public static BufferedImage fromFXImage(Image img, BufferedImage bimg) {
+      PixelReader pr = img.getPixelReader();
+      if (pr == null) {
+          return null;
+      }
+      int iw = (int) img.getWidth();
+      int ih = (int) img.getHeight();
+      if (bimg != null) {
+          int type = bimg.getType();
+          int bw = bimg.getWidth();
+          int bh = bimg.getHeight();
+          if (bw < iw || bh < ih ||
+              (type != BufferedImage.TYPE_INT_ARGB &&
+               type != BufferedImage.TYPE_INT_ARGB_PRE))
+          {
+              bimg = null;
+          } else if (iw < bw || ih < bh) {
+              Graphics2D g2d = bimg.createGraphics();
+              g2d.setComposite(AlphaComposite.Clear);
+              g2d.fillRect(0, 0, bw, bh);
+              g2d.dispose();
+          }
+      }
+      if (bimg == null) {
+          bimg = new BufferedImage(iw, ih, BufferedImage.TYPE_INT_ARGB_PRE);
+      }
+      IntegerComponentRaster icr = (IntegerComponentRaster) bimg.getRaster();
+      int offset = icr.getDataOffset(0);
+      int scan = icr.getScanlineStride();
+      int data[] = icr.getDataStorage();
+      WritablePixelFormat<IntBuffer> pf = (bimg.isAlphaPremultiplied() ?
+                                           PixelFormat.getIntArgbPreInstance() :
+                                           PixelFormat.getIntArgbInstance());
+      pr.getPixels(0, 0, iw, ih, pf, data, offset, scan);
+      return bimg;
+  }
+  
 
 }

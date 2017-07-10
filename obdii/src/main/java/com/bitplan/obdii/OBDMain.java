@@ -30,13 +30,13 @@ import com.bitplan.can4eve.Vehicle;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.gui.App;
 import com.bitplan.can4eve.gui.Display;
-import com.bitplan.can4eve.gui.swing.Translator;
 import com.bitplan.can4eve.util.TaskLaunch;
 import com.bitplan.elm327.Config;
 import com.bitplan.elm327.Config.ConfigMode;
 import com.bitplan.elm327.Config.DeviceType;
 import com.bitplan.elm327.Connection;
 import com.bitplan.elm327.LogImpl;
+import com.bitplan.i18n.Translator;
 import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.obdii.elm327.ElmSimulator;
@@ -238,7 +238,8 @@ public class OBDMain extends Main implements OBDApp {
   @Override
   public ELM327 stop() throws Exception {
     // stop monitoring;
-    obdTriplet.setMonitoring(false);
+    if (obdTriplet!=null)
+      obdTriplet.setMonitoring(false);
     if (elm != null) {
       int ltimeout = timeout;
       if (config != null)

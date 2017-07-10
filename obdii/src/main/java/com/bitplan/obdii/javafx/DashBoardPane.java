@@ -22,15 +22,13 @@ package com.bitplan.obdii.javafx;
 
 import com.bitplan.obdii.I18n;
 
+import eu.hansolo.LcdGauge;
 import eu.hansolo.medusa.FGauge;
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.Gauge.NeedleSize;
-import eu.hansolo.medusa.Gauge.SkinType;
 import eu.hansolo.medusa.GaugeBuilder;
 import eu.hansolo.medusa.GaugeDesign;
 import eu.hansolo.medusa.GaugeDesign.GaugeBackground;
-import eu.hansolo.medusa.LcdDesign;
-import eu.hansolo.medusa.LcdFont;
 import eu.hansolo.medusa.Section;
 import eu.hansolo.medusa.TickLabelLocation;
 import eu.hansolo.medusa.TickMarkType;
@@ -44,7 +42,7 @@ import javafx.scene.paint.Color;
  * @author wf
  *
  */
-public class DashBoardPane extends ConstrainedGridPane {
+public class DashBoardPane extends ConstrainedGridPane  {
 
   private FGauge framedRPMGauge;
   private Gauge rpmGauge;
@@ -72,11 +70,14 @@ public class DashBoardPane extends ConstrainedGridPane {
     this.rpmGauge = rpmGauge;
   }
 
+  /**
+   * create a DashBoardPane
+   * @param maxValue
+   */
   public DashBoardPane(int maxValue) {
     //LcdFont lcdFont=LcdFont.STANDARD;
     //LcdDesign lcdDesign=LcdDesign.SECTIONS;
-    LcdFont lcdFont=LcdFont.DIGITAL;
-    LcdDesign lcdDesign=LcdDesign.GRAY;
+   
     
     rpmGauge = GaugeBuilder.create().minValue(0)
         // FIXME use value from Vehicle definition
@@ -91,8 +92,8 @@ public class DashBoardPane extends ConstrainedGridPane {
         .mediumTickMarkType(TickMarkType.DOT)
         .minorTickMarkType(TickMarkType.LINE)
         .tickLabelLocation(TickLabelLocation.INSIDE).title(I18n.get(I18n.REV_COUNT))
-        .unit(I18n.get(I18n.RPM)).lcdDesign(lcdDesign).lcdVisible(true)
-        .lcdFont(lcdFont).needleSize(NeedleSize.THICK).build();
+        .unit(I18n.get(I18n.RPM)).lcdDesign(LcdGauge.lcdDesign).lcdVisible(true)
+        .lcdFont(LcdGauge.lcdFont).needleSize(NeedleSize.THICK).build();
     
     rpmSpeedGauge = GaugeBuilder.create().minValue(0).maxValue(140)
         .tickLabelDecimals(0).decimals(1).autoScale(true).animated(true)
@@ -105,32 +106,14 @@ public class DashBoardPane extends ConstrainedGridPane {
         .minorTickMarkType(TickMarkType.LINE)
         .tickLabelLocation(TickLabelLocation.INSIDE)
         .title(I18n.get(I18n.RPM_SPEED)).unit("km/h")
-        .lcdDesign(lcdDesign).lcdVisible(true)
-        .lcdFont(lcdFont).needleSize(NeedleSize.THICK).build();
+        .lcdDesign(LcdGauge.lcdDesign).lcdVisible(true)
+        .lcdFont(LcdGauge.lcdFont).needleSize(NeedleSize.THICK).build();
 
-    rpmMax = GaugeBuilder.create().skinType(SkinType.LCD).animated(true)
-        .oldValueVisible(false).maxMeasuredValueVisible(false).minMeasuredValueVisible(false).decimals(0)
-        .tickLabelDecimals(0).title(I18n.get(I18n.RPM_MAX)).unit(I18n.get(I18n.RPM))
-        .lcdDesign(lcdDesign).lcdFont(lcdFont).build();
-
-    rpmAvg = GaugeBuilder.create().skinType(SkinType.LCD).oldValueVisible(false)
-        .maxMeasuredValueVisible(false).minMeasuredValueVisible(false)
-        .animated(true).decimals(0).tickLabelDecimals(0)
-        .title(I18n.get(I18n.RPM_AVG)).unit(I18n.get(I18n.RPM))
-        .lcdDesign(lcdDesign).lcdFont(lcdFont)
-        .build();
-    
-    rpmSpeedMax = GaugeBuilder.create().skinType(SkinType.LCD)
-        .oldValueVisible(false).maxMeasuredValueVisible(false)
-        .minMeasuredValueVisible(false).animated(true).decimals(0)
-        .tickLabelDecimals(0).title(I18n.get(I18n.RPM_SPEED_MAX)).unit("km/h")
-        .lcdDesign(lcdDesign).lcdFont(lcdFont).build();
-    
-    rpmSpeedAvg = GaugeBuilder.create().skinType(SkinType.LCD)
-        .oldValueVisible(false).maxMeasuredValueVisible(false)
-        .minMeasuredValueVisible(false).animated(true).decimals(0)
-        .tickLabelDecimals(0).title(I18n.get(I18n.RPM_SPEED_AVG)).unit("km/h")
-        .lcdDesign(lcdDesign).lcdFont(lcdFont).build();
+    rpmMax = LcdGauge.create(I18n.RPM_MAX,I18n.RPM);
+    rpmAvg = LcdGauge.create(I18n.RPM_AVG,I18n.RPM);
+    // TODO translate km/h? or allow miles/hour?
+    rpmSpeedMax = LcdGauge.create(I18n.RPM_SPEED_MAX,I18n.KMH);   
+    rpmSpeedAvg = LcdGauge.create(I18n.RPM_SPEED_AVG,I18n.KMH);
 
     framedRPMGauge = new FGauge(rpmGauge, GaugeDesign.ENZO,
         GaugeBackground.DARK_GRAY);
@@ -151,7 +134,6 @@ public class DashBoardPane extends ConstrainedGridPane {
     rpmSpeedPane.add(rpmSpeedAvg, 1, 0);
     rpmSpeedPane.setAlignment(Pos.CENTER);
     this.add(rpmSpeedPane, 1, 1);
-    
     
     // 75= 80 - 5% (5% for extra gap)
     fixRowSizes(6,87,13);

@@ -23,8 +23,8 @@ package com.bitplan.obdii.javafx;
 import java.net.URL;
 
 import com.bitplan.can4eve.Vehicle.State;
-import com.bitplan.can4eve.gui.swing.Translator;
 import com.bitplan.can4eve.states.StopWatch;
+import com.bitplan.i18n.Translator;
 import com.bitplan.obdii.I18n;
 
 import eu.hansolo.medusa.Clock;

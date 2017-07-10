@@ -44,11 +44,11 @@ import com.bitplan.can4eve.gui.Group;
 import com.bitplan.can4eve.gui.javafx.GenericDialog;
 import com.bitplan.can4eve.gui.javafx.SampleApp;
 import com.bitplan.can4eve.gui.javafx.WaitableApp;
-import com.bitplan.can4eve.gui.swing.Translator;
 import com.bitplan.can4eve.json.JsonManager;
 import com.bitplan.can4eve.json.JsonManagerImpl;
 import com.bitplan.can4eve.states.StopWatch;
 import com.bitplan.can4eve.util.TaskLaunch;
+import com.bitplan.i18n.Translator;
 import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.javafx.ChargePane;
 import com.bitplan.obdii.javafx.ClockPane;
@@ -189,7 +189,7 @@ public class TestAppGUI {
       }
     }
     LCDPane lcdPane=new LCDPane(rows,cols,250,30,LcdFont.STANDARD,"rpm",texts);
-    SampleApp.createAndShow("LCDPane", lcdPane, SHOW_TIME*4);
+    SampleApp.createAndShow("LCDPane", lcdPane, SHOW_TIME);
   }
   
   @Test
@@ -217,17 +217,12 @@ public class TestAppGUI {
   }
 
   @Test
-  public void testMedusa() throws InterruptedException {
+  public void testMedusa() throws Exception {
     WaitableApp.toolkitInit();
     OverviewDemo demo = new OverviewDemo();
     demo.init();
     GridPane demoPane = demo.getDemoPane();
-    SampleApp sampleApp = new SampleApp("Controls", demoPane);
-    sampleApp.show();
-    sampleApp.waitOpen();
-    demo.startTimer(demoPane);
-    Thread.sleep(SHOW_TIME);
-    sampleApp.close();
+    SampleApp.createAndShow("Controls", demoPane,SHOW_TIME);
   }
 
   @Test
@@ -314,7 +309,9 @@ public class TestAppGUI {
     Translator.initialize(Preferences.getInstance().getLanguage().name());
     ChargePane chargePane = new ChargePane();
     SimpleDoubleProperty sd = new SimpleDoubleProperty();
-    chargePane.getSOCGauge().valueProperty().bind(sd);
+    SimpleDoubleProperty rr = new SimpleDoubleProperty();
+    chargePane.getGaugeMap().get("SOC").valueProperty().bind(sd);
+    chargePane.getGaugeMap().get("Range").valueProperty().bind(rr);
     sd.setValue(100);
     SampleApp sampleApp = new SampleApp("Charge", chargePane);
     sampleApp.show();
@@ -325,6 +322,7 @@ public class TestAppGUI {
       double newValue = 100 - (95 * i / loops);
       // LOGGER.log(Level.INFO, "new value "+newValue);
       sd.setValue(newValue);
+      rr.setValue(newValue*0.9);
     }
     sampleApp.close();
   }

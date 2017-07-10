@@ -18,39 +18,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bitplan.can4eve.gui.swing;
+package com.bitplan.obdii.javafx;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JComponent;
+import com.bitplan.obdii.I18n;
 
 /**
- * A generic multiple platform panel with gauges
+ * Odometer values
  * @author wf
  *
  */
-public class GaugePanel {
-  
-  public GaugePanel() {
-    
-  }
-  
-  private List<JComponent> components=new ArrayList<JComponent>();
-  
-  public List<JComponent> getComponents() {
-    return components;
-  }
-
-  public void setComponents(List<JComponent> components) {
-    this.components = components;
-  }
-
+public class OdoPane extends CANValuePane {
   /**
-   * add the given component
-   * @param component
+   * odometer info
    */
-  public void add(JComponent component) {
-    getComponents().add(component);
+  public OdoPane() {
+    super.addGauge("Odometer",I18n.ODO_METER,I18n.KM,0,0);
+    super.addGauge("TripOdo",I18n.TRIP_ODO_METER,I18n.KM,0,1).setDecimals(3);;
+    this.fixColumnSizes(4, 100);
+    this.fixRowSizes(4, 50,50);
   }
 }

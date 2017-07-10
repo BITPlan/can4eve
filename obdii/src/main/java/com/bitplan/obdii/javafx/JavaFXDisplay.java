@@ -46,10 +46,10 @@ import com.bitplan.can4eve.gui.javafx.GenericPanel;
 import com.bitplan.can4eve.gui.javafx.WaitableApp;
 //import com.bitplan.can4eve.gui.javafx.LoginDialog;
 import com.bitplan.can4eve.gui.swing.JLink;
-import com.bitplan.can4eve.gui.swing.Translator;
 import com.bitplan.can4eve.util.TaskLaunch;
 import com.bitplan.elm327.Config;
 import com.bitplan.elm327.Config.ConfigMode;
+import com.bitplan.i18n.Translator;
 import com.bitplan.obdii.CANValueDisplay;
 import com.bitplan.obdii.I18n;
 import com.bitplan.obdii.LabelField;
@@ -121,14 +121,21 @@ public class JavaFXDisplay extends WaitableApp
   protected Map<String, ObservableValue<?>> canProperties;
 
   protected ChargePane chargePane;
-
+  protected OdoPane odoPane;
+  
   private Tab chargeTab;
-
   private Scene scene;
+
+  private Tab odoTab;
+
+  private Map<String, GenericPanel> panels=new HashMap<String,GenericPanel>();
+
+  private TabPane activeTabPane;
+
 
   public static final boolean debug = false;
 
-  private static final String DASH_BOARD_GROUP = "dashBoardGroup";
+  public static final String DASH_BOARD_GROUP = "dashBoardGroup";
 
   /**
    * construct me from an abstract application description and a software
@@ -162,6 +169,20 @@ public class JavaFXDisplay extends WaitableApp
 
   public void setApp(com.bitplan.can4eve.gui.App app) {
     JavaFXDisplay.app = app;
+  }
+
+  /**
+   * @return the menuBar
+   */
+  public MenuBar getMenuBar() {
+    return menuBar;
+  }
+
+  /**
+   * @param menuBar the menuBar to set
+   */
+  public void setMenuBar(MenuBar menuBar) {
+    this.menuBar = menuBar;
   }
 
   @Override
@@ -231,7 +252,6 @@ public class JavaFXDisplay extends WaitableApp
       rootChilds.remove(pMenuBar);
     else
       rootChilds.add(0,pMenuBar);
-
   }
 
   /**
@@ -240,10 +260,10 @@ public class JavaFXDisplay extends WaitableApp
    * @param scene
    */
   public void createMenuBar(Scene scene) {
-    menuBar = new MenuBar();
+    setMenuBar(new MenuBar());
     for (com.bitplan.can4eve.gui.Menu amenu : app.getMainMenu().getSubMenus()) {
       Menu menu = new Menu(i18n(amenu.getId()));
-      menuBar.getMenus().add(menu);
+      getMenuBar().getMenus().add(menu);
       for (com.bitplan.can4eve.gui.MenuItem amenuitem : amenu.getMenuItems()) {
         MenuItem menuItem = new MenuItem(i18n(amenuitem.getId()));
         menuItem.setOnAction(this);
@@ -251,7 +271,7 @@ public class JavaFXDisplay extends WaitableApp
         menu.getItems().add(menuItem);
       }
     }
-    toggleMenuBar(scene,menuBar);
+    toggleMenuBar(scene,getMenuBar());
   }
 
   @Override
@@ -320,6 +340,7 @@ public class JavaFXDisplay extends WaitableApp
         Tab tab = new Tab();
         tab.setText(form.getTitle());
         GenericPanel panel = new GenericPanel(stage, form);
+        panels.put(form.getId(),panel);
         controls.putAll(panel.controls);
         tab.setContent(panel);
         tabPane.getTabs().add(tab);
@@ -353,9 +374,32 @@ public class JavaFXDisplay extends WaitableApp
   protected void bind(Property value, ObservableValue valueTo) {
     if (valueTo != null) {
       if (value.isBound())
-        throw new IllegalStateException("value is already bound");
+        LOGGER.log(Level.WARNING,"value is already bound");
       value.bind(valueTo);
     }
+  }
+  
+  public Void saveScreenShot() {
+    Preferences prefs;
+    try {
+      prefs = Preferences.getInstance();
+      if (prefs!=null) {
+        File screenShotDirectory=new File(prefs.getScreenShotDirectory());
+        if (!screenShotDirectory.exists()&& !screenShotDirectory.isDirectory()) {
+          screenShotDirectory.mkdirs();
+        }
+        String tabName=this.getActiveTab().getText();
+        SimpleDateFormat lIsoDateFormatter = new SimpleDateFormat(
+            "yyyy-MM-dd_HHmmss");
+        String screenShotName=String.format("screenShot_%s_%s.png",
+        tabName,lIsoDateFormatter.format(new Date()));
+        File screenShotFile=new File(screenShotDirectory,screenShotName);
+        WaitableApp.saveAsPng(stage, screenShotFile);
+      }
+    } catch (Exception e1) {
+      handleException(e1);
+    }
+    return null;
   }
 
   /**
@@ -363,8 +407,8 @@ public class JavaFXDisplay extends WaitableApp
    */
   public void setupSpecial(TabPane tabPane) {
     clockPane = new ClockPane();
-    // TODO i18n
-    // FIXME max RPM from Vehicle
+    odoPane=new OdoPane();
+    odoTab = addTab(tabPane, 0, I18n.get(I18n.ODO_INFO), odoPane);
     dashBoardPane = new DashBoardPane(9200);
     chargePane = new ChargePane();
     chargeTab = addTab(tabPane, 0, I18n.get(I18n.SOC), chargePane);
@@ -400,24 +444,7 @@ public class JavaFXDisplay extends WaitableApp
     screenShotButton.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
-        Preferences prefs;
-        try {
-          prefs = Preferences.getInstance();
-          if (prefs!=null) {
-            File screenShotDirectory=new File(prefs.getScreenShotDirectory());
-            if (!screenShotDirectory.exists()&& !screenShotDirectory.isDirectory()) {
-              screenShotDirectory.mkdirs();
-            }
-            SimpleDateFormat lIsoDateFormatter = new SimpleDateFormat(
-                "yyyy-MM-dd_HHmmss");
-            String screenShotName=String.format("screenShot_%s_%s.png",
-            JavaFXDisplay.this.activeView,lIsoDateFormatter.format(new Date()));
-            File screenShotFile=new File(screenShotDirectory,screenShotName);
-
-          }
-        } catch (Exception e1) {
-          handleException(e1);
-        }
+        Platform.runLater(()->saveScreenShot());
       }
     });
 
@@ -435,9 +462,9 @@ public class JavaFXDisplay extends WaitableApp
     hideMenuButton.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
-        toggleMenuBar(scene,menuBar);
-        menuBar.setVisible(!menuBar.isVisible());
-        hideMenuButton.setText(menuBar.isVisible() ? I18n.get(I18n.HIDE_MENU)
+        toggleMenuBar(scene,getMenuBar());
+        getMenuBar().setVisible(!getMenuBar().isVisible());
+        hideMenuButton.setText(getMenuBar().isVisible() ? I18n.get(I18n.HIDE_MENU)
             : I18n.get(I18n.SHOW_MENU));
       }
     });
@@ -466,7 +493,7 @@ public class JavaFXDisplay extends WaitableApp
    * @return the menu item
    */
   public MenuItem getMenuItem(String id) {
-    for (Menu menu : this.menuBar.getMenus()) {
+    for (Menu menu : this.getMenuBar().getMenus()) {
       for (MenuItem menuItem : menu.getItems()) {
         if (id.equals(menuItem.getId())) {
           return menuItem;
@@ -605,6 +632,11 @@ public class JavaFXDisplay extends WaitableApp
           obdApp.start(withLog);
         } catch (Exception e) {
           handleException(e);
+          try {
+            obdApp.stop();
+          } catch (Exception e1) {
+            handleException(e1);
+          }
         }
         return null;
       }
@@ -763,17 +795,18 @@ public class JavaFXDisplay extends WaitableApp
    * 
    * @param groupId
    */
-  public void setActiveTabPane(String groupId) {
+  public TabPane setActiveTabPane(String groupId) {
     TabPane oldtabPane = this.getActiveTabPane();
     if (oldtabPane != null) {
       root.getChildren().remove(oldtabPane);
     }
     this.activeView = groupId;
-    TabPane newTabPane = getActiveTabPane();
-    if (newTabPane == null)
+    activeTabPane = getActiveTabPane();
+    if (activeTabPane == null)
       throw new IllegalStateException(
           "tab Pane with groupId " + groupId + " missing");
-    root.getChildren().add(newTabPane);
+    root.getChildren().add(activeTabPane);
+    return activeTabPane;
   }
 
   /**
@@ -781,7 +814,7 @@ public class JavaFXDisplay extends WaitableApp
    * 
    * @return - the active Tab Pane
    */
-  private TabPane getActiveTabPane() {
+  public TabPane getActiveTabPane() {
     TabPane activeTabPane = this.tabPaneByView.get(this.activeView);
     return activeTabPane;
   }

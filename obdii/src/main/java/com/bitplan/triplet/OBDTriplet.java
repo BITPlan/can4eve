@@ -58,6 +58,7 @@ import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.triplet.ShifterPosition.ShiftPosition;
 
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
@@ -235,49 +236,86 @@ public class OBDTriplet extends OBDHandler {
   }
 
   /**
+   * add the given Value
+   * @param doubleValue
+   * @return - the value
+   */
+  private DoubleValue addValue(DoubleValue doubleValue) {
+    this.addCanProperty(doubleValue, new SimpleDoubleProperty());
+    return doubleValue;
+  }
+  
+  /**
+   * add the given Value
+   * @param integerValue
+   * @return - the value
+   */
+  private IntegerValue addValue(IntegerValue integerValue) {
+    this.addCanProperty(integerValue, new SimpleIntegerProperty());
+    return integerValue;
+  }
+  
+  /**
+   * add the given Value
+   * @param booleanValue
+   * @return - the value
+   */
+  private BooleanValue addValue(BooleanValue booleanValue) {
+    this.addCanProperty(booleanValue, new SimpleBooleanProperty());
+    return booleanValue;
+  }
+  
+  @SuppressWarnings("unchecked")
+  private void setValue(String name, Double value, Date timeStamp) {
+    canProperties.get(name).setValue(value, timeStamp);
+  }
+  
+  @SuppressWarnings("unchecked")
+  private void setValue(String name, Integer value, Date timeStamp) {
+    canProperties.get(name).setValue(value, timeStamp);
+  }
+  
+  /**
    * initialize the CanValues
    */
   public void initCanValues() {
     VehicleGroup vg = this.getElm327().getVehicleGroup();
     // car parameters
-    accelerator = new DoubleValue(getCanInfo("Accelerator"));
-    blinkerLeft = new BooleanValue(getCanInfo("BlinkerLeft"), "◀", "");
-    blinkerRight = new BooleanValue(getCanInfo("BlinkerRight"), "▶", "");
-    batteryCapacity = new DoubleValue(getCanInfo("BatteryCapacity"));
-    doorOpen = new BooleanValue(getCanInfo("DoorOpen"), "●", "");
-    parkingLight = new BooleanValue(getCanInfo("ParkingLight"), "●", "");
-    headLight = new BooleanValue(getCanInfo("HeadLight"), "●", "");
-    highBeam = new BooleanValue(getCanInfo("HighBeam"), "●", "");
+    accelerator = addValue(new DoubleValue(getCanInfo("Accelerator")));
+    blinkerLeft = addValue(new BooleanValue(getCanInfo("BlinkerLeft"), "◀", ""));
+    blinkerRight = addValue(new BooleanValue(getCanInfo("BlinkerRight"), "▶", ""));
+    batteryCapacity = addValue(new DoubleValue(getCanInfo("BatteryCapacity")));
+    doorOpen = addValue(new BooleanValue(getCanInfo("DoorOpen"), "●", ""));
+    parkingLight = addValue(new BooleanValue(getCanInfo("ParkingLight"), "●", ""));
+    headLight = addValue(new BooleanValue(getCanInfo("HeadLight"), "●", ""));
+    highBeam = addValue(new BooleanValue(getCanInfo("HighBeam"), "●", ""));
 
-    breakPedal = new DoubleValue(getCanInfo("BreakPedal"));
-    breakPressed = new BooleanValue(getCanInfo("BreakPressed"), "⬇", "");
-    cellTemperature = new DoubleValue(getCanInfo("CellTemperature"));
-    cellVoltage = new DoubleValue(getCanInfo("CellVoltage"));
-    chargertemp = new IntegerValue(getCanInfo("ChargerTemp"));
-    range = new IntegerValue(getCanInfo("Range"));
-    odometer = new IntegerValue(getCanInfo("Odometer"));
-    tripRounds = new DoubleValue(getCanInfo("TripRounds"));
-    tripOdo = new DoubleValue(getCanInfo("TripOdo"));
-    key = new BooleanValue(getCanInfo("Key"), "◉✔", "❌◎");
-    speed = new IntegerValue(getCanInfo("Speed"));
-    rpmSpeed = new DoubleValue(getCanInfo("RPMSpeed"));
-    addCanProperty(rpmSpeed,new SimpleDoubleProperty());
-    motortemp = new IntegerValue(getCanInfo("MotorTemp"));
-    rpm = new IntegerValue(getCanInfo("RPM"));
-    addCanProperty(rpm,new SimpleIntegerProperty());
-    SOC = new DoubleValue(getCanInfo("SOC"));
-    addCanProperty(SOC,new SimpleDoubleProperty());
-    cellCount = new IntegerValue(getCanInfo("CellCount"));
+    breakPedal = addValue(new DoubleValue(getCanInfo("BreakPedal")));
+    breakPressed = addValue(new BooleanValue(getCanInfo("BreakPressed"), "⬇", ""));
+    cellTemperature = addValue(new DoubleValue(getCanInfo("CellTemperature")));
+    cellVoltage = addValue(new DoubleValue(getCanInfo("CellVoltage")));
+    chargertemp = addValue(new IntegerValue(getCanInfo("ChargerTemp")));
+    range = addValue(new IntegerValue(getCanInfo("Range")));
+    odometer = addValue(new IntegerValue(getCanInfo("Odometer")));
+    tripRounds = addValue(new DoubleValue(getCanInfo("TripRounds")));
+    tripOdo = addValue(new DoubleValue(getCanInfo("TripOdo")));
+    key = addValue(new BooleanValue(getCanInfo("Key"), "◉✔", "❌◎"));
+    speed = addValue(new IntegerValue(getCanInfo("Speed")));
+    rpmSpeed = addValue(new DoubleValue(getCanInfo("RPMSpeed")));
+    motortemp = addValue(new IntegerValue(getCanInfo("MotorTemp")));
+    rpm = addValue(new IntegerValue(getCanInfo("RPM")));
+    SOC = addValue(new DoubleValue(getCanInfo("SOC")));
+    cellCount = addValue(new IntegerValue(getCanInfo("CellCount")));
     VIN = new VINValue(getCanInfo("VIN"));
     VIN2 = new VINValue(getCanInfo("VIN"));
-    acamps = new DoubleValue(getCanInfo("ACAmps"));
-    acvolts = new DoubleValue(getCanInfo("ACVolts"));
-    dcamps = new DoubleValue(getCanInfo("DCAmps"));
-    dcvolts = new DoubleValue(getCanInfo("DCVolts"));
+    acamps = addValue(new DoubleValue(getCanInfo("ACAmps")));
+    acvolts = addValue(new DoubleValue(getCanInfo("ACVolts")));
+    dcamps = addValue(new DoubleValue(getCanInfo("DCAmps")));
+    dcvolts = addValue(new DoubleValue(getCanInfo("DCVolts")));
     climateValue = new ClimateValue(getCanInfo("Climate"));
     ventDirection = new StringValue(getCanInfo("VentDirection"));
-    steeringWheelPosition = new DoubleValue(
-        getCanInfo("SteeringWheelPosition"));
+    steeringWheelPosition = addValue(new DoubleValue(
+        getCanInfo("SteeringWheelPosition")));
     steeringWheelMovement = new DoubleValue(
         getCanInfo("SteeringWheelMovement"));
     shifterPositionValue = new ShifterPositionValue(
@@ -317,6 +355,12 @@ public class OBDTriplet extends OBDHandler {
       this.canValue=canValue;
       this.property=property;
     }
+    
+    /**
+     * construct a CANProperty
+     * @param canValue
+     * @param property
+     */
     public CANProperty(DoubleValue canValue, SimpleDoubleProperty property) {
       this.canValue=(CT)canValue;
       this.property=(Property<T>)property;
@@ -360,7 +404,7 @@ public class OBDTriplet extends OBDHandler {
    * @param canValue - the can Value
    * @param property - the Property
    */
-  private <CT extends CANValue<T>,T> void addCanProperty(CT canValue,
+  protected <CT extends CANValue<T>,T> void addCanProperty(CT canValue,
       Property<T>property) {
     CANProperty<CT,T> canProperty=new CANProperty<CT,T>(canValue,property);
     canProperties.put(canValue.canInfo.getName(), canProperty);
@@ -371,7 +415,6 @@ public class OBDTriplet extends OBDHandler {
    * @param canValue
    * @param property
    */
-  @SuppressWarnings("unchecked")
   private void addCanProperty(DoubleValue canValue,
       SimpleDoubleProperty property) {
     CANProperty<DoubleValue,Double> canProperty=new CANProperty<DoubleValue,Double>(canValue,property);
@@ -386,6 +429,17 @@ public class OBDTriplet extends OBDHandler {
   private void addCanProperty(IntegerValue canValue,
       SimpleIntegerProperty property) {
     CANProperty<IntegerValue,Integer> canProperty=new CANProperty<IntegerValue,Integer>(canValue,property);
+    canProperties.put(canValue.canInfo.getName(), canProperty);       
+  }
+  
+  /**
+   * add a boolean Value property
+   * @param canValue
+   * @param property
+   */
+  private void addCanProperty(BooleanValue canValue,
+      SimpleBooleanProperty property) {
+    CANProperty<BooleanValue,Boolean> canProperty=new CANProperty<BooleanValue,Boolean>(canValue,property);
     canProperties.put(canValue.canInfo.getName(), canProperty);       
   }
 
@@ -426,13 +480,13 @@ public class OBDTriplet extends OBDHandler {
       accelerator.setValue(pr.d[2] / 250.0 * 100, timeStamp);
       break;
     case "AmpsVolts":
-      dcamps.setValue(((pr.d[2] * 256 + pr.d[3]) - 128 * 256) / 100.0,
+      setValue("DCAmps",((pr.d[2] * 256 + pr.d[3]) - 128 * 256) / 100.0,
           timeStamp);
-      dcvolts.setValue((pr.d[4] * 256 + pr.d[5]) / 10.0, timeStamp);
+      setValue("DCVolts",(pr.d[4] * 256 + pr.d[5]) / 10.0, timeStamp);
       break;
     case "ACAmpsVolts":
-      acvolts.setValue(pr.d[1] * 1.0, timeStamp);
-      acamps.setValue(pr.d[6] / 10.0, timeStamp);
+      setValue("ACVolts",pr.d[1] * 1.0, timeStamp);
+      setValue("ACAmps",pr.d[6] / 10.0, timeStamp);
       break;
     case "BatteryCapacity":
       int bindex = pr.d[0];
@@ -440,7 +494,7 @@ public class OBDTriplet extends OBDHandler {
         double ah = (pr.d[3] * 256 + pr.d[4]) / 10.0;
         // LOGGER.log(Level.INFO,String.format("Battery capacity is: %4.1f Ah",
         // ah));
-        batteryCapacity.setValue(ah, timeStamp);
+        setValue("BatteryCapacity",ah, timeStamp);
       }
       break;
     case "BreakPedal":
@@ -566,33 +620,30 @@ public class OBDTriplet extends OBDHandler {
             rpm.getValueItem().getTimeStamp(), Math.abs(rpmValue), timeStamp,
             1 / 60000.0);
         // calc distance based on rounds
-        this.tripOdo.setValue(tripRounds.getValueItem().getValue() * mmPerRound/1000000.0,
+        setValue("TripOdo",tripRounds.getValueItem().getValue() * mmPerRound/1000000.0,
             timeStamp);
       }
-      // tries binding
-      this.canProperties.get("RPM").setValue(rpmValue,timeStamp);
+      setValue("RPM",rpmValue,timeStamp);
       if (speed.getValueItem().isAvailable()) {
         // m per round
         // speed.getValueItem().getValue() * 1000.0 / 60
         // / rpm.getValueItem().getValue()
         double rpmSpeed=this.rpm.getValue()*this.mmPerRound*60/1000000.0;
-        this.canProperties.get("RPMSpeed").setValue(rpmSpeed, timeStamp);
+        setValue("RPMSpeed",rpmSpeed, timeStamp);
       }
       break;
     case "Odometer_Speed":
-      odometer.setValue(pr.d[2] * 65536 + pr.d[3] * 256 + pr.d[4], timeStamp);
-      int speedNum = pr.d[1];
+      setValue("Odometer",pr.d[2] * 65536 + pr.d[3] * 256 + pr.d[4], timeStamp);
+      Integer speedNum = pr.d[1];
       if (speedNum == 255)
-        speed.setValue(null, timeStamp);
-      else
-        speed.setValue(speedNum, timeStamp);
+        speedNum=null;
+      setValue("Speed",speedNum, timeStamp);
       break;
     case "Range": // 0x346
-      int rangeNum = pr.d[7];
+      Integer rangeNum = pr.d[7];
       if (rangeNum == 255)
-        range.setValue(null, timeStamp);
-      else
-        range.setValue(rangeNum, timeStamp);
+        rangeNum=null;
+      setValue("Range",rangeNum, timeStamp);
       break;
     case "Steering_Wheel":
       this.steeringWheelPosition
@@ -625,7 +676,7 @@ public class OBDTriplet extends OBDHandler {
       double soc=((pr.d[1]) - 10) / 2.0;
       // FIXME - workaround for binding timing issue
       soc=soc-Math.random()*0.001;
-      this.canProperties.get("SOC").setValue(soc, timeStamp);
+      setValue("SOC",soc, timeStamp);
       break;
 
     case "VIN":

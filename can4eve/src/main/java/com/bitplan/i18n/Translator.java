@@ -18,7 +18,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bitplan.can4eve.gui.swing;
+package com.bitplan.i18n;
 
 import java.text.MessageFormat;
 import java.util.Locale;

@@ -26,8 +26,8 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-import com.bitplan.can4eve.gui.swing.Translator;
 import com.bitplan.can4eve.states.StopWatch;
+import com.bitplan.i18n.Translator;
 
 import eu.hansolo.medusa.Clock;
 import eu.hansolo.medusa.Clock.ClockSkinType;

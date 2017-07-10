@@ -20,8 +20,12 @@
  */
 package com.bitplan.can4eve.gui.javafx;
 
+import java.io.File;
+
+import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
@@ -64,11 +68,36 @@ public class SampleApp extends WaitableApp {
     this.divY=divY;
   }
   
+  /**
+   * create and show the given Sample App
+   * @param title
+   * @param region
+   * @param showTimeMSecs
+   * @return the app
+   * @throws Exception
+   */
   public static SampleApp createAndShow(String title,Region region,int showTimeMSecs) throws Exception {
+    return createAndShow(title,region,showTimeMSecs,null);
+  }
+  
+  /**
+   * create and show me with screenShot Option
+   * @param title
+   * @param region
+   * @param showTimeMSecs
+   * @param screenShotFileName
+   * @return
+   * @throws InterruptedException
+   */
+  public static SampleApp createAndShow(String title, Region region,
+      int showTimeMSecs, String screenShotFileName) throws InterruptedException {
     SampleApp sampleApp = new SampleApp(title, region);
     sampleApp.show();
     sampleApp.waitOpen();
     Thread.sleep(showTimeMSecs);
+    if (screenShotFileName!=null) {
+      Platform.runLater(() ->WaitableApp.saveAsPng(sampleApp.getStage(),new File(screenShotFileName)));
+    }
     sampleApp.close();
     return sampleApp;
   }
