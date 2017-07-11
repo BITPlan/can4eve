@@ -20,35 +20,28 @@
  */
 package com.bitplan.obdii;
 
-import com.bitplan.can4eve.Pid;
-import com.bitplan.can4eve.VehicleGroup;
+import org.junit.Test;
+
+import com.bitplan.elm327.SerialImpl;
 
 /**
- * base test class for OBDII related tests
+ * test serial devices
  * @author wf
  *
  */
-public abstract class TestOBDII {
-  static VehicleGroup vehicleGroup;
-  boolean debug=false;
-  
+public class TestSerial {
+  public boolean debug=false;
   /**
-   * get the VehicleGroup
-   * @return
-   * @throws Exception
+   * 
    */
-  public static VehicleGroup getVehicleGroup() throws Exception {
-    return VehicleGroup.get("triplet");
-  }
-  
-  /**
-   * get the PID with the given PID id
-   * @param pidId
-   * @return
-   * @throws Exception
-   */
-  public static Pid byName(String pidId) throws Exception {
-    Pid pid=getVehicleGroup().getPidByName(pidId);
-    return pid;
+  @Test
+  public void testSerialPorts() {
+    SerialImpl serial = SerialImpl.getInstance();
+    if (debug)
+      System.out.println("available serial devices:");
+    for (String port:serial.getSerialPorts(true)){
+      if (debug)
+        System.out.println(port);
+    };
   }
 }

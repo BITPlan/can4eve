@@ -18,7 +18,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bitplan.can4eve.util;
+package com.bitplan.elm327.util;
 
 /**
  * helper class to check the operating system this Java VM runs in

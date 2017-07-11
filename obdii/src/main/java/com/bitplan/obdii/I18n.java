@@ -75,6 +75,10 @@ public class I18n {
   public static final String WATCH_CHARGING = "watchCharging";
   public static final String WATCH_TOTAL = "watchTotal";
   public static final String WATCH_TIME = "watchTime";
+  public static final String SERIAL_PORT_SELECT="serialPortSelect";
+  public static final String SERIAL_PORT_NONE_FOUND = "serialPortNoneFound";
+  public static final String SERIAL_PORT_PLEASE_CONNECT = "serialPortPleaseConnect";
+  public static final String SERIAL_PORT_PLEASE_SELECT = "serialPortPleaseSelect"; 
   //public static final String SOC = "SOC";
   public static final String RPM = "rpm";
   public static final String RPM_SPEED = "rpmSpeed";
@@ -115,4 +119,5 @@ public class I18n {
   public static String get(String text) {
     return Translator.translate(text);
   }
+
 }

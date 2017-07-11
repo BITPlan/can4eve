@@ -145,7 +145,7 @@
 							<chdir />
 							<priority>normal</priority>
 							<downloadUrl>http://java.com/download</downloadUrl>
-							<supportUrl />
+							<supportUrl>http://can4eve.bitplan.com</supportUrl>
 							<customProcName>false</customProcName>
 							<stayAlive>false</stayAlive>
 							<manifest />

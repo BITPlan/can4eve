@@ -35,8 +35,7 @@
 							"title": "serialDevice",
 							"format": "%s",
 							"labelSize": 10,
-							"fieldSize": 40,
-							"type": "File"
+							"fieldSize": 40
 						},
 						{
 							"title": "baudRate",

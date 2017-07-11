@@ -110,7 +110,7 @@ public abstract class OBDHandler implements ResponseHandler {
    */
   public OBDHandler(VehicleGroup vehicleGroup, String pDevice, int pBaudRate) {
     this(vehicleGroup);
-    SerialImpl con = new SerialImpl();
+    SerialImpl con = SerialImpl.getInstance();
     con.connect(pDevice, pBaudRate);
     this.getElm327().setCon(con);
     attachConnection(con);

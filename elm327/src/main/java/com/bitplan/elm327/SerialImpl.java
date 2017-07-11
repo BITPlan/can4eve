@@ -27,9 +27,14 @@ import static purejavacomm.CommPortIdentifier.getPortIdentifiers;
  */
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import com.bitplan.elm327.util.OSCheck;
+import com.bitplan.elm327.util.OSCheck.OSType;
 
 import purejavacomm.CommPortIdentifier;
 import purejavacomm.PortInUseException;
@@ -44,6 +49,28 @@ public class SerialImpl extends ConnectionImpl {
     SerialPort serialPort;
     static Map<String,SerialPort> openPorts=new HashMap<String,SerialPort>();
 
+    /**
+     * get the list of serial ports
+     * @param filter - filter the relevant ones
+     * @return - the list of serial ports
+     */
+    public List<String> getSerialPorts(boolean filter) {
+      List<String> serialPorts=new ArrayList<String>();
+      Enumeration<CommPortIdentifier> portEnum = getPortIdentifiers();
+      OSType os = OSCheck.getOperatingSystemType();
+      while (portEnum.hasMoreElements()) {
+          CommPortIdentifier portid = (CommPortIdentifier) portEnum.nextElement();
+          String portName=portid.getName();
+          switch (os) {
+          case MacOS:
+            if (!portName.startsWith("cu"))
+              continue;
+            break;
+          }
+          serialPorts.add(portName);
+      }
+      return serialPorts;
+    }
     /**
      * connect me to the given device with the given baud rate
      *
@@ -122,5 +149,17 @@ public class SerialImpl extends ConnectionImpl {
                 return portid;
         }
         return portid;
+    }
+    
+    private static SerialImpl instance=null;
+    /**
+     * singleton for SerialImpl
+     * @return the instance
+     */
+    public static SerialImpl getInstance() {
+      if (instance==null) {
+        instance=new SerialImpl();
+      }
+      return instance;
     }
 }

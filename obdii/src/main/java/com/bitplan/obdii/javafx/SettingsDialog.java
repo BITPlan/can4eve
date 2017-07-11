@@ -20,13 +20,18 @@
  */
 package com.bitplan.obdii.javafx;
 
-import java.io.File;
+
+import static com.bitplan.can4eve.gui.javafx.GenericDialog.showAlert;
+
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.bitplan.can4eve.gui.Form;
 import com.bitplan.can4eve.gui.javafx.GenericControl;
 import com.bitplan.can4eve.gui.javafx.GenericDialog;
 import com.bitplan.elm327.Config;
+import com.bitplan.elm327.SerialImpl;
 import com.bitplan.obdii.ErrorHandler;
 import com.bitplan.obdii.I18n;
 import com.bitplan.obdii.OBDApp;
@@ -36,6 +41,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceDialog;
 import javafx.stage.Stage;
 
 /**
@@ -58,7 +64,26 @@ public class SettingsDialog extends GenericDialog {
   public void setup(Map<String, Object> valueMap) {
     super.setup(valueMap);
     GenericControl serialDeviceControl = super.controls.get("serialDevice");
-    serialDeviceControl.getFileChooser().setInitialDirectory(new File("/dev"));
+    Button serialButton = new Button("...");
+    grid.add(serialButton, 2, 2);
+    serialButton.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent e) {
+        SerialImpl serial = SerialImpl.getInstance();
+        List<String> serialPorts = serial.getSerialPorts(true);
+        if (serialPorts.size()==0) {
+          SettingsDialog.super.showAlert(I18n.get(I18n.SERIAL_PORT_SELECT), I18n.get(I18n.SERIAL_PORT_NONE_FOUND), I18n.get(I18n.SERIAL_PORT_PLEASE_CONNECT));
+        } else {
+          ChoiceDialog<String> serialChoices=new ChoiceDialog<String>(serialPorts.get(0),serialPorts);
+          serialChoices.setTitle(I18n.get(I18n.SERIAL_PORT_SELECT));
+          serialChoices.setHeaderText(I18n.get(I18n.SERIAL_PORT_PLEASE_SELECT));
+          Optional<String> result = serialChoices.showAndWait();
+          if (result.isPresent()) {
+            serialDeviceControl.setValue(result.get());
+          }
+        }
+      }
+    });
     Button button = new Button("test Connection");
     button.setOnAction(new EventHandler<ActionEvent>() {
       @Override
