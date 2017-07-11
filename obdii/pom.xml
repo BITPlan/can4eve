@@ -138,7 +138,7 @@
 						<configuration>
 							<dontWrapJar>false</dontWrapJar>
 							<headerType>console</headerType>
-							<jar>target/com.bitplan.obdii-0.0.1-jar-with-dependencies.jar</jar>
+							<jar>target/com.bitplan.obdii-${project.version}-jar-with-dependencies.jar</jar>
 							<outfile>${project.build.directory}/can4eve.exe</outfile>
 							<errTitle />
 							<cmdLine />
@@ -162,7 +162,7 @@
 								<waitForWindow>true</waitForWindow> <timeout>60</timeout> <timeoutErr>true</timeoutErr> 
 								</splash> -->
 							<versionInfo>
-								<fileVersion>0.0.0.1</fileVersion>
+								<fileVersion>0.${project.version}</fileVersion>
 								<txtFileVersion>${project.version}</txtFileVersion>
 								<fileDescription>Can4Eve</fileDescription>
 								<copyright>BITPlan GmbH</copyright>
@@ -177,7 +177,25 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- http://kosalads.blogspot.de/2013/04/maven-copy-artifact-in-to-separate.html -->
+			<!-- http://kosalads.blogspot.de/2013/04/maven-copy-artifact-in-to-separate.html 
+			https://stackoverflow.com/a/16862404/1497139-->
+			<plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <configuration>
+                <tasks>
+                    <copy file="target/com.bitplan.obdii-${project.version}-jar-with-dependencies.jar" tofile="release/can4eve.jar"/>
+                    <copy file="target/can4eve.exe" tofile="release/can4eve.exe"/>
+                </tasks>
+            </configuration>
+            <executions>
+                <execution>
+                    <phase>install</phase>
+                    <goals>
+                        <goal>run</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
 		</plugins>
 	</build>
 </project>
