@@ -136,9 +136,9 @@
 							<goal>launch4j</goal>
 						</goals>
 						<configuration>
-							<dontWrapJar>true</dontWrapJar>
-							<headerType>gui</headerType>
-							<jar>com.bitplan.obdii-0.0.1-jar-with-dependencies.jar</jar>
+							<dontWrapJar>false</dontWrapJar>
+							<headerType>console</headerType>
+							<jar>target/com.bitplan.obdii-0.0.1-jar-with-dependencies.jar</jar>
 							<outfile>${project.build.directory}/can4eve.exe</outfile>
 							<errTitle />
 							<cmdLine />
@@ -158,12 +158,12 @@
 								<initialHeapSize>256</initialHeapSize>
 								<maxHeapSize>3000</maxHeapSize>
 							</jre>
-							<splash>
+							<!--  <splash>
 								<file>${project.basedir}/src/main/build/Sunflower.bmp</file>
 								<waitForWindow>true</waitForWindow>
 								<timeout>60</timeout>
 								<timeoutErr>true</timeoutErr>
-							</splash>
+							</splash> -->
 							<versionInfo>
 								<fileVersion>0.0.0.1</fileVersion>
 								<txtFileVersion>${project.version}</txtFileVersion>
