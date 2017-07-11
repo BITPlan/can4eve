@@ -13,6 +13,7 @@
 # Package Files #
 *.jar
 !gradle/wrapper/gradle-wrapper.jar
+!obdii/release/can4eve.jar
 *.war
 *.ear
 #*.zip
