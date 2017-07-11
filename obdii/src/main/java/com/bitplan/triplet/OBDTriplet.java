@@ -57,6 +57,7 @@ import com.bitplan.obdii.PIDResponse;
 import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.triplet.ShifterPosition.ShiftPosition;
 
+import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -367,6 +368,12 @@ public class OBDTriplet extends OBDHandler {
       this.avg=(Property<T>) new SimpleDoubleProperty();
       this.max=(Property<T>) new SimpleDoubleProperty();
     }
+    
+    /**
+     * construct me for an IntegerValue
+     * @param canValue
+     * @param property
+     */
     public CANProperty(IntegerValue canValue,
         SimpleIntegerProperty property) {
       this.canValue=(CT)canValue;
@@ -374,6 +381,7 @@ public class OBDTriplet extends OBDHandler {
       this.avg=(Property<T>) new SimpleIntegerProperty();
       this.max=(Property<T>) new SimpleIntegerProperty();
     }
+    
     /**
      * set the value for CANValue and property
      * @param value - the value to set
@@ -381,6 +389,14 @@ public class OBDTriplet extends OBDHandler {
      */
     public void setValue(T value, Date timeStamp) {
       canValue.setValue(value, timeStamp);
+      Platform.runLater(()->setValue(value));
+    }
+    
+    /**
+     * set the value (needs to be run on JavaFX thread!)
+     * @param value
+     */
+    private void setValue(T value) {  
       property.setValue(value);
       if (canValue instanceof DoubleValue) {
         DoubleValue dv=(DoubleValue) canValue;

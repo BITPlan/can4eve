@@ -27,6 +27,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.IntBuffer;
 
+import javax.imageio.ImageIO;
+
+import com.bitplan.can4eve.gui.Display;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
@@ -37,12 +41,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.image.WritablePixelFormat;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-
-import javax.imageio.ImageIO;
-
 import sun.awt.image.IntegerComponentRaster;
-
-import com.bitplan.can4eve.gui.Display;
 
 /**
  * Waitable Application that does not need launch
