@@ -122,14 +122,13 @@ public class TestAppGUI {
     pref.debug = true;
     pref.setLanguage(LangChoice.de);
     String json = pref.asJson();
-    //System.out.println(json);
-    assertEquals("{\n" + 
-        "  \"language\": \"de\",\n" + 
-        "  \"debug\": true,\n" + 
-        "  \"screenPercent\": 100,\n" + 
-        "  \"logDirectory\": \"can4eveLogs\",\n" + 
-        "  \"screenShotDirectory\": \"can4eveScreenShots\"\n" + 
-        "}", json);
+    // System.out.println(json);
+    assertEquals(
+        "{\n" + "  \"language\": \"de\",\n" + "  \"debug\": true,\n"
+            + "  \"screenPercent\": 100,\n"
+            + "  \"logDirectory\": \"can4eveLogs\",\n"
+            + "  \"screenShotDirectory\": \"can4eveScreenShots\"\n" + "}",
+        json);
     JsonManager<Preferences> jmPreferences = new JsonManagerImpl<Preferences>(
         Preferences.class);
     Preferences pref2 = jmPreferences.fromJson(json);
@@ -156,19 +155,29 @@ public class TestAppGUI {
     CANInfo rrInfo = vg.getCANInfoByName("Range");
     assertNotNull(rrInfo);
     IntegerValue RR = new IntegerValue(rrInfo);
-    Calendar date = Calendar.getInstance();
-    final long ONE_MINUTE_IN_MILLIS = 60000;// millisecs
-    // https://stackoverflow.com/a/9044010/1497139
-    long t = date.getTimeInMillis();
-    for (int i = 0; i < 50; i++) {
-      Date timeStamp = new Date(t + (i * ONE_MINUTE_IN_MILLIS));
-      SOC.setValue(90 - i * 1.2, timeStamp);
-      RR.setValue(90 - i, timeStamp);
-    }
     List<CANValue<?>> plotValues = new ArrayList<CANValue<?>>();
     plotValues.add(SOC);
     plotValues.add(RR);
     return plotValues;
+  }
+
+  /**
+   * set the PlotValues
+   * @param plotValues
+   * @param minutes
+   */
+  public void setPlotValues(List<CANValue<?>> plotValues, int minutes) {
+    Calendar date = Calendar.getInstance();
+    final long ONE_MINUTE_IN_MILLIS = 60000;// millisecs
+    // https://stackoverflow.com/a/9044010/1497139
+    long t = date.getTimeInMillis();
+    for (int i = 0; i < minutes; i++) {
+      Date timeStamp = new Date(t + (i * ONE_MINUTE_IN_MILLIS));
+      DoubleValue SOC = (DoubleValue) plotValues.get(0);
+      IntegerValue RR = (IntegerValue) plotValues.get(1);
+      SOC.setValue(90 - i * 1.2, timeStamp);
+      RR.setValue(90 - i, timeStamp);
+    }
   }
 
   // Swing Version of things
@@ -185,18 +194,19 @@ public class TestAppGUI {
   @Test
   public void testLCDPane() throws Exception {
     WaitableApp.toolkitInit();
-    int cols=3;
-    int rows=4;
-    String[] texts=new String[rows*cols];
-    for (int row=0;row<rows;row++) {
-      for (int col=0;col<cols;col++) {
-        texts[row*cols+col]=String.format("row %2d col %2d",row,col);
+    int cols = 3;
+    int rows = 4;
+    String[] texts = new String[rows * cols];
+    for (int row = 0; row < rows; row++) {
+      for (int col = 0; col < cols; col++) {
+        texts[row * cols + col] = String.format("row %2d col %2d", row, col);
       }
     }
-    LCDPane lcdPane=new LCDPane(rows,cols,250,30,LcdFont.STANDARD,"rpm",texts);
+    LCDPane lcdPane = new LCDPane(rows, cols, 250, 30, LcdFont.STANDARD, "rpm",
+        texts);
     SampleApp.createAndShow("LCDPane", lcdPane, SHOW_TIME);
   }
-  
+
   @Test
   public void testBarChartJavaFx() throws Exception {
     VehicleGroup vg = VehicleGroup.get("triplet");
@@ -227,7 +237,7 @@ public class TestAppGUI {
     OverviewDemo demo = new OverviewDemo();
     demo.init();
     GridPane demoPane = demo.getDemoPane();
-    SampleApp.createAndShow("Controls", demoPane,SHOW_TIME);
+    SampleApp.createAndShow("Controls", demoPane, SHOW_TIME);
   }
 
   @Test
@@ -327,24 +337,28 @@ public class TestAppGUI {
       double newValue = 100 - (95 * i / loops);
       // LOGGER.log(Level.INFO, "new value "+newValue);
       sd.setValue(newValue);
-      rr.setValue(newValue*0.9);
+      rr.setValue(newValue * 0.9);
     }
     sampleApp.close();
   }
 
   @Test
   public void testLineChartJavaFx() throws Exception {
-    List<CANValue<?>> plotValues = this.getPlotValues();
     String title = "SOC/RR";
     String xTitle = "time";
     String yTitle = "%/km";
     SampleApp.toolkitInit();
+    List<CANValue<?>> plotValues = this.getPlotValues();
+    setPlotValues(plotValues,1);
     final JFXCanValueHistoryPlot valuePlot = new JFXCanValueHistoryPlot(title,
         xTitle, yTitle, plotValues);
     SampleApp sampleApp = new SampleApp("SOC/RR", valuePlot.getLineChart());
     sampleApp.show();
     sampleApp.waitOpen();
-    Thread.sleep(SHOW_TIME);
+    for (int i = 2; i <= 50; i++) {
+      setPlotValues(plotValues,i);
+      Thread.sleep(SHOW_TIME / 50);
+    }
     sampleApp.close();
   }
 
