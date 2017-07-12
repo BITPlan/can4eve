@@ -55,9 +55,9 @@ import com.bitplan.obdii.JFXTripletDisplay;
 import com.bitplan.obdii.OBDHandler;
 import com.bitplan.obdii.PIDResponse;
 import com.bitplan.obdii.elm327.ELM327;
+import com.bitplan.obdii.javafx.CANProperty;
 import com.bitplan.triplet.ShifterPosition.ShiftPosition;
 
-import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -335,86 +335,6 @@ public class OBDTriplet extends OBDHandler {
     top = topArray;
   }
 
-  /**
-   * generic JavaFX CANProperty
-   * @author wf
-   *
-   * @param <CT>
-   * @param <T>
-   */
-  public class CANProperty<CT extends CANValue<T>,T> {
-    CT canValue;
-    Property<T>property;
-    Property<T>max;
-    Property<T>avg;
-    /**
-     * construct me
-     * @param canValue
-     * @param property
-     */
-    public CANProperty(CT canValue, Property<T> property) {
-      this.canValue=canValue;
-      this.property=property;
-    }
-    
-    /**
-     * construct a CANProperty
-     * @param canValue
-     * @param property
-     */
-    public CANProperty(DoubleValue canValue, SimpleDoubleProperty property) {
-      this.canValue=(CT)canValue;
-      this.property=(Property<T>)property;
-      this.avg=(Property<T>) new SimpleDoubleProperty();
-      this.max=(Property<T>) new SimpleDoubleProperty();
-    }
-    
-    /**
-     * construct me for an IntegerValue
-     * @param canValue
-     * @param property
-     */
-    public CANProperty(IntegerValue canValue,
-        SimpleIntegerProperty property) {
-      this.canValue=(CT)canValue;
-      this.property=(Property<T>)property;
-      this.avg=(Property<T>) new SimpleIntegerProperty();
-      this.max=(Property<T>) new SimpleIntegerProperty();
-    }
-    
-    /**
-     * set the value for CANValue and property
-     * @param value - the value to set
-     * @param timeStamp
-     */
-    public void setValue(T value, Date timeStamp) {
-      canValue.setValue(value, timeStamp);
-      Platform.runLater(()->setValue(value));
-    }
-    
-    /**
-     * set the value (needs to be run on JavaFX thread!)
-     * @param value
-     */
-    private void setValue(T value) {  
-      property.setValue(value);
-      if (canValue instanceof DoubleValue) {
-        DoubleValue dv=(DoubleValue) canValue;
-        if (dv.getMax()!=null)
-          max.setValue((T) dv.getMax());
-        if (dv.getAvg()!=null)
-          avg.setValue((T) dv.getAvg());
-      }
-      if (canValue instanceof IntegerValue) {
-        IntegerValue iv=(IntegerValue) canValue;
-        if (iv.getMax()!=null)
-          max.setValue((T) iv.getMax());
-        if (iv.getAvg()!=null)
-          avg.setValue((T) iv.getAvg());
-      }
-    }
-  }
-  
   /**
    * add a CAN Property
    * @param canValue - the can Value
@@ -922,13 +842,13 @@ public class OBDTriplet extends OBDHandler {
       canBindings.put("msecs",this.msecsRunningProperty);
       canBindings.put("vehicleState", this.vehicleStateProperty);
       // property based bindings
-      for (CANProperty canProperty:canProperties.values()) {
-        String name=canProperty.canValue.canInfo.getName();
+      for (CANProperty<?,?> canProperty:canProperties.values()) {
+        String name=canProperty.getName();
         if (debug)
           LOGGER.log(Level.INFO,"binding "+name);
-        canBindings.put(name, canProperty.property);
-        canBindings.put(name+"-max",canProperty.max);
-        canBindings.put(name+"-avg",canProperty.avg);
+        canBindings.put(name, canProperty.getProperty());
+        canBindings.put(name+"-max",canProperty.getMax());
+        canBindings.put(name+"-avg",canProperty.getAvg());
       }
       ((JFXTripletDisplay) display).bind(canBindings);
     }
