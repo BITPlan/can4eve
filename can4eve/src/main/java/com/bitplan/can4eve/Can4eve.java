@@ -86,6 +86,9 @@ public class Can4eve extends Main {
       }
     }
     con.connect(pDevice, pBaudRate);
+  }
+  
+  public void start() {  
     con.start();
     elm = new ELM327Impl();
     elm.setCon(con);
@@ -101,11 +104,11 @@ public class Can4eve extends Main {
   public void forward(String pDevice, int pPortNumber, int pBaudRate) throws Exception {
     prepare(pDevice,pBaudRate);
     ConnectionForwarder forwarder=new ConnectionForwarder();
-    elm.initOBD2();
     // elm.initOBD2();
-    forwarder.setLog(elm.getLog());
+    // elm.initOBD2();
+    forwarder.setLog(con.getLog());
     forwarder.createServerSocket(pPortNumber);
-    forwarder.startServer(elm.getCon());
+    forwarder.startServer(con);
     ServerSocket serverSocket = forwarder.getServerSocket();
     Socket clientSocket=new Socket("localhost",serverSocket.getLocalPort());
     forwarder.getServerThread().join();
