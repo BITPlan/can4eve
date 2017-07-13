@@ -30,9 +30,12 @@ import org.apache.commons.collections4.queue.CircularFifoQueue;
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.ValueItem;
 
+import javafx.collections.ObservableList;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Data;
+import javafx.scene.chart.XYChart.Series;
 
 /**
  * plot a histor of CanValues
@@ -47,6 +50,11 @@ public class JFXCanValueHistoryPlot {
   String xTitle;
   String yTitle;
   private Collection<CANValue<?>> canValues;
+  LineChart<Number,Number> lineChart=null;
+  
+  public LineChart<Number, Number> getLineChart() {
+    return lineChart;
+  }
 
   /**
    * create a Plot for a History of CANValues
@@ -76,44 +84,66 @@ public class JFXCanValueHistoryPlot {
   }
   
   /**
+   * create a series for the given CANValue
+   * @param canValue - the canValue to use as a basis
+   * @return the chart data series
+   */
+  public XYChart.Series<Number, Number> createSeries(CANValue<?> canValue){
+    //defining a series
+    XYChart.Series<Number, Number> series = new XYChart.Series<Number,Number>();
+    series.setName(canValue.canInfo.getTitle());
+    return series;
+  }
+  
+  /**
+   * update the given chart Series
+   * @param series - the series to update
+   * @param canValue - the canvalue to take the data from
+   */
+  public void updateSeries(XYChart.Series<Number, Number> series, CANValue<?> canValue) {
+    CircularFifoQueue<?> history = canValue.getHistory();
+    if (debug)
+      LOGGER.log(Level.INFO,
+        "plotting for " + history.size() + " history values of " + canValue.canInfo.getTitle());
+    Date first=null;
+    ObservableList<Data<Number, Number>> dataList = series.getData();
+    for (Object historyValueObject : history) {
+      ValueItem<?>historyValue = (ValueItem<?>) historyValueObject;
+      
+      Date timeStamp=historyValue.getTimeStamp();
+      if (first==null)
+        first=timeStamp;
+      Double value;
+      if (historyValue.getValue() instanceof Integer) {
+        // http://stackoverflow.com/questions/31860761/maven-compile-error-with-using-java-generics
+        int intValue=(Integer) historyValue.getValue();
+        value = new Double(intValue*1.0);
+      } else {
+        value = (Double) historyValue.getValue();
+      }
+      long minute = getMinute(timeStamp,first);
+      Data<Number, Number> chartData = new XYChart.Data<Number,Number>(minute,value);
+      dataList.add(chartData);
+    }
+  }
+  
+  /**
    * get the LineChart for this history
    * @return - the line chart
    */
-  public LineChart<Number, Number> getLineChart() {
+  public LineChart<Number, Number> createLineChart() {
     //defining the axes
     final NumberAxis xAxis = new NumberAxis();
     final NumberAxis yAxis = new NumberAxis();
     xAxis.setLabel(xTitle);
     //creating the chart
-    final LineChart<Number,Number> lineChart = 
+    lineChart = 
             new LineChart<Number,Number>(xAxis,yAxis);
             
     lineChart.setTitle(title);
     for (CANValue<?> canValue : this.canValues) {
-      //defining a series
-      XYChart.Series<Number, Number> series = new XYChart.Series<Number,Number>();
-      series.setName(canValue.canInfo.getTitle());
-      CircularFifoQueue<?> history = canValue.getHistory();
-      if (debug)
-        LOGGER.log(Level.INFO,
-          "plotting for " + history.size() + " history values of " + canValue.canInfo.getTitle());
-      Date first=null;
-      for (Object historyValueObject : history) {
-        ValueItem<?>historyValue = (ValueItem<?>) historyValueObject;
-        
-        Date timeStamp=historyValue.getTimeStamp();
-        if (first==null)
-          first=timeStamp;
-        Double value;
-        if (historyValue.getValue() instanceof Integer) {
-          // http://stackoverflow.com/questions/31860761/maven-compile-error-with-using-java-generics
-          int intValue=(Integer) historyValue.getValue();
-          value = new Double(intValue*1.0);
-        } else {
-          value = (Double) historyValue.getValue();
-        }
-        series.getData().add(new XYChart.Data<Number,Number>(getMinute(timeStamp,first),value));
-      }
+      Series<Number, Number> series = this.createSeries(canValue);
+      updateSeries(series,canValue);
       lineChart.getData().add(series);
     }
     return lineChart;

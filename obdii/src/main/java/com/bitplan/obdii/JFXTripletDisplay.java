@@ -97,7 +97,7 @@ public class JFXTripletDisplay extends JavaFXDisplay {
       plotValues.add(yValue);
       final JFXCanValueHistoryPlot valuePlot = new JFXCanValueHistoryPlot(title,
           xTitle, yTitle, plotValues);
-      Platform.runLater(() -> updateTab(activeTab, valuePlot.getLineChart()));
+      Platform.runLater(() -> updateTab(activeTab, valuePlot.createLineChart()));
     }
   }
 

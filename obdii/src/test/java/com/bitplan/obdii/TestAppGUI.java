@@ -352,9 +352,10 @@ public class TestAppGUI {
     setPlotValues(plotValues,1);
     final JFXCanValueHistoryPlot valuePlot = new JFXCanValueHistoryPlot(title,
         xTitle, yTitle, plotValues);
-    SampleApp sampleApp = new SampleApp("SOC/RR", valuePlot.getLineChart());
+    SampleApp sampleApp = new SampleApp("SOC/RR", valuePlot.createLineChart());
     sampleApp.show();
     sampleApp.waitOpen();
+    //valuePlot.getLineChart().getData().gt
     for (int i = 2; i <= 50; i++) {
       setPlotValues(plotValues,i);
       Thread.sleep(SHOW_TIME / 50);
