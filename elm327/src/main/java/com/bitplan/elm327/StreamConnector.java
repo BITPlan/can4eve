@@ -102,7 +102,7 @@ public class StreamConnector extends Thread {
         assert (is != null);
         assert (os != null);
 
-        // If the InputStream or outputstream is null, don't do anything
+        // If the InputStream or output stream is null, don't do anything
         if ((is == null) || (os == null))
             return;
 
