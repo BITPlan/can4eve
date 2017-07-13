@@ -31,8 +31,9 @@ import java.util.Map;
 import com.google.gson.Gson;
 
 /**
- * a group of vehicles that share the same OBDII-Diagnosis infrastructure
- * see http://can4eve.bitplan.com/index.php/VehicleGroup
+ * a group of vehicles that share the same OBDII-Diagnosis infrastructure see
+ * http://can4eve.bitplan.com/index.php/VehicleGroup
+ * 
  * @author wf
  *
  */
@@ -44,7 +45,7 @@ public class VehicleGroup {
   List<Pid> pids = new ArrayList<Pid>();
   transient Map<String, Pid> pidByPid = new HashMap<String, Pid>();
   transient Map<String, Pid> pidByName = new HashMap<String, Pid>();
-  transient Map<String,CANInfo> canInfoByName=new HashMap<String,CANInfo>();
+  transient Map<String, CANInfo> canInfoByName = new HashMap<String, CANInfo>();
 
   public String getName() {
     return name;
@@ -87,7 +88,7 @@ public class VehicleGroup {
   public void addToMaps(Pid pid) {
     pidByPid.put(pid.getPid(), pid);
     pidByName.put(pid.getName(), pid);
-    for (CANInfo canInfo:pid.getCaninfos()) {
+    for (CANInfo canInfo : pid.getCaninfos()) {
       this.canInfoByName.put(canInfo.getName(), canInfo);
     }
   }
@@ -104,8 +105,8 @@ public class VehicleGroup {
     this.pidByPid.clear();
     for (Pid pid : pids) {
       addToMaps(pid);
-      for (CANInfo caninfo:pid.caninfos) {
-        caninfo.pid=pid;
+      for (CANInfo caninfo : pid.caninfos) {
+        caninfo.pid = pid;
       }
     }
   }
@@ -143,6 +144,7 @@ public class VehicleGroup {
 
   /**
    * get the VehicleGroup for the given name
+   * 
    * @param name
    * @return
    * @throws Exception
@@ -152,8 +154,9 @@ public class VehicleGroup {
     if (vehicleGroup == null) {
       InputStream jsonStream = VehicleGroup.class.getClassLoader()
           .getResourceAsStream("com/bitplan/can4eve/" + name + ".json");
-      if (jsonStream==null) {
-        throw new Exception(String.format("Could not load VehicleGroup %s.json from classpath",name));
+      if (jsonStream == null) {
+        throw new Exception(String.format(
+            "Could not load VehicleGroup %s.json from classpath", name));
       }
       vehicleGroup = VehicleGroup.fromJsonStream(jsonStream);
     }
@@ -182,12 +185,16 @@ public class VehicleGroup {
 
   /**
    * lookup the canInfo by it's name
+   * 
    * @param canInfoName
    * @return the CANInfo
    */
   public CANInfo getCANInfoByName(String canInfoName) {
-    CANInfo result=this.canInfoByName.get(canInfoName);
-   return result;
+    CANInfo result = this.canInfoByName.get(canInfoName);
+    if (result == null)
+      throw new RuntimeException("Misconfigured canValue " + canInfoName
+          + " missing canInfo in vehicle Group " + getName());
+    return result;
   }
 
 }

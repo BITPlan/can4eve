@@ -44,12 +44,12 @@ import com.bitplan.can4eve.CANValue.CANRawValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.CANValue.IntegerValue;
 import com.bitplan.can4eve.CANValue.StringValue;
-import com.bitplan.can4eve.gui.javafx.CANProperty;
-import com.bitplan.can4eve.gui.javafx.CANPropertyManager;
 import com.bitplan.can4eve.ErrorHandler;
 import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.Vehicle;
 import com.bitplan.can4eve.VehicleGroup;
+import com.bitplan.can4eve.gui.javafx.CANProperty;
+import com.bitplan.can4eve.gui.javafx.CANPropertyManager;
 import com.bitplan.csv.CSVUtil;
 import com.bitplan.elm327.Connection;
 import com.bitplan.obdii.CANValueDisplay;
@@ -59,10 +59,6 @@ import com.bitplan.obdii.PIDResponse;
 import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.triplet.ShifterPosition.ShiftPosition;
 
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -184,7 +180,7 @@ public class OBDTriplet extends OBDHandler {
    * @throws IOException
    */
   public OBDTriplet(VehicleGroup vehicleGroup, Socket socket, boolean debug)
-      throws IOException {
+      throws Exception {
     super(vehicleGroup, socket, debug);
     postConstruct();
   }
@@ -197,7 +193,7 @@ public class OBDTriplet extends OBDHandler {
    * @throws IOException
    */
   public OBDTriplet(VehicleGroup vehicleGroup, Socket socket)
-      throws IOException {
+      throws Exception {
     this(vehicleGroup, socket, debug);
   }
 
@@ -211,21 +207,7 @@ public class OBDTriplet extends OBDHandler {
     super(vehicleGroup, elm);
     postConstruct();
   }
-
-  /**
-   * get the CANInfo for the given canInfo Name
-   * 
-   * @param canInfoName
-   * @return
-   */
-  public static CANInfo getCanInfo(VehicleGroup vg, String canInfoName) {
-    CANInfo canInfo = vg.getCANInfoByName(canInfoName);
-    if (canInfo == null)
-      throw new RuntimeException("Misconfigured canValue " + canInfoName
-          + " missing canInfo in vehicle Group " + vg.getName());
-    return canInfo;
-  }
-
+  
   /**
    * get the canInfo for the given CanInfo name
    * 
@@ -233,19 +215,15 @@ public class OBDTriplet extends OBDHandler {
    * @return
    */
   private CANInfo getCanInfo(String canInfoName) {
-    VehicleGroup vg = this.getElm327().getVehicleGroup();
-    CANInfo canInfo = OBDTriplet.getCanInfo(vg, canInfoName);
+    CANInfo canInfo = this.getVehicleGroup().getCANInfoByName(canInfoName);
     return canInfo;
   }
-  
- 
   
   /**
    * initialize the CanValues
    */
   public void initCanValues() {
-    VehicleGroup vg = this.getElm327().getVehicleGroup();
-    cpm=new CANPropertyManager(vg);
+    cpm=new CANPropertyManager(getVehicleGroup());
     // car parameters
     accelerator = cpm.addValue(new DoubleValue(getCanInfo("Accelerator")));
     blinkerLeft = cpm.addValue(new BooleanValue(getCanInfo("BlinkerLeft"), "◀", ""));
@@ -801,27 +779,6 @@ public class OBDTriplet extends OBDHandler {
       displayexecutor.shutdown();
       displayexecutor=null;
     }
-  }
-
-  /**
-   * delegate the initialization of the OBD device
-   * 
-   * @throws Exception
-   */
-  public void initOBD() throws Exception {
-    this.getElm327().initOBD2();
-  }
-
-  /**
-   * get the PID with the given PID id
-   * 
-   * @param pidId
-   * @return
-   * @throws Exception
-   */
-  public Pid pidByName(String pidId) throws Exception {
-    Pid pid = getElm327().getVehicleGroup().getPidByName(pidId);
-    return pid;
   }
 
   /**
