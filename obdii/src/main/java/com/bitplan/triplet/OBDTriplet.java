@@ -226,16 +226,16 @@ public class OBDTriplet extends OBDHandler {
     cpm=new CANPropertyManager(getVehicleGroup());
     // car parameters
     accelerator = cpm.addValue(new DoubleValue(getCanInfo("Accelerator")));
-    blinkerLeft = cpm.addValue(new BooleanValue(getCanInfo("BlinkerLeft"), "◀", ""));
-    blinkerRight = cpm.addValue(new BooleanValue(getCanInfo("BlinkerRight"), "▶", ""));
+    blinkerLeft = cpm.addValue(new BooleanValue(getCanInfo("BlinkerLeft")));
+    blinkerRight = cpm.addValue(new BooleanValue(getCanInfo("BlinkerRight")));
     batteryCapacity = cpm.addValue(new DoubleValue(getCanInfo("BatteryCapacity")));
-    doorOpen = cpm.addValue(new BooleanValue(getCanInfo("DoorOpen"), "●", ""));
-    parkingLight = cpm.addValue(new BooleanValue(getCanInfo("ParkingLight"), "●", ""));
-    headLight = cpm.addValue(new BooleanValue(getCanInfo("HeadLight"), "●", ""));
-    highBeam = cpm.addValue(new BooleanValue(getCanInfo("HighBeam"), "●", ""));
+    doorOpen = cpm.addValue(new BooleanValue(getCanInfo("DoorOpen")));
+    parkingLight = cpm.addValue(new BooleanValue(getCanInfo("ParkingLight")));
+    headLight = cpm.addValue(new BooleanValue(getCanInfo("HeadLight")));
+    highBeam = cpm.addValue(new BooleanValue(getCanInfo("HighBeam")));
 
     breakPedal = cpm.addValue(new DoubleValue(getCanInfo("BreakPedal")));
-    breakPressed = cpm.addValue(new BooleanValue(getCanInfo("BreakPressed"), "⬇", ""));
+    breakPressed = cpm.addValue(new BooleanValue(getCanInfo("BreakPressed")));
     cellTemperature = cpm.addValue(new DoubleValue(getCanInfo("CellTemperature")));
     cellVoltage = cpm.addValue(new DoubleValue(getCanInfo("CellVoltage")));
     chargertemp = cpm.addValue(new IntegerValue(getCanInfo("ChargerTemp")));
@@ -243,7 +243,7 @@ public class OBDTriplet extends OBDHandler {
     odometer = cpm.addValue(new IntegerValue(getCanInfo("Odometer")));
     tripRounds = cpm.addValue(new DoubleValue(getCanInfo("TripRounds")));
     tripOdo = cpm.addValue(new DoubleValue(getCanInfo("TripOdo")));
-    key = cpm.addValue(new BooleanValue(getCanInfo("Key"), "◉✔", "❌◎"));
+    key = cpm.addValue(new BooleanValue(getCanInfo("Key")));
     speed = cpm.addValue(new IntegerValue(getCanInfo("Speed")));
     rpmSpeed = cpm.addValue(new DoubleValue(getCanInfo("RPMSpeed")));
     motortemp = cpm.addValue(new IntegerValue(getCanInfo("MotorTemp")));

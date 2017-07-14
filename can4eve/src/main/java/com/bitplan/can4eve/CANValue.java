@@ -476,23 +476,21 @@ public abstract class CANValue<ValueType> {
    */
   public static class BooleanValue extends CANValue<Boolean> {
 
-    private String trueSymbol;
-    private String falseSymbol;
-
-    public BooleanValue(CANInfo canInfo, String trueSymbol,
-        String falseSymbol) {
-      super(canInfo, Boolean.class);
-      this.trueSymbol = trueSymbol;
-      this.falseSymbol = falseSymbol;
+    /**
+     * construct me from a canInfo
+     * @param canInfo
+     */
+    public BooleanValue(CANInfo canInfo) {
+      super(canInfo,Boolean.class);
     }
-
+       
     public String asString() {
       String result = "?";
       if (valueItem.available) {
         if (this.valueItem.value)
-          result = trueSymbol;
+          result = this.canInfo.trueSymbol;
         else
-          result = falseSymbol;
+          result = this.canInfo.falseSymbol;
       }
       return result;
     }

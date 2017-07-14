@@ -102,9 +102,12 @@ public class CANPropertyManager {
     if (type.equals("DoubleValue")) {
       DoubleValue doubleValue = new DoubleValue(canInfo);
       addValue(doubleValue);
-    } else  if (type.equals("IntegerValue")) {
-        IntegerValue integerValue = new IntegerValue(canInfo);
-        addValue(integerValue);
+    } else if (type.equals("IntegerValue")) {
+      IntegerValue integerValue = new IntegerValue(canInfo);
+      addValue(integerValue);
+    } else if (type.equals("BooleanValue")) {
+      BooleanValue booleanValue=new BooleanValue(canInfo);
+      addValue(booleanValue);
     } else {
       try {
         clazz = (Class<CANValue<?>>) Class.forName(type);
@@ -228,6 +231,7 @@ public class CANPropertyManager {
 
   /**
    * get the given CANProperty byName
+   * 
    * @param CANInfoName
    * @return
    */

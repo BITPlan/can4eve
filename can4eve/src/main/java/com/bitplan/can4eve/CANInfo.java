@@ -32,6 +32,8 @@ public class CANInfo {
   String format;
   String unit; // i18n unit
   String type;
+  String trueSymbol;  // symbol to display for true
+  String falseSymbol; // symbol to display for false
 
   int historyValuesPerMinute;
   int maxIndex;
@@ -79,6 +81,18 @@ public class CANInfo {
   }
   public void setType(String type) {
     this.type = type;
+  }
+  public String getTrueSymbol() {
+    return trueSymbol;
+  }
+  public void setTrueSymbol(String trueSymbol) {
+    this.trueSymbol = trueSymbol;
+  }
+  public String getFalseSymbol() {
+    return falseSymbol;
+  }
+  public void setFalseSymbol(String falseSymbol) {
+    this.falseSymbol = falseSymbol;
   }
   public int getHistoryValuesPerMinute() {
     return historyValuesPerMinute;

@@ -166,7 +166,9 @@
           "title": "Break Pressed",
           "description": "Break Pressed",
           "format": "%s",
-          "type": "StringValue",
+          "type": "BooleanValue",
+          "trueSymbol": "⬇",
+          "falseSymbol": "",
           "historyValuesPerMinute": 60,
           "maxIndex": 0
         }
@@ -393,7 +395,9 @@
           "title": "Key",
           "description": "Key state",
           "format": "%s",
-          "type": "StringValue",
+          "type": "BooleanValue",
+          "trueSymbol": "◉✔",
+          "falseSymbol": "❌◎",          
           "historyValuesPerMinute": 1,
           "maxIndex": 0
         }
@@ -420,6 +424,8 @@
           "description": "Left Blinker",
           "format": "%s",
           "type": "BooleanValue",
+          "trueSymbol": "◀",
+          "falseSymbol": "",
           "historyValuesPerMinute": 30,
           "maxIndex": 0
         },
@@ -429,6 +435,8 @@
           "description": "Right Blinker",
           "format": "%s",
           "type": "BooleanValue",
+          "trueSymbol": "▶",
+          "falseSymbol": "",
           "historyValuesPerMinute": 30,
           "maxIndex": 0
         },
@@ -438,6 +446,8 @@
           "description": "Door Open",
           "format": "%s",
           "type": "BooleanValue",
+          "trueSymbol": "●",
+          "falseSymbol": "",
           "historyValuesPerMinute": 30,
           "maxIndex": 0
         },
@@ -447,6 +457,8 @@
           "description": "Parking Light",
           "format": "%s",
           "type": "BooleanValue",
+          "trueSymbol": "●",
+          "falseSymbol": "",
           "historyValuesPerMinute": 4,
           "maxIndex": 0
         },
@@ -456,6 +468,8 @@
           "description": "Head Light",
           "format": "%s",
           "type": "BooleanValue",
+          "trueSymbol": "●",
+          "falseSymbol": "",
           "historyValuesPerMinute": 4,
           "maxIndex": 0
         },
@@ -465,6 +479,8 @@
           "description": "High Beam",
           "format": "%s",
           "type": "BooleanValue",
+          "trueSymbol": "●",
+          "falseSymbol": "",
           "historyValuesPerMinute": 4,
           "maxIndex": 0
         }
