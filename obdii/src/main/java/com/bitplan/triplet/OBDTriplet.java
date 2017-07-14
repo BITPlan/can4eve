@@ -72,21 +72,7 @@ public class OBDTriplet extends OBDHandler {
 
   // car parameters
   public DoubleValue batteryCapacity;
- 
-  DoubleValue breakPedal;
-  BooleanValue breakPressed;
-  DoubleValue cellTemperature;
-  DoubleValue cellVoltage;
-  IntegerValue chargertemp;
-  public IntegerValue range;
-  public IntegerValue odometer;
-  DoubleValue tripRounds;
-  DoubleValue tripOdo;
-  BooleanValue key;
-  IntegerValue speed;
-  DoubleValue rpmSpeed;
-  IntegerValue motortemp;
-  IntegerValue cellCount;
+
   public VINValue VIN;
   VINValue VIN2;
   DoubleValue acamps;
@@ -103,7 +89,7 @@ public class OBDTriplet extends OBDHandler {
   private SimpleObjectProperty vehicleStateProperty;
   Integer mmPerRound = 261; // TODO do we need a default?
   private CANPropertyManager cpm;
-  public static boolean withRawValues=false;
+  public static boolean withRawValues = false;
 
   public boolean isWithHistory() {
     return withHistory;
@@ -210,29 +196,14 @@ public class OBDTriplet extends OBDHandler {
   /**
    * initialize the CanValues
    */
-  public void initCanValues(String...canInfoNames) {
+  public void initCanValues(String... canInfoNames) {
     cpm = new CANPropertyManager(getVehicleGroup());
-    for (String canInfoName:canInfoNames) {
+    for (String canInfoName : canInfoNames) {
       cpm.addValue(canInfoName);
     }
     batteryCapacity = cpm
         .addValue(new DoubleValue(getCanInfo("BatteryCapacity")));
-   
-    breakPedal = cpm.addValue(new DoubleValue(getCanInfo("BreakPedal")));
-    breakPressed = cpm.addValue(new BooleanValue(getCanInfo("BreakPressed")));
-    cellTemperature = cpm
-        .addValue(new DoubleValue(getCanInfo("CellTemperature")));
-    cellVoltage = cpm.addValue(new DoubleValue(getCanInfo("CellVoltage")));
-    chargertemp = cpm.addValue(new IntegerValue(getCanInfo("ChargerTemp")));
-    range = cpm.addValue(new IntegerValue(getCanInfo("Range")));
-    odometer = cpm.addValue(new IntegerValue(getCanInfo("Odometer")));
-    tripRounds = cpm.addValue(new DoubleValue(getCanInfo("TripRounds")));
-    tripOdo = cpm.addValue(new DoubleValue(getCanInfo("TripOdo")));
-    key = cpm.addValue(new BooleanValue(getCanInfo("Key")));
-    speed = cpm.addValue(new IntegerValue(getCanInfo("Speed")));
-    rpmSpeed = cpm.addValue(new DoubleValue(getCanInfo("RPMSpeed")));
-    motortemp = cpm.addValue(new IntegerValue(getCanInfo("MotorTemp")));
-    cellCount = cpm.addValue(new IntegerValue(getCanInfo("CellCount")));
+
     VIN = new VINValue(getCanInfo("VIN"));
     VIN2 = new VINValue(getCanInfo("VIN"));
     acamps = cpm.addValue(new DoubleValue(getCanInfo("ACAmps")));
@@ -253,8 +224,11 @@ public class OBDTriplet extends OBDHandler {
    * things to do / initialize after I a was constructed
    */
   public void postConstruct() {
-    initCanValues("Accelerator","BlinkerLeft","BlinkerRight", 
-        "DoorOpen","ParkingLight","HeadLight","HighBeam","RPM","SOC");
+    initCanValues("Accelerator", "BlinkerLeft", "BlinkerRight", "BreakPedal",
+        "BreakPressed", "CellCount", "CellTemperature", "CellVoltage",
+        "ChargerTemp", "DoorOpen", "HeadLight", "HighBeam", "Key", "MotorTemp",
+        "Odometer", "ParkingLight", "Range", "RPM", "RPMSpeed", "SOC", "Speed",
+        "TripRounds", "TripOdo");
     // add all available PIDs to the available raw values
     for (Pid pid : getElm327().getVehicleGroup().getPids()) {
       CANInfo pidInfo = pid.getFirstInfo();
@@ -306,20 +280,20 @@ public class OBDTriplet extends OBDHandler {
       break;
     case "BreakPedal":
       // TODO 6F FF FF FF FF FF
-      breakPedal.setValue(((pr.d[2] * 256 + pr.d[3]) - 24576.0) / 640 * 100.0,
+      cpm.setValue(pidName, ((pr.d[2] * 256 + pr.d[3]) - 24576.0) / 640 * 100.0,
           timeStamp);
       break;
     case "BreakPressed":
-      breakPressed.setValue(pr.d[4] == 2, timeStamp);
+      cpm.setValue(pidName, pr.d[4] == 2, timeStamp);
       break;
     case "ChargerTemp":
-      chargertemp.setValue(pr.d[3] - 40, timeStamp);
+      cpm.setValue(pidName, pr.d[3] - 40, timeStamp);
       break;
     case "CellInfo1":
     case "CellInfo2":
     case "CellInfo3":
     case "CellInfo4":
-      Pid cellInfo1 = this.getElm327().getVehicleGroup()
+      Pid cellInfo1 = getVehicleGroup()
           .getPidByName("CellInfo1");
       int pidindex = pr.pidHex - PIDResponse.hex2decimal(cellInfo1.getPid());
       // cell monitoring unit index
@@ -333,27 +307,29 @@ public class OBDTriplet extends OBDHandler {
       // ignore voltages for cmu id 6 and 12 on 6E3 and 6E4
       boolean voltageIgnore = (pidindex == 2 || pidindex == 3)
           && (cmu_id == 6 || cmu_id == 12);
-      if (index < this.cellVoltage.canInfo.getMaxIndex()) {
+      DoubleValue cellVoltage=this.getValue("CellVoltage");
+      if (index < cellVoltage.canInfo.getMaxIndex()) {
         if (!voltageIgnore) {
-          this.cellVoltage.setValue(index, voltage1, timeStamp);
-          this.cellVoltage.setValue(index + 1, voltage2, timeStamp);
+          cellVoltage.setValue(index, voltage1, timeStamp);
+          cellVoltage.setValue(index + 1, voltage2, timeStamp);
         }
       }
-      if (index < this.cellTemperature.canInfo.getMaxIndex()) {
+      DoubleValue cellTemperature=this.getValue("CellTemperature");
+      if (index < cellTemperature.canInfo.getMaxIndex()) {
         switch (pr.pid.getName()) {
         case "CellInfo1":
-          this.cellTemperature.setValue(index, temp2, timeStamp);
-          this.cellTemperature.setValue(index + 1, temp3, timeStamp);
+          cellTemperature.setValue(index, temp2, timeStamp);
+          cellTemperature.setValue(index + 1, temp3, timeStamp);
           break;
         case "CellInfo2":
-          this.cellTemperature.setValue(index, temp1, timeStamp);
+          cellTemperature.setValue(index, temp1, timeStamp);
           if (cmu_id != 6 && cmu_id != 12)
-            this.cellTemperature.setValue(index + 1, temp2, timeStamp);
+            cellTemperature.setValue(index + 1, temp2, timeStamp);
           break;
         case "CellInfo3":
           if (cmu_id != 6 && cmu_id != 12) {
-            this.cellTemperature.setValue(index, temp1, timeStamp);
-            this.cellTemperature.setValue(index + 1, temp2, timeStamp);
+            cellTemperature.setValue(index, temp1, timeStamp);
+            cellTemperature.setValue(index + 1, temp2, timeStamp);
           }
         default:
           // ignore
@@ -404,27 +380,28 @@ public class OBDTriplet extends OBDHandler {
       break;
     case "Key":
       int keyVal = pr.d[0];
-      key.setValue(keyVal == 4, timeStamp);
+      cpm.setValue(pidName, keyVal == 4, timeStamp);
       break;
     case "Lights":
       int lightNum = pr.d[0] * 256 + pr.d[1];
       int ilightNum = pr.d[2];
-      cpm.setValue("DoorOpen",(ilightNum & 0x01) != 0, timeStamp);
-      cpm.setValue("BlinkerRight",(lightNum & 0x01) != 0, timeStamp);
-      cpm.setValue("BlinkerLeft",(lightNum & 0x02) != 0, timeStamp);
-      cpm.setValue("HighBeam",(lightNum & 0x04) != 0, timeStamp);
-      cpm.setValue("HeadLight",(lightNum & 0x20) != 0, timeStamp);
-      cpm.setValue("ParkingLight",(lightNum & 0x40) != 0, timeStamp);
+      cpm.setValue("DoorOpen", (ilightNum & 0x01) != 0, timeStamp);
+      cpm.setValue("BlinkerRight", (lightNum & 0x01) != 0, timeStamp);
+      cpm.setValue("BlinkerLeft", (lightNum & 0x02) != 0, timeStamp);
+      cpm.setValue("HighBeam", (lightNum & 0x04) != 0, timeStamp);
+      cpm.setValue("HeadLight", (lightNum & 0x20) != 0, timeStamp);
+      cpm.setValue("ParkingLight", (lightNum & 0x40) != 0, timeStamp);
       break;
     case "MotorTemp_RPM":
-      motortemp.setValue(pr.d[3] - 40, timeStamp);
+      cpm.setValue("MotorTemp", pr.d[3] - 40, timeStamp);
       // fetch teh rounds per minute
       int rpmValue = (pr.d[6] * 256 + pr.d[7]) - 10000;
       // if we have a previous value we can start integrating
-      IntegerValue rpm=getValue("RPM");
+      IntegerValue rpm = getValue("RPM");
       if (rpm.getValueItem().isAvailable()) {
+        DoubleValue tripRounds=this.getValue("TripRounds");
         // calc numerical integral - how many rounds total on this trip?
-        this.tripRounds.integrate(rpm.getValueItem().getValue(),
+        tripRounds.integrate(rpm.getValueItem().getValue(),
             rpm.getValueItem().getTimeStamp(), Math.abs(rpmValue), timeStamp,
             1 / 60000.0);
         // calc distance based on rounds
@@ -433,12 +410,12 @@ public class OBDTriplet extends OBDHandler {
             timeStamp);
       }
       cpm.setValue("RPM", rpmValue, timeStamp);
+      IntegerValue speed = this.getValue("Speed");
       if (speed.getValueItem().isAvailable()) {
         // m per round
         // speed.getValueItem().getValue() * 1000.0 / 60
         // / rpm.getValueItem().getValue()
-        double rpmSpeed = rpm.getValue() * this.mmPerRound * 60
-            / 1000000.0;
+        double rpmSpeed = rpm.getValue() * this.mmPerRound * 60 / 1000000.0;
         cpm.setValue("RPMSpeed", rpmSpeed, timeStamp);
       }
       break;
@@ -497,7 +474,7 @@ public class OBDTriplet extends OBDHandler {
       String partVal = pr.getString(1);
       VIN.set(indexVal, partVal, timeStamp);
       if (VIN.getValueItem().isAvailable()) {
-        this.cellCount.setValue(VIN.getCellCount(), timeStamp);
+        cpm.setValue("CellCount",VIN.getCellCount(), timeStamp);
       }
       break;
 
@@ -513,14 +490,17 @@ public class OBDTriplet extends OBDHandler {
     CANRawValue canRawValue = this.getCanRawValues().get(pr.pid.getPid());
     canRawValue.setRawValue(pr.getRawString(), timeStamp);
   }
-  
+
   /**
    * get the CANValue
+   * 
    * @param canInfoName
    * @return the canValue
    */
-  public <CT extends CANValue<T>,T> CT getValue(String canInfoName) {
-    CANProperty<CT,T> property = cpm.get(canInfoName);
+  public <CT extends CANValue<T>, T> CT getValue(String canInfoName) {
+    CANProperty<CT, T> property = cpm.get(canInfoName);
+    if (property==null)
+      throw new RuntimeException("invalid canInfoName "+canInfoName);
     return property.getCanValue();
   }
 

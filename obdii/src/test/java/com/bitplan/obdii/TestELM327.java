@@ -42,6 +42,7 @@ import org.junit.Test;
 import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
+import com.bitplan.can4eve.CANValue.IntegerValue;
 import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.SoftwareVersion;
 import com.bitplan.can4eve.gui.App;
@@ -259,8 +260,10 @@ public class TestELM327 extends TestOBDII {
     assertNotNull(SOC);
     assertEquals(new Double(44.8), obdTriplet.batteryCapacity.getValue(), 0.1);
     assertEquals(new Double(100.0), SOC.getValue(), 0.1);
-    assertEquals(new Integer(95), obdTriplet.range.getValue());
-    assertEquals(new Integer(721), obdTriplet.odometer.getValue());
+    IntegerValue range=obdTriplet.getValue("Range");
+    assertEquals(new Integer(95), range.getValue());
+    IntegerValue odometer=obdTriplet.getValue("Odometer");
+    assertEquals(new Integer(721), odometer.getValue());
     assertEquals(new Double(-9.5), obdTriplet.steeringWheelPosition.getValue(),
         0.01);
     assertEquals(new Double(2.5), obdTriplet.steeringWheelMovement.getValue(),
