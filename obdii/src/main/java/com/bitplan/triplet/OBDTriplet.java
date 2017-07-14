@@ -37,7 +37,6 @@ import java.util.logging.Level;
 
 import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue;
-import com.bitplan.can4eve.CANValue.BooleanValue;
 import com.bitplan.can4eve.CANValue.CANRawValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.CANValue.IntegerValue;
@@ -86,7 +85,7 @@ public class OBDTriplet extends OBDHandler {
   ShifterPositionValue shifterPositionValue;
   private SimpleLongProperty msecsRunningProperty;
   // vehicleState
-  private SimpleObjectProperty vehicleStateProperty;
+  private SimpleObjectProperty<Vehicle.State> vehicleStateProperty;
   Integer mmPerRound = 261; // TODO do we need a default?
   private CANPropertyManager cpm;
   public static boolean withRawValues = false;
@@ -241,7 +240,7 @@ public class OBDTriplet extends OBDHandler {
     VIN.activate();
     // properties
     msecsRunningProperty = new SimpleLongProperty();
-    vehicleStateProperty = new SimpleObjectProperty();
+    vehicleStateProperty = new SimpleObjectProperty<Vehicle.State>();
   }
 
   /**
