@@ -241,7 +241,7 @@ public class CANPropertyManager {
    * @param CANInfoName
    * @return
    */
-  public CANProperty get(String CANInfoName) {
+  public <CT extends CANValue<T>,T> CANProperty<CT,T> get(String CANInfoName) {
     CANProperty result = getCanProperties().get(CANInfoName);
     return result;
   }

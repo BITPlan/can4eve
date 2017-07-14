@@ -72,11 +72,7 @@ public class OBDTriplet extends OBDHandler {
 
   // car parameters
   public DoubleValue batteryCapacity;
-  BooleanValue doorOpen;
-  BooleanValue parkingLight;
-  BooleanValue headLight;
-  BooleanValue highBeam;
-
+ 
   DoubleValue breakPedal;
   BooleanValue breakPressed;
   DoubleValue cellTemperature;
@@ -90,8 +86,6 @@ public class OBDTriplet extends OBDHandler {
   IntegerValue speed;
   DoubleValue rpmSpeed;
   IntegerValue motortemp;
-  IntegerValue rpm;
-  public DoubleValue SOC;
   IntegerValue cellCount;
   public VINValue VIN;
   VINValue VIN2;
@@ -223,11 +217,7 @@ public class OBDTriplet extends OBDHandler {
     }
     batteryCapacity = cpm
         .addValue(new DoubleValue(getCanInfo("BatteryCapacity")));
-    doorOpen = cpm.addValue(new BooleanValue(getCanInfo("DoorOpen")));
-    parkingLight = cpm.addValue(new BooleanValue(getCanInfo("ParkingLight")));
-    headLight = cpm.addValue(new BooleanValue(getCanInfo("HeadLight")));
-    highBeam = cpm.addValue(new BooleanValue(getCanInfo("HighBeam")));
-
+   
     breakPedal = cpm.addValue(new DoubleValue(getCanInfo("BreakPedal")));
     breakPressed = cpm.addValue(new BooleanValue(getCanInfo("BreakPressed")));
     cellTemperature = cpm
@@ -242,8 +232,6 @@ public class OBDTriplet extends OBDHandler {
     speed = cpm.addValue(new IntegerValue(getCanInfo("Speed")));
     rpmSpeed = cpm.addValue(new DoubleValue(getCanInfo("RPMSpeed")));
     motortemp = cpm.addValue(new IntegerValue(getCanInfo("MotorTemp")));
-    rpm = cpm.addValue(new IntegerValue(getCanInfo("RPM")));
-    SOC = cpm.addValue(new DoubleValue(getCanInfo("SOC")));
     cellCount = cpm.addValue(new IntegerValue(getCanInfo("CellCount")));
     VIN = new VINValue(getCanInfo("VIN"));
     VIN2 = new VINValue(getCanInfo("VIN"));
@@ -265,7 +253,8 @@ public class OBDTriplet extends OBDHandler {
    * things to do / initialize after I a was constructed
    */
   public void postConstruct() {
-    initCanValues("Accelerator","BlinkerLeft","BlinkerRight");
+    initCanValues("Accelerator","BlinkerLeft","BlinkerRight", 
+        "DoorOpen","ParkingLight","HeadLight","HighBeam","RPM","SOC");
     // add all available PIDs to the available raw values
     for (Pid pid : getElm327().getVehicleGroup().getPids()) {
       CANInfo pidInfo = pid.getFirstInfo();
@@ -420,18 +409,19 @@ public class OBDTriplet extends OBDHandler {
     case "Lights":
       int lightNum = pr.d[0] * 256 + pr.d[1];
       int ilightNum = pr.d[2];
-      this.doorOpen.setValue((ilightNum & 0x01) != 0, timeStamp);
+      cpm.setValue("DoorOpen",(ilightNum & 0x01) != 0, timeStamp);
       cpm.setValue("BlinkerRight",(lightNum & 0x01) != 0, timeStamp);
       cpm.setValue("BlinkerLeft",(lightNum & 0x02) != 0, timeStamp);
-      this.highBeam.setValue((lightNum & 0x04) != 0, timeStamp);
-      this.headLight.setValue((lightNum & 0x20) != 0, timeStamp);
-      this.parkingLight.setValue((lightNum & 0x40) != 0, timeStamp);
+      cpm.setValue("HighBeam",(lightNum & 0x04) != 0, timeStamp);
+      cpm.setValue("HeadLight",(lightNum & 0x20) != 0, timeStamp);
+      cpm.setValue("ParkingLight",(lightNum & 0x40) != 0, timeStamp);
       break;
     case "MotorTemp_RPM":
       motortemp.setValue(pr.d[3] - 40, timeStamp);
       // fetch teh rounds per minute
       int rpmValue = (pr.d[6] * 256 + pr.d[7]) - 10000;
       // if we have a previous value we can start integrating
+      IntegerValue rpm=getValue("RPM");
       if (rpm.getValueItem().isAvailable()) {
         // calc numerical integral - how many rounds total on this trip?
         this.tripRounds.integrate(rpm.getValueItem().getValue(),
@@ -447,7 +437,7 @@ public class OBDTriplet extends OBDHandler {
         // m per round
         // speed.getValueItem().getValue() * 1000.0 / 60
         // / rpm.getValueItem().getValue()
-        double rpmSpeed = this.rpm.getValue() * this.mmPerRound * 60
+        double rpmSpeed = rpm.getValue() * this.mmPerRound * 60
             / 1000000.0;
         cpm.setValue("RPMSpeed", rpmSpeed, timeStamp);
       }
@@ -522,6 +512,16 @@ public class OBDTriplet extends OBDHandler {
     } // switch
     CANRawValue canRawValue = this.getCanRawValues().get(pr.pid.getPid());
     canRawValue.setRawValue(pr.getRawString(), timeStamp);
+  }
+  
+  /**
+   * get the CANValue
+   * @param canInfoName
+   * @return the canValue
+   */
+  public <CT extends CANValue<T>,T> CT getValue(String canInfoName) {
+    CANProperty<CT,T> property = cpm.get(canInfoName);
+    return property.getCanValue();
   }
 
   /**

@@ -255,9 +255,10 @@ public class TestELM327 extends TestOBDII {
     // display.waitClose();
     assertNotNull("the battery capacity should be set",
         obdTriplet.batteryCapacity.getValue());
-    assertNotNull(obdTriplet.SOC);
+    DoubleValue SOC=obdTriplet.getValue("SOC");
+    assertNotNull(SOC);
     assertEquals(new Double(44.8), obdTriplet.batteryCapacity.getValue(), 0.1);
-    assertEquals(new Double(100.0), obdTriplet.SOC.getValue(), 0.1);
+    assertEquals(new Double(100.0), SOC.getValue(), 0.1);
     assertEquals(new Integer(95), obdTriplet.range.getValue());
     assertEquals(new Integer(721), obdTriplet.odometer.getValue());
     assertEquals(new Double(-9.5), obdTriplet.steeringWheelPosition.getValue(),
