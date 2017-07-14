@@ -21,6 +21,7 @@
 package com.bitplan.can4eve.gui.javafx;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -228,6 +229,11 @@ public class CANPropertyManager {
       final Date timeStamp) {
     getCanProperties().get(name).setValue(value, timeStamp);
   }
+  
+  @SuppressWarnings("unchecked")
+  public void setValue(String name, Boolean value, Date timeStamp) {
+    getCanProperties().get(name).setValue(value, timeStamp);
+  }
 
   /**
    * get the given CANProperty byName
@@ -238,6 +244,18 @@ public class CANPropertyManager {
   public CANProperty get(String CANInfoName) {
     CANProperty result = getCanProperties().get(CANInfoName);
     return result;
+  }
+
+  /**
+   * get the CANValues
+   * @return
+   */
+  public List<CANValue<?>> getCANValues() {
+    List<CANValue<?>> canValues = new ArrayList<CANValue<?>>();
+    for (CANProperty canProperty:this.canProperties.values()) {
+      canValues.add(canProperty.getCanValue());
+    }
+    return canValues;
   }
 
 }

@@ -24,8 +24,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -71,11 +69,8 @@ import javafx.beans.value.ObservableValue;
  *
  */
 public class OBDTriplet extends OBDHandler {
-  
+
   // car parameters
-  DoubleValue accelerator;
-  BooleanValue blinkerLeft;
-  BooleanValue blinkerRight;
   public DoubleValue batteryCapacity;
   BooleanValue doorOpen;
   BooleanValue parkingLight;
@@ -109,13 +104,13 @@ public class OBDTriplet extends OBDHandler {
   public DoubleValue steeringWheelPosition;
   public DoubleValue steeringWheelMovement;
   ShifterPositionValue shifterPositionValue;
-  private CANValue<?>[] top;
   private SimpleLongProperty msecsRunningProperty;
   // vehicleState
   private SimpleObjectProperty vehicleStateProperty;
-  Integer mmPerRound=261; // TODO do we need a default?
+  Integer mmPerRound = 261; // TODO do we need a default?
   private CANPropertyManager cpm;
-  
+  public static boolean withRawValues=false;
+
   public boolean isWithHistory() {
     return withHistory;
   }
@@ -192,8 +187,7 @@ public class OBDTriplet extends OBDHandler {
    * @param socket
    * @throws IOException
    */
-  public OBDTriplet(VehicleGroup vehicleGroup, Socket socket)
-      throws Exception {
+  public OBDTriplet(VehicleGroup vehicleGroup, Socket socket) throws Exception {
     this(vehicleGroup, socket, debug);
   }
 
@@ -207,7 +201,7 @@ public class OBDTriplet extends OBDHandler {
     super(vehicleGroup, elm);
     postConstruct();
   }
-  
+
   /**
    * get the canInfo for the given CanInfo name
    * 
@@ -218,17 +212,17 @@ public class OBDTriplet extends OBDHandler {
     CANInfo canInfo = this.getVehicleGroup().getCANInfoByName(canInfoName);
     return canInfo;
   }
-  
+
   /**
    * initialize the CanValues
    */
-  public void initCanValues() {
-    cpm=new CANPropertyManager(getVehicleGroup());
-    // car parameters
-    accelerator = cpm.addValue(new DoubleValue(getCanInfo("Accelerator")));
-    blinkerLeft = cpm.addValue(new BooleanValue(getCanInfo("BlinkerLeft")));
-    blinkerRight = cpm.addValue(new BooleanValue(getCanInfo("BlinkerRight")));
-    batteryCapacity = cpm.addValue(new DoubleValue(getCanInfo("BatteryCapacity")));
+  public void initCanValues(String...canInfoNames) {
+    cpm = new CANPropertyManager(getVehicleGroup());
+    for (String canInfoName:canInfoNames) {
+      cpm.addValue(canInfoName);
+    }
+    batteryCapacity = cpm
+        .addValue(new DoubleValue(getCanInfo("BatteryCapacity")));
     doorOpen = cpm.addValue(new BooleanValue(getCanInfo("DoorOpen")));
     parkingLight = cpm.addValue(new BooleanValue(getCanInfo("ParkingLight")));
     headLight = cpm.addValue(new BooleanValue(getCanInfo("HeadLight")));
@@ -236,7 +230,8 @@ public class OBDTriplet extends OBDHandler {
 
     breakPedal = cpm.addValue(new DoubleValue(getCanInfo("BreakPedal")));
     breakPressed = cpm.addValue(new BooleanValue(getCanInfo("BreakPressed")));
-    cellTemperature = cpm.addValue(new DoubleValue(getCanInfo("CellTemperature")));
+    cellTemperature = cpm
+        .addValue(new DoubleValue(getCanInfo("CellTemperature")));
     cellVoltage = cpm.addValue(new DoubleValue(getCanInfo("CellVoltage")));
     chargertemp = cpm.addValue(new IntegerValue(getCanInfo("ChargerTemp")));
     range = cpm.addValue(new IntegerValue(getCanInfo("Range")));
@@ -258,34 +253,19 @@ public class OBDTriplet extends OBDHandler {
     dcvolts = cpm.addValue(new DoubleValue(getCanInfo("DCVolts")));
     climateValue = new ClimateValue(getCanInfo("Climate"));
     ventDirection = new StringValue(getCanInfo("VentDirection"));
-    steeringWheelPosition = cpm.addValue(new DoubleValue(
-        getCanInfo("SteeringWheelPosition")));
+    steeringWheelPosition = cpm
+        .addValue(new DoubleValue(getCanInfo("SteeringWheelPosition")));
     steeringWheelMovement = new DoubleValue(
         getCanInfo("SteeringWheelMovement"));
     shifterPositionValue = new ShifterPositionValue(
         getCanInfo("ShifterPosition"));
-    // the top list as requested
-    CANValue<?>[] topArray = { this.VIN, this.cellCount, this.batteryCapacity,
-        this.key, this.odometer, this.tripOdo, this.tripRounds, this.speed,
-        this.rpm, this.rpmSpeed, this.range, this.SOC, this.climateValue,
-        this.ventDirection, this.acamps, this.acvolts, this.dcamps,
-        this.dcvolts, this.motortemp, this.chargertemp,
-        this.shifterPositionValue, this.steeringWheelPosition,
-        this.steeringWheelMovement, this.accelerator, this.breakPressed,
-        this.breakPedal, this.blinkerLeft, this.blinkerRight, this.doorOpen,
-        this.parkingLight, this.headLight, this.highBeam, this.cellTemperature,
-        this.cellVoltage };
-    top = topArray;
   }
-
-  
-
 
   /**
    * things to do / initialize after I a was constructed
    */
   public void postConstruct() {
-    initCanValues();
+    initCanValues("Accelerator","BlinkerLeft","BlinkerRight");
     // add all available PIDs to the available raw values
     for (Pid pid : getElm327().getVehicleGroup().getPids()) {
       CANInfo pidInfo = pid.getFirstInfo();
@@ -297,8 +277,8 @@ public class OBDTriplet extends OBDHandler {
     }
     VIN.activate();
     // properties
-    msecsRunningProperty=new SimpleLongProperty();
-    vehicleStateProperty=new SimpleObjectProperty();
+    msecsRunningProperty = new SimpleLongProperty();
+    vehicleStateProperty = new SimpleObjectProperty();
   }
 
   /**
@@ -312,18 +292,19 @@ public class OBDTriplet extends OBDHandler {
       LOGGER.log(Level.INFO, "triplet handling PID Response " + pr.pidId + " ("
           + pr.pid.getName() + ")");
     Date timeStamp = pr.getResponse().getTime();
-    switch (pr.pid.getName()) {
+    String pidName = pr.pid.getName();
+    switch (pidName) {
     case "Accelerator":
-      accelerator.setValue(pr.d[2] / 250.0 * 100, timeStamp);
+      cpm.setValue(pidName, pr.d[2] / 250.0 * 100, timeStamp);
       break;
     case "AmpsVolts":
-      cpm.setValue("DCAmps",((pr.d[2] * 256 + pr.d[3]) - 128 * 256) / 100.0,
+      cpm.setValue("DCAmps", ((pr.d[2] * 256 + pr.d[3]) - 128 * 256) / 100.0,
           timeStamp);
-      cpm.setValue("DCVolts",(pr.d[4] * 256 + pr.d[5]) / 10.0, timeStamp);
+      cpm.setValue("DCVolts", (pr.d[4] * 256 + pr.d[5]) / 10.0, timeStamp);
       break;
     case "ACAmpsVolts":
-      cpm.setValue("ACVolts",pr.d[1] * 1.0, timeStamp);
-      cpm.setValue("ACAmps",pr.d[6] / 10.0, timeStamp);
+      cpm.setValue("ACVolts", pr.d[1] * 1.0, timeStamp);
+      cpm.setValue("ACAmps", pr.d[6] / 10.0, timeStamp);
       break;
     case "BatteryCapacity":
       int bindex = pr.d[0];
@@ -331,7 +312,7 @@ public class OBDTriplet extends OBDHandler {
         double ah = (pr.d[3] * 256 + pr.d[4]) / 10.0;
         // LOGGER.log(Level.INFO,String.format("Battery capacity is: %4.1f Ah",
         // ah));
-        cpm.setValue("BatteryCapacity",ah, timeStamp);
+        cpm.setValue("BatteryCapacity", ah, timeStamp);
       }
       break;
     case "BreakPedal":
@@ -440,8 +421,8 @@ public class OBDTriplet extends OBDHandler {
       int lightNum = pr.d[0] * 256 + pr.d[1];
       int ilightNum = pr.d[2];
       this.doorOpen.setValue((ilightNum & 0x01) != 0, timeStamp);
-      this.blinkerRight.setValue((lightNum & 0x01) != 0, timeStamp);
-      this.blinkerLeft.setValue((lightNum & 0x02) != 0, timeStamp);
+      cpm.setValue("BlinkerRight",(lightNum & 0x01) != 0, timeStamp);
+      cpm.setValue("BlinkerLeft",(lightNum & 0x02) != 0, timeStamp);
       this.highBeam.setValue((lightNum & 0x04) != 0, timeStamp);
       this.headLight.setValue((lightNum & 0x20) != 0, timeStamp);
       this.parkingLight.setValue((lightNum & 0x40) != 0, timeStamp);
@@ -457,30 +438,33 @@ public class OBDTriplet extends OBDHandler {
             rpm.getValueItem().getTimeStamp(), Math.abs(rpmValue), timeStamp,
             1 / 60000.0);
         // calc distance based on rounds
-        cpm.setValue("TripOdo",tripRounds.getValueItem().getValue() * mmPerRound/1000000.0,
+        cpm.setValue("TripOdo",
+            tripRounds.getValueItem().getValue() * mmPerRound / 1000000.0,
             timeStamp);
       }
-      cpm.setValue("RPM",rpmValue,timeStamp);
+      cpm.setValue("RPM", rpmValue, timeStamp);
       if (speed.getValueItem().isAvailable()) {
         // m per round
         // speed.getValueItem().getValue() * 1000.0 / 60
         // / rpm.getValueItem().getValue()
-        double rpmSpeed=this.rpm.getValue()*this.mmPerRound*60/1000000.0;
-        cpm.setValue("RPMSpeed",rpmSpeed, timeStamp);
+        double rpmSpeed = this.rpm.getValue() * this.mmPerRound * 60
+            / 1000000.0;
+        cpm.setValue("RPMSpeed", rpmSpeed, timeStamp);
       }
       break;
     case "Odometer_Speed":
-      cpm.setValue("Odometer",pr.d[2] * 65536 + pr.d[3] * 256 + pr.d[4], timeStamp);
+      cpm.setValue("Odometer", pr.d[2] * 65536 + pr.d[3] * 256 + pr.d[4],
+          timeStamp);
       Integer speedNum = pr.d[1];
       if (speedNum == 255)
-        speedNum=null;
-      cpm.setValue("Speed",speedNum, timeStamp);
+        speedNum = null;
+      cpm.setValue("Speed", speedNum, timeStamp);
       break;
     case "Range": // 0x346
       Integer rangeNum = pr.d[7];
       if (rangeNum == 255)
-        rangeNum=null;
-      cpm.setValue("Range",rangeNum, timeStamp);
+        rangeNum = null;
+      cpm.setValue("Range", rangeNum, timeStamp);
       break;
     case "Steering_Wheel":
       this.steeringWheelPosition
@@ -491,16 +475,18 @@ public class OBDTriplet extends OBDHandler {
     case "ShifterPosition":
       ShifterPosition newShifterPosition = new ShifterPosition(pr.d[0]);
       shifterPositionValue.setValue(newShifterPosition, timeStamp);
-      if (newShifterPosition.shiftPosition==ShiftPosition.P) {
-        this.vehicleStateProperty.set(Vehicle.State.Parking); 
+      if (newShifterPosition.shiftPosition == ShiftPosition.P) {
+        this.vehicleStateProperty.set(Vehicle.State.Parking);
         // are we charging?
-        if (this.acvolts.getValueItem().isAvailable() && this.acvolts.getValue()>50) {
+        if (this.acvolts.getValueItem().isAvailable()
+            && this.acvolts.getValue() > 50) {
           // AC charging
           this.vehicleStateProperty.set(Vehicle.State.Charging);
         }
         // DC charging
         // FIXME is 1 amp the minimum?
-        if (this.dcamps.getValueItem().isAvailable() && this.dcamps.getValue()>1.0) {
+        if (this.dcamps.getValueItem().isAvailable()
+            && this.dcamps.getValue() > 1.0) {
           this.vehicleStateProperty.set(Vehicle.State.Charging);
         }
       } else {
@@ -510,10 +496,10 @@ public class OBDTriplet extends OBDHandler {
 
     case "SOC":
       // state of charging in %
-      double soc=((pr.d[1]) - 10) / 2.0;
+      double soc = ((pr.d[1]) - 10) / 2.0;
       // FIXME - workaround for binding timing issue
-      soc=soc-Math.random()*0.001;
-      cpm.setValue("SOC",soc, timeStamp);
+      soc = soc - Math.random() * 0.001;
+      cpm.setValue("SOC", soc, timeStamp);
       break;
 
     case "VIN":
@@ -539,35 +525,38 @@ public class OBDTriplet extends OBDHandler {
   }
 
   /**
-   * get the CAMValues
+   * get the CANValues
    * 
    * @return - the array of CAN Values in order of appearance
    */
   public List<CANValue<?>> getCANValues() {
     if (canValues == null) {
       // start the canValues with the top list
-      canValues = new ArrayList<CANValue<?>>(Arrays.asList(top));
-      // TODO check handling of raw values
-      // create a map of these already added values
-      HashMap<Pid, CANValue<?>> canValueMap = new HashMap<Pid, CANValue<?>>();
-      for (CANValue<?> canValue : canValues) {
-        CANInfo canInfo = canValue.canInfo;
-        Pid pid = canInfo.getPid();
-        canValueMap.put(pid, canValue);
-      } // for
-      // now add all raw values
-      for (Pid pid : this.getElm327().getVehicleGroup().getPids()) {
-        if (pid.getIsoTp() == null) {
-          CANRawValue canRawValue = this.getCanRawValues().get(pid.getPid());
-          if (canRawValue == null)
-            throw new RuntimeException(
-                "this can't happen - no pid raw value for PID " + pid.getPid());
-          // if (!canValueMap.containsKey(pid)) {
-          canValues.add(canRawValue);
-          canValueMap.put(pid, canRawValue);
-        }
-        // } // if
-      } // for
+      canValues = cpm.getCANValues();
+      if (withRawValues) {
+        // TODO check handling of raw values
+        // create a map of these already added values
+        HashMap<Pid, CANValue<?>> canValueMap = new HashMap<Pid, CANValue<?>>();
+        for (CANValue<?> canValue : canValues) {
+          CANInfo canInfo = canValue.canInfo;
+          Pid pid = canInfo.getPid();
+          canValueMap.put(pid, canValue);
+        } // for
+        // now add all raw values
+        for (Pid pid : getVehicleGroup().getPids()) {
+          if (pid.getIsoTp() == null) {
+            CANRawValue canRawValue = this.getCanRawValues().get(pid.getPid());
+            if (canRawValue == null)
+              throw new RuntimeException(
+                  "this can't happen - no pid raw value for PID "
+                      + pid.getPid());
+            // if (!canValueMap.containsKey(pid)) {
+            canValues.add(canRawValue);
+            canValueMap.put(pid, canRawValue);
+          }
+          // } // if
+        } // for
+      }
       for (CANValue<?> canValue : canValues) {
         canValue.activate();
       } // for
@@ -596,9 +585,9 @@ public class OBDTriplet extends OBDHandler {
     String nowStr = isoDateFormatter.format(now);
     display.updateField("date", nowStr, ++dateUpdateCount);
     long totalUpdates = 0;
-    if (displayStart!=null) {
-      long msecsRunning=now.getTime()-displayStart.getTime();
-      if (msecsRunningProperty!=null)
+    if (displayStart != null) {
+      long msecsRunning = now.getTime() - displayStart.getTime();
+      if (msecsRunningProperty != null)
         this.msecsRunningProperty.setValue(msecsRunning);
     }
     for (CANValue<?> canValue : this.getCANValues()) {
@@ -648,8 +637,8 @@ public class OBDTriplet extends OBDHandler {
   private Date showHistory(CANValueDisplay display, Date now) {
     if (display instanceof JFXTripletDisplay) {
       final JFXTripletDisplay tripletDisplay = (JFXTripletDisplay) display;
-      tripletDisplay.updateHistory(cpm.get("SOC"), cpm.get("Range"), "SOC/RR over time", "time",
-          "SOC/RR");
+      tripletDisplay.updateHistory(cpm.get("SOC"), cpm.get("Range"),
+          "SOC/RR over time", "time", "SOC/RR");
     }
     return now;
   }
@@ -733,28 +722,28 @@ public class OBDTriplet extends OBDHandler {
    * @param display
    */
   public void startDisplay(final CANValueDisplay display) {
-    if (displayexecutor!=null) {
+    if (displayexecutor != null) {
       throw new IllegalStateException("display already started!");
     }
     // TODO make this more systematic
     if (display instanceof JFXTripletDisplay) {
-      Map<String,ObservableValue<?>> canBindings=new HashMap<String,ObservableValue<?>>();
+      Map<String, ObservableValue<?>> canBindings = new HashMap<String, ObservableValue<?>>();
       // fixed bindings
-      canBindings.put("msecs",this.msecsRunningProperty);
+      canBindings.put("msecs", this.msecsRunningProperty);
       canBindings.put("vehicleState", this.vehicleStateProperty);
       // property based bindings
-      for (CANProperty<?,?> canProperty:cpm.getCanProperties().values()) {
-        String name=canProperty.getName();
+      for (CANProperty<?, ?> canProperty : cpm.getCanProperties().values()) {
+        String name = canProperty.getName();
         if (debug)
-          LOGGER.log(Level.INFO,"binding "+name);
+          LOGGER.log(Level.INFO, "binding " + name);
         canBindings.put(name, canProperty.getProperty());
-        canBindings.put(name+"-max",canProperty.getMax());
-        canBindings.put(name+"-avg",canProperty.getAvg());
+        canBindings.put(name + "-max", canProperty.getMax());
+        canBindings.put(name + "-avg", canProperty.getAvg());
       }
       ((JFXTripletDisplay) display).bind(canBindings);
     }
     displayexecutor = Executors.newSingleThreadScheduledExecutor();
-    displayStart=new Date();
+    displayStart = new Date();
     displayTask = new Runnable() {
       public void run() {
         // Invoke method(s) to do the work
@@ -777,7 +766,7 @@ public class OBDTriplet extends OBDHandler {
   private void stopDisplay() {
     if (displayexecutor != null) {
       displayexecutor.shutdown();
-      displayexecutor=null;
+      displayexecutor = null;
     }
   }
 
@@ -806,14 +795,14 @@ public class OBDTriplet extends OBDHandler {
     // do we have an STM capable chip?
     if (this.getElm327().isSTN()) {
       this.STMMonitor(display, canValues, frameLimit);
-      for (CANValue<?> canValue : top) {
+      for (CANValue<?> canValue : cpm.getCANValues()) {
         if (debug)
           LOGGER.log(Level.INFO, "canValue:" + canValue.canInfo.getTitle());
         printWriter.write(canValue.asCSV());
       }
     } else {
       // slow version
-      for (CANValue<?> canValue : top) {
+      for (CANValue<?> canValue : cpm.getCANValues()) {
         CANInfo canInfo = canValue.canInfo;
         monitorPid(display, canInfo.getPid().getPid(),
             canInfo.getMaxIndex() + 5);

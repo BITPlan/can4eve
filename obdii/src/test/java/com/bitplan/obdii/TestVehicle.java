@@ -159,13 +159,13 @@ public class TestVehicle extends TestOBDII {
   public void testNeededBaudrate() throws Exception {
     VehicleGroup vg=getVehicleGroup();
     long bytesPerSec=0;
-    long frameSize=9*3;
+    long frameSize=9*3+2;
     int index=1;
     //debug=true;
     for (Pid pid:vg.getPids()) {
       if (debug)
         System.out.println(String.format("%3d: %25s %3s %3d",index++,pid.getName(),pid.getPid(),pid.getFreq()));
-      if (!pid.getName().startsWith("PID"))
+      //if (!pid.getName().startsWith("PID"))
       bytesPerSec+=pid.getFreq()*frameSize;
     }
     if (debug)
