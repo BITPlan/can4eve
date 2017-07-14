@@ -43,6 +43,11 @@ public class CANProperty<CT extends CANValue<T>,T> {
   private Property<T>property;
   private Property<T>max;
   private Property<T>avg;
+  
+  public CT getCanValue() {
+    return canValue;
+  }
+
   public Property<T> getProperty() {
     return property;
   }

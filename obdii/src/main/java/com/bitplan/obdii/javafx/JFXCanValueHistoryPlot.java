@@ -22,6 +22,7 @@ package com.bitplan.obdii.javafx;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,6 +30,7 @@ import org.apache.commons.collections4.queue.CircularFifoQueue;
 
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.ValueItem;
+import com.bitplan.can4eve.gui.javafx.CANProperty;
 
 import javafx.collections.ObservableList;
 import javafx.scene.chart.LineChart;
@@ -49,7 +51,7 @@ public class JFXCanValueHistoryPlot {
   String title;
   String xTitle;
   String yTitle;
-  private Collection<CANValue<?>> canValues;
+  private Map<String, CANProperty> canProperties;
   LineChart<Number,Number> lineChart=null;
   
   public LineChart<Number, Number> getLineChart() {
@@ -62,14 +64,14 @@ public class JFXCanValueHistoryPlot {
    * @param title
    * @param xTitle
    * @param yTitle
-   * @param canValues
+   * @param properties
    */
   public JFXCanValueHistoryPlot(String title, String xTitle, String yTitle,
-      Collection<CANValue<?>> canValues) {
+      Map<String, CANProperty> properties) {
     this.title = title;
     this.xTitle = xTitle;
     this.yTitle = yTitle;
-    this.canValues = canValues;
+    this.canProperties = properties;
   }
   
   /**
@@ -85,26 +87,26 @@ public class JFXCanValueHistoryPlot {
   
   /**
    * create a series for the given CANValue
-   * @param canValue - the canValue to use as a basis
+   * @param canProperty - the canValue to use as a basis
    * @return the chart data series
    */
-  public XYChart.Series<Number, Number> createSeries(CANValue<?> canValue){
+  public XYChart.Series<Number, Number> createSeries(CANProperty canProperty){
     //defining a series
     XYChart.Series<Number, Number> series = new XYChart.Series<Number,Number>();
-    series.setName(canValue.canInfo.getTitle());
+    series.setName(canProperty.getName());
     return series;
   }
   
   /**
    * update the given chart Series
    * @param series - the series to update
-   * @param canValue - the canvalue to take the data from
+   * @param canProperty - the canvalue to take the data from
    */
-  public void updateSeries(XYChart.Series<Number, Number> series, CANValue<?> canValue) {
-    CircularFifoQueue<?> history = canValue.getHistory();
+  public void updateSeries(XYChart.Series<Number, Number> series, CANProperty canProperty) {
+    CircularFifoQueue<?> history = canProperty.getCanValue().getHistory();
     if (debug)
       LOGGER.log(Level.INFO,
-        "plotting for " + history.size() + " history values of " + canValue.canInfo.getTitle());
+        "plotting for " + history.size() + " history values of " + canProperty.getCanValue().canInfo.getTitle());
     Date first=null;
     ObservableList<Data<Number, Number>> dataList = series.getData();
     for (Object historyValueObject : history) {
@@ -141,7 +143,7 @@ public class JFXCanValueHistoryPlot {
             new LineChart<Number,Number>(xAxis,yAxis);
             
     lineChart.setTitle(title);
-    for (CANValue<?> canValue : this.canValues) {
+    for (CANProperty canValue : this.canProperties.values()) {
       Series<Number, Number> series = this.createSeries(canValue);
       updateSeries(series,canValue);
       lineChart.getData().add(series);

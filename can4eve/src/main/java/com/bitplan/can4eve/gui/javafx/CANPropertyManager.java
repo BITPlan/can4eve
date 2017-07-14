@@ -20,10 +20,13 @@
  */
 package com.bitplan.can4eve.gui.javafx;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.CANValue.BooleanValue;
@@ -60,6 +63,70 @@ public class CANPropertyManager {
    */
   public CANPropertyManager(VehicleGroup vehicleGroup) {
     this.vehicleGroup = vehicleGroup;
+  }
+
+  /**
+   * get the list of Properties for the given canInfoNames
+   * 
+   * @param canInfoNames
+   * @return the list
+   * @throws Exception
+   */
+  public Map<String, CANProperty> getCANProperties(String... canInfoNames)
+      throws Exception {
+    Map<String, CANProperty> properties = new HashMap<String, CANProperty>();
+    for (String canInfoName : canInfoNames) {
+      if (!this.canProperties.containsKey(canInfoName)) {
+        addValue(canInfoName);
+      }
+      properties.put(canInfoName, canProperties.get(canInfoName));
+    }
+    return properties;
+  }
+
+  /**
+   * add Value by Name
+   * 
+   * @param canInfoName
+   * @return
+   */
+  public CANProperty addValue(final String canInfoName) {
+    CANInfo canInfo = vehicleGroup.getCANInfoByName(canInfoName);
+    String type = canInfo.getType();
+    Class<CANValue<?>> clazz = null;
+    CANValue<?> canValue = null;
+    if (type == null)
+      throw new RuntimeException(
+          String.format("invalid CANInfo configuration %s - type not specified",
+              canInfoName));
+    if (type.equals("DoubleValue")) {
+      DoubleValue doubleValue = new DoubleValue(canInfo);
+      addValue(doubleValue);
+    } else  if (type.equals("IntegerValue")) {
+        IntegerValue integerValue = new IntegerValue(canInfo);
+        addValue(integerValue);
+    } else {
+      try {
+        clazz = (Class<CANValue<?>>) Class.forName(type);
+      } catch (ClassNotFoundException e) {
+        throw new RuntimeException(
+            String.format("invalid CANInfo configuration %s - invalid type %s",
+                canInfoName, type));
+      }
+      try {
+        canValue = clazz.newInstance();
+      } catch (Throwable th) {
+        throw new RuntimeException(String.format(
+            "invalid CANInfo configuration %s - can not instantiate type %s - error %s",
+            canInfoName, type, th.getMessage()));
+      }
+    }
+    CANProperty result = this.getCanProperties().get(canInfoName);
+    if (result == null)
+      throw new RuntimeException(String.format(
+          "invalid CANInfo configuration %s could not add to CANProperties",
+          canInfoName));
+    return result;
   }
 
   /**
@@ -147,14 +214,26 @@ public class CANPropertyManager {
         canValue, property);
     getCanProperties().put(canValue.canInfo.getName(), canProperty);
   }
-  
+
   @SuppressWarnings("unchecked")
   public void setValue(String name, Double value, Date timeStamp) {
     getCanProperties().get(name).setValue(value, timeStamp);
   }
-  
+
   @SuppressWarnings("unchecked")
-  public void setValue(final String name, final Integer value, final Date timeStamp) {
+  public void setValue(final String name, final Integer value,
+      final Date timeStamp) {
     getCanProperties().get(name).setValue(value, timeStamp);
   }
+
+  /**
+   * get the given CANProperty byName
+   * @param CANInfoName
+   * @return
+   */
+  public CANProperty get(String CANInfoName) {
+    CANProperty result = getCanProperties().get(CANInfoName);
+    return result;
+  }
+
 }

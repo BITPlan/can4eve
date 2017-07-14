@@ -648,7 +648,7 @@ public class OBDTriplet extends OBDHandler {
   private Date showHistory(CANValueDisplay display, Date now) {
     if (display instanceof JFXTripletDisplay) {
       final JFXTripletDisplay tripletDisplay = (JFXTripletDisplay) display;
-      tripletDisplay.updateHistory(SOC, range, "SOC/RR over time", "time",
+      tripletDisplay.updateHistory(cpm.get("SOC"), cpm.get("Range"), "SOC/RR over time", "time",
           "SOC/RR");
     }
     return now;

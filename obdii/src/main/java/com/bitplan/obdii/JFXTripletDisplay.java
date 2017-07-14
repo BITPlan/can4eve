@@ -21,6 +21,7 @@
 package com.bitplan.obdii;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -31,6 +32,7 @@ import com.bitplan.can4eve.CANValue.IntegerValue;
 import com.bitplan.can4eve.SoftwareVersion;
 import com.bitplan.can4eve.Vehicle.State;
 import com.bitplan.can4eve.gui.App;
+import com.bitplan.can4eve.gui.javafx.CANProperty;
 import com.bitplan.obdii.javafx.CANValuePane;
 import com.bitplan.obdii.javafx.JFXCanCellStatePlot;
 import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
@@ -85,16 +87,16 @@ public class JFXTripletDisplay extends JavaFXDisplay {
    * @param xTitle
    * @param yTitle
    */
-  public void updateHistory(DoubleValue xValue, IntegerValue yValue,
+  public void updateHistory(CANProperty xValue, CANProperty yValue,
       String title, String xTitle, String yTitle) {
     Tab activeTab = super.getActiveTab();
     if (activeTab == null)
       return;
     String activePanelTitle = activeTab.getText();
     if ("history".equals(activePanelTitle)) {
-      List<CANValue<?>> plotValues = new ArrayList<CANValue<?>>();
-      plotValues.add(xValue);
-      plotValues.add(yValue);
+      Map<String, CANProperty> plotValues = new HashMap<String, CANProperty>();
+      plotValues.put(xValue.getName(),xValue);
+      plotValues.put(yValue.getName(),yValue);
       final JFXCanValueHistoryPlot valuePlot = new JFXCanValueHistoryPlot(title,
           xTitle, yTitle, plotValues);
       Platform.runLater(() -> updateTab(activeTab, valuePlot.createLineChart()));

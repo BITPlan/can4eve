@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
@@ -41,6 +42,8 @@ import com.bitplan.can4eve.CANValue.IntegerValue;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.gui.App;
 import com.bitplan.can4eve.gui.Group;
+import com.bitplan.can4eve.gui.javafx.CANProperty;
+import com.bitplan.can4eve.gui.javafx.CANPropertyManager;
 import com.bitplan.can4eve.gui.javafx.GenericDialog;
 import com.bitplan.can4eve.gui.javafx.SampleApp;
 import com.bitplan.can4eve.gui.javafx.WaitableApp;
@@ -142,39 +145,19 @@ public class TestAppGUI {
   }
 
   /**
-   * get the plot Values
-   * 
-   * @return
-   * @throws Exception
-   */
-  public List<CANValue<?>> getPlotValues() throws Exception {
-    VehicleGroup vg = VehicleGroup.get("triplet");
-    CANInfo socInfo = vg.getCANInfoByName("SOC");
-    assertNotNull(socInfo);
-    DoubleValue SOC = new DoubleValue(socInfo);
-    CANInfo rrInfo = vg.getCANInfoByName("Range");
-    assertNotNull(rrInfo);
-    IntegerValue RR = new IntegerValue(rrInfo);
-    List<CANValue<?>> plotValues = new ArrayList<CANValue<?>>();
-    plotValues.add(SOC);
-    plotValues.add(RR);
-    return plotValues;
-  }
-
-  /**
    * set the PlotValues
-   * @param plotValues
+   * @param properties
    * @param minutes
    */
-  public void setPlotValues(List<CANValue<?>> plotValues, int minutes) {
+  public void setPlotValues(Map<String, CANProperty> properties, int minutes) {
     Calendar date = Calendar.getInstance();
     final long ONE_MINUTE_IN_MILLIS = 60000;// millisecs
     // https://stackoverflow.com/a/9044010/1497139
     long t = date.getTimeInMillis();
     for (int i = 0; i < minutes; i++) {
       Date timeStamp = new Date(t + (i * ONE_MINUTE_IN_MILLIS));
-      DoubleValue SOC = (DoubleValue) plotValues.get(0);
-      IntegerValue RR = (IntegerValue) plotValues.get(1);
+      DoubleValue SOC = (DoubleValue) properties.get("SOC").getCanValue();
+      IntegerValue RR = (IntegerValue) properties.get("Range").getCanValue();
       SOC.setValue(90 - i * 1.2, timeStamp);
       RR.setValue(90 - i, timeStamp);
     }
@@ -348,16 +331,18 @@ public class TestAppGUI {
     String xTitle = "time";
     String yTitle = "%/km";
     SampleApp.toolkitInit();
-    List<CANValue<?>> plotValues = this.getPlotValues();
-    setPlotValues(plotValues,1);
+    VehicleGroup vg=VehicleGroup.get("triplet");
+    CANPropertyManager cpm = new CANPropertyManager(vg);
+    Map<String, CANProperty> properties = cpm.getCANProperties("SOC","Range");
+    setPlotValues(properties,1);
     final JFXCanValueHistoryPlot valuePlot = new JFXCanValueHistoryPlot(title,
-        xTitle, yTitle, plotValues);
+        xTitle, yTitle, properties);
     SampleApp sampleApp = new SampleApp("SOC/RR", valuePlot.createLineChart());
     sampleApp.show();
     sampleApp.waitOpen();
     //valuePlot.getLineChart().getData().gt
     for (int i = 2; i <= 50; i++) {
-      setPlotValues(plotValues,i);
+      setPlotValues(properties,i);
       Thread.sleep(SHOW_TIME / 50);
     }
     sampleApp.close();
