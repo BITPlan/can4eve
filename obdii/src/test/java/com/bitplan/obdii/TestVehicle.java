@@ -31,6 +31,7 @@ import com.google.gson.GsonBuilder;
 // import com.google.gson.graph.GraphAdapterBuilder;
 import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.CANInfo;
+import com.bitplan.can4eve.CANValue;
 
 /**
  * test the loadable vehicle concept
@@ -137,5 +138,37 @@ public class TestVehicle extends TestOBDII {
     CANInfo bc = vg.getCANInfoByName("BatteryCapacity");
     assertNotNull("There should be a pid for the battery capacity",bc);
     assertEquals("761",bc.getPid().getIsoTp());
+  }
+  
+  @Test
+  public void testHistorySize() throws Exception {
+    VehicleGroup vg=getVehicleGroup();
+    long historySize=0;
+    int index=1;
+    for (CANInfo canInfo:vg.getCANInfos()) {
+      if (debug)
+        System.out.println(String.format("%3d: %25s %3d %3d",index++,canInfo.getName(),canInfo.getHistoryValuesPerMinute()));
+      historySize+=canInfo.getHistoryValuesPerMinute()*CANValue.MAX_HISTORY_MINUTES;
+    }
+    if (debug)
+      System.out.println(String.format("history size=%7d items",historySize));
+    assertEquals(224700,historySize);
+  }
+  
+  @Test
+  public void testNeededBaudrate() throws Exception {
+    VehicleGroup vg=getVehicleGroup();
+    long bytesPerSec=0;
+    long frameSize=9*3;
+    int index=1;
+    //debug=true;
+    for (Pid pid:vg.getPids()) {
+      if (debug)
+        System.out.println(String.format("%3d: %25s %3s %3d",index++,pid.getName(),pid.getPid(),pid.getFreq()));
+      if (!pid.getName().startsWith("PID"))
+      bytesPerSec+=pid.getFreq()*frameSize;
+    }
+    if (debug)
+      System.out.println(String.format("%5d baud",bytesPerSec*8));
   }
 }

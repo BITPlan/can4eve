@@ -25,6 +25,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,6 +86,10 @@ public class VehicleGroup {
     addToMaps(pid);
   }
 
+  /**
+   * add the given Pid to the maps
+   * @param pid
+   */
   public void addToMaps(Pid pid) {
     pidByPid.put(pid.getPid(), pid);
     pidByName.put(pid.getName(), pid);
@@ -101,6 +106,9 @@ public class VehicleGroup {
     this.pids = pids;
   }
 
+  /**
+   * reinitialize me
+   */
   public void reinit() {
     this.pidByPid.clear();
     for (Pid pid : pids) {
@@ -195,6 +203,14 @@ public class VehicleGroup {
       throw new RuntimeException("Misconfigured canValue " + canInfoName
           + " missing canInfo in vehicle Group " + getName());
     return result;
+  }
+  
+  /**
+   * get all CANInfo items
+   * @return - the list of CANInfos
+   */
+  public Collection<CANInfo> getCANInfos() {
+    return this.canInfoByName.values();
   }
 
 }

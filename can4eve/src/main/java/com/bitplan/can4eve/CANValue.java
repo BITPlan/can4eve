@@ -36,6 +36,7 @@ import com.bitplan.csv.CSVUtil;
  *
  */
 public abstract class CANValue<ValueType> {
+  public static final int MAX_HISTORY_MINUTES=300; // maximum length of history (300 minutes=5 hours)
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.can4eve");
   protected static boolean debug = false;
   protected static List<CANValue<?>> canValues;
@@ -114,9 +115,9 @@ public abstract class CANValue<ValueType> {
       this.historyMSecs = 60000 / canInfo.getHistoryValuesPerMinute();
     else
       this.historyMSecs = Long.MAX_VALUE;
-    // create a history buffer for 5 hours
+    // create a history buffer for MAX_HISTORY_MINUTES
     setHistory(new CircularFifoQueue<ValueItem<ValueType>>(
-        canInfo.getHistoryValuesPerMinute() * 300 + 1));
+        canInfo.getHistoryValuesPerMinute() * MAX_HISTORY_MINUTES + 1));
   }
 
   /**

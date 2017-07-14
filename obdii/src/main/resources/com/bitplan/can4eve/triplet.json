@@ -762,7 +762,7 @@
     {
       "name": "PID1B6",
       "pid": "1B6",
-      "freq": -1,
+      "freq": 25,
       "examples": "",
       "caninfos": [
         {
@@ -779,7 +779,7 @@
     {
       "name": "PID212",
       "pid": "212",
-      "freq": -1,
+      "freq": 50,
       "examples": "",
       "caninfos": [
         {
@@ -796,7 +796,7 @@
     {
       "name": "PID285",
       "pid": "285",
-      "freq": -1,
+      "freq": 100,
       "examples": "",
       "caninfos": [
         {
@@ -813,7 +813,7 @@
     {
       "name": "PID288",
       "pid": "288",
-      "freq": -1,
+      "freq": 100,
       "examples": "",
       "caninfos": [
         {
@@ -830,7 +830,7 @@
     {
       "name": "PID308",
       "pid": "308",
-      "freq": -1,
+      "freq": 50,
       "examples": "",
       "caninfos": [
         {
@@ -847,7 +847,7 @@
     {
       "name": "PID375",
       "pid": "375",
-      "freq": -1,
+      "freq": 10,
       "examples": "",
       "caninfos": [
         {
@@ -864,7 +864,7 @@
     {
       "name": "PID384",
       "pid": "384",
-      "freq": -1,
+      "freq": 10,
       "examples": "",
       "caninfos": [
         {
@@ -915,7 +915,7 @@
     {
       "name": "PID39B",
       "pid": "39B",
-      "freq": -1,
+      "freq": 10,
       "examples": "",
       "caninfos": [
         {
@@ -932,7 +932,7 @@
     {
       "name": "PID408",
       "pid": "408",
-      "freq": -1,
+      "freq": 10,
       "examples": "",
       "caninfos": [
         {
@@ -949,7 +949,7 @@
     {
       "name": "PID564",
       "pid": "564",
-      "freq": -1,
+      "freq": 20,
       "examples": "",
       "caninfos": [
         {
@@ -966,7 +966,7 @@
     {
       "name": "PID565",
       "pid": "565",
-      "freq": -1,
+      "freq": 20,
       "examples": "",
       "caninfos": [
         {
@@ -1000,7 +1000,7 @@
     {
       "name": "PID5A1",
       "pid": "5A1",
-      "freq": -1,
+      "freq": 20,
       "examples": "",
       "caninfos": [
         {
@@ -1017,7 +1017,7 @@
     {
       "name": "PID695",
       "pid": "695",
-      "freq": -1,
+      "freq": 10,
       "examples": "",
       "caninfos": [
         {
@@ -1034,7 +1034,7 @@
     {
       "name": "PID696",
       "pid": "696",
-      "freq": -1,
+      "freq": 10,
       "examples": "",
       "caninfos": [
         {
@@ -1051,7 +1051,7 @@
     {
       "name": "PID697",
       "pid": "697",
-      "freq": -1,
+      "freq": 10,
       "examples": "",
       "caninfos": [
         {
@@ -1068,7 +1068,7 @@
     {
       "name": "PID6D0",
       "pid": "6D0",
-      "freq": -1,
+      "freq": 20,
       "examples": "",
       "caninfos": [
         {
@@ -1085,7 +1085,7 @@
     {
       "name": "PID6D1",
       "pid": "6D1",
-      "freq": -1,
+      "freq": 20,
       "examples": "",
       "caninfos": [
         {
@@ -1102,7 +1102,7 @@
     {
       "name": "PID6D2",
       "pid": "6D2",
-      "freq": -1,
+      "freq": 20,
       "examples": "",
       "caninfos": [
         {
@@ -1119,7 +1119,7 @@
     {
       "name": "PID6D3",
       "pid": "6D3",
-      "freq": -1,
+      "freq": 20,
       "examples": "",
       "caninfos": [
         {
@@ -1136,7 +1136,7 @@
     {
       "name": "PID6D4",
       "pid": "6D4",
-      "freq": -1,
+      "freq": 20,
       "examples": "",
       "caninfos": [
         {
@@ -1153,7 +1153,7 @@
     {
       "name": "PID6D5",
       "pid": "6D5",
-      "freq": -1,
+      "freq": 20,
       "examples": "",
       "caninfos": [
         {
@@ -1170,7 +1170,7 @@
     {
       "name": "PID6D6",
       "pid": "6D6",
-      "freq": -1,
+      "freq": 20,
       "examples": "",
       "caninfos": [
         {
@@ -1187,7 +1187,7 @@
     {
       "name": "PID6DA",
       "pid": "6DA",
-      "freq": -1,
+      "freq": 20,
       "examples": "",
       "caninfos": [
         {
@@ -1221,7 +1221,7 @@
     {
       "name": "PID75A",
       "pid": "75A",
-      "freq": -1,
+      "freq": 10,
       "examples": "",
       "caninfos": [
         {
@@ -1238,7 +1238,7 @@
     {
       "name": "PID75B",
       "pid": "75B",
-      "freq": -1,
+      "freq": 10,
       "examples": "",
       "caninfos": [
         {
