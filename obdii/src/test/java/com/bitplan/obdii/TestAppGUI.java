@@ -27,7 +27,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -36,9 +35,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.bitplan.can4eve.CANInfo;
-import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
-import com.bitplan.can4eve.CANValue.IntegerValue;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.gui.App;
 import com.bitplan.can4eve.gui.Group;
@@ -149,6 +146,7 @@ public class TestAppGUI {
    * @param properties
    * @param minutes
    */
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   public void setPlotValues(Map<String, CANProperty> properties, int minutes) {
     Calendar date = Calendar.getInstance();
     final long ONE_MINUTE_IN_MILLIS = 60000;// millisecs
@@ -156,8 +154,8 @@ public class TestAppGUI {
     long t = date.getTimeInMillis();
     for (int i = 0; i < minutes; i++) {
       Date timeStamp = new Date(t + (i * ONE_MINUTE_IN_MILLIS));
-      DoubleValue SOC = (DoubleValue) properties.get("SOC").getCanValue();
-      IntegerValue RR = (IntegerValue) properties.get("Range").getCanValue();
+      CANProperty SOC=properties.get("SOC");
+      CANProperty RR = properties.get("Range");
       SOC.setValue(90 - i * 1.2, timeStamp);
       RR.setValue(90 - i, timeStamp);
     }
@@ -325,6 +323,7 @@ public class TestAppGUI {
     sampleApp.close();
   }
 
+  @SuppressWarnings("rawtypes")
   @Test
   public void testLineChartJavaFx() throws Exception {
     String title = "SOC/RR";
@@ -341,9 +340,11 @@ public class TestAppGUI {
     sampleApp.show();
     sampleApp.waitOpen();
     //valuePlot.getLineChart().getData().gt
-    for (int i = 2; i <= 50; i++) {
+    int minutes=35;
+    for (int i = 2; i <= minutes; i++) {
       setPlotValues(properties,i);
-      Thread.sleep(SHOW_TIME / 50);
+      valuePlot.update();
+      Thread.sleep(SHOW_TIME*2 / minutes);
     }
     sampleApp.close();
   }

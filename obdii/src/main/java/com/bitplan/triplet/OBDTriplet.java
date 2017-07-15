@@ -46,7 +46,6 @@ import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.Vehicle;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.gui.javafx.CANProperty;
-import com.bitplan.can4eve.gui.javafx.CANPropertyManager;
 import com.bitplan.csv.CSVUtil;
 import com.bitplan.elm327.Connection;
 import com.bitplan.obdii.CANValueDisplay;
