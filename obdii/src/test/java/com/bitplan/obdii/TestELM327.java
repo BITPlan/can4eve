@@ -264,9 +264,11 @@ public class TestELM327 extends TestOBDII {
     assertEquals(new Integer(95), range.getValue());
     IntegerValue odometer=obdTriplet.getValue("Odometer");
     assertEquals(new Integer(721), odometer.getValue());
-    assertEquals(new Double(-9.5), obdTriplet.steeringWheelPosition.getValue(),
+    DoubleValue steeringWheelPosition=obdTriplet.getValue("SteeringWheelPosition");
+    assertEquals(new Double(-9.5), steeringWheelPosition.getValue(),
         0.01);
-    assertEquals(new Double(2.5), obdTriplet.steeringWheelMovement.getValue(),
+    DoubleValue steeringWheelMovement=obdTriplet.getValue("SteeringWheelMovement");
+    assertEquals(new Double(2.5), steeringWheelMovement.getValue(),
         0.01);
     assertEquals("VF31NZKYZHU900769", obdTriplet.VIN.getValue());
     obdTriplet.close();

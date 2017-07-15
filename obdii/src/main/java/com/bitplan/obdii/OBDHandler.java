@@ -21,9 +21,9 @@
 package com.bitplan.obdii;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.Socket;
 
+import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.obdii.elm327.ELM327;
@@ -65,6 +65,17 @@ public abstract class OBDHandler extends AbstractOBDHandler{
   public Pid pidByName(String pidId) throws Exception {
     Pid pid = getVehicleGroup().getPidByName(pidId);
     return pid;
+  }
+  
+  /**
+   * get the canInfo for the given CanInfo name
+   * 
+   * @param canInfoName
+   * @return
+   */
+  protected CANInfo getCanInfo(String canInfoName) {
+    CANInfo canInfo = this.getVehicleGroup().getCANInfoByName(canInfoName);
+    return canInfo;
   }
   
   /**

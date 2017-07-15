@@ -74,14 +74,9 @@ public class OBDTriplet extends OBDHandler {
 
   public VINValue VIN;
   VINValue VIN2;
-  DoubleValue acamps;
-  DoubleValue acvolts;
-  DoubleValue dcamps;
-  DoubleValue dcvolts;
   ClimateValue climateValue;
   StringValue ventDirection;
-  public DoubleValue steeringWheelPosition;
-  public DoubleValue steeringWheelMovement;
+
   ShifterPositionValue shifterPositionValue;
   private SimpleLongProperty msecsRunningProperty;
   // vehicleState
@@ -182,17 +177,6 @@ public class OBDTriplet extends OBDHandler {
   }
 
   /**
-   * get the canInfo for the given CanInfo name
-   * 
-   * @param canInfoName
-   * @return
-   */
-  private CANInfo getCanInfo(String canInfoName) {
-    CANInfo canInfo = this.getVehicleGroup().getCANInfoByName(canInfoName);
-    return canInfo;
-  }
-
-  /**
    * initialize the CanValues
    */
   public void initCanValues(String... canInfoNames) {
@@ -205,16 +189,8 @@ public class OBDTriplet extends OBDHandler {
 
     VIN = new VINValue(getCanInfo("VIN"));
     VIN2 = new VINValue(getCanInfo("VIN"));
-    acamps = cpm.addValue(new DoubleValue(getCanInfo("ACAmps")));
-    acvolts = cpm.addValue(new DoubleValue(getCanInfo("ACVolts")));
-    dcamps = cpm.addValue(new DoubleValue(getCanInfo("DCAmps")));
-    dcvolts = cpm.addValue(new DoubleValue(getCanInfo("DCVolts")));
     climateValue = new ClimateValue(getCanInfo("Climate"));
     ventDirection = new StringValue(getCanInfo("VentDirection"));
-    steeringWheelPosition = cpm
-        .addValue(new DoubleValue(getCanInfo("SteeringWheelPosition")));
-    steeringWheelMovement = new DoubleValue(
-        getCanInfo("SteeringWheelMovement"));
     shifterPositionValue = new ShifterPositionValue(
         getCanInfo("ShifterPosition"));
   }
@@ -223,11 +199,13 @@ public class OBDTriplet extends OBDHandler {
    * things to do / initialize after I a was constructed
    */
   public void postConstruct() {
-    initCanValues("Accelerator", "BlinkerLeft", "BlinkerRight", "BreakPedal",
-        "BreakPressed", "CellCount", "CellTemperature", "CellVoltage",
-        "ChargerTemp", "DoorOpen", "HeadLight", "HighBeam", "Key", "MotorTemp",
-        "Odometer", "ParkingLight", "Range", "RPM", "RPMSpeed", "SOC", "Speed",
-        "TripRounds", "TripOdo");
+    initCanValues("ACAmps", "ACVolts", "Accelerator", "BlinkerLeft",
+        "BlinkerRight", "BreakPedal", "BreakPressed", "CellCount",
+        "CellTemperature", "CellVoltage", "ChargerTemp", "DCAmps", "DCVolts",
+        "DoorOpen", "HeadLight", "HighBeam", "Key", "MotorTemp", "Odometer",
+        "ParkingLight", "Range", "RPM", "RPMSpeed", "SOC", "Speed",
+        "SteeringWheelPosition", "SteeringWheelMovement", "TripRounds",
+        "TripOdo");
     // add all available PIDs to the available raw values
     for (Pid pid : getElm327().getVehicleGroup().getPids()) {
       CANInfo pidInfo = pid.getFirstInfo();
@@ -292,8 +270,7 @@ public class OBDTriplet extends OBDHandler {
     case "CellInfo2":
     case "CellInfo3":
     case "CellInfo4":
-      Pid cellInfo1 = getVehicleGroup()
-          .getPidByName("CellInfo1");
+      Pid cellInfo1 = getVehicleGroup().getPidByName("CellInfo1");
       int pidindex = pr.pidHex - PIDResponse.hex2decimal(cellInfo1.getPid());
       // cell monitoring unit index
       int cmu_id = pr.d[0]; // 1-12
@@ -306,14 +283,14 @@ public class OBDTriplet extends OBDHandler {
       // ignore voltages for cmu id 6 and 12 on 6E3 and 6E4
       boolean voltageIgnore = (pidindex == 2 || pidindex == 3)
           && (cmu_id == 6 || cmu_id == 12);
-      DoubleValue cellVoltage=this.getValue("CellVoltage");
+      DoubleValue cellVoltage = this.getValue("CellVoltage");
       if (index < cellVoltage.canInfo.getMaxIndex()) {
         if (!voltageIgnore) {
           cellVoltage.setValue(index, voltage1, timeStamp);
           cellVoltage.setValue(index + 1, voltage2, timeStamp);
         }
       }
-      DoubleValue cellTemperature=this.getValue("CellTemperature");
+      DoubleValue cellTemperature = this.getValue("CellTemperature");
       if (index < cellTemperature.canInfo.getMaxIndex()) {
         switch (pr.pid.getName()) {
         case "CellInfo1":
@@ -398,7 +375,7 @@ public class OBDTriplet extends OBDHandler {
       // if we have a previous value we can start integrating
       IntegerValue rpm = getValue("RPM");
       if (rpm.getValueItem().isAvailable()) {
-        DoubleValue tripRounds=this.getValue("TripRounds");
+        DoubleValue tripRounds = this.getValue("TripRounds");
         // calc numerical integral - how many rounds total on this trip?
         tripRounds.integrate(rpm.getValueItem().getValue(),
             rpm.getValueItem().getTimeStamp(), Math.abs(rpmValue), timeStamp,
@@ -433,10 +410,10 @@ public class OBDTriplet extends OBDHandler {
       cpm.setValue("Range", rangeNum, timeStamp);
       break;
     case "Steering_Wheel":
-      this.steeringWheelPosition
-          .setValue((pr.d[0] * 256 + pr.d[1] - 4096) / 2.0, timeStamp);
-      this.steeringWheelMovement
-          .setValue((pr.d[2] * 256 + pr.d[3] - 4096) / 2.0, timeStamp);
+      cpm.setValue("SteeringWheelPosition",
+          (pr.d[0] * 256 + pr.d[1] - 4096) / 2.0, timeStamp);
+      cpm.setValue("SteeringWheelMovement",
+          (pr.d[2] * 256 + pr.d[3] - 4096) / 2.0, timeStamp);
       break;
     case "ShifterPosition":
       ShifterPosition newShifterPosition = new ShifterPosition(pr.d[0]);
@@ -444,15 +421,15 @@ public class OBDTriplet extends OBDHandler {
       if (newShifterPosition.shiftPosition == ShiftPosition.P) {
         this.vehicleStateProperty.set(Vehicle.State.Parking);
         // are we charging?
-        if (this.acvolts.getValueItem().isAvailable()
-            && this.acvolts.getValue() > 50) {
+        DoubleValue acvolts = getValue("ACVolts");
+        if (acvolts.getValueItem().isAvailable() && acvolts.getValue() > 50) {
           // AC charging
           this.vehicleStateProperty.set(Vehicle.State.Charging);
         }
         // DC charging
         // FIXME is 1 amp the minimum?
-        if (this.dcamps.getValueItem().isAvailable()
-            && this.dcamps.getValue() > 1.0) {
+        DoubleValue dcamps = getValue("DCAmps");
+        if (dcamps.getValueItem().isAvailable() && dcamps.getValue() > 1.0) {
           this.vehicleStateProperty.set(Vehicle.State.Charging);
         }
       } else {
@@ -473,7 +450,7 @@ public class OBDTriplet extends OBDHandler {
       String partVal = pr.getString(1);
       VIN.set(indexVal, partVal, timeStamp);
       if (VIN.getValueItem().isAvailable()) {
-        cpm.setValue("CellCount",VIN.getCellCount(), timeStamp);
+        cpm.setValue("CellCount", VIN.getCellCount(), timeStamp);
       }
       break;
 
@@ -498,8 +475,8 @@ public class OBDTriplet extends OBDHandler {
    */
   public <CT extends CANValue<T>, T> CT getValue(String canInfoName) {
     CANProperty<CT, T> property = cpm.get(canInfoName);
-    if (property==null)
-      throw new RuntimeException("invalid canInfoName "+canInfoName);
+    if (property == null)
+      throw new RuntimeException("invalid canInfoName " + canInfoName);
     return property.getCanValue();
   }
 
