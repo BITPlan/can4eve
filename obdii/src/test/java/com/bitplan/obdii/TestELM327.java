@@ -220,9 +220,10 @@ public class TestELM327 extends TestOBDII {
     // obdTriplet.setDebug(true);
     obdTriplet.readPid(display, byName("BatteryCapacity"));
     Thread.sleep(200);
+    DoubleValue batteryCapacity=obdTriplet.getValue("BatteryCapacity");
     assertNotNull("the battery capacity should be set",
-        obdTriplet.batteryCapacity.getValue());
-    assertEquals(new Double(44.7), obdTriplet.batteryCapacity.getValue(), 0.01);
+       batteryCapacity.getValue());
+    assertEquals(new Double(44.7), batteryCapacity.getValue(), 0.01);
   }
 
   @Test
@@ -254,11 +255,12 @@ public class TestELM327 extends TestOBDII {
     // let's wait a bit for the results
     Thread.sleep(500);
     // display.waitClose();
+    DoubleValue batteryCapacity=obdTriplet.getValue("BatteryCapacity");
     assertNotNull("the battery capacity should be set",
-        obdTriplet.batteryCapacity.getValue());
+        batteryCapacity.getValue());
+    assertEquals(new Double(44.8), batteryCapacity.getValue(), 0.1);
     DoubleValue SOC=obdTriplet.getValue("SOC");
     assertNotNull(SOC);
-    assertEquals(new Double(44.8), obdTriplet.batteryCapacity.getValue(), 0.1);
     assertEquals(new Double(100.0), SOC.getValue(), 0.1);
     IntegerValue range=obdTriplet.getValue("Range");
     assertEquals(new Integer(95), range.getValue());
@@ -547,7 +549,7 @@ public class TestELM327 extends TestOBDII {
   public void testCanValues() throws Exception {
     OBDTriplet lOBDTriplet = new OBDTriplet(getVehicleGroup());
     List<CANValue<?>> canValues = lOBDTriplet.getCANValues();
-    assertEquals(29, canValues.size());
+    assertEquals(30, canValues.size());
     @SuppressWarnings("unused")
     String names = "";
     String delim = "";
@@ -592,7 +594,7 @@ public class TestELM327 extends TestOBDII {
     // debug=true;
     OBDTriplet lOBDTriplet = new OBDTriplet(getVehicleGroup());
     List<CANValue<?>> canValues = lOBDTriplet.getCANValues();
-    assertEquals(29, canValues.size());
+    assertEquals(30, canValues.size());
     for (CANValue<?> canValue : canValues) {
       if (debug) {
         LOGGER.log(Level.INFO, canValue.canInfo.getTitle() + ":"

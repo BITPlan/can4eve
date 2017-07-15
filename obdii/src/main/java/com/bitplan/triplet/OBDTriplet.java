@@ -70,8 +70,6 @@ import javafx.beans.value.ObservableValue;
 public class OBDTriplet extends OBDHandler {
 
   // car parameters
-  public DoubleValue batteryCapacity;
-
   public VINValue VIN;
   VINValue VIN2;
   ClimateValue climateValue;
@@ -81,33 +79,6 @@ public class OBDTriplet extends OBDHandler {
   private SimpleLongProperty msecsRunningProperty;
   // vehicleState
   private SimpleObjectProperty<Vehicle.State> vehicleStateProperty;
-  Integer mmPerRound = 261; // TODO do we need a default?
-  private CANPropertyManager cpm;
-  public static boolean withRawValues = false;
-
-  public boolean isWithHistory() {
-    return withHistory;
-  }
-
-  public void setWithHistory(boolean withHistory) {
-    this.withHistory = withHistory;
-  }
-
-  public Integer getMmPerRound() {
-    return mmPerRound;
-  }
-
-  public void setMmPerRound(Integer mmPerRound) {
-    this.mmPerRound = mmPerRound;
-  }
-
-  public boolean isMonitoring() {
-    return monitoring;
-  }
-
-  public void setMonitoring(boolean monitoring) {
-    this.monitoring = monitoring;
-  }
 
   /**
    * construct me
@@ -180,13 +151,7 @@ public class OBDTriplet extends OBDHandler {
    * initialize the CanValues
    */
   public void initCanValues(String... canInfoNames) {
-    cpm = new CANPropertyManager(getVehicleGroup());
-    for (String canInfoName : canInfoNames) {
-      cpm.addValue(canInfoName);
-    }
-    batteryCapacity = cpm
-        .addValue(new DoubleValue(getCanInfo("BatteryCapacity")));
-
+    super.initCanValues(canInfoNames);
     VIN = new VINValue(getCanInfo("VIN"));
     VIN2 = new VINValue(getCanInfo("VIN"));
     climateValue = new ClimateValue(getCanInfo("Climate"));
@@ -199,15 +164,16 @@ public class OBDTriplet extends OBDHandler {
    * things to do / initialize after I a was constructed
    */
   public void postConstruct() {
-    initCanValues("ACAmps", "ACVolts", "Accelerator", "BlinkerLeft",
-        "BlinkerRight", "BreakPedal", "BreakPressed", "CellCount",
-        "CellTemperature", "CellVoltage", "ChargerTemp", "DCAmps", "DCVolts",
-        "DoorOpen", "HeadLight", "HighBeam", "Key", "MotorTemp", "Odometer",
-        "ParkingLight", "Range", "RPM", "RPMSpeed", "SOC", "Speed",
+    initCanValues("ACAmps", "ACVolts", "Accelerator", "BatteryCapacity",
+        "BlinkerLeft", "BlinkerRight", "BreakPedal", "BreakPressed",
+        "CellCount", "CellTemperature", "CellVoltage", "ChargerTemp", "DCAmps",
+        "DCVolts", "DoorOpen", "HeadLight", "HighBeam", "Key", "MotorTemp",
+        "Odometer", "ParkingLight", "Range", "RPM", "RPMSpeed", "SOC", "Speed",
         "SteeringWheelPosition", "SteeringWheelMovement", "TripRounds",
         "TripOdo");
     // add all available PIDs to the available raw values
-    for (Pid pid : getElm327().getVehicleGroup().getPids()) {
+    for (Pid pid : getVehicleGroup().getPids()) {
+      // FIXME - do we keep the convention for raw values?
       CANInfo pidInfo = pid.getFirstInfo();
       if (debug) {
         // LOGGER.log(Level.INFO,"rawValue "+pidInfo.getPid().getPid()+"
@@ -467,59 +433,6 @@ public class OBDTriplet extends OBDHandler {
     canRawValue.setRawValue(pr.getRawString(), timeStamp);
   }
 
-  /**
-   * get the CANValue
-   * 
-   * @param canInfoName
-   * @return the canValue
-   */
-  public <CT extends CANValue<T>, T> CT getValue(String canInfoName) {
-    CANProperty<CT, T> property = cpm.get(canInfoName);
-    if (property == null)
-      throw new RuntimeException("invalid canInfoName " + canInfoName);
-    return property.getCanValue();
-  }
-
-  /**
-   * get the CANValues
-   * 
-   * @return - the array of CAN Values in order of appearance
-   */
-  public List<CANValue<?>> getCANValues() {
-    if (canValues == null) {
-      // start the canValues with the top list
-      canValues = cpm.getCANValues();
-      if (withRawValues) {
-        // TODO check handling of raw values
-        // create a map of these already added values
-        HashMap<Pid, CANValue<?>> canValueMap = new HashMap<Pid, CANValue<?>>();
-        for (CANValue<?> canValue : canValues) {
-          CANInfo canInfo = canValue.canInfo;
-          Pid pid = canInfo.getPid();
-          canValueMap.put(pid, canValue);
-        } // for
-        // now add all raw values
-        for (Pid pid : getVehicleGroup().getPids()) {
-          if (pid.getIsoTp() == null) {
-            CANRawValue canRawValue = this.getCanRawValues().get(pid.getPid());
-            if (canRawValue == null)
-              throw new RuntimeException(
-                  "this can't happen - no pid raw value for PID "
-                      + pid.getPid());
-            // if (!canValueMap.containsKey(pid)) {
-            canValues.add(canRawValue);
-            canValueMap.put(pid, canRawValue);
-          }
-          // } // if
-        } // for
-      }
-      for (CANValue<?> canValue : canValues) {
-        canValue.activate();
-      } // for
-    } // if
-    return canValues;
-  }
-
   int dateUpdateCount = 0;
   int fpsUpdateCount = 0;
   Date latestUpdate;
@@ -527,9 +440,8 @@ public class OBDTriplet extends OBDHandler {
   long latestTotalUpdates;
   private ScheduledExecutorService displayexecutor;
   private Runnable displayTask;
-  private boolean withHistory = true;
+
   private Date latestHistoryUpdate;
-  private boolean monitoring;
 
   /**
    * show the values
