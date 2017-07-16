@@ -143,6 +143,7 @@ public class TestELM327 extends TestOBDII {
   public void prepareOBDTriplet(boolean simulated, boolean debug)
       throws Exception {
     if (simulated) {
+      Monitor.reset();
       obdTriplet = new OBDTriplet(getVehicleGroup());
       obdTriplet.setElm327(getSimulation());
       obdTriplet.getElm327().getCon().setResponseHandler(obdTriplet);
@@ -254,7 +255,8 @@ public class TestELM327 extends TestOBDII {
                                                                             // then
                                                                             // fails
     // let's wait a bit for the results
-    Thread.sleep(500);
+    // 500 msecs is not enough
+    Thread.sleep(600);
     // display.waitClose();
     DoubleValue batteryCapacity=obdTriplet.getValue("BatteryCapacity");
     assertNotNull("the battery capacity should be set",

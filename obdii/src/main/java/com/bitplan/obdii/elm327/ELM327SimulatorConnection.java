@@ -40,7 +40,7 @@ public class ELM327SimulatorConnection extends ELM327 implements ResponseHandler
   public int delay = 0; // 0,1 millisecs delay
   public int delaynano=100; 
   private String filter;
-  List<Monitor> monitors = new ArrayList<Monitor>();
+  //List<Monitor> monitors = new ArrayList<Monitor>();
   private String canprotcode;
   private String canprot;
   private String ecu;
@@ -152,8 +152,8 @@ public class ELM327SimulatorConnection extends ELM327 implements ResponseHandler
           // TODO - also use log file here ..
           Monitor monitor = Monitor.getInstance();
           monitor.init(this, filter, isHeader(), isLength());
-          monitor.start();
-          monitors.add(monitor);
+          monitor.startUp();
+          // monitors.add(monitor);
         } else if (command.equals("DP")) {
           log("Reporting can protocol " + canprotcode + "=" + canprot);
           outputWithPrompt(canprot);
@@ -210,8 +210,8 @@ public class ELM327SimulatorConnection extends ELM327 implements ResponseHandler
         } else if (command.equals("STM")) {  
           Monitor monitor = Monitor.getInstance();
           monitor.init(this, isHeader(), isLength());
-          monitor.start();
-          monitors.add(monitor);
+          monitor.startUp();
+          // monitors.add(monitor);
         } else if (command.equals("2101")) {
           // outputWithPrompt("OK");
           this.getCon().
@@ -255,12 +255,13 @@ public class ELM327SimulatorConnection extends ELM327 implements ResponseHandler
    * stop the monitors
    */
   protected void stopMonitors() {
-    for (Monitor monitor : monitors) {
+    Monitor.getInstance().halt();
+    /*for (Monitor monitor : monitors) {
       monitor.halt();
       ;
     }
     monitors.clear();
-
+    */
   }
 
 }

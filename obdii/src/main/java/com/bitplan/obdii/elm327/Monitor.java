@@ -63,6 +63,7 @@ public class Monitor extends Thread implements LogPlayer {
   private RandomAccessLogReader logReader;
   Date logReaderStartDate;
   Date logReaderEndDate;
+  private boolean firstStart = true;
 
   /**
    * create a Monitor
@@ -186,9 +187,7 @@ public class Monitor extends Thread implements LogPlayer {
     return sample;
   }
 
-  @Override
-  public void run() {
-    running = true;
+  public void startUp() {
     if (pidFilter != null)
       if (debug)
         LOGGER.log(Level.INFO, "monitoring " + pidFilter);
@@ -205,6 +204,16 @@ public class Monitor extends Thread implements LogPlayer {
         ErrorHandler.handle(e);
       }
     }
+    if (firstStart)
+      start();
+    else
+      running = true;
+  }
+
+  @Override
+  public void run() {
+    firstStart = false;
+    running = true;
     // loop
     while (running) {
       try {
@@ -289,6 +298,10 @@ public class Monitor extends Thread implements LogPlayer {
   @Override
   public void addListener(LogPlayerListener listener) {
     listeners.add(listener);
+  }
+  
+  public static void reset() {
+    instance=null;
   }
 
 }
