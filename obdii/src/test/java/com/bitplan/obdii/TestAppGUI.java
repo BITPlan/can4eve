@@ -397,7 +397,7 @@ public class TestAppGUI {
   @Test
   public void testStopWatch() {
     WaitableApp.toolkitInit();
-    StopWatch stopWatch = new JFXStopWatch("test");
+    StopWatch stopWatch = new JFXStopWatch(I18n.WATCH_TOTAL);
     stopWatch.halt();
     stopWatch.reset();
     // System.out.println(stopWatch.asIsoDateStr());
