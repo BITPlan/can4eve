@@ -22,6 +22,7 @@ package com.bitplan.obdii.elm327;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -302,6 +303,14 @@ public class Monitor extends Thread implements LogPlayer {
   
   public static void reset() {
     instance=null;
+  }
+
+  @Override
+  public void moveTo(Date date) {
+    SimpleDateFormat moveDateFormatter = new SimpleDateFormat(
+        "yyyy-MM-dd hh:mm:ss ");
+    LOGGER.log(Level.INFO, "monitor moveTo "+moveDateFormatter.format(date));
+    
   }
 
 }

@@ -34,4 +34,5 @@ public interface LogPlayer {
   public void setLogFile(File file);
   
   public void addListener(LogPlayerListener listener);
+  public void moveTo(Date date);
 }

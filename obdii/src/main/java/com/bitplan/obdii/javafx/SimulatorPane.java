@@ -26,6 +26,8 @@ import com.bitplan.obdii.elm327.LogPlayer;
 import com.bitplan.obdii.elm327.LogPlayerListener;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
@@ -46,6 +48,8 @@ public class SimulatorPane extends ConstrainedGridPane
   private LogPlayer logPlayer;
   private Duration duration;
   private Duration elapsed;
+  private boolean humanSliderMovement = false;
+  private boolean computerChange = false;
 
   /**
    * construct me
@@ -66,6 +70,32 @@ public class SimulatorPane extends ConstrainedGridPane
     this.add(playTime, 2, 0);
     super.fixColumnSizes(5, 25, 60, 15);
     super.fixRowSizes(0, 100);
+    slider.valueChangingProperty().addListener(new ChangeListener<Boolean>() {
+      @Override
+      public void changed(
+              ObservableValue<? extends Boolean> observableValue,
+              Boolean wasChanging,
+              Boolean changing) {
+            if (changing) {
+              if (!computerChange) {
+                humanSliderMovement=true;
+              }
+            } else {
+              if (humanSliderMovement) {
+                onSliderNewHumanValue();
+                humanSliderMovement=false;
+              }
+            }
+          }
+    });
+  } // SimulatorPane 
+  
+  /**
+   * we have got a new SliderNewHumanValue
+   */
+  protected void onSliderNewHumanValue() {
+    long newTime=(long) (this.logPlayer.getStartDate().getTime()+slider.getValue());
+    logPlayer.moveTo(new Date(newTime));
   }
 
   /**
@@ -126,18 +156,26 @@ public class SimulatorPane extends ConstrainedGridPane
     elapsed = Duration.ZERO;
     duration = new Duration(
         logPlayer.getEndDate().getTime() - logPlayer.getStartDate().getTime());
-    Platform.runLater(()->updateElapsed());
-  }
-  
-  @Override
-  public void onProgress(Date currentDate) {
-    elapsed=new Duration(currentDate.getTime()-logPlayer.getStartDate().getTime());
-    Platform.runLater(()->updateElapsed());
+    Platform.runLater(() -> updateElapsed());
   }
 
+  @Override
+  public void onProgress(Date currentDate) {
+    elapsed = new Duration(
+        currentDate.getTime() - logPlayer.getStartDate().getTime());
+    Platform.runLater(() -> updateElapsed());
+  }
+
+  /**
+   * update the Elapsed Valuedd
+   */
   private void updateElapsed() {
-    slider.setMax(duration.toSeconds());
-    slider.setValue(elapsed.toSeconds());
+    if (!humanSliderMovement) {
+      computerChange = true;
+      slider.setMax(duration.toSeconds());
+      slider.setValue(elapsed.toSeconds());
+      computerChange = false;
+    }
     String durationText = formatTime(elapsed, duration);
     this.playTime.setText(durationText);
   }
