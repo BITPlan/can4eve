@@ -256,7 +256,7 @@ public class TestELM327 extends TestOBDII {
                                                                             // fails
     // let's wait a bit for the results
     // 500 msecs is not enough
-    Thread.sleep(1000);
+    Thread.sleep(1500);
     // display.waitClose();
     DoubleValue batteryCapacity=obdTriplet.getValue("BatteryCapacity");
     assertNotNull("the battery capacity should be set",
