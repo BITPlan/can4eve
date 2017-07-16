@@ -255,8 +255,8 @@ public class TestELM327 extends TestOBDII {
                                                                             // then
                                                                             // fails
     // let's wait a bit for the results
-    // 500 msecs is not enoughclea
-    Thread.sleep(600);
+    // 500 msecs is not enough
+    Thread.sleep(1000);
     // display.waitClose();
     DoubleValue batteryCapacity=obdTriplet.getValue("BatteryCapacity");
     assertNotNull("the battery capacity should be set",
@@ -454,31 +454,7 @@ public class TestELM327 extends TestOBDII {
     }
   }
 
-  @Test
-  public void testSimulatorFromElmLogFile() throws Exception {
-    String[] fileNames = {
-        // "Triplet_2017-04-17_151817.log",
-        "Triplet_2017-04-17_104141.log", "Triplet_2017-04-15_192134.log",
-        "Triplet_2017-04-15_132733.log", "Triplet_2017-04-14_191849.log",
-        "capture_chg_1104.txt" };
-    String startDates[] = { "2017-04-17 10:41:42.157",
-        "2017-04-15 07:21:35.965", "2017-04-15 01:27:33.966",
-        "2017-04-14 07:18:49.433", "2012-11-04 07:01:34.000" };
-    int index = 0;
-    for (String fileName : fileNames) {
-      File logCAN = new File("src/test/data/" + fileName + ".zip");
-      assertTrue("" + logCAN.getPath() + " should exist", logCAN.exists());
-      RandomAccessLogReader logReader = new RandomAccessLogReader(logCAN);
-      String startDate = LogReader.logDateFormatter
-          .format(logReader.getStartDate());
-      //System.out.println(startDate);
-      assertEquals(startDates[index++], startDate);
-      Packet packet = logReader.getPacket(1000);
-      //System.out.println(packet.getData());
-      String endDate=LogReader.logDateFormatter.format(logReader.getEndDate());
-      // System.out.println(endDate);
-    }
-  }
+ 
 
   /**
    * Test PID handling from a CAN log

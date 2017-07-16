@@ -20,10 +20,7 @@
  */
 package com.bitplan.obdii.elm327;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.elm327.Packet;

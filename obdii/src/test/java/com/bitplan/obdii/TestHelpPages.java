@@ -22,15 +22,15 @@ package com.bitplan.obdii;
 
 import java.io.File;
 
-import javafx.application.Platform;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.stage.Stage;
-
 import org.junit.Test;
 
 import com.bitplan.can4eve.gui.javafx.WaitableApp;
 import com.bitplan.can4eve.util.TaskLaunch;
+
+import javafx.application.Platform;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.stage.Stage;
 
 /**
  * tests which create screenshots for http://can4eve.bitplan.com/index.php/Help
