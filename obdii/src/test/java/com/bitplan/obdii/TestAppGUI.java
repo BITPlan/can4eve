@@ -50,13 +50,16 @@ import com.bitplan.can4eve.states.StopWatch;
 import com.bitplan.can4eve.util.TaskLaunch;
 import com.bitplan.i18n.Translator;
 import com.bitplan.obdii.Preferences.LangChoice;
+import com.bitplan.obdii.elm327.Monitor;
 import com.bitplan.obdii.javafx.ChargePane;
 import com.bitplan.obdii.javafx.ClockPane;
 import com.bitplan.obdii.javafx.ClockPane.Watch;
+import com.bitplan.obdii.javafx.ConstrainedGridPane;
 import com.bitplan.obdii.javafx.JFXCanCellStatePlot;
 import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
 import com.bitplan.obdii.javafx.JFXStopWatch;
 import com.bitplan.obdii.javafx.LCDPane;
+import com.bitplan.obdii.javafx.SimulatorPane;
 
 import eu.hansolo.OverviewDemo;
 import eu.hansolo.medusa.FGauge;
@@ -183,8 +186,12 @@ public class TestAppGUI {
         texts[row * cols + col] = String.format("row %2d col %2d", row, col);
       }
     }
-    LCDPane lcdPane = new LCDPane(rows, cols, 250, 30, LcdFont.STANDARD, "rpm",
-        texts);
+    LCDPane lcdPane = new LCDPane(rows, cols, texts);
+    for (int row = 0; row < rows; row++) {
+      for (int col = 0; col < cols; col++) {
+        lcdPane.getAt(row, col).setValue(Math.random()*200);
+      }
+    }
     SampleApp.createAndShow("LCDPane", lcdPane, SHOW_TIME);
   }
 
@@ -321,6 +328,19 @@ public class TestAppGUI {
       rr.setValue(newValue * 0.9);
     }
     sampleApp.close();
+  }
+  
+  @Test
+  public void testSimulatorPane() throws Exception {
+    WaitableApp.toolkitInit();
+    Translator.initialize(Preferences.getInstance().getLanguage().name());
+    SimulatorPane simulatorPane=new SimulatorPane(Monitor.getInstance());
+    ConstrainedGridPane containerPane=new ConstrainedGridPane();
+    containerPane.add(simulatorPane,0, 0);
+    containerPane.add(new GridPane(), 0, 1);
+    containerPane.fixColumnSizes(0,100);
+    containerPane.fixRowSizes(5, 15,85);
+    SampleApp.createAndShow("simulator", containerPane, SHOW_TIME);
   }
 
   @SuppressWarnings("rawtypes")

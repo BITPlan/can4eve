@@ -54,6 +54,14 @@ public abstract class WaitableApp extends Application implements Display {
   static boolean toolkitStarted;
   File screenShot=null;
 
+  public static double getScreenWidth() {
+    return Screen.getPrimary().getVisualBounds().getWidth();
+  }
+
+  public static double getScreenHeight() {
+    return Screen.getPrimary().getVisualBounds().getHeight();
+  }
+
   /**
    * allow startup without launch
    */
@@ -77,13 +85,10 @@ public abstract class WaitableApp extends Application implements Display {
    * @return
    */
   public Rectangle2D getSceneBounds(int screenPercent, int xDiv, int yDiv) {
-    Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
-    double screenWidth = primScreenBounds.getWidth();
-    double screenHeight = primScreenBounds.getHeight();
-    double sceneWidth = screenWidth * screenPercent / 100.0;
-    double sceneHeight = screenHeight * screenPercent / 100.0;
-    double x=(primScreenBounds.getWidth() - sceneWidth) / xDiv;
-    double y=(primScreenBounds.getHeight() - sceneHeight) / yDiv;
+    double sceneWidth = getScreenWidth() * screenPercent / 100.0;
+    double sceneHeight = getScreenHeight() * screenPercent / 100.0;
+    double x=(getScreenWidth() - sceneWidth) / xDiv;
+    double y=(getScreenHeight() - sceneHeight) / yDiv;
     Rectangle2D sceneBounds = new Rectangle2D(x,y,sceneWidth,sceneHeight);
     return sceneBounds;
   }

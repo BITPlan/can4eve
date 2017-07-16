@@ -31,6 +31,7 @@ import org.apache.commons.collections4.queue.CircularFifoQueue;
 import com.bitplan.can4eve.CANValue.ValueItem;
 import com.bitplan.can4eve.gui.javafx.CANProperty;
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -162,9 +163,8 @@ public class JFXCanValueHistoryPlot {
   public void update() {
     for (CANProperty canProperty : this.canProperties.values()) {
       Series<Number, Number> series = seriesMap.get(canProperty.getName());
-      updateSeries(series,canProperty);
+      Platform.runLater(()->updateSeries(series,canProperty));
     }
-    
   }
 
 }

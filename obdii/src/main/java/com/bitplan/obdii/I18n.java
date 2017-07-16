@@ -109,6 +109,8 @@ public class I18n {
   public static final String ODO_METER = "odoMeter";
   public static final String TRIP_ODO_METER = "tripOdoMeter";
   public static final String ODO_INFO = "odoInfo";
+  public static final String FROM = "from";
+  public static final String TO="to";
  
   
   /**

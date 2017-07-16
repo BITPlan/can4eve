@@ -61,7 +61,7 @@ public class CANValuePane extends ConstrainedGridPane {
    * @param row
    */
   public Gauge addGauge(String canInfo,String i18nTitle, String i18nUnit, int col, int row) {
-    Gauge gauge = LcdGauge.create(i18nTitle, i18nUnit);
+    Gauge gauge = LcdGauge.createGauge(i18nTitle, i18nUnit);
     addGauge(canInfo,gauge,col,row);
     return gauge;
   }

@@ -40,6 +40,8 @@ import com.bitplan.i18n.Translator;
 import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.obdii.elm327.ElmSimulator;
+import com.bitplan.obdii.elm327.LogPlayer;
+import com.bitplan.obdii.elm327.Monitor;
 import com.bitplan.obdii.javafx.JavaFXDisplay;
 import com.bitplan.triplet.OBDTriplet;
 
@@ -357,6 +359,11 @@ public class OBDMain extends Main implements OBDApp {
     return String.format(
         "Dear can4eve support\nI am using version %s of the software on %s using Java %s\n",
         VERSION, os, javaversion);
+  }
+
+  @Override
+  public LogPlayer getLogPlayer() {
+    return Monitor.getInstance();
   }
 
 }

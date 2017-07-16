@@ -54,6 +54,7 @@ import com.bitplan.i18n.Translator;
 import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.obdii.elm327.ElmSimulator;
 import com.bitplan.obdii.elm327.LogReader;
+import com.bitplan.obdii.elm327.Monitor;
 import com.bitplan.obdii.elm327.RandomAccessLogReader;
 import com.bitplan.obdii.javafx.JavaFXDisplay;
 import com.bitplan.triplet.OBDTriplet;
@@ -398,7 +399,7 @@ public class TestELM327 extends TestOBDII {
     // Monitor.debug=true;
     // debug=true;
     // FIXME - proper  handling of ElmSimulator files
-    ElmSimulator.fileName=null;
+    Monitor.getInstance().setLogFile(null);
     prepareOBDTriplet(simulated, debug);
     obdTriplet.initOBD();
     File logRoot = new File("src/test/data");

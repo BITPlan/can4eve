@@ -44,7 +44,6 @@ public class ELM327SimulatorConnection extends ELM327 implements ResponseHandler
   private String canprotcode;
   private String canprot;
   private String ecu;
-  private File elmLogFile;
   
   /**
    * constructor
@@ -150,7 +149,9 @@ public class ELM327SimulatorConnection extends ELM327 implements ResponseHandler
           filter = command.substring(3).trim();
           outputWithPrompt("OK");
         } else if (command.startsWith("MA")) {
-          Monitor monitor = new Monitor(this, filter, isHeader(), isLength());
+          // TODO - also use log file here ..
+          Monitor monitor = Monitor.getInstance();
+          monitor.init(this, filter, isHeader(), isLength());
           monitor.start();
           monitors.add(monitor);
         } else if (command.equals("DP")) {
@@ -207,7 +208,8 @@ public class ELM327SimulatorConnection extends ELM327 implements ResponseHandler
         } else if (command.startsWith("STFAP")) {
           outputWithPrompt("OK");      
         } else if (command.equals("STM")) {  
-          Monitor monitor = new Monitor(this, isHeader(), isLength(), this.elmLogFile);
+          Monitor monitor = Monitor.getInstance();
+          monitor.init(this, isHeader(), isLength());
           monitor.start();
           monitors.add(monitor);
         } else if (command.equals("2101")) {
@@ -259,14 +261,6 @@ public class ELM327SimulatorConnection extends ELM327 implements ResponseHandler
     }
     monitors.clear();
 
-  }
-
-  /**
-   * set the elm Simulator Log file to be used 
-   * @param file
-   */
-  public void setFile(File file) {
-    this.elmLogFile=file;
   }
 
 }
