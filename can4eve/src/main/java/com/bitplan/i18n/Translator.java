@@ -60,12 +60,15 @@ public class Translator {
   }
 
   /**
-   * tranlsate the given message
+   * translate the given message
    * @param messageName
    * @return - the translated message
    */
   public static String translate(String messageName) {
-    return resourceBundle.getString(messageName);
+    if (resourceBundle!=null)
+      return resourceBundle.getString(messageName);
+    else 
+      return messageName;
   }
 
   /**

@@ -22,6 +22,7 @@ package com.bitplan.obdii;
 
 import com.bitplan.elm327.Config;
 import com.bitplan.obdii.elm327.ELM327;
+import com.bitplan.obdii.elm327.LogPlayer;
 
 /**
  * 
@@ -34,4 +35,5 @@ public interface OBDApp {
   public ELM327 testConnection(Config config) throws Exception;
   public ELM327 start(boolean withLog) throws Exception;
   public ELM327 stop() throws Exception;
+  public LogPlayer getLogPlayer();
 }

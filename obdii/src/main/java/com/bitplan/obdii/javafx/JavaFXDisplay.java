@@ -57,6 +57,7 @@ import com.bitplan.obdii.OBDApp;
 import com.bitplan.obdii.Preferences;
 import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.elm327.ElmSimulator;
+import com.bitplan.obdii.elm327.Monitor;
 
 import javafx.application.Platform;
 import javafx.beans.property.Property;
@@ -132,6 +133,7 @@ public class JavaFXDisplay extends WaitableApp
 
   private TabPane activeTabPane;
 
+  private SimulatorPane simulatorPane;
 
   public static final boolean debug = false;
 
@@ -422,6 +424,7 @@ public class JavaFXDisplay extends WaitableApp
     // File / Open
     MenuItem fileOpenMenuItem = getMenuItem(I18n.FILE_OPEN_MENU_ITEM);
     fileOpenMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+
       @Override
       public void handle(final ActionEvent e) {
         FileChooser fileChooser = new FileChooser();
@@ -435,7 +438,7 @@ public class JavaFXDisplay extends WaitableApp
           }
         File file = fileChooser.showOpenDialog(stage);
         if (file != null) {
-          ElmSimulator.fileName = file.getAbsolutePath();
+          initSimulation(file.getAbsolutePath());
         } // if
       } // handle
     });
@@ -472,6 +475,20 @@ public class JavaFXDisplay extends WaitableApp
     statusBar.getRightItems().add(hideMenuButton);
     statusBar.getRightItems().add(fullScreenButton);
 
+  }
+
+  /**
+   * initialize the simulation
+   * @param filePath
+   */
+  protected void initSimulation(String filePath) {
+    if (simulatorPane==null) {
+      simulatorPane=new SimulatorPane(obdApp.getLogPlayer());
+      root.getChildren().add(1, simulatorPane);
+    }       
+    File file=new File(filePath);
+    simulatorPane.getFileField().setText(file.getName());
+    obdApp.getLogPlayer().setLogFile(file);
   }
 
   /**

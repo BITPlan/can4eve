@@ -23,7 +23,8 @@ package com.bitplan.obdii.javafx;
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.hansolo.LcdField;
+import eu.hansolo.LcdGauge;
+import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.LcdDesign;
 import eu.hansolo.medusa.LcdFont;
 
@@ -34,7 +35,7 @@ import eu.hansolo.medusa.LcdFont;
  *
  */
 public class LCDPane extends ConstrainedGridPane {
-  List<LcdField> lcdFields = new ArrayList<LcdField>();
+  List<Gauge> lcdFields = new ArrayList<Gauge>();
   private int rows;
   private int cols;
 
@@ -45,13 +46,14 @@ public class LCDPane extends ConstrainedGridPane {
    * @param rows
    * @param colums
    */
-  public LCDPane(int rows, int cols, double width, double height,LcdFont lcdFont,String label,String... texts) {
+  public LCDPane(int rows, int cols,String... texts) {
     this.rows = rows;
     this.cols = cols;
     int index = 0;
     for (int row = 0; row < this.rows; row++) {
       for (int col = 0; col < this.cols; col++) {
-        LcdField newField = new LcdField(label,texts[index], width, height,LcdDesign.SECTIONS,lcdFont);
+        Gauge newField = LcdGauge.createGaugeLocalized(texts[index],"");
+        newField.setLcdDesign(LcdDesign.SECTIONS);
         index++;
         this.add(newField, col, row);
         lcdFields.add(newField);
@@ -77,10 +79,12 @@ public class LCDPane extends ConstrainedGridPane {
    * @param col
    * @return the lcdField
    */
-  public LcdField getAt(int row, int col) {
-    // FIXME check parameters for valid bounds
-    int index=(row-1)*cols+col-1;
-    LcdField lcdField=lcdFields.get(index);
+  public Gauge getAt(int row, int col) {
+    if (row<0 || row>=rows || col<0 || col>=cols)
+      return null;
+    int index=row*cols+col;
+    
+    Gauge lcdField=lcdFields.get(index);
     return lcdField;
   }
 }

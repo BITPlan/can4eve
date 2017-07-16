@@ -54,6 +54,7 @@ import com.bitplan.i18n.Translator;
 import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.obdii.elm327.ElmSimulator;
 import com.bitplan.obdii.elm327.LogReader;
+import com.bitplan.obdii.elm327.Monitor;
 import com.bitplan.obdii.elm327.RandomAccessLogReader;
 import com.bitplan.obdii.javafx.JavaFXDisplay;
 import com.bitplan.triplet.OBDTriplet;
@@ -142,6 +143,7 @@ public class TestELM327 extends TestOBDII {
   public void prepareOBDTriplet(boolean simulated, boolean debug)
       throws Exception {
     if (simulated) {
+      Monitor.reset();
       obdTriplet = new OBDTriplet(getVehicleGroup());
       obdTriplet.setElm327(getSimulation());
       obdTriplet.getElm327().getCon().setResponseHandler(obdTriplet);
@@ -220,9 +222,10 @@ public class TestELM327 extends TestOBDII {
     // obdTriplet.setDebug(true);
     obdTriplet.readPid(display, byName("BatteryCapacity"));
     Thread.sleep(200);
+    DoubleValue batteryCapacity=obdTriplet.getValue("BatteryCapacity");
     assertNotNull("the battery capacity should be set",
-        obdTriplet.batteryCapacity.getValue());
-    assertEquals(new Double(44.7), obdTriplet.batteryCapacity.getValue(), 0.01);
+       batteryCapacity.getValue());
+    assertEquals(new Double(44.7), batteryCapacity.getValue(), 0.01);
   }
 
   @Test
@@ -252,21 +255,25 @@ public class TestELM327 extends TestOBDII {
                                                                             // then
                                                                             // fails
     // let's wait a bit for the results
-    Thread.sleep(500);
+    // 500 msecs is not enoughclea
+    Thread.sleep(600);
     // display.waitClose();
+    DoubleValue batteryCapacity=obdTriplet.getValue("BatteryCapacity");
     assertNotNull("the battery capacity should be set",
-        obdTriplet.batteryCapacity.getValue());
+        batteryCapacity.getValue());
+    assertEquals(new Double(44.8), batteryCapacity.getValue(), 0.1);
     DoubleValue SOC=obdTriplet.getValue("SOC");
     assertNotNull(SOC);
-    assertEquals(new Double(44.8), obdTriplet.batteryCapacity.getValue(), 0.1);
     assertEquals(new Double(100.0), SOC.getValue(), 0.1);
     IntegerValue range=obdTriplet.getValue("Range");
     assertEquals(new Integer(95), range.getValue());
     IntegerValue odometer=obdTriplet.getValue("Odometer");
     assertEquals(new Integer(721), odometer.getValue());
-    assertEquals(new Double(-9.5), obdTriplet.steeringWheelPosition.getValue(),
+    DoubleValue steeringWheelPosition=obdTriplet.getValue("SteeringWheelPosition");
+    assertEquals(new Double(-9.5), steeringWheelPosition.getValue(),
         0.01);
-    assertEquals(new Double(2.5), obdTriplet.steeringWheelMovement.getValue(),
+    DoubleValue steeringWheelMovement=obdTriplet.getValue("SteeringWheelMovement");
+    assertEquals(new Double(2.5), steeringWheelMovement.getValue(),
         0.01);
     assertEquals("VF31NZKYZHU900769", obdTriplet.VIN.getValue());
     obdTriplet.close();
@@ -394,7 +401,7 @@ public class TestELM327 extends TestOBDII {
     // Monitor.debug=true;
     // debug=true;
     // FIXME - proper  handling of ElmSimulator files
-    ElmSimulator.fileName=null;
+    Monitor.getInstance().setLogFile(null);
     prepareOBDTriplet(simulated, debug);
     obdTriplet.initOBD();
     File logRoot = new File("src/test/data");
@@ -545,7 +552,7 @@ public class TestELM327 extends TestOBDII {
   public void testCanValues() throws Exception {
     OBDTriplet lOBDTriplet = new OBDTriplet(getVehicleGroup());
     List<CANValue<?>> canValues = lOBDTriplet.getCANValues();
-    assertEquals(29, canValues.size());
+    assertEquals(30, canValues.size());
     @SuppressWarnings("unused")
     String names = "";
     String delim = "";
@@ -590,7 +597,7 @@ public class TestELM327 extends TestOBDII {
     // debug=true;
     OBDTriplet lOBDTriplet = new OBDTriplet(getVehicleGroup());
     List<CANValue<?>> canValues = lOBDTriplet.getCANValues();
-    assertEquals(29, canValues.size());
+    assertEquals(30, canValues.size());
     for (CANValue<?> canValue : canValues) {
       if (debug) {
         LOGGER.log(Level.INFO, canValue.canInfo.getTitle() + ":"

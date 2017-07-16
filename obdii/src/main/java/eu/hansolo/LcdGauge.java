@@ -20,37 +20,73 @@
  */
 package eu.hansolo;
 
+import java.util.Locale;
+
+import com.bitplan.i18n.Translator;
 import com.bitplan.obdii.I18n;
 
+import eu.hansolo.medusa.Clock;
+import eu.hansolo.medusa.ClockBuilder;
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.GaugeBuilder;
 import eu.hansolo.medusa.LcdDesign;
 import eu.hansolo.medusa.LcdFont;
+import eu.hansolo.medusa.Clock.ClockSkinType;
 import eu.hansolo.medusa.Gauge.SkinType;
 
 /**
  * Helper class for LCD Gauges
+ * 
  * @author wf
  *
  */
 public class LcdGauge {
-  
-  public static LcdFont lcdFont=LcdFont.DIGITAL;
-  public static LcdDesign lcdDesign=LcdDesign.GRAY;
+
+  public static LcdFont lcdFont = LcdFont.DIGITAL;
+  public static LcdDesign lcdDesign = LcdDesign.GRAY;
 
   /**
    * create the given LCD Gauge
+   * 
    * @param i18nTitle
    * @param i18nUnit
-   * @return  the gauge
+   * @return the gauge
    */
-  public static Gauge create(String i18nTitle, String i18nUnit) {
+  public static Gauge createGauge(String i18nTitle, String i18nUnit) {
+    return createGaugeLocalized(I18n.get(i18nTitle), I18n.get(i18nUnit));
+
+  }
+
+  /**
+   * 
+   * @param title
+   * @param unit
+   * @return
+   */
+  public static Gauge createGaugeLocalized(String title, String unit) {
     Gauge gauge = GaugeBuilder.create().skinType(SkinType.LCD).animated(true)
         .oldValueVisible(false).maxMeasuredValueVisible(false)
         .minMeasuredValueVisible(false).decimals(0).tickLabelDecimals(0)
-        .title(I18n.get(i18nTitle)).unit(I18n.get(i18nUnit))
-        .lcdDesign(lcdDesign).lcdFont(lcdFont).build();
+        .title(title).unit(unit).lcdDesign(lcdDesign).lcdFont(lcdFont).build();
     return gauge;
+  }
+
+  /**
+   * create a clock with the given title
+   * 
+   * @param title
+   * @return
+   */
+  public static Clock createClock(String i18nTitle) {
+    String title = I18n.get(i18nTitle);
+    Locale locale = Translator.getCurrentLocale();
+    if (locale == null)
+      locale = Locale.getDefault();
+    Clock clock = ClockBuilder.create().skinType(ClockSkinType.LCD)
+        .lcdDesign(lcdDesign).title(title).titleVisible(true)
+        .secondsVisible(true).alarmsEnabled(true).dateVisible(false)
+        .locale(locale).build();
+    return clock;
   }
 
 }

@@ -22,6 +22,9 @@ package com.bitplan.obdii.elm327;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,9 +40,9 @@ import com.bitplan.elm327.Packet;
  * @author wf
  *
  */
-public class Monitor extends Thread {
+public class Monitor extends Thread implements LogPlayer {
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii");
-
+  private List<LogPlayerListener> listeners = new ArrayList<LogPlayerListener>();
   public static boolean debug = false;
   private String pidFilter = null;
   private ELM327 elm;
@@ -59,6 +62,9 @@ public class Monitor extends Thread {
   private File elmLogFile;
 
   private RandomAccessLogReader logReader;
+  Date logReaderStartDate;
+  Date logReaderEndDate;
+  private boolean firstStart = true;
 
   /**
    * create a Monitor
@@ -68,8 +74,9 @@ public class Monitor extends Thread {
    * @param header
    * @param length
    */
-  public Monitor(ELM327 elm, String pidFilter, boolean header, boolean length) {
-    this(elm, header, length, null);
+  public void init(ELM327 elm, String pidFilter, boolean header,
+      boolean length) {
+    init(elm, header, length);
     this.pidFilter = pidFilter;
   }
 
@@ -79,15 +86,13 @@ public class Monitor extends Thread {
    * @param elm
    * @param header
    * @param length
-   * @param elmLogFile
    */
-  public Monitor(ELM327 elm, boolean header, boolean length, File elmLogFile) {
+  public void init(ELM327 elm, boolean header, boolean length) {
     this.elm = elm;
     this.con = elm.getCon();
     this.header = header;
     this.length = length;
     this.pids = elm.getVehicleGroup().getPids();
-    this.elmLogFile = elmLogFile;
     if (debug)
       LOGGER.log(Level.INFO, "Monitor created for " + pids.size() + " Pids");
   }
@@ -183,20 +188,34 @@ public class Monitor extends Thread {
     return sample;
   }
 
-  @Override
-  public void run() {
-    running = true;
+  public void startUp() {
     if (pidFilter != null)
       if (debug)
         LOGGER.log(Level.INFO, "monitoring " + pidFilter);
     if (elmLogFile != null) {
       try {
         logReader = new RandomAccessLogReader(elmLogFile);
+        this.logReaderStartDate = logReader.getStartDate();
+        this.logReaderEndDate = logReader.getEndDate();
         logReader.open();
+        for (LogPlayerListener listener : this.listeners) {
+          listener.onOpen();
+        }
       } catch (Exception e) {
         ErrorHandler.handle(e);
       }
     }
+    if (firstStart)
+      start();
+    else
+      running = true;
+  }
+
+  @Override
+  public void run() {
+    firstStart = false;
+    running = true;
+    // loop
     while (running) {
       try {
         String sample = null;
@@ -214,8 +233,12 @@ public class Monitor extends Thread {
         } else {
           try {
             Packet p = logReader.nextPacket();
-            if (p!=null)
+            if (p != null) {
+              for (LogPlayerListener listener : this.listeners) {
+                listener.onProgress(p.getTime());
+              }
               sample = p.getData();
+            }
           } catch (Exception e) {
             ErrorHandler.handle(e);
           }
@@ -240,6 +263,54 @@ public class Monitor extends Thread {
 
   public void halt() {
     running = false;
+  }
+
+  @Override
+  public File getLogFile() {
+    return this.elmLogFile;
+  }
+
+  public void setLogFile(File elmLogFile) {
+    this.elmLogFile = elmLogFile;
+  }
+
+  static Monitor instance;
+
+  public static Monitor getInstance() {
+    if (instance == null)
+      instance = new Monitor();
+    return instance;
+  }
+
+  @Override
+  public Date getStartDate() {
+    if (logReaderStartDate != null)
+      return logReaderStartDate;
+    return null;
+  }
+
+  @Override
+  public Date getEndDate() {
+    if (logReaderEndDate != null)
+      return logReaderEndDate;
+    return null;
+  }
+
+  @Override
+  public void addListener(LogPlayerListener listener) {
+    listeners.add(listener);
+  }
+  
+  public static void reset() {
+    instance=null;
+  }
+
+  @Override
+  public void moveTo(Date date) {
+    SimpleDateFormat moveDateFormatter = new SimpleDateFormat(
+        "yyyy-MM-dd hh:mm:ss ");
+    LOGGER.log(Level.INFO, "monitor moveTo "+moveDateFormatter.format(date));
+    
   }
 
 }

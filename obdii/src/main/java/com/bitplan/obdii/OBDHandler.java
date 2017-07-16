@@ -21,11 +21,17 @@
 package com.bitplan.obdii;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.List;
 
+import com.bitplan.can4eve.CANInfo;
+import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.VehicleGroup;
+import com.bitplan.can4eve.CANValue.CANRawValue;
+import com.bitplan.can4eve.gui.javafx.CANProperty;
+import com.bitplan.can4eve.gui.javafx.CANPropertyManager;
 import com.bitplan.obdii.elm327.ELM327;
 
 /**
@@ -34,6 +40,36 @@ import com.bitplan.obdii.elm327.ELM327;
  *
  */
 public abstract class OBDHandler extends AbstractOBDHandler{
+  protected CANPropertyManager cpm;
+  public static boolean withRawValues = false;
+  protected Integer mmPerRound = 261; // FIXME do we need a default here?
+  protected boolean withHistory = true;
+  protected boolean monitoring;
+
+  public boolean isWithHistory() {
+    return withHistory;
+  }
+
+  public void setWithHistory(boolean withHistory) {
+    this.withHistory = withHistory;
+  }
+
+  public Integer getMmPerRound() {
+    return mmPerRound;
+  }
+
+  public void setMmPerRound(Integer mmPerRound) {
+    this.mmPerRound = mmPerRound;
+  }
+
+  public boolean isMonitoring() {
+    return monitoring;
+  }
+
+  public void setMonitoring(boolean monitoring) {
+    this.monitoring = monitoring;
+  }
+
 
   public OBDHandler(VehicleGroup vehicleGroup) {
     super(vehicleGroup);
@@ -68,12 +104,86 @@ public abstract class OBDHandler extends AbstractOBDHandler{
   }
   
   /**
+   * get the canInfo for the given CanInfo name
+   * 
+   * @param canInfoName
+   * @return
+   */
+  protected CANInfo getCanInfo(String canInfoName) {
+    CANInfo canInfo = this.getVehicleGroup().getCANInfoByName(canInfoName);
+    return canInfo;
+  }
+  
+  /**
    * delegate the initialization of the OBD device
    * 
    * @throws Exception
    */
   public void initOBD() throws Exception {
     this.getElm327().initOBD2();
+  }
+  
+  /**
+   * initialize the CanValues
+   */
+  public void initCanValues(String... canInfoNames) {
+    cpm = new CANPropertyManager(getVehicleGroup());
+    for (String canInfoName : canInfoNames) {
+      cpm.addValue(canInfoName);
+    }
+  }
+  
+  /**
+   * get the CANValue
+   * 
+   * @param canInfoName
+   * @return the canValue
+   */
+  public <CT extends CANValue<T>, T> CT getValue(String canInfoName) {
+    CANProperty<CT, T> property = cpm.get(canInfoName);
+    if (property == null)
+      throw new RuntimeException("invalid canInfoName " + canInfoName);
+    return property.getCanValue();
+  }
+
+  /**
+   * get the CANValues
+   * 
+   * @return - the array of CAN Values in order of appearance
+   */
+  public List<CANValue<?>> getCANValues() {
+    if (canValues == null) {
+      // start the canValues with the top list
+      canValues = cpm.getCANValues();
+      if (withRawValues) {
+        // TODO check handling of raw values
+        // create a map of these already added values
+        HashMap<Pid, CANValue<?>> canValueMap = new HashMap<Pid, CANValue<?>>();
+        for (CANValue<?> canValue : canValues) {
+          CANInfo canInfo = canValue.canInfo;
+          Pid pid = canInfo.getPid();
+          canValueMap.put(pid, canValue);
+        } // for
+        // now add all raw values
+        for (Pid pid : getVehicleGroup().getPids()) {
+          if (pid.getIsoTp() == null) {
+            CANRawValue canRawValue = this.getCanRawValues().get(pid.getPid());
+            if (canRawValue == null)
+              throw new RuntimeException(
+                  "this can't happen - no pid raw value for PID "
+                      + pid.getPid());
+            // if (!canValueMap.containsKey(pid)) {
+            canValues.add(canRawValue);
+            canValueMap.put(pid, canRawValue);
+          }
+          // } // if
+        } // for
+      }
+      for (CANValue<?> canValue : canValues) {
+        canValue.activate();
+      } // for
+    } // if
+    return canValues;
   }
 
 }

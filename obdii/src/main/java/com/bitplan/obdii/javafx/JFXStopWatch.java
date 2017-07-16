@@ -24,15 +24,11 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
 import com.bitplan.can4eve.states.StopWatch;
-import com.bitplan.i18n.Translator;
 
+import eu.hansolo.LcdGauge;
 import eu.hansolo.medusa.Clock;
-import eu.hansolo.medusa.Clock.ClockSkinType;
-import eu.hansolo.medusa.ClockBuilder;
-import eu.hansolo.medusa.LcdDesign;
 import javafx.scene.image.ImageView;
 
 /**
@@ -51,16 +47,10 @@ public class JFXStopWatch implements StopWatch {
   /**
    * create a StopWatch
    * 
-   * @param title
+   * @param i18nTitle
    */
-  public JFXStopWatch(String title) {
-    Locale locale = Translator.getCurrentLocale();
-    if (locale==null)
-      locale=Locale.getDefault();
-    stopWatch = ClockBuilder.create().skinType(ClockSkinType.LCD)
-        .lcdDesign(LcdDesign.GRAY).title(title).titleVisible(true)
-        .secondsVisible(true).alarmsEnabled(true).dateVisible(false)
-        .running(true).locale(locale).build();
+  public JFXStopWatch(String i18nTitle) {
+    stopWatch = LcdGauge.createClock(i18nTitle);
   }
 
   public ImageView getIcon() {

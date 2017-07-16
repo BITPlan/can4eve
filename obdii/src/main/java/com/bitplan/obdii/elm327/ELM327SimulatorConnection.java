@@ -40,11 +40,10 @@ public class ELM327SimulatorConnection extends ELM327 implements ResponseHandler
   public int delay = 0; // 0,1 millisecs delay
   public int delaynano=100; 
   private String filter;
-  List<Monitor> monitors = new ArrayList<Monitor>();
+  //List<Monitor> monitors = new ArrayList<Monitor>();
   private String canprotcode;
   private String canprot;
   private String ecu;
-  private File elmLogFile;
   
   /**
    * constructor
@@ -150,9 +149,11 @@ public class ELM327SimulatorConnection extends ELM327 implements ResponseHandler
           filter = command.substring(3).trim();
           outputWithPrompt("OK");
         } else if (command.startsWith("MA")) {
-          Monitor monitor = new Monitor(this, filter, isHeader(), isLength());
-          monitor.start();
-          monitors.add(monitor);
+          // TODO - also use log file here ..
+          Monitor monitor = Monitor.getInstance();
+          monitor.init(this, filter, isHeader(), isLength());
+          monitor.startUp();
+          // monitors.add(monitor);
         } else if (command.equals("DP")) {
           log("Reporting can protocol " + canprotcode + "=" + canprot);
           outputWithPrompt(canprot);
@@ -207,9 +208,10 @@ public class ELM327SimulatorConnection extends ELM327 implements ResponseHandler
         } else if (command.startsWith("STFAP")) {
           outputWithPrompt("OK");      
         } else if (command.equals("STM")) {  
-          Monitor monitor = new Monitor(this, isHeader(), isLength(), this.elmLogFile);
-          monitor.start();
-          monitors.add(monitor);
+          Monitor monitor = Monitor.getInstance();
+          monitor.init(this, isHeader(), isLength());
+          monitor.startUp();
+          // monitors.add(monitor);
         } else if (command.equals("2101")) {
           // outputWithPrompt("OK");
           this.getCon().
@@ -253,20 +255,13 @@ public class ELM327SimulatorConnection extends ELM327 implements ResponseHandler
    * stop the monitors
    */
   protected void stopMonitors() {
-    for (Monitor monitor : monitors) {
+    Monitor.getInstance().halt();
+    /*for (Monitor monitor : monitors) {
       monitor.halt();
       ;
     }
     monitors.clear();
-
-  }
-
-  /**
-   * set the elm Simulator Log file to be used 
-   * @param file
-   */
-  public void setFile(File file) {
-    this.elmLogFile=file;
+    */
   }
 
 }

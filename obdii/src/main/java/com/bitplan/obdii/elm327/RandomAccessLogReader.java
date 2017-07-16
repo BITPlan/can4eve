@@ -97,12 +97,22 @@ public class RandomAccessLogReader {
     return p;
   }
  
+  /**
+   * open me
+   * @throws FileNotFoundException
+   */
   public void open() throws FileNotFoundException {
      raf= new RandomAccessFile(elmLogFile, "r");
   }
+  
+  /**
+   * close me
+   * @throws IOException
+   */
   public void close() throws IOException {
     raf.close();
   }
+  
   /**
    * get a line from the Random Access file
    * @param raf - the random access file

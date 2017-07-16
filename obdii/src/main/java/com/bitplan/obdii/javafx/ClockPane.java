@@ -60,9 +60,9 @@ public class ClockPane extends ConstrainedGridPane {
         .locale(Translator.getCurrentLocale()).build();
 
     String[] icons = { "car", "plug", "parking", "total" };
-    String[] titles = { I18n.get(I18n.WATCH_MOVING),
-        I18n.get(I18n.WATCH_CHARGING), I18n.get(I18n.WATCH_PARKING),
-        I18n.get(I18n.WATCH_TOTAL) };
+    String[] titles = { I18n.WATCH_MOVING,
+        I18n.WATCH_CHARGING, I18n.WATCH_PARKING,
+        I18n.WATCH_TOTAL};
     watches = new JFXStopWatch[Watch.values().length];
     this.msecsStart=new long[Watch.values().length];
     for (Watch watch : Watch.values()) {

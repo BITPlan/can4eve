@@ -27,7 +27,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -36,9 +35,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.bitplan.can4eve.CANInfo;
-import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
-import com.bitplan.can4eve.CANValue.IntegerValue;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.gui.App;
 import com.bitplan.can4eve.gui.Group;
@@ -53,13 +50,16 @@ import com.bitplan.can4eve.states.StopWatch;
 import com.bitplan.can4eve.util.TaskLaunch;
 import com.bitplan.i18n.Translator;
 import com.bitplan.obdii.Preferences.LangChoice;
+import com.bitplan.obdii.elm327.Monitor;
 import com.bitplan.obdii.javafx.ChargePane;
 import com.bitplan.obdii.javafx.ClockPane;
 import com.bitplan.obdii.javafx.ClockPane.Watch;
+import com.bitplan.obdii.javafx.ConstrainedGridPane;
 import com.bitplan.obdii.javafx.JFXCanCellStatePlot;
 import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
 import com.bitplan.obdii.javafx.JFXStopWatch;
 import com.bitplan.obdii.javafx.LCDPane;
+import com.bitplan.obdii.javafx.SimulatorPane;
 
 import eu.hansolo.OverviewDemo;
 import eu.hansolo.medusa.FGauge;
@@ -149,6 +149,7 @@ public class TestAppGUI {
    * @param properties
    * @param minutes
    */
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   public void setPlotValues(Map<String, CANProperty> properties, int minutes) {
     Calendar date = Calendar.getInstance();
     final long ONE_MINUTE_IN_MILLIS = 60000;// millisecs
@@ -156,8 +157,8 @@ public class TestAppGUI {
     long t = date.getTimeInMillis();
     for (int i = 0; i < minutes; i++) {
       Date timeStamp = new Date(t + (i * ONE_MINUTE_IN_MILLIS));
-      DoubleValue SOC = (DoubleValue) properties.get("SOC").getCanValue();
-      IntegerValue RR = (IntegerValue) properties.get("Range").getCanValue();
+      CANProperty SOC=properties.get("SOC");
+      CANProperty RR = properties.get("Range");
       SOC.setValue(90 - i * 1.2, timeStamp);
       RR.setValue(90 - i, timeStamp);
     }
@@ -185,8 +186,12 @@ public class TestAppGUI {
         texts[row * cols + col] = String.format("row %2d col %2d", row, col);
       }
     }
-    LCDPane lcdPane = new LCDPane(rows, cols, 250, 30, LcdFont.STANDARD, "rpm",
-        texts);
+    LCDPane lcdPane = new LCDPane(rows, cols, texts);
+    for (int row = 0; row < rows; row++) {
+      for (int col = 0; col < cols; col++) {
+        lcdPane.getAt(row, col).setValue(Math.random()*200);
+      }
+    }
     SampleApp.createAndShow("LCDPane", lcdPane, SHOW_TIME);
   }
 
@@ -324,7 +329,21 @@ public class TestAppGUI {
     }
     sampleApp.close();
   }
+  
+  @Test
+  public void testSimulatorPane() throws Exception {
+    WaitableApp.toolkitInit();
+    Translator.initialize(Preferences.getInstance().getLanguage().name());
+    SimulatorPane simulatorPane=new SimulatorPane(Monitor.getInstance());
+    ConstrainedGridPane containerPane=new ConstrainedGridPane();
+    containerPane.add(simulatorPane,0, 0);
+    containerPane.add(new GridPane(), 0, 1);
+    containerPane.fixColumnSizes(0,100);
+    containerPane.fixRowSizes(5, 15,85);
+    SampleApp.createAndShow("simulator", containerPane, SHOW_TIME);
+  }
 
+  @SuppressWarnings("rawtypes")
   @Test
   public void testLineChartJavaFx() throws Exception {
     String title = "SOC/RR";
@@ -341,9 +360,11 @@ public class TestAppGUI {
     sampleApp.show();
     sampleApp.waitOpen();
     //valuePlot.getLineChart().getData().gt
-    for (int i = 2; i <= 50; i++) {
+    int minutes=35;
+    for (int i = 2; i <= minutes; i++) {
       setPlotValues(properties,i);
-      Thread.sleep(SHOW_TIME / 50);
+      valuePlot.update();
+      Thread.sleep(SHOW_TIME*2 / minutes);
     }
     sampleApp.close();
   }

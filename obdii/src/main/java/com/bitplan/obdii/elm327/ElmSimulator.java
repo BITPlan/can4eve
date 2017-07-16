@@ -59,7 +59,7 @@ public class ElmSimulator extends Main {
   
   @Option(name = "-f", aliases = {
   "-file" }, usage = "file\ntthe log file to use for simulation")
-  public static String fileName = null;
+  public String fileName = null;
 
   public static int SIMULATOR_TIMEOUT = 50; // Simulator should be quick 2 msecs is
   // feasible
@@ -117,7 +117,7 @@ public class ElmSimulator extends Main {
             ELM327SimulatorConnection elm327SimulatorConnection = new ELM327SimulatorConnection(
                 vehicleGroup);
             if (fileName!=null) {
-              elm327SimulatorConnection.setFile(new File(fileName));
+              Monitor.getInstance().setLogFile(new File(fileName));
             }
             Connection con = elm327SimulatorConnection.getCon();
             con.setTitle(String.format("ELM327 Simulator on port %5d",clientSocket.getPort()));
