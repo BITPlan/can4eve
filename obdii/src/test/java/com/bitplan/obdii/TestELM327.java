@@ -403,7 +403,7 @@ public class TestELM327 extends TestOBDII {
       logFile = obdTriplet.logResponses(logRoot, "testLogs");
     }
     int frameLimit = 150;
-    obdTriplet.STMMonitor(display, obdTriplet.getCANValues(), frameLimit);
+    obdTriplet.pidMonitor(display, obdTriplet.getCANValues(), frameLimit);
     obdTriplet.close();
     Platform.runLater(() -> display.close());
     if (!simulated) {

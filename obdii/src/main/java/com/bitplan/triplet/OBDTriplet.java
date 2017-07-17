@@ -524,7 +524,7 @@ public class OBDTriplet extends OBDHandler {
    * @param canValues
    * @throws Exception
    */
-  public void STMFilter(List<CANValue<?>> canValues) throws Exception {
+  public void setSTMFilter(List<CANValue<?>> canValues) throws Exception {
     ELM327 lelm = this.getElm327();
     Set<String> pidFilter = new HashSet<String>();
     for (CANValue<?> canValue : canValues) {
@@ -535,8 +535,6 @@ public class OBDTriplet extends OBDHandler {
         }
       }
     }
-    if (!lelm.isSTN())
-      throw new Exception("AT STM capable OBDII Adapter needed!");
     lelm.sendCommand("STFAC", "OK"); // FIXME - not understood by ELM327 v2.1
     // device
     for (String pidId : pidFilter) {
@@ -555,31 +553,62 @@ public class OBDTriplet extends OBDHandler {
    *          - the maximum number of frames to read
    * @throws Exception
    */
-  public void STMMonitor(CANValueDisplay display, List<CANValue<?>> canValues,
+  public void pidMonitor(CANValueDisplay display, List<CANValue<?>> canValues,
       long frameLimit) throws Exception {
     ELM327 lelm = this.getElm327();
     Connection lcon = lelm.getCon();
     // VehicleGroup vg = this.getElm327().getVehicleGroup();
-    for (CANValue<?> canValue : canValues) {
-      if (canValue.isRead()) {
-        Pid pid = canValue.canInfo.getPid();
-        // handle ISO-TP based frames differently by direct reading
-        if (pid.getIsoTp() != null)
-          this.readPid(display, pid);
+    // FIXME - china clone battery handling?
+    // make available on button/menu?
+    if (lelm.isSTN()) {
+      for (CANValue<?> canValue : canValues) {
+        if (canValue.isRead()) {
+          Pid pid = canValue.canInfo.getPid();
+          // handle ISO-TP based frames differently by direct reading
+          if (pid.getIsoTp() != null)
+            this.readPid(display, pid);
+        }
       }
     }
     this.initOBD();
-    this.STMFilter(canValues);
-    lcon.output("STM");
-    setMonitoring(true);
-    // regularly update the display
-    this.startDisplay(display);
-    for (long i = 0; i < frameLimit && isMonitoring(); i++) {
-      lcon.getResponse(null);
-    }
-    this.stopDisplay();
+    if (lelm.isSTN()) {
+      this.setSTMFilter(canValues);
+      lcon.output("STM");
+      setMonitoring(true);
+      // regularly update the display
+      this.startDisplay(display);
+      for (long i = 0; i < frameLimit && isMonitoring(); i++) {
+        lcon.getResponse(null);
+      }
+      this.stopDisplay();
+    } else {
+      if (debug)
+        LOGGER.log(Level.INFO, "super slow China clone loop entered");
+      // oh the China loop ... how ugly and slow ...
+      int pidFrameLimit = 3;
+      if (debug)
+        LOGGER.log(Level.INFO,
+            String.format("%3d PIDs to loop thru", canValues.size()));
+      setMonitoring(true);
+      for (long i = 0; i < frameLimit
+          && isMonitoring(); i += pidFrameLimit * canValues.size()) {
+        for (CANValue<?> canValue : canValues) {
+          if (canValue.isRead()) {
+            Pid pid = canValue.canInfo.getPid();
+            // handle ISO-TP based frames differently by direct reading
+            if (pid.getIsoTp() == null) {
+              if (debug) {
+                LOGGER.log(Level.INFO, String.format("pid %s (%s) ",
+                    pid.getPid(), canValue.canInfo.getTitle()));
+              }
+              super.monitorPid(display, pid.getPid(), pidFrameLimit);
+            } // if not ISO-TP
+          } // is isREAD
+        } // for canValues
+      } // for frames
+    } // non STN
     if (debug) {
-      LOGGER.log(Level.INFO, "STM finished");
+      LOGGER.log(Level.INFO, "PidMonitoring finished");
     }
   }
 
@@ -661,7 +690,7 @@ public class OBDTriplet extends OBDHandler {
     printWriter.flush();
     // do we have an STM capable chip?
     if (this.getElm327().isSTN()) {
-      this.STMMonitor(display, canValues, frameLimit);
+      this.pidMonitor(display, canValues, frameLimit);
       for (CANValue<?> canValue : cpm.getCANValues()) {
         if (debug)
           LOGGER.log(Level.INFO, "canValue:" + canValue.canInfo.getTitle());

@@ -231,7 +231,7 @@ public class OBDMain extends Main implements OBDApp {
     } else if (pid != null)
       obdTriplet.checkPid(canValueDisplay, pid, frameLimit);
     else {
-      obdTriplet.STMMonitor(canValueDisplay, obdTriplet.getCANValues(),
+      obdTriplet.pidMonitor(canValueDisplay, obdTriplet.getCANValues(),
           frameLimit);
     }
     return elm;

@@ -190,24 +190,6 @@ public class JavaFXDisplay extends WaitableApp
   }
 
   @Override
-  public LabelField addField(String title, String format, int labelSize,
-      int fieldSize) {
-    // ignore this
-    return null;
-  }
-
-  @Override
-  public void addCANValueField(CANValue<?> canValue) {
-
-  }
-
-  @Override
-  public void addCanValueFields(Collection<CANValue<?>> list) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
   public void updateField(String title, Object value, int updateCount) {
     if (controls == null)
       return;
@@ -439,7 +421,7 @@ public class JavaFXDisplay extends WaitableApp
     // disable menu items
     this.setMenuItemDisable(I18n.OBD_HALT_MENU_ITEM, true);
     this.setMenuItemDisable(I18n.FILE_CLOSE_MENU_ITEM, true);
-    
+
     Button screenShotButton = new Button(I18n.get(I18n.SCREEN_SHOT));
     screenShotButton.setOnAction(new EventHandler<ActionEvent>() {
       @Override
@@ -485,20 +467,20 @@ public class JavaFXDisplay extends WaitableApp
       simulatorPane = new SimulatorPane(logPlayer, this);
       root.getChildren().add(1, simulatorPane);
       setMenuItemDisable(I18n.OBD_START_WITH_LOG_MENU_ITEM, true);
-      setMenuItemDisable(I18n.FILE_CLOSE_MENU_ITEM,false);
+      setMenuItemDisable(I18n.FILE_CLOSE_MENU_ITEM, false);
     }
     File file = new File(filePath);
     logPlayer.setLogFile(file);
     logPlayer.open();
   }
-  
+
   @Override
   public void closeSimulation() {
-    if (simulatorPane!=null) {
+    if (simulatorPane != null) {
       root.getChildren().remove(simulatorPane);
-      simulatorPane=null;
+      simulatorPane = null;
     }
-    
+
   }
 
   /**
@@ -701,8 +683,10 @@ public class JavaFXDisplay extends WaitableApp
    * @param state
    */
   private void setWatchDogState(String symbol, String state) {
-    this.watchDogLabel.setText(symbol);
-    this.statusBar.setText(state);
+    Platform.runLater(() -> {
+      this.watchDogLabel.setText(symbol);
+      this.statusBar.setText(state);
+    });
   }
 
   /**
