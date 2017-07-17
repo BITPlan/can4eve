@@ -222,9 +222,9 @@ public class TestELM327 extends TestOBDII {
     // obdTriplet.setDebug(true);
     obdTriplet.readPid(display, byName("BatteryCapacity"));
     Thread.sleep(200);
-    DoubleValue batteryCapacity=obdTriplet.getValue("BatteryCapacity");
+    DoubleValue batteryCapacity = obdTriplet.getValue("BatteryCapacity");
     assertNotNull("the battery capacity should be set",
-       batteryCapacity.getValue());
+        batteryCapacity.getValue());
     assertEquals(new Double(44.7), batteryCapacity.getValue(), 0.01);
   }
 
@@ -242,39 +242,30 @@ public class TestELM327 extends TestOBDII {
         frameLimit);
     obdTriplet.monitorPid(display, byName("Odometer_Speed").getPid(),
         frameLimit);
-    obdTriplet.monitorPid(display, byName("VIN").getPid(), frameLimit * 3); // 3
-                                                                            // should
-                                                                            // be
-                                                                            // enough
-                                                                            // but
-                                                                            // somehow
-                                                                            // on
-                                                                            // travis
-                                                                            // the
-                                                                            // test
-                                                                            // then
-                                                                            // fails
-    // let's wait a bit for the results
-    // 500 msecs is not enough
+    obdTriplet.monitorPid(display, byName("VIN").getPid(), frameLimit * 3);
+    /*
+     * 3 should be enoughbut somehow on travis the test then fails let's wait a
+     * bit for the results 500 msecs is not enough
+     */
     Thread.sleep(1500);
     // display.waitClose();
-    DoubleValue batteryCapacity=obdTriplet.getValue("BatteryCapacity");
+    DoubleValue batteryCapacity = obdTriplet.getValue("BatteryCapacity");
     assertNotNull("the battery capacity should be set",
         batteryCapacity.getValue());
     assertEquals(new Double(44.8), batteryCapacity.getValue(), 0.1);
-    DoubleValue SOC=obdTriplet.getValue("SOC");
+    DoubleValue SOC = obdTriplet.getValue("SOC");
     assertNotNull(SOC);
     assertEquals(new Double(100.0), SOC.getValue(), 0.1);
-    IntegerValue range=obdTriplet.getValue("Range");
+    IntegerValue range = obdTriplet.getValue("Range");
     assertEquals(new Integer(95), range.getValue());
-    IntegerValue odometer=obdTriplet.getValue("Odometer");
+    IntegerValue odometer = obdTriplet.getValue("Odometer");
     assertEquals(new Integer(721), odometer.getValue());
-    DoubleValue steeringWheelPosition=obdTriplet.getValue("SteeringWheelPosition");
-    assertEquals(new Double(-9.5), steeringWheelPosition.getValue(),
-        0.01);
-    DoubleValue steeringWheelMovement=obdTriplet.getValue("SteeringWheelMovement");
-    assertEquals(new Double(2.5), steeringWheelMovement.getValue(),
-        0.01);
+    DoubleValue steeringWheelPosition = obdTriplet
+        .getValue("SteeringWheelPosition");
+    assertEquals(new Double(-9.5), steeringWheelPosition.getValue(), 0.01);
+    DoubleValue steeringWheelMovement = obdTriplet
+        .getValue("SteeringWheelMovement");
+    assertEquals(new Double(2.5), steeringWheelMovement.getValue(), 0.01);
     assertEquals("VF31NZKYZHU900769", obdTriplet.VIN.getValue());
     obdTriplet.close();
     // display.waitClose();
@@ -400,7 +391,7 @@ public class TestELM327 extends TestOBDII {
     // simulated=false;
     // Monitor.debug=true;
     // debug=true;
-    // FIXME - proper  handling of ElmSimulator files
+    // FIXME - proper handling of ElmSimulator files
     Monitor.getInstance().setLogFile(null);
     prepareOBDTriplet(simulated, debug);
     obdTriplet.initOBD();
@@ -453,8 +444,6 @@ public class TestELM327 extends TestOBDII {
       // assertTrue("Timeout too low - simulator broken?",con.getTimeout() >4);
     }
   }
-
- 
 
   /**
    * Test PID handling from a CAN log
@@ -537,13 +526,12 @@ public class TestELM327 extends TestOBDII {
       delim = ",";
       assertTrue(canValue.isRead());
     }
-    /*debug = true;
-    if (debug) {
-      LOGGER.log(Level.INFO, names);
-    }
-    assertTrue(names.startsWith(
-        "VIN,# of Cells,Battery Capacity,Key,total km,Trip Odo,Trip Rounds,Speed,RPM,RPM Speed,Range,SOC,Climate,Vent Dir,AC Amps,AC Volts,DC Amps,DC Volts,Motor temp,Charger temp,Shifter,Steering Position,Steering Movement,Accelerator,Break Pressed,Break Pedal,Blinker Left,Blinker Right,Door Open,Parking Light,Head Light,High Beam,Cell Temperature,Cell Voltage"));
-        */
+    /*
+     * debug = true; if (debug) { LOGGER.log(Level.INFO, names); }
+     * assertTrue(names.startsWith(
+     * "VIN,# of Cells,Battery Capacity,Key,total km,Trip Odo,Trip Rounds,Speed,RPM,RPM Speed,Range,SOC,Climate,Vent Dir,AC Amps,AC Volts,DC Amps,DC Volts,Motor temp,Charger temp,Shifter,Steering Position,Steering Movement,Accelerator,Break Pressed,Break Pedal,Blinker Left,Blinker Right,Door Open,Parking Light,Head Light,High Beam,Cell Temperature,Cell Voltage"
+     * ));
+     */
   }
 
   @Test
@@ -564,7 +552,8 @@ public class TestELM327 extends TestOBDII {
     }
     long done = System.nanoTime();
     long time = (done - start) / 1000000;
-    final int SHORT_TIME=150; // was 100 but failed on travis with 103 2017-07-06
+    final int SHORT_TIME = 150; // was 100 but failed on travis with 103
+                                // 2017-07-06
     assertTrue("time should be short but is " + time, time < SHORT_TIME);
   }
 

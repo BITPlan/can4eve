@@ -302,7 +302,7 @@ public class Monitor extends Thread implements LogPlayer {
   }
   
   public static void reset() {
-    instance=null;
+    getInstance().setLogFile(null);
   }
 
   @Override
