@@ -27,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -146,6 +147,7 @@ public class TestAppGUI {
 
   /**
    * set the PlotValues
+   * 
    * @param properties
    * @param minutes
    */
@@ -157,7 +159,7 @@ public class TestAppGUI {
     long t = date.getTimeInMillis();
     for (int i = 0; i < minutes; i++) {
       Date timeStamp = new Date(t + (i * ONE_MINUTE_IN_MILLIS));
-      CANProperty SOC=properties.get("SOC");
+      CANProperty SOC = properties.get("SOC");
       CANProperty RR = properties.get("Range");
       SOC.setValue(90 - i * 1.2, timeStamp);
       RR.setValue(90 - i, timeStamp);
@@ -189,7 +191,7 @@ public class TestAppGUI {
     LCDPane lcdPane = new LCDPane(rows, cols, texts);
     for (int row = 0; row < rows; row++) {
       for (int col = 0; col < cols; col++) {
-        lcdPane.getAt(row, col).setValue(Math.random()*200);
+        lcdPane.getAt(row, col).setValue(Math.random() * 200);
       }
     }
     SampleApp.createAndShow("LCDPane", lcdPane, SHOW_TIME);
@@ -311,35 +313,44 @@ public class TestAppGUI {
     WaitableApp.toolkitInit();
     Translator.initialize(Preferences.getInstance().getLanguage().name());
     ChargePane chargePane = new ChargePane();
-    SimpleDoubleProperty sd = new SimpleDoubleProperty();
-    SimpleDoubleProperty rr = new SimpleDoubleProperty();
-    chargePane.getGaugeMap().get("SOC").valueProperty().bind(sd);
-    chargePane.getGaugeMap().get("Range").valueProperty().bind(rr);
-    sd.setValue(100);
+    Map<String, SimpleDoubleProperty> props = new HashMap<String, SimpleDoubleProperty>();
+    String propnames[] = { "SOC", "Range", "ACVolts", "ACAmps", "DCVolts",
+        "DCAmps" };
+    for (String propname : propnames) {
+      SimpleDoubleProperty sd = new SimpleDoubleProperty();
+      props.put(propname, sd);
+      chargePane.getGaugeMap().get(propname).valueProperty().bind(sd);
+    }
     SampleApp sampleApp = new SampleApp("Charge", chargePane);
     sampleApp.show();
     sampleApp.waitOpen();
     int loops = SHOW_TIME / 50 * 2;
     for (int i = 0; i < loops; i++) {
       Thread.sleep(50);
-      double newValue = 100 - (95 * i / loops);
+      double newValue = (95 * i / loops);
       // LOGGER.log(Level.INFO, "new value "+newValue);
-      sd.setValue(newValue);
-      rr.setValue(newValue * 0.9);
+      Platform.runLater(() -> {
+        props.get("SOC").setValue(newValue);
+        props.get("Range").setValue(newValue * 0.9);
+        props.get("ACVolts").setValue(224 + Math.random() * 2);
+        props.get("ACAmps").setValue(14 + Math.random() * 0.2);
+        props.get("DCVolts").setValue(313);
+        props.get("DCAmps").setValue(7.7 + Math.random() * 0.1);
+      });
     }
     sampleApp.close();
   }
-  
+
   @Test
   public void testSimulatorPane() throws Exception {
     WaitableApp.toolkitInit();
     Translator.initialize(Preferences.getInstance().getLanguage().name());
-    SimulatorPane simulatorPane=new SimulatorPane(Monitor.getInstance());
-    ConstrainedGridPane containerPane=new ConstrainedGridPane();
-    containerPane.add(simulatorPane,0, 0);
+    SimulatorPane simulatorPane = new SimulatorPane(Monitor.getInstance());
+    ConstrainedGridPane containerPane = new ConstrainedGridPane();
+    containerPane.add(simulatorPane, 0, 0);
     containerPane.add(new GridPane(), 0, 1);
-    containerPane.fixColumnSizes(0,100);
-    containerPane.fixRowSizes(5, 15,85);
+    containerPane.fixColumnSizes(0, 100);
+    containerPane.fixRowSizes(5, 15, 85);
     SampleApp.createAndShow("simulator", containerPane, SHOW_TIME);
   }
 
@@ -350,21 +361,21 @@ public class TestAppGUI {
     String xTitle = "time";
     String yTitle = "%/km";
     SampleApp.toolkitInit();
-    VehicleGroup vg=VehicleGroup.get("triplet");
+    VehicleGroup vg = VehicleGroup.get("triplet");
     CANPropertyManager cpm = new CANPropertyManager(vg);
-    Map<String, CANProperty> properties = cpm.getCANProperties("SOC","Range");
-    setPlotValues(properties,1);
+    Map<String, CANProperty> properties = cpm.getCANProperties("SOC", "Range");
+    setPlotValues(properties, 1);
     final JFXCanValueHistoryPlot valuePlot = new JFXCanValueHistoryPlot(title,
         xTitle, yTitle, properties);
     SampleApp sampleApp = new SampleApp("SOC/RR", valuePlot.createLineChart());
     sampleApp.show();
     sampleApp.waitOpen();
-    //valuePlot.getLineChart().getData().gt
-    int minutes=35;
+    // valuePlot.getLineChart().getData().gt
+    int minutes = 35;
     for (int i = 2; i <= minutes; i++) {
-      setPlotValues(properties,i);
+      setPlotValues(properties, i);
       valuePlot.update();
-      Thread.sleep(SHOW_TIME*2 / minutes);
+      Thread.sleep(SHOW_TIME * 2 / minutes);
     }
     sampleApp.close();
   }
