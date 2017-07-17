@@ -149,7 +149,6 @@ public class ELM327SimulatorConnection extends ELM327
           filter = command.substring(3).trim();
           outputWithPrompt("OK");
         } else if (command.startsWith("MA")) {
-          // TODO - also use log file here ..
           Monitor monitor = new Monitor();
           monitor.init(this, filter, isHeader(), isLength());
           monitor.startUp();

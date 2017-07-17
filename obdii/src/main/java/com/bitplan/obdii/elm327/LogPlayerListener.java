@@ -30,4 +30,5 @@ import java.util.Date;
 public interface LogPlayerListener {
   public void onOpen();
   public void onProgress(Date currentDate);
+  public void onClose();
 }

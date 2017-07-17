@@ -21,6 +21,7 @@
 package com.bitplan.obdii.elm327;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,6 +41,7 @@ public class LogPlayerImpl implements LogPlayer {
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.elm327");
   
   public static boolean debug=true;
+  boolean open=false;
   
   private File elmLogFile;
   private RandomAccessLogReader logReader;
@@ -126,13 +128,27 @@ public class LogPlayerImpl implements LogPlayer {
       this.logReaderStartDate = logReader.getStartDate();
       this.logReaderEndDate = logReader.getEndDate();
       logReader.open();
+      open=true;
       for (LogPlayerListener listener : this.listeners) {
         listener.onOpen();
       }
     } catch (Exception e) {
       ErrorHandler.handle(e);
     }
-    
+  }
+
+  @Override
+  public boolean isOpen() {
+    return open;
+  }
+
+  @Override
+  public void close() throws Exception {
+    logReader.close();
+    open=false;
+    for (LogPlayerListener listener : this.listeners) {
+      listener.onClose();
+    }
   }
 
 }

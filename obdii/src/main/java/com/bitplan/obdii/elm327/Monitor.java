@@ -57,7 +57,6 @@ public class Monitor extends Thread  {
 
   private List<Pid> pids;
   private Connection con;
-  LogPlayer logPlayer;
 
   /**
    * create a Monitor
@@ -199,7 +198,7 @@ public class Monitor extends Thread  {
   public String getSample() {
     String sample = null;
     String lPidFilter = getPidFilter();
-    if (logPlayer == null) {
+    if (!LogPlayerImpl.getInstance().isOpen()) {
       sample = getSample(lPidFilter);
       if (sample != null) {
         if (length) {
@@ -210,6 +209,7 @@ public class Monitor extends Thread  {
           sample = lPidFilter + " " + sample;
       }
     } else {
+      LogPlayer logPlayer=LogPlayerImpl.getInstance();
       synchronized (logPlayer) { 
         sample=logPlayer.getSample();
       }

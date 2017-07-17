@@ -168,6 +168,11 @@ public class SimulatorPane extends ConstrainedGridPane
     Platform.runLater(()->getFileField().setText(logPlayer.getLogFile().getName()));
     Platform.runLater(() -> updateElapsed());
   }
+  
+  @Override
+  public void onClose() {
+    
+  }
 
   @Override
   public void onProgress(Date currentDate) {
