@@ -21,6 +21,8 @@
 package com.bitplan.obdii.javafx;
 
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.bitplan.obdii.ErrorHandler;
 import com.bitplan.obdii.elm327.LogPlayer;
@@ -42,7 +44,8 @@ import javafx.util.Duration;
  */
 public class SimulatorPane extends ConstrainedGridPane
     implements LogPlayerListener {
-
+  protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.javafx");
+  public static boolean debug=false;
   private Slider slider;
   private TextField fileField;
   private Label playTime;
@@ -51,6 +54,10 @@ public class SimulatorPane extends ConstrainedGridPane
   private Duration elapsed;
   private boolean humanSliderMovement = false;
   private boolean computerChange = false;
+
+  public Duration getDuration() {
+    return duration;
+  }
 
   /**
    * construct me
@@ -64,7 +71,7 @@ public class SimulatorPane extends ConstrainedGridPane
     logPlayer.addListener(this);
     fileField = new TextField();
     fileField.setEditable(false);
-    slider = new Slider();
+    slider=new Slider();
     playTime = new Label();
     this.add(fileField, 0, 0);
     this.add(slider, 1, 0);
@@ -96,6 +103,8 @@ public class SimulatorPane extends ConstrainedGridPane
     long newTime = (long) (this.logPlayer.getStartDate().getTime()
         + slider.getValue()*1000);
     try {
+      if (debug)
+        LOGGER.log(Level.INFO, "new time set");
       logPlayer.moveTo(new Date(newTime));
     } catch (Exception e) {
       // FIXME GUI error handling via interface?
@@ -156,6 +165,7 @@ public class SimulatorPane extends ConstrainedGridPane
     elapsed = Duration.ZERO;
     duration = new Duration(
         logPlayer.getEndDate().getTime() - logPlayer.getStartDate().getTime());
+    Platform.runLater(()->getFileField().setText(logPlayer.getLogFile().getName()));
     Platform.runLater(() -> updateElapsed());
   }
 
@@ -165,9 +175,18 @@ public class SimulatorPane extends ConstrainedGridPane
         currentDate.getTime() - logPlayer.getStartDate().getTime());
     Platform.runLater(() -> updateElapsed());
   }
+  
+  /**
+   * set the elapsed time
+   * @param seconds
+   */
+  public void setElapsed(double seconds) {
+    elapsed=new Duration(seconds*1000);
+    updateElapsed();
+  }
 
   /**
-   * update the Elapsed Valuedd
+   * update the Elapsed Value
    */
   private void updateElapsed() {
     if (!humanSliderMovement) {
@@ -177,6 +196,8 @@ public class SimulatorPane extends ConstrainedGridPane
       computerChange = false;
     }
     String durationText = formatTime(elapsed, duration);
+    if (debug)
+      LOGGER.log(Level.INFO, durationText);
     this.playTime.setText(durationText);
   }
 

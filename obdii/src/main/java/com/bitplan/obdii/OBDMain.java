@@ -41,6 +41,7 @@ import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.obdii.elm327.ElmSimulator;
 import com.bitplan.obdii.elm327.LogPlayer;
+import com.bitplan.obdii.elm327.LogPlayerImpl;
 import com.bitplan.obdii.elm327.Monitor;
 import com.bitplan.obdii.javafx.JavaFXDisplay;
 import com.bitplan.triplet.OBDTriplet;
@@ -363,7 +364,7 @@ public class OBDMain extends Main implements OBDApp {
 
   @Override
   public LogPlayer getLogPlayer() {
-    return Monitor.getInstance();
+    return LogPlayerImpl.getInstance();
   }
 
 }

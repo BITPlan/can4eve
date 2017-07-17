@@ -56,6 +56,7 @@ import com.bitplan.obdii.LabelField;
 import com.bitplan.obdii.OBDApp;
 import com.bitplan.obdii.Preferences;
 import com.bitplan.obdii.Preferences.LangChoice;
+import com.bitplan.obdii.elm327.LogPlayer;
 
 import javafx.application.Platform;
 import javafx.beans.property.Property;
@@ -480,13 +481,14 @@ public class JavaFXDisplay extends WaitableApp
    * @param filePath
    */
   protected void initSimulation(String filePath) {
+    LogPlayer logPlayer=obdApp.getLogPlayer();
     if (simulatorPane==null) {
-      simulatorPane=new SimulatorPane(obdApp.getLogPlayer());
+      simulatorPane=new SimulatorPane(logPlayer);
       root.getChildren().add(1, simulatorPane);
     }       
     File file=new File(filePath);
-    simulatorPane.getFileField().setText(file.getName());
-    obdApp.getLogPlayer().setLogFile(file);
+    logPlayer.setLogFile(file);
+    logPlayer.open();
   }
 
   /**

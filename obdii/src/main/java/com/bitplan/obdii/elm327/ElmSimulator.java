@@ -117,7 +117,7 @@ public class ElmSimulator extends Main {
             ELM327SimulatorConnection elm327SimulatorConnection = new ELM327SimulatorConnection(
                 vehicleGroup);
             if (fileName!=null) {
-              Monitor.getInstance().setLogFile(new File(fileName));
+              LogPlayerImpl.getInstance().setLogFile(new File(fileName));
             }
             Connection con = elm327SimulatorConnection.getCon();
             con.setTitle(String.format("ELM327 Simulator on port %5d",clientSocket.getPort()));

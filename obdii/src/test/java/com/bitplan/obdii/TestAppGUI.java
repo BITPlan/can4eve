@@ -29,6 +29,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
@@ -51,11 +52,11 @@ import com.bitplan.can4eve.states.StopWatch;
 import com.bitplan.can4eve.util.TaskLaunch;
 import com.bitplan.i18n.Translator;
 import com.bitplan.obdii.Preferences.LangChoice;
-import com.bitplan.obdii.elm327.Monitor;
+import com.bitplan.obdii.elm327.LogPlayer;
+import com.bitplan.obdii.elm327.LogPlayerImpl;
 import com.bitplan.obdii.javafx.ChargePane;
 import com.bitplan.obdii.javafx.ClockPane;
 import com.bitplan.obdii.javafx.ClockPane.Watch;
-import com.bitplan.obdii.javafx.ConstrainedGridPane;
 import com.bitplan.obdii.javafx.JFXCanCellStatePlot;
 import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
 import com.bitplan.obdii.javafx.JFXStopWatch;
@@ -345,13 +346,20 @@ public class TestAppGUI {
   public void testSimulatorPane() throws Exception {
     WaitableApp.toolkitInit();
     Translator.initialize(Preferences.getInstance().getLanguage().name());
-    SimulatorPane simulatorPane = new SimulatorPane(Monitor.getInstance());
-    ConstrainedGridPane containerPane = new ConstrainedGridPane();
-    containerPane.add(simulatorPane, 0, 0);
-    containerPane.add(new GridPane(), 0, 1);
-    containerPane.fixColumnSizes(0, 100);
-    containerPane.fixRowSizes(5, 15, 85);
-    SampleApp.createAndShow("simulator", containerPane, SHOW_TIME);
+    LogPlayer logPlayer=new LogPlayerImpl();
+    logPlayer.setLogFile(TestSimulatorLogReader.getTestFile());
+    SimulatorPane simulatorPane = new SimulatorPane(logPlayer);
+    logPlayer.open();
+    SampleApp sampleApp = new SampleApp("simulator", simulatorPane);
+    sampleApp.show();
+    sampleApp.waitOpen();
+    int loops = 50;
+    for (int i = 0; i < loops; i++) {
+      Thread.sleep(SHOW_TIME/loops);
+      double seconds = simulatorPane.getDuration().toSeconds()/loops*i;
+      Platform.runLater(()->simulatorPane.setElapsed(seconds));
+    }
+    sampleApp.close();
   }
 
   @SuppressWarnings("rawtypes")

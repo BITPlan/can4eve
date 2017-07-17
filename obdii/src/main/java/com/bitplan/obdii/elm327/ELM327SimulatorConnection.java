@@ -21,6 +21,8 @@
 package com.bitplan.obdii.elm327;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.elm327.Packet;
@@ -32,16 +34,17 @@ import com.bitplan.elm327.ResponseHandler;
  * @author wf
  *
  */
-public class ELM327SimulatorConnection extends ELM327 implements ResponseHandler {
+public class ELM327SimulatorConnection extends ELM327
+    implements ResponseHandler {
 
   public int delay = 0; // 0,1 millisecs delay
-  public int delaynano=100; 
+  public int delaynano = 100;
   private String filter;
-  //List<Monitor> monitors = new ArrayList<Monitor>();
+  List<Monitor> monitors = new ArrayList<Monitor>();
   private String canprotcode;
   private String canprot;
   private String ecu;
-  
+
   /**
    * constructor
    */
@@ -50,7 +53,7 @@ public class ELM327SimulatorConnection extends ELM327 implements ResponseHandler
     this.getCon().setHandleResponses(true);
     this.getCon().setResponseHandler(this);
   }
-  
+
   public void setHandleResponses(boolean handleResponses) {
     // ignore trying to set e.g. to false
   }
@@ -67,7 +70,7 @@ public class ELM327SimulatorConnection extends ELM327 implements ResponseHandler
       log(" received null response");
       return;
     }
-    String command = response.getData().toUpperCase().trim().replace(" ","");
+    String command = response.getData().toUpperCase().trim().replace(" ", "");
     log(" received command " + command);
     try {
       if (command.startsWith("AT")) {
@@ -83,7 +86,7 @@ public class ELM327SimulatorConnection extends ELM327 implements ResponseHandler
         } else if (command.equals("Z")) {
           log("Resetting OBD");
           filter = null;
-          ecu=null;
+          ecu = null;
           outputWithPrompt("OK");
         } else if (command.startsWith("L")) {
           String option = command.substring(1).trim();
@@ -103,7 +106,7 @@ public class ELM327SimulatorConnection extends ELM327 implements ResponseHandler
             setHeader(false);
           }
           outputWithPrompt("OK");
-        } else if (command.equals("RV")) { 
+        } else if (command.equals("RV")) {
           outputWithPrompt("14.5V");
         } else if (command.equals("D1") || command.equals("D0")) {
           String option = command.substring(1).trim();
@@ -134,23 +137,23 @@ public class ELM327SimulatorConnection extends ELM327 implements ResponseHandler
           outputWithPrompt("OK");
         } else if (command.startsWith("FCSH")) {
           // ECU selection
-          ecu=command.substring(4);
-          log("fcsh selected ecu="+ecu);
+          ecu = command.substring(4);
+          log("fcsh selected ecu=" + ecu);
           outputWithPrompt("OK");
         } else if (command.startsWith("SH")) {
           // ECU selection
-          ecu=command.substring(4);
-          log("sh selected ecu="+ecu);
+          ecu = command.substring(4);
+          log("sh selected ecu=" + ecu);
           outputWithPrompt("OK");
         } else if (command.startsWith("CRA")) {
           filter = command.substring(3).trim();
           outputWithPrompt("OK");
         } else if (command.startsWith("MA")) {
           // TODO - also use log file here ..
-          Monitor monitor = Monitor.getInstance();
+          Monitor monitor = new Monitor();
           monitor.init(this, filter, isHeader(), isLength());
           monitor.startUp();
-          // monitors.add(monitor);
+          monitors.add(monitor);
         } else if (command.equals("DP")) {
           log("Reporting can protocol " + canprotcode + "=" + canprot);
           outputWithPrompt(canprot);
@@ -161,9 +164,8 @@ public class ELM327SimulatorConnection extends ELM327 implements ResponseHandler
            * 14230-4 KWP (5 baud init, 10.4 kbaud) 5 ISO 14230-4 KWP (fast init,
            * 10.4 kbaud) 6 ISO 15765-4 CAN (11 bit ID, 500 kbaud) 7 ISO 15765-4
            * CAN (29 bit ID, 500 kbaud) 8 ISO 15765-4 CAN (11 bit ID, 250 kbaud)
-           * -
-           * used mainly on utility vehicles and Volvo 9 ISO 15765-4 CAN (29 bit
-           * ID, 250 kbaud) - used mainly on utility vehicles and Volvo
+           * - used mainly on utility vehicles and Volvo 9 ISO 15765-4 CAN (29
+           * bit ID, 250 kbaud) - used mainly on utility vehicles and Volvo
            */
           canprotcode = command.substring(2).trim();
           canprot = canprotcode;
@@ -203,24 +205,24 @@ public class ELM327SimulatorConnection extends ELM327 implements ResponseHandler
         } else if (command.equals("STDI")) {
           outputWithPrompt("OBDLink SX r4.2");
         } else if (command.startsWith("STFAP")) {
-          outputWithPrompt("OK");      
-        } else if (command.equals("STM")) {  
-          Monitor monitor = Monitor.getInstance();
+          outputWithPrompt("OK");
+        } else if (command.equals("STM")) {
+          Monitor monitor = new Monitor();
           monitor.init(this, isHeader(), isLength());
           monitor.startUp();
-          // monitors.add(monitor);
+          monitors.add(monitor);
         } else if (command.equals("2101")) {
           // outputWithPrompt("OK");
-          this.getCon().
-          output("762 10 2E 61 01 D2 D2 01 90\n" + 
-              "762 21 00 01 8F 4A 0C D0 4E\n" + 
-              "75A 03 E8 03 E8 64 64 46 45\n" + 
-              "762 22 02 4B 0C 01 5E 01 5D\n" + 
-              "762 23 01 2C 00 FA 00 FA 10\n" + 
-              "762 24 0F 0F 01 BF 01 BF 28\n" + 
-              "762 25 FE 00 00 01 8F 78 7C\n" + 
-              "762 26 64 00 01 00 00 00 00\n" + 
-              "75A 03 E8 03 E8 64 64 46 45\n");
+          this.getCon()
+              .output("762 10 2E 61 01 D2 D2 01 90\n"
+                  + "762 21 00 01 8F 4A 0C D0 4E\n"
+                  + "75A 03 E8 03 E8 64 64 46 45\n"
+                  + "762 22 02 4B 0C 01 5E 01 5D\n"
+                  + "762 23 01 2C 00 FA 00 FA 10\n"
+                  + "762 24 0F 0F 01 BF 01 BF 28\n"
+                  + "762 25 FE 00 00 01 8F 78 7C\n"
+                  + "762 26 64 00 01 00 00 00 00\n"
+                  + "75A 03 E8 03 E8 64 64 46 45\n");
         } else if (command.equals("0100")) {
           outputWithPrompt("SEARCHING ...");
           this.getCon().pause(2000, 0);
@@ -245,20 +247,18 @@ public class ELM327SimulatorConnection extends ELM327 implements ResponseHandler
    * @throws IOException
    */
   protected void outputWithPrompt(String response) throws IOException {
-    this.getCon().output(response+"\r\n>");
+    this.getCon().output(response + "\r\n>");
   }
 
   /**
    * stop the monitors
    */
   protected void stopMonitors() {
-    Monitor.getInstance().halt();
-    /*for (Monitor monitor : monitors) {
+    for (Monitor monitor : monitors) {
       monitor.halt();
       ;
     }
     monitors.clear();
-    */
   }
 
 }

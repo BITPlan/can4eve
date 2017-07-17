@@ -40,9 +40,9 @@ import com.bitplan.elm327.Packet;
  * @author wf
  *
  */
-public class Monitor extends Thread implements LogPlayer {
-  protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii");
-  private List<LogPlayerListener> listeners = new ArrayList<LogPlayerListener>();
+public class Monitor extends Thread  {
+  protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.elm327");
+  
   public static boolean debug = false;
   private String pidFilter = null;
   private ELM327 elm;
@@ -56,15 +56,8 @@ public class Monitor extends Thread implements LogPlayer {
   int cycle = 0;
 
   private List<Pid> pids;
-
   private Connection con;
-
-  private File elmLogFile;
-
-  private RandomAccessLogReader logReader;
-  Date logReaderStartDate;
-  Date logReaderEndDate;
-  private boolean firstStart = true;
+  LogPlayer logPlayer;
 
   /**
    * create a Monitor
@@ -188,64 +181,49 @@ public class Monitor extends Thread implements LogPlayer {
     return sample;
   }
 
+  /**
+   * startUp this thread
+   */
   public void startUp() {
     if (pidFilter != null)
       if (debug)
         LOGGER.log(Level.INFO, "monitoring " + pidFilter);
-    if (elmLogFile != null) {
-      try {
-        logReader = new RandomAccessLogReader(elmLogFile);
-        this.logReaderStartDate = logReader.getStartDate();
-        this.logReaderEndDate = logReader.getEndDate();
-        logReader.open();
-        for (LogPlayerListener listener : this.listeners) {
-          listener.onOpen();
+    start();
+  }
+
+  /**
+   * get the next sample
+   * 
+   * @return
+   */
+  public String getSample() {
+    String sample = null;
+    String lPidFilter = getPidFilter();
+    if (logPlayer == null) {
+      sample = getSample(lPidFilter);
+      if (sample != null) {
+        if (length) {
+          int len = (sample.length() + 1) / 3;
+          sample = "" + len + " " + sample;
         }
-      } catch (Exception e) {
-        ErrorHandler.handle(e);
+        if (header)
+          sample = lPidFilter + " " + sample;
+      }
+    } else {
+      synchronized (logPlayer) { 
+        sample=logPlayer.getSample();
       }
     }
-    if (firstStart)
-      start();
-    else
-      running = true;
+    return sample;
   }
 
   @Override
   public void run() {
-    firstStart = false;
     running = true;
     // loop
     while (running) {
       try {
-        String sample = null;
-        String lPidFilter = getPidFilter();
-        if (elmLogFile == null) {
-          sample = getSample(lPidFilter);
-          if (sample != null) {
-            if (length) {
-              int len = (sample.length() + 1) / 3;
-              sample = "" + len + " " + sample;
-            }
-            if (header)
-              sample = lPidFilter + " " + sample;
-          }
-        } else {
-          try {
-            Packet p = null;
-            synchronized (this) {
-              p = logReader.nextPacket();
-            }
-            if (p != null) {
-              for (LogPlayerListener listener : this.listeners) {
-                listener.onProgress(p.getTime());
-              }
-              sample = p.getData();
-            }
-          } catch (Exception e) {
-            ErrorHandler.handle(e);
-          }
-        }
+        String sample = getSample();
         if (sample != null) {
           if (debug)
             LOGGER.log(Level.INFO, "sample: " + sample);
@@ -266,61 +244,6 @@ public class Monitor extends Thread implements LogPlayer {
 
   public void halt() {
     running = false;
-  }
-
-  @Override
-  public File getLogFile() {
-    return this.elmLogFile;
-  }
-
-  public void setLogFile(File elmLogFile) {
-    this.elmLogFile = elmLogFile;
-  }
-
-  static Monitor instance;
-
-  public static Monitor getInstance() {
-    if (instance == null)
-      instance = new Monitor();
-    return instance;
-  }
-
-  @Override
-  public Date getStartDate() {
-    if (logReaderStartDate != null)
-      return logReaderStartDate;
-    return null;
-  }
-
-  @Override
-  public Date getEndDate() {
-    if (logReaderEndDate != null)
-      return logReaderEndDate;
-    return null;
-  }
-
-  @Override
-  public void addListener(LogPlayerListener listener) {
-    listeners.add(listener);
-  }
-
-  public static void reset() {
-    getInstance().setLogFile(null);
-  }
-
-  @Override
-  public void moveTo(Date date) throws Exception {
-    if (debug) {
-      SimpleDateFormat moveDateFormatter = new SimpleDateFormat(
-          "yyyy-MM-dd hh:mm:ss ");
-      LOGGER.log(Level.INFO,
-          "monitor moveTo " + moveDateFormatter.format(date));
-    }
-    // were are called from a different thread - synchronize with the running
-    // thread
-    synchronized (this) {
-      logReader.moveTo(date);
-    }
   }
 
 }

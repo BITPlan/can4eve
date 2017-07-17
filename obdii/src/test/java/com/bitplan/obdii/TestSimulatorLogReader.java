@@ -39,6 +39,12 @@ import com.bitplan.obdii.elm327.RandomAccessLogReader;
  */
 public class TestSimulatorLogReader {
   public static boolean debug=false;
+  
+  public static File getTestFile() {
+    File logCAN = new File("src/test/data/Triplet_2017-04-17_104141.log.zip");
+    return logCAN;
+  }
+  
   /**
    * get the logReader for the given fileName
    * @param fileName
@@ -67,9 +73,7 @@ public class TestSimulatorLogReader {
     String middleDateIso = LogReader.logDateFormatter
         .format(p.getTime());
     assertEquals("2017-04-17 11:04:43.286",middleDateIso);
-    
   }
-  
  
   @Test
   public void testSimulatorFromElmLogFile() throws Exception {

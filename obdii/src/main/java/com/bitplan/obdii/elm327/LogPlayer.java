@@ -32,7 +32,9 @@ public interface LogPlayer {
   public Date getStartDate();
   public Date getEndDate();
   public void setLogFile(File file);
-  
+  public void open();
   public void addListener(LogPlayerListener listener);
   public void moveTo(Date date) throws Exception;
+  public String getSample();
+
 }

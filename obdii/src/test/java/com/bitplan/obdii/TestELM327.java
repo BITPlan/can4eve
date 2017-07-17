@@ -53,6 +53,7 @@ import com.bitplan.elm327.Packet;
 import com.bitplan.i18n.Translator;
 import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.obdii.elm327.ElmSimulator;
+import com.bitplan.obdii.elm327.LogPlayerImpl;
 import com.bitplan.obdii.elm327.LogReader;
 import com.bitplan.obdii.elm327.Monitor;
 import com.bitplan.obdii.javafx.JavaFXDisplay;
@@ -142,7 +143,8 @@ public class TestELM327 extends TestOBDII {
   public void prepareOBDTriplet(boolean simulated, boolean debug)
       throws Exception {
     if (simulated) {
-      Monitor.reset();
+      // FIXME - proper handling of ElmSimulator files
+      LogPlayerImpl.getInstance().setLogFile(null);
       obdTriplet = new OBDTriplet(getVehicleGroup());
       obdTriplet.setElm327(getSimulation());
       obdTriplet.getElm327().getCon().setResponseHandler(obdTriplet);
@@ -229,11 +231,12 @@ public class TestELM327 extends TestOBDII {
 
   @Test
   public void testOBDTriplet() throws Exception {
-    // debug=true;
-    // PIDResponse.debug=true;
+    /*debug=true;
+    PIDResponse.debug=true;
+    Monitor.debug=true;*/
     this.prepareOBDTriplet(simulated, debug);
     obdTriplet.initOBD();
-    int frameLimit = 2;
+    int frameLimit = 1;
     obdTriplet.readPid(display, byName("BatteryCapacity"));
     obdTriplet.monitorPid(display, byName("Range").getPid(), frameLimit);
     obdTriplet.monitorPid(display, byName("SOC").getPid(), frameLimit);
@@ -246,7 +249,7 @@ public class TestELM327 extends TestOBDII {
      * 3 should be enough but somehow on travis the test then fails let's wait a
      * bit for the results 500, 1000, 1500 msecs is not enough
      */
-    Thread.sleep(2000);
+    Thread.sleep(1000);
     // display.waitClose();
     DoubleValue batteryCapacity = obdTriplet.getValue("BatteryCapacity");
     assertNotNull("the battery capacity should be set",
@@ -254,6 +257,7 @@ public class TestELM327 extends TestOBDII {
     assertEquals(new Double(44.8), batteryCapacity.getValue(), 0.1);
     DoubleValue SOC = obdTriplet.getValue("SOC");
     assertNotNull(SOC);
+    assertNotNull("SOC should not be null",SOC.getValue());
     assertEquals(new Double(100.0), SOC.getValue(), 0.1);
     IntegerValue range = obdTriplet.getValue("Range");
     assertEquals(new Integer(95), range.getValue());
@@ -390,8 +394,6 @@ public class TestELM327 extends TestOBDII {
     // simulated=false;
     // Monitor.debug=true;
     // debug=true;
-    // FIXME - proper handling of ElmSimulator files
-    Monitor.getInstance().setLogFile(null);
     prepareOBDTriplet(simulated, debug);
     obdTriplet.initOBD();
     File logRoot = new File("src/test/data");
