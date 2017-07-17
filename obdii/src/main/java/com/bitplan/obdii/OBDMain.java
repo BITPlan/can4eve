@@ -240,8 +240,9 @@ public class OBDMain extends Main implements OBDApp {
   @Override
   public ELM327 stop() throws Exception {
     // stop monitoring;
-    if (obdTriplet!=null)
+    if (obdTriplet!=null) {
       obdTriplet.setMonitoring(false);
+    }
     if (elm != null) {
       int ltimeout = timeout;
       if (config != null)

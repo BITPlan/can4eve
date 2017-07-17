@@ -20,9 +20,6 @@
  */
 package com.bitplan.obdii.javafx;
 
-
-import static com.bitplan.can4eve.gui.javafx.GenericDialog.showAlert;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;

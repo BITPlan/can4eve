@@ -24,6 +24,11 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.controlsfx.glyphfont.FontAwesome;
+import org.controlsfx.glyphfont.Glyph;
+import org.controlsfx.glyphfont.GlyphFont;
+import org.controlsfx.glyphfont.GlyphFontRegistry;
+
 import com.bitplan.obdii.ErrorHandler;
 import com.bitplan.obdii.elm327.LogPlayer;
 import com.bitplan.obdii.elm327.LogPlayerListener;
@@ -31,6 +36,9 @@ import com.bitplan.obdii.elm327.LogPlayerListener;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
@@ -45,15 +53,21 @@ import javafx.util.Duration;
 public class SimulatorPane extends ConstrainedGridPane
     implements LogPlayerListener {
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.javafx");
-  public static boolean debug=false;
+  public static boolean debug = false;
   private Slider slider;
   private TextField fileField;
   private Label playTime;
+  private Button playButton;
   private LogPlayer logPlayer;
   private Duration duration;
   private Duration elapsed;
   private boolean humanSliderMovement = false;
   private boolean computerChange = false;
+  private GlyphFont fontAwesome;
+  private Glyph pause;
+  private Glyph play;
+  private boolean started = false;
+  private MonitorControl monitorControl;
 
   public Duration getDuration() {
     return duration;
@@ -63,20 +77,27 @@ public class SimulatorPane extends ConstrainedGridPane
    * construct me
    * 
    * @param logPlayer
+   * @param javaFXDisplay
    * @param e
    * @param d
    */
-  public SimulatorPane(LogPlayer logPlayer) {
+  public SimulatorPane(LogPlayer logPlayer, MonitorControl monitorControl) {
+    this.monitorControl = monitorControl;
     this.logPlayer = logPlayer;
     logPlayer.addListener(this);
     fileField = new TextField();
     fileField.setEditable(false);
-    slider=new Slider();
+    slider = new Slider();
     playTime = new Label();
+    fontAwesome = GlyphFontRegistry.font("FontAwesome");
+    pause = fontAwesome.create(FontAwesome.Glyph.PAUSE);
+    play = fontAwesome.create(FontAwesome.Glyph.PLAY);
+    playButton = new Button("", play);
     this.add(fileField, 0, 0);
-    this.add(slider, 1, 0);
-    this.add(playTime, 2, 0);
-    super.fixColumnSizes(5, 25, 60, 15);
+    this.add(playButton, 1, 0);
+    this.add(slider, 2, 0);
+    this.add(playTime, 3, 0);
+    super.fixColumnSizes(5, 25, 5, 55, 15);
     super.fixRowSizes(0, 100);
     slider.valueChangingProperty().addListener(new ChangeListener<Boolean>() {
       @Override
@@ -94,14 +115,36 @@ public class SimulatorPane extends ConstrainedGridPane
         }
       }
     });
+    playButton.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent e) {
+        play();
+      }
+    });
   } // SimulatorPane
+
+  protected void play() {
+    if (this.monitorControl != null) {
+      if (!started) {
+        playButton.setDisable(true);
+        monitorControl.startMonitoring(false);
+      } else {
+        monitorControl.stopMonitoring();
+        started=false;
+        Platform.runLater(() -> {
+          playButton.setGraphic(play);
+        });
+      }
+    }
+
+  }
 
   /**
    * we have got a new SliderNewHumanValue
    */
   protected void onSliderNewHumanValue() {
     long newTime = (long) (this.logPlayer.getStartDate().getTime()
-        + slider.getValue()*1000);
+        + slider.getValue() * 1000);
     try {
       if (debug)
         LOGGER.log(Level.INFO, "new time set");
@@ -141,7 +184,7 @@ public class SimulatorPane extends ConstrainedGridPane
     else if (hours > 0)
       return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     else
-      return String.format("%02d:%02d", hours, minutes, seconds);
+      return String.format("%02d:%02d", minutes, seconds);
   }
 
   /**
@@ -165,13 +208,23 @@ public class SimulatorPane extends ConstrainedGridPane
     elapsed = Duration.ZERO;
     duration = new Duration(
         logPlayer.getEndDate().getTime() - logPlayer.getStartDate().getTime());
-    Platform.runLater(()->getFileField().setText(logPlayer.getLogFile().getName()));
+    Platform.runLater(
+        () -> getFileField().setText(logPlayer.getLogFile().getName()));
     Platform.runLater(() -> updateElapsed());
   }
-  
+
+  @Override
+  public void onStart() {
+    started=true;
+    Platform.runLater(() -> {
+      playButton.setDisable(false);
+      playButton.setGraphic(pause);
+    });
+  }
+
   @Override
   public void onClose() {
-    
+
   }
 
   @Override
@@ -180,13 +233,14 @@ public class SimulatorPane extends ConstrainedGridPane
         currentDate.getTime() - logPlayer.getStartDate().getTime());
     Platform.runLater(() -> updateElapsed());
   }
-  
+
   /**
    * set the elapsed time
+   * 
    * @param seconds
    */
   public void setElapsed(double seconds) {
-    elapsed=new Duration(seconds*1000);
+    elapsed = new Duration(seconds * 1000);
     updateElapsed();
   }
 

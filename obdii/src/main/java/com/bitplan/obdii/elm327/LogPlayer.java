@@ -34,9 +34,9 @@ public interface LogPlayer {
   public void setLogFile(File file);
   public void open();
   public boolean isOpen();
+  public void start();
   public void close() throws Exception;
   public void addListener(LogPlayerListener listener);
   public void moveTo(Date date) throws Exception;
   public String getSample();
-
 }

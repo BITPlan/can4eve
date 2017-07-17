@@ -20,19 +20,13 @@
  */
 package com.bitplan.obdii.elm327;
 
-import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.bitplan.can4eve.ErrorHandler;
 import com.bitplan.can4eve.Pid;
 import com.bitplan.elm327.Connection;
-import com.bitplan.elm327.Packet;
 
 /**
  * simulates MA / Monitor All command
@@ -187,6 +181,9 @@ public class Monitor extends Thread  {
     if (pidFilter != null)
       if (debug)
         LOGGER.log(Level.INFO, "monitoring " + pidFilter);
+    if (LogPlayerImpl.getInstance().isOpen()) {
+      LogPlayerImpl.getInstance().start();
+    }
     start();
   }
 

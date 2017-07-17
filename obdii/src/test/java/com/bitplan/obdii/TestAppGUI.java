@@ -29,10 +29,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
+import org.controlsfx.control.Notifications;
+import org.controlsfx.glyphfont.GlyphFont;
+import org.controlsfx.glyphfont.GlyphFontRegistry;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -91,6 +93,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  * test the descriptive application gui
@@ -348,11 +351,16 @@ public class TestAppGUI {
     Translator.initialize(Preferences.getInstance().getLanguage().name());
     LogPlayer logPlayer=new LogPlayerImpl();
     logPlayer.setLogFile(TestSimulatorLogReader.getTestFile());
-    SimulatorPane simulatorPane = new SimulatorPane(logPlayer);
+    SimulatorPane simulatorPane = new SimulatorPane(logPlayer,null);
     logPlayer.open();
     SampleApp sampleApp = new SampleApp("simulator", simulatorPane);
     sampleApp.show();
     sampleApp.waitOpen();
+    Notifications notification = Notifications.create();
+    notification.hideAfter(new Duration(SHOW_TIME/2));
+    notification.title("simulator running");
+    notification.text("Simulation started");
+    Platform.runLater(()->notification.showInformation());
     int loops = 50;
     for (int i = 0; i < loops; i++) {
       Thread.sleep(SHOW_TIME/loops);

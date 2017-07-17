@@ -21,7 +21,6 @@
 package com.bitplan.obdii.elm327;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -120,7 +119,6 @@ public class LogPlayerImpl implements LogPlayer {
     return instance;
   }
 
-
   @Override
   public void open() {
     try {
@@ -140,6 +138,12 @@ public class LogPlayerImpl implements LogPlayer {
   @Override
   public boolean isOpen() {
     return open;
+  }
+  
+  public void start() {
+    for (LogPlayerListener listener : this.listeners) {
+      listener.onStart();
+    }
   }
 
   @Override

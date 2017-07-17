@@ -91,7 +91,7 @@ import javafx.stage.Stage;
  *
  */
 public class JavaFXDisplay extends WaitableApp
-    implements CANValueDisplay, EventHandler<ActionEvent> {
+    implements MonitorControl,CANValueDisplay, EventHandler<ActionEvent> {
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.javafx");
 
   private static com.bitplan.can4eve.gui.App app;
@@ -483,8 +483,9 @@ public class JavaFXDisplay extends WaitableApp
   protected void initSimulation(String filePath) {
     LogPlayer logPlayer=obdApp.getLogPlayer();
     if (simulatorPane==null) {
-      simulatorPane=new SimulatorPane(logPlayer);
+      simulatorPane=new SimulatorPane(logPlayer,this);
       root.getChildren().add(1, simulatorPane);
+      setMenuItemDisable(I18n.OBD_START_WITH_LOG_MENU_ITEM, true);
     }       
     File file=new File(filePath);
     logPlayer.setLogFile(file);
@@ -608,13 +609,13 @@ public class JavaFXDisplay extends WaitableApp
   /**
    * stop the monitoring
    */
-  private void stopMonitoring() {
+  public void stopMonitoring() {
     if (monitortask == null)
       return;
     // TODO use better symbol e.g. icon
     setWatchDogState("X", I18n.get(I18n.HALTED));
     setMenuItemDisable(I18n.OBD_START_MENU_ITEM, false);
-    setMenuItemDisable(I18n.OBD_START_WITH_LOG_MENU_ITEM, false);
+    setMenuItemDisable(I18n.OBD_START_WITH_LOG_MENU_ITEM, simulatorPane!=null);
     setMenuItemDisable(I18n.OBD_TEST_MENU_ITEM, false);
     setMenuItemDisable(I18n.OBD_HALT_MENU_ITEM, true);
     Task<Void> task = new Task<Void>() {
@@ -636,7 +637,7 @@ public class JavaFXDisplay extends WaitableApp
    * 
    * @param
    */
-  private void startMonitoring(boolean withLog) {
+  public void startMonitoring(boolean withLog) {
     setWatchDogState("⚙", I18n.get(I18n.MONITORING));
     setMenuItemDisable(I18n.OBD_START_MENU_ITEM, true);
     setMenuItemDisable(I18n.OBD_START_WITH_LOG_MENU_ITEM, true);
@@ -649,11 +650,7 @@ public class JavaFXDisplay extends WaitableApp
           obdApp.start(withLog);
         } catch (Exception e) {
           handleException(e);
-          try {
-            obdApp.stop();
-          } catch (Exception e1) {
-            handleException(e1);
-          }
+          stopMonitoring();
         }
         return null;
       }

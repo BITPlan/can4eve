@@ -27,6 +27,21 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
+	<repositories>
+		<repository>
+			<id>jcenter</id>
+			<url>http://jcenter.bintray.com </url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+				<checksumPolicy>warn</checksumPolicy>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+				<checksumPolicy>warn</checksumPolicy>
+			</releases>
+		</repository>
+	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>com.bitplan.can4eve</groupId>
@@ -58,6 +73,12 @@
 			<groupId>org.controlsfx</groupId>
 			<artifactId>controlsfx</artifactId>
 			<version>8.40.12</version>
+		</dependency>
+		<dependency>
+			<groupId>de.jensd</groupId>
+			<artifactId>fontawesomefx-commons</artifactId>
+			<version>8.15</version>
+			<type>pom</type>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/eu.hansolo/Medusa -->
 		<dependency>
@@ -178,24 +199,26 @@
 				</executions>
 			</plugin>
 			<!-- http://kosalads.blogspot.de/2013/04/maven-copy-artifact-in-to-separate.html 
-			https://stackoverflow.com/a/16862404/1497139-->
+				https://stackoverflow.com/a/16862404/1497139 -->
 			<plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <configuration>
-                <tasks>
-                    <copy file="target/com.bitplan.obdii-${project.version}-jar-with-dependencies.jar" tofile="release/can4eve.jar"/>
-                    <copy file="target/can4eve.exe" tofile="release/can4eve.exe"/>
-                </tasks>
-            </configuration>
-            <executions>
-                <execution>
-                    <phase>install</phase>
-                    <goals>
-                        <goal>run</goal>
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<configuration>
+					<tasks>
+						<copy
+							file="target/com.bitplan.obdii-${project.version}-jar-with-dependencies.jar"
+							tofile="release/can4eve.jar" />
+						<copy file="target/can4eve.exe" tofile="release/can4eve.exe" />
+					</tasks>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>install</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 </project>
