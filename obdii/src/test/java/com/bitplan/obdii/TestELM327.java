@@ -55,7 +55,6 @@ import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.obdii.elm327.ElmSimulator;
 import com.bitplan.obdii.elm327.LogReader;
 import com.bitplan.obdii.elm327.Monitor;
-import com.bitplan.obdii.elm327.RandomAccessLogReader;
 import com.bitplan.obdii.javafx.JavaFXDisplay;
 import com.bitplan.triplet.OBDTriplet;
 
@@ -245,9 +244,9 @@ public class TestELM327 extends TestOBDII {
     obdTriplet.monitorPid(display, byName("VIN").getPid(), frameLimit * 3);
     /*
      * 3 should be enoughbut somehow on travis the test then fails let's wait a
-     * bit for the results 500 msecs is not enough
+     * bit for the results 500, 1000, 1500 msecs is not enough
      */
-    Thread.sleep(1500);
+    Thread.sleep(3000);
     // display.waitClose();
     DoubleValue batteryCapacity = obdTriplet.getValue("BatteryCapacity");
     assertNotNull("the battery capacity should be set",
