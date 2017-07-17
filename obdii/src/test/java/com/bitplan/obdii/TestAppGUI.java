@@ -33,8 +33,6 @@ import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.Notifications;
-import org.controlsfx.glyphfont.GlyphFont;
-import org.controlsfx.glyphfont.GlyphFontRegistry;
 import org.junit.Ignore;
 import org.junit.Test;
 

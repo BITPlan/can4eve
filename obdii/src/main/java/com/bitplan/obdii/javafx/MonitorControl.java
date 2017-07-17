@@ -28,4 +28,5 @@ package com.bitplan.obdii.javafx;
 public interface MonitorControl {
   public void startMonitoring(boolean withLog);
   public void stopMonitoring();
+  public void closeSimulation();
 }

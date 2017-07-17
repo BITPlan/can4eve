@@ -470,9 +470,9 @@
 						"shortCut": "O"
 					},
 					{
-						"id": "fileSaveMenuItem",
-						"title": "Save",
-						"shortCut": "S"
+						"id": "fileCloseMenuItem",
+						"title": "Close",
+						"shortCut": "C"
 					},
 					{
 						"id": "fileQuitMenuItem",

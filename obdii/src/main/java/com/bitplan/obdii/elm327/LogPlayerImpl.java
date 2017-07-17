@@ -33,30 +33,32 @@ import com.bitplan.elm327.Packet;
 
 /**
  * implements a LogPlayer
+ * 
  * @author wf
  *
  */
 public class LogPlayerImpl implements LogPlayer {
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.elm327");
-  
-  public static boolean debug=true;
-  boolean open=false;
-  
+
+  public static boolean debug =false;
+  boolean open = false;
+
   private File elmLogFile;
   private RandomAccessLogReader logReader;
   Date logReaderStartDate;
   Date logReaderEndDate;
-  List<LogPlayerListener> listeners=new ArrayList<LogPlayerListener>();
+  List<LogPlayerListener> listeners = new ArrayList<LogPlayerListener>();
+
   @Override
   public File getLogFile() {
     return elmLogFile;
   }
-  
+
   @Override
   public void setLogFile(File file) {
-    this.elmLogFile=file;
+    this.elmLogFile = file;
   }
-  
+
   @Override
   public Date getStartDate() {
     if (logReaderStartDate != null)
@@ -102,19 +104,19 @@ public class LogPlayerImpl implements LogPlayer {
         for (LogPlayerListener listener : this.listeners) {
           listener.onProgress(p.getTime());
         }
-       return p.getData();
+        return p.getData();
       }
     } catch (Exception e) {
       ErrorHandler.handle(e);
     }
     return null;
   }
-  
+
   static LogPlayer instance;
-  
+
   public static LogPlayer getInstance() {
-    if (instance==null) {
-      instance=new LogPlayerImpl();
+    if (instance == null) {
+      instance = new LogPlayerImpl();
     }
     return instance;
   }
@@ -126,7 +128,7 @@ public class LogPlayerImpl implements LogPlayer {
       this.logReaderStartDate = logReader.getStartDate();
       this.logReaderEndDate = logReader.getEndDate();
       logReader.open();
-      open=true;
+      open = true;
       for (LogPlayerListener listener : this.listeners) {
         listener.onOpen();
       }
@@ -139,7 +141,7 @@ public class LogPlayerImpl implements LogPlayer {
   public boolean isOpen() {
     return open;
   }
-  
+
   public void start() {
     for (LogPlayerListener listener : this.listeners) {
       listener.onStart();
@@ -148,10 +150,13 @@ public class LogPlayerImpl implements LogPlayer {
 
   @Override
   public void close() throws Exception {
-    logReader.close();
-    open=false;
-    for (LogPlayerListener listener : this.listeners) {
-      listener.onClose();
+    if (logReader != null) {
+      logReader.close();
+      logReader=null;
+      open = false;
+      for (LogPlayerListener listener : this.listeners) {
+        listener.onClose();
+      }
     }
   }
 

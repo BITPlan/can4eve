@@ -25,8 +25,6 @@ import java.util.Map;
 import com.bitplan.can4eve.gui.Form;
 
 import javafx.geometry.Insets;
-import javafx.scene.control.Control;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 

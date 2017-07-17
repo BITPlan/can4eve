@@ -45,6 +45,7 @@ public class I18n {
   public static final String LANGUAGE_CHANGED="language_changed"; //You have selected english as your new language
   public static final String FILE_MENU="fileMenu"; //File
   public static final String FILE_SAVE_MENU_ITEM="fileSaveMenuItem"; //Save
+  public static final String FILE_CLOSE_MENU_ITEM="fileCloseMenuItem"; //Close
   public static final String FILE_OPEN_MENU_ITEM="fileOpenMenuItem"; //Open
   public static final String FILE_QUIT_MENU_ITEM="fileQuitMenuItem"; //Quit
   public static final String VEHICLE_MENU_ITEM="vehicleMenuItem"; //Details

@@ -32,6 +32,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.controlsfx.control.Notifications;
 import org.controlsfx.control.StatusBar;
 
 import com.bitplan.can4eve.CANValue;
@@ -83,6 +84,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  * Java FX Display
@@ -91,7 +93,7 @@ import javafx.stage.Stage;
  *
  */
 public class JavaFXDisplay extends WaitableApp
-    implements MonitorControl,CANValueDisplay, EventHandler<ActionEvent> {
+    implements MonitorControl, CANValueDisplay, EventHandler<ActionEvent> {
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.javafx");
 
   private static com.bitplan.can4eve.gui.App app;
@@ -122,13 +124,13 @@ public class JavaFXDisplay extends WaitableApp
 
   protected ChargePane chargePane;
   protected OdoPane odoPane;
-  
+
   private Tab chargeTab;
   private Scene scene;
 
   private Tab odoTab;
 
-  private Map<String, GenericPanel> panels=new HashMap<String,GenericPanel>();
+  private Map<String, GenericPanel> panels = new HashMap<String, GenericPanel>();
 
   private TabPane activeTabPane;
 
@@ -180,7 +182,8 @@ public class JavaFXDisplay extends WaitableApp
   }
 
   /**
-   * @param menuBar the menuBar to set
+   * @param menuBar
+   *          the menuBar to set
    */
   public void setMenuBar(MenuBar menuBar) {
     this.menuBar = menuBar;
@@ -215,7 +218,22 @@ public class JavaFXDisplay extends WaitableApp
     } else {
       Platform.runLater(() -> control.setValue(value));
     }
+  }
 
+  /**
+   * show the given notification
+   * 
+   * @param title
+   * @param text
+   * @param milliSecs
+   */
+  public static void showNotification(String title, String text,
+      int milliSecs) {
+    Notifications notification = Notifications.create();
+    notification.hideAfter(new Duration(milliSecs));
+    notification.title(title);
+    notification.text(text);
+    Platform.runLater(() -> notification.showInformation());
   }
 
   /**
@@ -244,15 +262,16 @@ public class JavaFXDisplay extends WaitableApp
 
   /**
    * remove or add the menuBar
+   * 
    * @param scene
-   * @param pMenuBar 
+   * @param pMenuBar
    */
   public void toggleMenuBar(Scene scene, MenuBar pMenuBar) {
     ObservableList<Node> rootChilds = ((VBox) scene.getRoot()).getChildren();
     if (rootChilds.contains(pMenuBar))
       rootChilds.remove(pMenuBar);
     else
-      rootChilds.add(0,pMenuBar);
+      rootChilds.add(0, pMenuBar);
   }
 
   /**
@@ -272,7 +291,7 @@ public class JavaFXDisplay extends WaitableApp
         menu.getItems().add(menuItem);
       }
     }
-    toggleMenuBar(scene,getMenuBar());
+    toggleMenuBar(scene, getMenuBar());
   }
 
   @Override
@@ -289,8 +308,7 @@ public class JavaFXDisplay extends WaitableApp
       screenPercent = 100;
     }
     Rectangle2D sceneBounds = super.getSceneBounds(screenPercent, 2, 3);
-    scene = new Scene(root, sceneBounds.getWidth(),
-        sceneBounds.getHeight());
+    scene = new Scene(root, sceneBounds.getWidth(), sceneBounds.getHeight());
     scene.setFill(Color.OLDLACE);
     createMenuBar(scene);
     stage.setScene(scene);
@@ -341,7 +359,7 @@ public class JavaFXDisplay extends WaitableApp
         Tab tab = new Tab();
         tab.setText(form.getTitle());
         GenericPanel panel = new GenericPanel(stage, form);
-        panels.put(form.getId(),panel);
+        panels.put(form.getId(), panel);
         controls.putAll(panel.controls);
         tab.setContent(panel);
         tabPane.getTabs().add(tab);
@@ -375,27 +393,30 @@ public class JavaFXDisplay extends WaitableApp
   protected void bind(Property value, ObservableValue valueTo) {
     if (valueTo != null) {
       if (value.isBound())
-        LOGGER.log(Level.WARNING,"value is already bound");
+        LOGGER.log(Level.WARNING, "value is already bound");
       value.bind(valueTo);
     }
   }
-  
+
   public Void saveScreenShot() {
     Preferences prefs;
     try {
       prefs = Preferences.getInstance();
-      if (prefs!=null) {
-        File screenShotDirectory=new File(prefs.getScreenShotDirectory());
-        if (!screenShotDirectory.exists()&& !screenShotDirectory.isDirectory()) {
+      if (prefs != null) {
+        File screenShotDirectory = new File(prefs.getScreenShotDirectory());
+        if (!screenShotDirectory.exists()
+            && !screenShotDirectory.isDirectory()) {
           screenShotDirectory.mkdirs();
         }
-        String tabName=this.getActiveTab().getText();
+        String tabName = this.getActiveTab().getText();
         SimpleDateFormat lIsoDateFormatter = new SimpleDateFormat(
             "yyyy-MM-dd_HHmmss");
-        String screenShotName=String.format("screenShot_%s_%s.png",
-        tabName,lIsoDateFormatter.format(new Date()));
-        File screenShotFile=new File(screenShotDirectory,screenShotName);
+        String screenShotName = String.format("screenShot_%s_%s.png", tabName,
+            lIsoDateFormatter.format(new Date()));
+        File screenShotFile = new File(screenShotDirectory, screenShotName);
         WaitableApp.saveAsPng(stage, screenShotFile);
+        showNotification(I18n.get(I18n.SCREEN_SHOT), screenShotFile.getName(),
+            2000);
       }
     } catch (Exception e1) {
       handleException(e1);
@@ -408,7 +429,7 @@ public class JavaFXDisplay extends WaitableApp
    */
   public void setupSpecial(TabPane tabPane) {
     clockPane = new ClockPane();
-    odoPane=new OdoPane();
+    odoPane = new OdoPane();
     odoTab = addTab(tabPane, 0, I18n.get(I18n.ODO_INFO), odoPane);
     dashBoardPane = new DashBoardPane(9200);
     chargePane = new ChargePane();
@@ -417,36 +438,13 @@ public class JavaFXDisplay extends WaitableApp
     clockTab = addTab(tabPane, 0, I18n.get(I18n.CLOCKS), clockPane);
     // disable menu items
     this.setMenuItemDisable(I18n.OBD_HALT_MENU_ITEM, true);
-    this.setMenuItemDisable(I18n.FILE_SAVE_MENU_ITEM, true);
-
-    // add menu actions
-    // File / Open
-    MenuItem fileOpenMenuItem = getMenuItem(I18n.FILE_OPEN_MENU_ITEM);
-    fileOpenMenuItem.setOnAction(new EventHandler<ActionEvent>() {
-
-      @Override
-      public void handle(final ActionEvent e) {
-        FileChooser fileChooser = new FileChooser();
-        if (Config.getInstance() != null)
-          try {
-            fileChooser.setInitialDirectory(
-                new File(Preferences.getInstance().getLogDirectory()));
-          } catch (Exception e1) {
-            // TODO Auto-generated catch block
-
-          }
-        File file = fileChooser.showOpenDialog(stage);
-        if (file != null) {
-          initSimulation(file.getAbsolutePath());
-        } // if
-      } // handle
-    });
+    this.setMenuItemDisable(I18n.FILE_CLOSE_MENU_ITEM, true);
     
     Button screenShotButton = new Button(I18n.get(I18n.SCREEN_SHOT));
     screenShotButton.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
-        Platform.runLater(()->saveScreenShot());
+        Platform.runLater(() -> saveScreenShot());
       }
     });
 
@@ -459,15 +457,15 @@ public class JavaFXDisplay extends WaitableApp
             ? I18n.get(I18n.PART_SCREEN) : I18n.get(I18n.FULL_SCREEN));
       }
     });
-    
+
     Button hideMenuButton = new Button(I18n.get(I18n.HIDE_MENU));
     hideMenuButton.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
-        toggleMenuBar(scene,getMenuBar());
+        toggleMenuBar(scene, getMenuBar());
         getMenuBar().setVisible(!getMenuBar().isVisible());
-        hideMenuButton.setText(getMenuBar().isVisible() ? I18n.get(I18n.HIDE_MENU)
-            : I18n.get(I18n.SHOW_MENU));
+        hideMenuButton.setText(getMenuBar().isVisible()
+            ? I18n.get(I18n.HIDE_MENU) : I18n.get(I18n.SHOW_MENU));
       }
     });
     statusBar.getRightItems().add(screenShotButton);
@@ -478,18 +476,29 @@ public class JavaFXDisplay extends WaitableApp
 
   /**
    * initialize the simulation
+   * 
    * @param filePath
    */
   protected void initSimulation(String filePath) {
-    LogPlayer logPlayer=obdApp.getLogPlayer();
-    if (simulatorPane==null) {
-      simulatorPane=new SimulatorPane(logPlayer,this);
+    LogPlayer logPlayer = obdApp.getLogPlayer();
+    if (simulatorPane == null) {
+      simulatorPane = new SimulatorPane(logPlayer, this);
       root.getChildren().add(1, simulatorPane);
       setMenuItemDisable(I18n.OBD_START_WITH_LOG_MENU_ITEM, true);
-    }       
-    File file=new File(filePath);
+      setMenuItemDisable(I18n.FILE_CLOSE_MENU_ITEM,false);
+    }
+    File file = new File(filePath);
     logPlayer.setLogFile(file);
     logPlayer.open();
+  }
+  
+  @Override
+  public void closeSimulation() {
+    if (simulatorPane!=null) {
+      root.getChildren().remove(simulatorPane);
+      simulatorPane=null;
+    }
+    
   }
 
   /**
@@ -543,8 +552,10 @@ public class JavaFXDisplay extends WaitableApp
           notImplemented(I18n.FILE_SAVE_MENU_ITEM);
           break;
         case I18n.FILE_OPEN_MENU_ITEM:
-          // this can't happen
-          notImplemented(I18n.FILE_OPEN_MENU_ITEM);
+          fileOpen();
+          break;
+        case I18n.FILE_CLOSE_MENU_ITEM:
+          fileClose();
           break;
         case I18n.FILE_QUIT_MENU_ITEM:
           close();
@@ -606,6 +617,30 @@ public class JavaFXDisplay extends WaitableApp
     }
   }
 
+  private void fileClose() {
+    try {
+      obdApp.getLogPlayer().close();
+      this.setMenuItemDisable(I18n.FILE_CLOSE_MENU_ITEM, true);
+    } catch (Exception e) {
+      this.handleException(e);
+    }
+  }
+
+  private void fileOpen() {
+    FileChooser fileChooser = new FileChooser();
+    if (Config.getInstance() != null)
+      try {
+        fileChooser.setInitialDirectory(
+            new File(Preferences.getInstance().getLogDirectory()));
+      } catch (Exception e1) {
+        // Ignore
+      }
+    File file = fileChooser.showOpenDialog(stage);
+    if (file != null) {
+      initSimulation(file.getAbsolutePath());
+    } // if
+  }
+
   /**
    * stop the monitoring
    */
@@ -615,7 +650,8 @@ public class JavaFXDisplay extends WaitableApp
     // TODO use better symbol e.g. icon
     setWatchDogState("X", I18n.get(I18n.HALTED));
     setMenuItemDisable(I18n.OBD_START_MENU_ITEM, false);
-    setMenuItemDisable(I18n.OBD_START_WITH_LOG_MENU_ITEM, simulatorPane!=null);
+    setMenuItemDisable(I18n.OBD_START_WITH_LOG_MENU_ITEM,
+        simulatorPane != null);
     setMenuItemDisable(I18n.OBD_TEST_MENU_ITEM, false);
     setMenuItemDisable(I18n.OBD_HALT_MENU_ITEM, true);
     Task<Void> task = new Task<Void>() {

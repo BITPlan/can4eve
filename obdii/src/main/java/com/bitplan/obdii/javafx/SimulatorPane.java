@@ -123,21 +123,7 @@ public class SimulatorPane extends ConstrainedGridPane
     });
   } // SimulatorPane
 
-  protected void play() {
-    if (this.monitorControl != null) {
-      if (!started) {
-        playButton.setDisable(true);
-        monitorControl.startMonitoring(false);
-      } else {
-        monitorControl.stopMonitoring();
-        started=false;
-        Platform.runLater(() -> {
-          playButton.setGraphic(play);
-        });
-      }
-    }
-
-  }
+ 
 
   /**
    * we have got a new SliderNewHumanValue
@@ -215,7 +201,6 @@ public class SimulatorPane extends ConstrainedGridPane
 
   @Override
   public void onStart() {
-    started=true;
     Platform.runLater(() -> {
       playButton.setDisable(false);
       playButton.setGraphic(pause);
@@ -224,6 +209,28 @@ public class SimulatorPane extends ConstrainedGridPane
 
   @Override
   public void onClose() {
+    if (started)
+      monitorControl.stopMonitoring();
+    monitorControl.closeSimulation();
+  }
+  
+  /**
+   * playButton has bin pressed
+   */
+  protected void play() {
+    if (this.monitorControl != null) {
+      if (!started) {
+        playButton.setDisable(true);
+        monitorControl.startMonitoring(false);
+        started=true;
+      } else {
+        monitorControl.stopMonitoring();
+        started = false;
+        Platform.runLater(() -> {
+          playButton.setGraphic(play);
+        });
+      }
+    }
 
   }
 
