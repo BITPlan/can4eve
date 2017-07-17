@@ -45,6 +45,7 @@ import com.bitplan.elm327.Packet;
  */
 public class RandomAccessLogReader {
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.elm327");
+  public static boolean debug = false;
   private ZipFile zipFile;
 
   File elmLogFile;
@@ -97,7 +98,7 @@ public class RandomAccessLogReader {
     open();
     PacketSeek ps = getPacket(this.raf, start);
     close();
-    if (ps!=null)
+    if (ps != null)
       return ps.packet;
     return null;
   }
@@ -120,11 +121,17 @@ public class RandomAccessLogReader {
     raf.close();
   }
 
+  /**
+   * seek result
+   * 
+   * @author wf
+   *
+   */
   public class PacketSeek {
     long pos;
     Packet packet;
   }
-  
+
   /**
    * get a line from the Random Access file
    * 
@@ -134,7 +141,8 @@ public class RandomAccessLogReader {
    * @return
    * @throws Exception
    */
-  public PacketSeek getPacket(RandomAccessFile raf, long start) throws Exception {
+  public PacketSeek getPacket(RandomAccessFile raf, long start)
+      throws Exception {
     // we want an even start if 2 bytes per char
     // long pos = (start % 2 == 0) ? start : start - 1;
     long pos = start;
@@ -181,8 +189,8 @@ public class RandomAccessLogReader {
    * @throws Exception
    */
   public Packet nextPacket() throws Exception {
-    PacketSeek ps=nextPacket(raf);
-    if (ps.packet!=null)
+    PacketSeek ps = nextPacket(raf);
+    if (ps!=null && ps.packet != null)
       return ps.packet;
     return null;
   }
@@ -197,16 +205,16 @@ public class RandomAccessLogReader {
   public PacketSeek nextPacket(RandomAccessFile raf) throws Exception {
     String line = null;
     int count = 0;
-    long pos=raf.getFilePointer();
+    long pos = raf.getFilePointer();
     while ((line = raf.readLine()) != null) {
       Packet p = LogReader.lineAsPacket(line);
       if (p != null) {
-        PacketSeek packetSeek=new PacketSeek();
-        packetSeek.packet=p;
-        packetSeek.pos=pos;
+        PacketSeek packetSeek = new PacketSeek();
+        packetSeek.packet = p;
+        packetSeek.pos = pos;
         return packetSeek;
       }
-      pos=raf.getFilePointer();
+      pos = raf.getFilePointer();
       if (checkCountLimit("line", count++, false))
         return null;
     } // while
@@ -215,25 +223,30 @@ public class RandomAccessLogReader {
 
   /**
    * binary seek a packet
-   * @param raf - the random access file
-   * @param high 
-   * @param low 
-   * @param from - from where to seek
-   * @param l - to where to seek
+   * 
+   * @param raf
+   *          - the random access file
+   * @param high
+   * @param low
+   * @param from
+   *          - from where to seek
+   * @param l
+   *          - to where to seek
    * @return - the seek result
    * @throws Exception
    */
-  public PacketSeek binarySeek(RandomAccessFile raf, PacketSeek low, PacketSeek high, long from, long to) throws Exception {
-    if (to-from<200)
+  public PacketSeek binarySeek(RandomAccessFile raf, PacketSeek low,
+      PacketSeek high, long from, long to) throws Exception {
+    if (to - from < 200)
       return low;
-    if (high!=null) {
+    if (high != null) {
       return high;
     }
-    from=(from+to)/2;
-    PacketSeek newlow=this.getPacket(raf,from);
-    if (newlow==null)
+    from = (from + to) / 2;
+    PacketSeek newlow = this.getPacket(raf, from);
+    if (newlow == null)
       return low;
-    return binarySeek(raf,newlow,high,from,to);
+    return binarySeek(raf, newlow, high, from, to);
   }
 
   /**
@@ -261,27 +274,26 @@ public class RandomAccessLogReader {
   public Date getEndDate() throws Exception {
     if (endDate == null) {
       RandomAccessFile raf = new RandomAccessFile(elmLogFile, "r");
-      low = this.getPacket(raf,0);
-      high = this.getPacket(raf,raf.length());
-      high = this.binarySeek(raf, low, high,0,raf.length());
+      low = this.getPacket(raf, 0);
+      high = this.getPacket(raf, raf.length());
+      high = this.binarySeek(raf, low, high, 0, raf.length());
       endDate = high.packet.getTime();
       raf.close();
     }
     return endDate;
   }
-  
+
   /**
    * get the given isoRange
+   * 
    * @param from
    * @param to
    * @return the isoRange
    */
   public String getIsoRange(Date from, Date to) {
-    String fromDateIso = LogReader.logDateFormatter
-        .format(from);
-    String toDateIso = LogReader.logDateFormatter
-        .format(to);
-    return fromDateIso+" - "+toDateIso;
+    String fromDateIso = LogReader.logDateFormatter.format(from);
+    String toDateIso = LogReader.logDateFormatter.format(to);
+    return fromDateIso + " - " + toDateIso;
   }
 
   /**
@@ -301,8 +313,10 @@ public class RandomAccessLogReader {
     if (timeStamp.after(endDate)) {
       timeStamp = endDate;
     }
-    dateSeek(timeStamp, low, high,0);
+    dateSeek(timeStamp, low, high, 0);
   }
+
+  public static final int MAX_SEEK_STEPS = 30;
 
   /**
    * seek the given timestamp in the range
@@ -314,24 +328,28 @@ public class RandomAccessLogReader {
    * @param to
    * @throws Exception
    */
-  private void dateSeek(Date timeStamp, PacketSeek low,PacketSeek high,
+  private void dateSeek(Date timeStamp, PacketSeek low, PacketSeek high,
       int steps) throws Exception {
-    if (steps > 30) {
-      LOGGER.log(Level.SEVERE,
-          "dateSeek recursion not ended after 30 steps - forcing end of recursion");
+    double diffMSecs = (high.packet.getTime().getTime()
+        - low.packet.getTime().getTime()) / 1000;
+    if (diffMSecs < 1.0)
+      return;
+    if (steps > MAX_SEEK_STEPS) {
+      if (debug) {
+        String msg = String.format("%3d: %5.1f secs %s", steps, diffMSecs,
+            this.getIsoRange(low.packet.getTime(), high.packet.getTime()));
+        LOGGER.log(Level.INFO, msg);
+      }
       return;
     }
-    double diffMSecs=(high.packet.getTime().getTime()-low.packet.getTime().getTime())/1000;
-    if (diffMSecs<0.5)
-      return;
-    LOGGER.log(Level.INFO, String.format("%3d: %5.1f secs %s",steps,diffMSecs,this.getIsoRange(low.packet.getTime(),high.packet.getTime())));
-    if (high.packet.getTime().after(timeStamp) && low.packet.getTime().before(timeStamp)) {
-      long middle = (low.pos+high.pos)/ 2;
+    if (high.packet.getTime().after(timeStamp)
+        && low.packet.getTime().before(timeStamp)) {
+      long middle = (low.pos + high.pos) / 2;
       PacketSeek middleP = getPacket(raf, middle);
       if (middleP.packet.getTime().after(timeStamp)) {
         dateSeek(timeStamp, low, middleP, ++steps);
       } else {
-        dateSeek(timeStamp, middleP,  high,++steps);
+        dateSeek(timeStamp, middleP, high, ++steps);
       }
     }
   }

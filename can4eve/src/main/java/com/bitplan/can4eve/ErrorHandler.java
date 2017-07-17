@@ -20,7 +20,6 @@
  */
 package com.bitplan.can4eve;
 
-
 /**
  *
  * Copyright 2017 Wolfgang Fahl https://github.com/WolfgangFahl/
@@ -39,11 +38,10 @@ package com.bitplan.can4eve;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-  import java.io.PrintWriter;
-  import java.io.StringWriter;
-  import java.util.IllegalFormatConversionException;
-  import java.util.logging.Level;
-  import java.util.logging.Logger;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * simple ErrorHandler

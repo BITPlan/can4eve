@@ -22,6 +22,7 @@ package com.bitplan.obdii.javafx;
 
 import java.util.Date;
 
+import com.bitplan.obdii.ErrorHandler;
 import com.bitplan.obdii.elm327.LogPlayer;
 import com.bitplan.obdii.elm327.LogPlayerListener;
 
@@ -72,30 +73,34 @@ public class SimulatorPane extends ConstrainedGridPane
     super.fixRowSizes(0, 100);
     slider.valueChangingProperty().addListener(new ChangeListener<Boolean>() {
       @Override
-      public void changed(
-              ObservableValue<? extends Boolean> observableValue,
-              Boolean wasChanging,
-              Boolean changing) {
-            if (changing) {
-              if (!computerChange) {
-                humanSliderMovement=true;
-              }
-            } else {
-              if (humanSliderMovement) {
-                onSliderNewHumanValue();
-                humanSliderMovement=false;
-              }
-            }
+      public void changed(ObservableValue<? extends Boolean> observableValue,
+          Boolean wasChanging, Boolean changing) {
+        if (changing) {
+          if (!computerChange) {
+            humanSliderMovement = true;
           }
+        } else {
+          if (humanSliderMovement) {
+            onSliderNewHumanValue();
+            humanSliderMovement = false;
+          }
+        }
+      }
     });
-  } // SimulatorPane 
-  
+  } // SimulatorPane
+
   /**
    * we have got a new SliderNewHumanValue
    */
   protected void onSliderNewHumanValue() {
-    long newTime=(long) (this.logPlayer.getStartDate().getTime()+slider.getValue());
-    logPlayer.moveTo(new Date(newTime));
+    long newTime = (long) (this.logPlayer.getStartDate().getTime()
+        + slider.getValue()*1000);
+    try {
+      logPlayer.moveTo(new Date(newTime));
+    } catch (Exception e) {
+      // FIXME GUI error handling via interface?
+      ErrorHandler.handle(e);
+    }
   }
 
   /**
@@ -106,26 +111,28 @@ public class SimulatorPane extends ConstrainedGridPane
   public TextField getFileField() {
     return fileField;
   }
-  
+
   /**
    * get the time string for a given number of seconds
    * https://stackoverflow.com/a/6118983/1497139
+   * 
    * @param totalSecs
    * @return the timestring
    */
   public String getTimeString(double totalSecsDouble) {
-    long totalSecs=(long) Math.floor(totalSecsDouble);
-    long days = totalSecs/86400;
+    long totalSecs = (long) Math.floor(totalSecsDouble);
+    long days = totalSecs / 86400;
     long hours = totalSecs / 3600;
     long minutes = (totalSecs % 3600) / 60;
     long seconds = totalSecs % 60;
     // TODO i18n
-    if (days>0)
-      return String.format("%2d d %02d:%02d:%02d", days,hours, minutes, seconds);    
-    else if (hours>0)
-     return String.format("%02d:%02d:%02d", hours, minutes, seconds);
-    else
+    if (days > 0)
+      return String.format("%2d d %02d:%02d:%02d", days, hours, minutes,
+          seconds);
+    else if (hours > 0)
       return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    else
+      return String.format("%02d:%02d", hours, minutes, seconds);
   }
 
   /**
@@ -137,7 +144,8 @@ public class SimulatorPane extends ConstrainedGridPane
    */
   public String formatTime(Duration elapsed, Duration duration) {
     if (duration.greaterThan(Duration.ZERO)) {
-      return getTimeString(elapsed.toSeconds())+"/"+getTimeString(duration.toSeconds());
+      return getTimeString(elapsed.toSeconds()) + "/"
+          + getTimeString(duration.toSeconds());
     } else {
       return "";
     }

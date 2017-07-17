@@ -232,7 +232,10 @@ public class Monitor extends Thread implements LogPlayer {
           }
         } else {
           try {
-            Packet p = logReader.nextPacket();
+            Packet p = null;
+            synchronized (this) {
+              p = logReader.nextPacket();
+            }
             if (p != null) {
               for (LogPlayerListener listener : this.listeners) {
                 listener.onProgress(p.getTime());
@@ -300,17 +303,24 @@ public class Monitor extends Thread implements LogPlayer {
   public void addListener(LogPlayerListener listener) {
     listeners.add(listener);
   }
-  
+
   public static void reset() {
     getInstance().setLogFile(null);
   }
 
   @Override
-  public void moveTo(Date date) {
-    SimpleDateFormat moveDateFormatter = new SimpleDateFormat(
-        "yyyy-MM-dd hh:mm:ss ");
-    LOGGER.log(Level.INFO, "monitor moveTo "+moveDateFormatter.format(date));
-    
+  public void moveTo(Date date) throws Exception {
+    if (debug) {
+      SimpleDateFormat moveDateFormatter = new SimpleDateFormat(
+          "yyyy-MM-dd hh:mm:ss ");
+      LOGGER.log(Level.INFO,
+          "monitor moveTo " + moveDateFormatter.format(date));
+    }
+    // were are called from a different thread - synchronize with the running
+    // thread
+    synchronized (this) {
+      logReader.moveTo(date);
+    }
   }
 
 }

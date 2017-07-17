@@ -56,8 +56,6 @@ import com.bitplan.obdii.LabelField;
 import com.bitplan.obdii.OBDApp;
 import com.bitplan.obdii.Preferences;
 import com.bitplan.obdii.Preferences.LangChoice;
-import com.bitplan.obdii.elm327.ElmSimulator;
-import com.bitplan.obdii.elm327.Monitor;
 
 import javafx.application.Platform;
 import javafx.beans.property.Property;
