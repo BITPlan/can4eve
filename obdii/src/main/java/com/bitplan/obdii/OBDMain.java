@@ -367,4 +367,9 @@ public class OBDMain extends Main implements OBDApp {
     return LogPlayerImpl.getInstance();
   }
 
+  @Override
+  public Vehicle getVehicle() {
+    return Vehicle.getInstance();
+  }
+
 }

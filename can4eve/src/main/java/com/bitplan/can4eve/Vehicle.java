@@ -43,8 +43,8 @@ public class Vehicle implements JsonAble{
   String group;
   String picture;
   Integer mmPerRound;
-  Integer maxSpeed; // km/h
-  Integer maxRPM; // round per minute
+  Integer maxSpeed=135; // km/h
+  Integer maxRPM=9060; // rounds per minute
   public String getNickName() {
     return nickName;
   }
@@ -142,12 +142,16 @@ public class Vehicle implements JsonAble{
    * @return - the instance
    * @throws Exception
    */
-  public static Vehicle getInstance() throws Exception {
+  public static Vehicle getInstance()  {
     if (instance == null) {
       File jsonFile = JsonAble.getJsonFile(Vehicle.class.getSimpleName());
       JsonManager<Vehicle> jmVehicle = new JsonManagerImpl<Vehicle>(
           Vehicle.class);
-      instance = jmVehicle.fromJsonFile(jsonFile);
+      try {
+        instance = jmVehicle.fromJsonFile(jsonFile);
+      } catch (Exception e) {
+        ErrorHandler.handle(e);
+      }
       if (instance == null)
         instance = new Vehicle();
     }

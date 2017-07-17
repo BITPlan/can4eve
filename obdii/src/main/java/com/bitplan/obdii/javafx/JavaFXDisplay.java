@@ -431,7 +431,7 @@ public class JavaFXDisplay extends WaitableApp
     clockPane = new ClockPane();
     odoPane = new OdoPane();
     odoTab = addTab(tabPane, 0, I18n.get(I18n.ODO_INFO), odoPane);
-    dashBoardPane = new DashBoardPane(9200);
+    dashBoardPane = new DashBoardPane(obdApp.getVehicle());
     chargePane = new ChargePane();
     chargeTab = addTab(tabPane, 0, I18n.get(I18n.SOC), chargePane);
     dashBoardTab = addTab(tabPane, 0, I18n.get(I18n.DASH_BOARD), dashBoardPane);

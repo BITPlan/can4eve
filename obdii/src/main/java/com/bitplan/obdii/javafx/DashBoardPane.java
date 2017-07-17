@@ -20,6 +20,7 @@
  */
 package com.bitplan.obdii.javafx;
 
+import com.bitplan.can4eve.Vehicle;
 import com.bitplan.obdii.I18n;
 
 import eu.hansolo.LcdGauge;
@@ -74,17 +75,16 @@ public class DashBoardPane extends ConstrainedGridPane  {
    * create a DashBoardPane
    * @param maxValue
    */
-  public DashBoardPane(int maxValue) {
+  public DashBoardPane(Vehicle vehicle) {
     //LcdFont lcdFont=LcdFont.STANDARD;
     //LcdDesign lcdDesign=LcdDesign.SECTIONS;
-   
     
     rpmGauge = GaugeBuilder.create().minValue(0)
         // FIXME use value from Vehicle definition
-        .maxValue(maxValue).tickLabelDecimals(0).decimals(0).autoScale(true)
+        .maxValue(vehicle.getMaxRPM()).tickLabelDecimals(0).decimals(0).autoScale(true)
         .animated(true).shadowsEnabled(true).sectionsVisible(true)
         // FIXME use value form Vehicle definition
-        .sections(new Section(maxValue * 80 / 100, maxValue,
+        .sections(new Section(vehicle.getMaxRPM() * 80 / 100, vehicle.getMaxRPM(),
             Color.rgb(195, 139, 102, 0.5)))
         .majorTickMarkColor(Color.rgb(241, 161, 71))
         // .minorTickMarkColor(Color.rgb(0, 175, 248))
@@ -95,10 +95,10 @@ public class DashBoardPane extends ConstrainedGridPane  {
         .unit(I18n.get(I18n.RPM)).lcdDesign(LcdGauge.lcdDesign).lcdVisible(true)
         .lcdFont(LcdGauge.lcdFont).needleSize(NeedleSize.THICK).build();
     
-    rpmSpeedGauge = GaugeBuilder.create().minValue(0).maxValue(140)
+    rpmSpeedGauge = GaugeBuilder.create().minValue(0).maxValue(vehicle.getMaxSpeed())
         .tickLabelDecimals(0).decimals(1).autoScale(true).animated(true)
         .shadowsEnabled(true).sectionsVisible(true)
-        .sections(new Section(100, 140, Color.rgb(195, 139, 102, 0.5)))
+        .sections(new Section(vehicle.getMaxSpeed()/1.4, vehicle.getMaxSpeed(), Color.rgb(195, 139, 102, 0.5)))
         .majorTickMarkColor(Color.rgb(241, 161, 71))
         // .minorTickMarkColor(Color.rgb(0, 175, 248))
         .majorTickMarkType(TickMarkType.TRAPEZOID)
