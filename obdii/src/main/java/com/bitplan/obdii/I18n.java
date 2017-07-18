@@ -28,6 +28,8 @@ import com.bitplan.i18n.Translator;
  *
  */
 public class I18n {
+  public static final String ADDRESS_ALREADY_IN_USE="addressAlreadyInUse"; //Could not start Simulator - did you start the software twice?
+  public static final String HELP="help"; //Help
   public static final String INVALID_CONFIGURATION="invalid_configuration";
   public static final String NEWLANGUAGE_RESTART="newlanguage_restart"; //To get the full effect of the change a restart of the application is necessary!
   public static final String APP_NAME="appName"; //can4eve
