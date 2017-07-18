@@ -25,11 +25,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import com.bitplan.can4eve.CANInfo;
@@ -38,13 +33,10 @@ import com.bitplan.can4eve.CANValue.CANRawValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.CANValue.IntegerValue;
 import com.bitplan.can4eve.CANValue.StringValue;
-import com.bitplan.can4eve.ErrorHandler;
 import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.Vehicle;
 import com.bitplan.can4eve.VehicleGroup;
-import com.bitplan.can4eve.gui.javafx.CANProperty;
 import com.bitplan.csv.CSVUtil;
-import com.bitplan.elm327.Connection;
 import com.bitplan.obdii.CANValueDisplay;
 import com.bitplan.obdii.JFXTripletDisplay;
 import com.bitplan.obdii.OBDHandler;
@@ -55,7 +47,6 @@ import com.bitplan.triplet.ShifterPosition.ShiftPosition;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 
 /**
  * Handles OBD II communication for the Triplet cars Mitsubishi i-Miev, Peugeot
@@ -73,6 +64,7 @@ public class OBDTriplet extends OBDHandler {
   StringValue ventDirection;
 
   ShifterPositionValue shifterPositionValue;
+
   /**
    * construct me
    */
@@ -148,14 +140,15 @@ public class OBDTriplet extends OBDHandler {
     VIN = new VINValue(getCanInfo("VIN"));
     cpm.addCanProperty(VIN, new SimpleStringProperty());
     VIN2 = new VINValue(getCanInfo("VIN"));
-    cpm.addCanProperty(VIN2,new SimpleStringProperty());
+    cpm.addCanProperty(VIN2, new SimpleStringProperty());
     climateValue = new ClimateValue(getCanInfo("Climate"));
     cpm.addCanProperty(climateValue, new SimpleObjectProperty<Climate>());
     ventDirection = new StringValue(getCanInfo("VentDirection"));
     cpm.addCanProperty(ventDirection, new SimpleStringProperty());
     shifterPositionValue = new ShifterPositionValue(
         getCanInfo("ShifterPosition"));
-    cpm.addCanProperty(shifterPositionValue, new SimpleObjectProperty<ShifterPosition>());
+    cpm.addCanProperty(shifterPositionValue,
+        new SimpleObjectProperty<ShifterPosition>());
   }
 
   /**
@@ -434,7 +427,6 @@ public class OBDTriplet extends OBDHandler {
   int dateUpdateCount = 0;
   int fpsUpdateCount = 0;
   Date latestUpdate;
-  Date displayStart;
   long latestTotalUpdates;
   private Date latestHistoryUpdate;
 
@@ -514,120 +506,6 @@ public class OBDTriplet extends OBDHandler {
   }
 
   /**
-   * start the STM Monitoring
-   * 
-   * @param display
-   *          - a display to use (if any)
-   * @param canValues
-   *          - the canValues to monitor
-   * @param limit
-   *          - the maximum number of frames to read
-   * @throws Exception
-   */
-  public void pidMonitor(CANValueDisplay display, List<CANValue<?>> canValues,
-      long frameLimit) throws Exception {
-    ELM327 lelm = this.getElm327();
-    Connection lcon = lelm.getCon();
-    // VehicleGroup vg = this.getElm327().getVehicleGroup();
-    // FIXME - china clone battery handling?
-    // make available on button/menu?
-    if (lelm.isSTN()) {
-      for (CANValue<?> canValue : canValues) {
-        if (canValue.isRead()) {
-          Pid pid = canValue.canInfo.getPid();
-          // handle ISO-TP based frames differently by direct reading
-          if (pid.getIsoTp() != null)
-            this.readPid(display, pid);
-        }
-      }
-    }
-    this.initOBD();
-    if (lelm.isSTN()) {
-      this.setSTMFilter(canValues);
-      lcon.output("STM");
-      setMonitoring(true);
-      // regularly update the display
-      this.startDisplay(display);
-      for (long i = 0; i < frameLimit && isMonitoring(); i++) {
-        lcon.getResponse(null);
-      }
-      this.stopDisplay();
-    } else {
-      if (debug)
-        LOGGER.log(Level.INFO, "super slow China clone loop entered");
-      // oh the China loop ... how ugly and slow ...
-      int pidFrameLimit = 3;
-      if (debug)
-        LOGGER.log(Level.INFO,
-            String.format("%3d PIDs to loop thru", canValues.size()));
-      setMonitoring(true);
-      for (long i = 0; i < frameLimit
-          && isMonitoring(); i += pidFrameLimit * canValues.size()) {
-        for (CANValue<?> canValue : canValues) {
-          if (canValue.isRead()) {
-            Pid pid = canValue.canInfo.getPid();
-            // handle ISO-TP based frames differently by direct reading
-            if (pid.getIsoTp() == null) {
-              if (debug) {
-                LOGGER.log(Level.INFO, String.format("pid %s (%s) ",
-                    pid.getPid(), canValue.canInfo.getTitle()));
-              }
-              super.monitorPid(display, pid.getPid(), pidFrameLimit);
-            } // if not ISO-TP
-          } // is isREAD
-        } // for canValues
-      } // for frames
-    } // non STN
-    if (debug) {
-      LOGGER.log(Level.INFO, "PidMonitoring finished");
-    }
-  }
-
-  /**
-   * start the display
-   * 
-   * @param display
-   */
-  public void startDisplay(final CANValueDisplay display) {
-    if (displayexecutor != null) {
-      throw new IllegalStateException("display already started!");
-    }
-    // TODO make this more systematic
-    if (display instanceof JFXTripletDisplay) {
-      Map<String, ObservableValue<?>> canBindings = new HashMap<String, ObservableValue<?>>();
-      // fixed bindings
-      canBindings.put("msecs", this.msecsRunningProperty);
-      canBindings.put("vehicleState", this.vehicleStateProperty);
-      // property based bindings
-      for (CANProperty<?, ?> canProperty : cpm.getCanProperties().values()) {
-        String name = canProperty.getName();
-        if (debug)
-          LOGGER.log(Level.INFO, "binding " + name);
-        canBindings.put(name, canProperty.getProperty());
-        canBindings.put(name + "-max", canProperty.getMax());
-        canBindings.put(name + "-avg", canProperty.getAvg());
-      }
-      ((JFXTripletDisplay) display).bind(canBindings);
-    }
-    displayexecutor = Executors.newSingleThreadScheduledExecutor();
-    displayStart = new Date();
-    displayTask = new Runnable() {
-      public void run() {
-        // Invoke method(s) to do the work
-        try {
-          showValues(display);
-        } catch (Exception e) {
-          ErrorHandler.handle(e);
-        }
-      }
-    };
-    // FIXME make configurable
-    // update meter value every 200 milliseconds
-    displayexecutor.scheduleAtFixedRate(displayTask, 0, 200,
-        TimeUnit.MILLISECONDS);
-  }
-
-  /**
    * create a csv report according to
    * https://github.com/BITPlan/can4eve/issues/4 and put the result into the
    * given CSV file
@@ -639,8 +517,7 @@ public class OBDTriplet extends OBDHandler {
    *          - the maximum number of frame to read
    * @throws Exception
    */
-  public void report(CANValueDisplay display, String reportFileName,
-      long frameLimit) throws Exception {
+  public void report(String reportFileName, long frameLimit) throws Exception {
     File reportFile = new File(reportFileName);
     PrintWriter printWriter = new PrintWriter(reportFile);
     this.getElm327().identify();
@@ -649,22 +526,11 @@ public class OBDTriplet extends OBDHandler {
     String elmCSV = this.getElm327().asCSV();
     printWriter.write(elmCSV);
     printWriter.flush();
-    // do we have an STM capable chip?
-    if (this.getElm327().isSTN()) {
-      this.pidMonitor(display, canValues, frameLimit);
-      for (CANValue<?> canValue : cpm.getCANValues()) {
-        if (debug)
-          LOGGER.log(Level.INFO, "canValue:" + canValue.canInfo.getTitle());
-        printWriter.write(canValue.asCSV());
-      }
-    } else {
-      // slow version
-      for (CANValue<?> canValue : cpm.getCANValues()) {
-        CANInfo canInfo = canValue.canInfo;
-        monitorPid(display, canInfo.getPid().getPid(),
-            canInfo.getMaxIndex() + 5);
-        printWriter.write(canValue.asCSV());
-      }
+    this.pidMonitor(canValues, frameLimit);
+    for (CANValue<?> canValue : cpm.getCANValues()) {
+      if (debug)
+        LOGGER.log(Level.INFO, "canValue:" + canValue.canInfo.getTitle());
+      printWriter.write(canValue.asCSV());
     }
     printWriter.close();
   }

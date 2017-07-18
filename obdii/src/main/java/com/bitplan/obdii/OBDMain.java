@@ -250,14 +250,16 @@ public class OBDMain extends Main implements OBDApp {
         }
       }
     }
+    obdTriplet.startDisplay(canValueDisplay);
     if (this.reportFileName != null) {
-      obdTriplet.report(canValueDisplay, reportFileName, frameLimit);
+      obdTriplet.report(reportFileName, frameLimit);
     } else if (pid != null)
-      obdTriplet.checkPid(canValueDisplay, pid, frameLimit);
+      obdTriplet.checkPid(pid, frameLimit);
     else {
-      obdTriplet.pidMonitor(canValueDisplay, obdTriplet.getCANValues(),
+      obdTriplet.pidMonitor(obdTriplet.getCANValues(),
           frameLimit);
     }
+    obdTriplet.startDisplay(canValueDisplay);
     return elm;
   }
 

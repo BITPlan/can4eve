@@ -91,11 +91,12 @@ public class JFXTripletDisplay extends JavaFXDisplay {
     String activePanelTitle = activeTab.getText();
     if ("history".equals(activePanelTitle)) {
       Map<String, CANProperty> plotValues = new HashMap<String, CANProperty>();
-      plotValues.put(xValue.getName(),xValue);
-      plotValues.put(yValue.getName(),yValue);
+      plotValues.put(xValue.getName(), xValue);
+      plotValues.put(yValue.getName(), yValue);
       final JFXCanValueHistoryPlot valuePlot = new JFXCanValueHistoryPlot(title,
           xTitle, yTitle, plotValues);
-      Platform.runLater(() -> updateTab(activeTab, valuePlot.createLineChart()));
+      Platform
+          .runLater(() -> updateTab(activeTab, valuePlot.createLineChart()));
     }
   }
 
@@ -115,22 +116,20 @@ public class JFXTripletDisplay extends JavaFXDisplay {
       // TODO - use some kind of id to clearly identify plotable stuff
       // Cell Temp / Cell Voltage e.g. might not work in i18n
       if (title.startsWith(activePanelTitle)) {
-        if (canValue.getUpdateCount() % canValue.canInfo.getMaxIndex() == 0) {
-          if ("Cell Temp".equals(activePanelTitle)) {
-            DoubleValue cellTemperature = (DoubleValue) canValue;
-            final JFXCanCellStatePlot cellStatePlot = new JFXCanCellStatePlot(
-                "cellTemperature", "cell", "Temperature", cellTemperature, 1.0,
-                0.5);
-            Platform.runLater(
-                () -> updateTab(activeTab, cellStatePlot.getBarChart()));
-          }
-          if ("Cell Voltage".equals(activePanelTitle)) {
-            DoubleValue cellVoltage = (DoubleValue) canValue;
-            final JFXCanCellStatePlot cellStatePlot = new JFXCanCellStatePlot(
-                "cellVoltage", "cell", "Voltage", cellVoltage, 0.01, 0.1);
-            Platform.runLater(
-                () -> updateTab(activeTab, cellStatePlot.getBarChart()));
-          }
+        if ("Cell Temp".equals(activePanelTitle)) {
+          DoubleValue cellTemperature = (DoubleValue) canValue;
+          final JFXCanCellStatePlot cellStatePlot = new JFXCanCellStatePlot(
+              "cellTemperature", "cell", "Temperature", cellTemperature, 1.0,
+              0.5);
+          Platform.runLater(
+              () -> updateTab(activeTab, cellStatePlot.getBarChart()));
+        }
+        if ("Cell Voltage".equals(activePanelTitle)) {
+          DoubleValue cellVoltage = (DoubleValue) canValue;
+          final JFXCanCellStatePlot cellStatePlot = new JFXCanCellStatePlot(
+              "cellVoltage", "cell", "Voltage", cellVoltage, 0.01, 0.1);
+          Platform.runLater(
+              () -> updateTab(activeTab, cellStatePlot.getBarChart()));
         }
       }
     } else {
@@ -146,7 +145,7 @@ public class JFXTripletDisplay extends JavaFXDisplay {
   public void bind(Map<String, ObservableValue<?>> canProperties) {
     this.canProperties = canProperties;
     // bind values by name
-    CANValuePane[] canValuePanes = { chargePane,odoPane };
+    CANValuePane[] canValuePanes = { chargePane, odoPane };
     for (CANValuePane canValuePane : canValuePanes) {
       if (canValuePane != null) {
         for (Entry<String, Gauge> gaugeEntry : canValuePane.getGaugeMap()

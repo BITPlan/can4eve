@@ -227,20 +227,17 @@ public abstract class AbstractOBDHandler implements ResponseHandler {
    * @param frameLimit
    * @throws Exception
    */
-  public void checkPid(CANValueDisplay display, String pidId, long frameLimit)
+  public void checkPid(String pidId, long frameLimit)
       throws Exception {
     Pid pid=this.getElm327().getVehicleGroup().getPidById(pidId);
     if (pid==null)
       throw new IllegalArgumentException("unknown pid "+pidId);
     if (pid.getIsoTp()!=null) {
-      this.readPid(display, pid);
+      this.readPid(pid);
       Thread.sleep(this.getElm327().getCon().getTimeout()*5);
-      if (display != null)
-        showValues(display);
     }
     else
-      this.monitorPid(display, pidId, frameLimit);
-    
+      this.monitorPid(pidId, frameLimit);
   }
 
   /**
@@ -252,7 +249,7 @@ public abstract class AbstractOBDHandler implements ResponseHandler {
    * @param timeOut
    * @throws Exception
    */
-  public void monitorPid(CANValueDisplay display, String pid, long frameLimit)
+  public void monitorPid(String pid, long frameLimit)
       throws Exception {
     ELM327 lelm = getElm327();
     lelm.sendCommand("", ".*", true);
@@ -262,20 +259,15 @@ public abstract class AbstractOBDHandler implements ResponseHandler {
     for (long i = 0; i < frameLimit; i++) {
       // FIXME - Pseudo request - timeout handling ...
       lelm.getCon().getResponse(null);
-      if (display != null) {
-        // FIXME all values on every request?
-        showValues(display);
-      }
     }
   }
   
   /**
    * read the given Pid
-   * @param display
    * @param pid
    * @throws Exception 
    */
-  public void readPid(CANValueDisplay display,Pid pid) throws Exception{
+  public void readPid(Pid pid) throws Exception{
     if (pid.getIsoTp()==null) {
       throw new IllegalArgumentException("Pid "+pid.getName()+"("+pid.getPid()+") is not a ISO-TP frame pid it can not be read with readPid");
     }

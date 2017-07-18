@@ -221,7 +221,7 @@ public class TestELM327 extends TestOBDII {
     this.prepareOBDTriplet(simulated, debug);
     obdTriplet.initOBD();
     // obdTriplet.setDebug(true);
-    obdTriplet.readPid(display, byName("BatteryCapacity"));
+    obdTriplet.readPid(byName("BatteryCapacity"));
     Thread.sleep(200);
     DoubleValue batteryCapacity = obdTriplet.getValue("BatteryCapacity");
     assertNotNull("the battery capacity should be set",
@@ -237,14 +237,14 @@ public class TestELM327 extends TestOBDII {
     this.prepareOBDTriplet(simulated, debug);
     obdTriplet.initOBD();
     int frameLimit = 1;
-    obdTriplet.readPid(display, byName("BatteryCapacity"));
-    obdTriplet.monitorPid(display, byName("Range").getPid(), frameLimit);
-    obdTriplet.monitorPid(display, byName("SOC").getPid(), frameLimit);
-    obdTriplet.monitorPid(display, byName("Steering_Wheel").getPid(),
+    obdTriplet.readPid(byName("BatteryCapacity"));
+    obdTriplet.monitorPid(byName("Range").getPid(), frameLimit);
+    obdTriplet.monitorPid(byName("SOC").getPid(), frameLimit);
+    obdTriplet.monitorPid(byName("Steering_Wheel").getPid(),
         frameLimit);
-    obdTriplet.monitorPid(display, byName("Odometer_Speed").getPid(),
+    obdTriplet.monitorPid(byName("Odometer_Speed").getPid(),
         frameLimit);
-    obdTriplet.monitorPid(display, byName("VIN").getPid(), frameLimit * 3);
+    obdTriplet.monitorPid(byName("VIN").getPid(), frameLimit * 3);
     /*
      * 3 should be enough but somehow on travis the test then fails let's wait a
      * bit for the results 500, 1000, 1500 msecs is not enough
@@ -305,8 +305,7 @@ public class TestELM327 extends TestOBDII {
     for (int i = 0; i < loops; i++) {
       int count = 0;
       for (CANValue<?> canvalue : canvalues) {
-        obdTriplet.monitorPid(display,
-            canvalue.canInfo.getPid().getPid().toString(), frameLimit);
+        obdTriplet.monitorPid(canvalue.canInfo.getPid().getPid().toString(), frameLimit);
         if (debug)
           obdTriplet.showValues(display);
         if (count++ > max)
@@ -403,7 +402,7 @@ public class TestELM327 extends TestOBDII {
       logFile = obdTriplet.logResponses(logRoot, "testLogs");
     }
     int frameLimit = 150;
-    obdTriplet.pidMonitor(display, obdTriplet.getCANValues(), frameLimit);
+    obdTriplet.pidMonitor(obdTriplet.getCANValues(), frameLimit);
     obdTriplet.close();
     Platform.runLater(() -> display.close());
     if (!simulated) {
@@ -652,7 +651,7 @@ public class TestELM327 extends TestOBDII {
     obdTriplet.initOBD();
     File reportFile = File.createTempFile("report", ".csv");
     // obdTriplet.debug=true;
-    obdTriplet.report(display, reportFile.getAbsolutePath(), 45);
+    obdTriplet.report(reportFile.getAbsolutePath(), 45);
     assertTrue(reportFile.exists());
     List<String> lines = FileUtils.readLines(reportFile, "UTF-8");
     // debug=true;
