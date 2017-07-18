@@ -123,8 +123,6 @@ public class SimulatorPane extends ConstrainedGridPane
     });
   } // SimulatorPane
 
- 
-
   /**
    * we have got a new SliderNewHumanValue
    */
@@ -194,9 +192,31 @@ public class SimulatorPane extends ConstrainedGridPane
     elapsed = Duration.ZERO;
     duration = new Duration(
         logPlayer.getEndDate().getTime() - logPlayer.getStartDate().getTime());
-    Platform.runLater(
-        () -> getFileField().setText(logPlayer.getLogFile().getName()));
-    Platform.runLater(() -> updateElapsed());
+    Platform.runLater(() -> {
+      setTickMarks();
+      getFileField().setText(logPlayer.getLogFile().getName());
+      updateElapsed();
+    });
+  }
+
+  private void setTickMarks() {
+    double secs = duration.toSeconds();
+    // up to 24 minutes
+    if (secs<24*60) {
+      // max 24 ticks 1  minute each
+      slider.setMajorTickUnit(60);
+    } else if (secs<24*300) {
+      // max 24 ticks 5 minutes each
+      slider.setMajorTickUnit(300);
+      slider.setMinorTickCount(5);
+    } else{
+      // normally we'll end up with less than 10 tick 1 hour each
+      // but could be a full day 24 ticks
+      slider.setMajorTickUnit(3600);
+      slider.setMinorTickCount(4);
+    }
+    slider.setShowTickMarks(true);
+    
   }
 
   @Override
@@ -213,7 +233,7 @@ public class SimulatorPane extends ConstrainedGridPane
       monitorControl.stopMonitoring();
     monitorControl.closeSimulation();
   }
-  
+
   /**
    * playButton has bin pressed
    */
@@ -222,7 +242,7 @@ public class SimulatorPane extends ConstrainedGridPane
       if (!started) {
         playButton.setDisable(true);
         monitorControl.startMonitoring(false);
-        started=true;
+        started = true;
       } else {
         monitorControl.stopMonitoring();
         started = false;

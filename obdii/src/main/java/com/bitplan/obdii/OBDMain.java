@@ -125,6 +125,30 @@ public class OBDMain extends Main implements OBDApp {
   public String getUrl() {
     return "http://can4eve.bitplan.com";
   };
+  
+  @Override
+  public String getSupportEMail() {
+    return "support@bitplan.com";
+  }
+
+  @Override
+  public String getSupportEMailPreamble() {
+    String javaversion = System.getProperty("java.version");
+    String os = System.getProperty("os.name");
+    return String.format(
+        "Dear can4eve support\nI am using version %s of the software on %s using Java %s\n",
+        VERSION, os, javaversion);
+  }
+  
+  @Override
+  public LogPlayer getLogPlayer() {
+    return LogPlayerImpl.getInstance();
+  }
+
+  @Override
+  public Vehicle getVehicle() {
+    return Vehicle.getInstance();
+  }
 
   /**
    * construct me
@@ -346,30 +370,6 @@ public class OBDMain extends Main implements OBDApp {
       //LOGGER.log(Level.INFO, "System exit " + result);
       System.exit(result);
     }
-  }
-
-  @Override
-  public String getSupportEMail() {
-    return "support@bitplan.com";
-  }
-
-  @Override
-  public String getSupportEMailPreamble() {
-    String javaversion = System.getProperty("java.version");
-    String os = System.getProperty("os.name");
-    return String.format(
-        "Dear can4eve support\nI am using version %s of the software on %s using Java %s\n",
-        VERSION, os, javaversion);
-  }
-
-  @Override
-  public LogPlayer getLogPlayer() {
-    return LogPlayerImpl.getInstance();
-  }
-
-  @Override
-  public Vehicle getVehicle() {
-    return Vehicle.getInstance();
   }
 
 }
