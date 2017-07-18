@@ -516,7 +516,7 @@ public class TestELM327 extends TestOBDII {
 
   @Test
   public void testCanValues() throws Exception {
-    OBDTriplet lOBDTriplet = new OBDTriplet(getVehicleGroup());
+    OBDHandler lOBDTriplet = new OBDTriplet(getVehicleGroup());
     List<CANValue<?>> canValues = lOBDTriplet.getCANValues();
     assertEquals(34, canValues.size());
 
@@ -535,7 +535,7 @@ public class TestELM327 extends TestOBDII {
 
   @Test
   public void testPidFromPid() throws Exception {
-    OBDTriplet lOBDTriplet = new OBDTriplet(getVehicleGroup());
+    OBDHandler lOBDTriplet = new OBDTriplet(getVehicleGroup());
     List<CANValue<?>> canValues = lOBDTriplet.getCANValues();
     long start = System.nanoTime();
     for (int i = 0; i < 100; i++) {
@@ -559,7 +559,7 @@ public class TestELM327 extends TestOBDII {
   @Test
   public void testGetPidList() throws Exception {
     // debug=true;
-    OBDTriplet lOBDTriplet = new OBDTriplet(getVehicleGroup());
+    OBDHandler lOBDTriplet = new OBDTriplet(getVehicleGroup());
     List<CANValue<?>> canValues = lOBDTriplet.getCANValues();
     assertEquals(34, canValues.size());
     for (CANValue<?> canValue : canValues) {

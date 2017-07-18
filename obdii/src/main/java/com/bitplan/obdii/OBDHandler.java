@@ -23,16 +23,24 @@ package com.bitplan.obdii;
 import java.io.File;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
 
 import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.Pid;
+import com.bitplan.can4eve.Vehicle;
+import com.bitplan.can4eve.Vehicle.State;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.CANValue.CANRawValue;
 import com.bitplan.can4eve.gui.javafx.CANProperty;
 import com.bitplan.can4eve.gui.javafx.CANPropertyManager;
 import com.bitplan.obdii.elm327.ELM327;
+
+import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleObjectProperty;
 
 /**
  * OBD Handler
@@ -45,6 +53,10 @@ public abstract class OBDHandler extends AbstractOBDHandler{
   protected Integer mmPerRound = 261; // FIXME do we need a default here?
   protected boolean withHistory = true;
   protected boolean monitoring;
+  protected ScheduledExecutorService displayexecutor;
+  protected Runnable displayTask;
+  protected SimpleLongProperty msecsRunningProperty;
+  protected SimpleObjectProperty<Vehicle.State> vehicleStateProperty;
 
   public boolean isWithHistory() {
     return withHistory;
@@ -184,6 +196,41 @@ public abstract class OBDHandler extends AbstractOBDHandler{
       } // for
     } // if
     return canValues;
+  }
+
+  /**
+   * set the ELM327 to filter the given canValues in preparation of an AT STM
+   * command
+   * 
+   * @param canValues
+   * @throws Exception
+   */
+  public void setSTMFilter(List<CANValue<?>> canValues) throws Exception {
+    ELM327 lelm = this.getElm327();
+    Set<String> pidFilter = new HashSet<String>();
+    for (CANValue<?> canValue : canValues) {
+      if (canValue.isRead()) {
+        Pid pid = canValue.canInfo.getPid();
+        if (pid.getIsoTp() == null) {
+          pidFilter.add(pid.getPid());
+        }
+      }
+    }
+    lelm.sendCommand("STFAC", "OK"); // FIXME - not understood by ELM327 v2.1
+    // device
+    for (String pidId : pidFilter) {
+      lelm.sendCommand("STFAP " + pidId + ",FFF", "OK");
+    }
+  }
+
+  /**
+   * stop the display
+   */
+  protected void stopDisplay() {
+    if (displayexecutor != null) {
+      displayexecutor.shutdown();
+      displayexecutor = null;
+    }
   }
 
 }

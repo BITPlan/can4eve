@@ -26,12 +26,9 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -76,10 +73,6 @@ public class OBDTriplet extends OBDHandler {
   StringValue ventDirection;
 
   ShifterPositionValue shifterPositionValue;
-  private SimpleLongProperty msecsRunningProperty;
-  // vehicleState
-  private SimpleObjectProperty<Vehicle.State> vehicleStateProperty;
-
   /**
    * construct me
    */
@@ -443,9 +436,6 @@ public class OBDTriplet extends OBDHandler {
   Date latestUpdate;
   Date displayStart;
   long latestTotalUpdates;
-  private ScheduledExecutorService displayexecutor;
-  private Runnable displayTask;
-
   private Date latestHistoryUpdate;
 
   /**
@@ -521,31 +511,6 @@ public class OBDTriplet extends OBDHandler {
    */
   public void setUpCanValues() throws Exception {
     canValues = getCANValues();
-  }
-
-  /**
-   * set the ELM327 to filter the given canValues in preparation of an AT STM
-   * command
-   * 
-   * @param canValues
-   * @throws Exception
-   */
-  public void setSTMFilter(List<CANValue<?>> canValues) throws Exception {
-    ELM327 lelm = this.getElm327();
-    Set<String> pidFilter = new HashSet<String>();
-    for (CANValue<?> canValue : canValues) {
-      if (canValue.isRead()) {
-        Pid pid = canValue.canInfo.getPid();
-        if (pid.getIsoTp() == null) {
-          pidFilter.add(pid.getPid());
-        }
-      }
-    }
-    lelm.sendCommand("STFAC", "OK"); // FIXME - not understood by ELM327 v2.1
-    // device
-    for (String pidId : pidFilter) {
-      lelm.sendCommand("STFAP " + pidId + ",FFF", "OK");
-    }
   }
 
   /**
@@ -660,16 +625,6 @@ public class OBDTriplet extends OBDHandler {
     // update meter value every 200 milliseconds
     displayexecutor.scheduleAtFixedRate(displayTask, 0, 200,
         TimeUnit.MILLISECONDS);
-  }
-
-  /**
-   * stop the display
-   */
-  private void stopDisplay() {
-    if (displayexecutor != null) {
-      displayexecutor.shutdown();
-      displayexecutor = null;
-    }
   }
 
   /**
