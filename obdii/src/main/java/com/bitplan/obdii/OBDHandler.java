@@ -313,8 +313,9 @@ public abstract class OBDHandler extends AbstractOBDHandler {
    * start the display
    * 
    * @param display
+   * @msecs - the update frequency
    */
-  public void startDisplay(final CANValueDisplay display) {
+  public void startDisplay(final CANValueDisplay display, int msecs) {
     if (displayexecutor != null) {
       throw new IllegalStateException("display already started!");
     }
@@ -347,9 +348,7 @@ public abstract class OBDHandler extends AbstractOBDHandler {
         }
       }
     };
-    // FIXME make configurable
-    // update meter value with 3 fps
-    displayexecutor.scheduleAtFixedRate(displayTask, 0, 333,
+    displayexecutor.scheduleAtFixedRate(displayTask, 0, msecs,
         TimeUnit.MILLISECONDS);
   }
 

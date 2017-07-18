@@ -31,6 +31,7 @@ import java.util.ResourceBundle;
 import org.junit.Test;
 
 import com.bitplan.can4eve.gui.App;
+import com.bitplan.can4eve.gui.ExceptionHelp;
 import com.bitplan.can4eve.gui.Menu;
 import com.bitplan.can4eve.gui.MenuItem;
 import com.bitplan.i18n.Translator;
@@ -43,9 +44,11 @@ import com.bitplan.i18n.Translator;
 public class TestI18n {
   static boolean show = false;
   static boolean showError = true;
+  String locales[] = { "en", "de" };
 
   /**
    * get the underscored version of the given identifier
+   * 
    * @param identifier
    * @return - the underscored identifier
    */
@@ -99,7 +102,6 @@ public class TestI18n {
   @Test
   public void testMenuTranslated() throws Exception {
     App app = App.getInstance();
-    String locales[] = { "en", "de" };
     int errors = 0;
     for (String locale : locales) {
       Translator.initialize(locale);
@@ -118,8 +120,6 @@ public class TestI18n {
    */
   @Test
   public void testi18nFieldsTranslated() throws Exception {
-
-    String locales[] = { "en", "de" };
     int errors = 0;
     for (String locale : locales) {
       Translator.initialize(locale);
@@ -134,9 +134,30 @@ public class TestI18n {
   }
 
   @Test
+  public void textExceptionHelp() throws Exception {
+    App app = App.getInstance();
+    int errors = 0;
+    for (String locale : locales) {
+      Translator.initialize(locale);
+      for (ExceptionHelp ehelp : app.getExceptionHelps()) {
+        String hint = ehelp.getI18nHint();
+        if (hint.isEmpty()) {
+          errors++;
+          if (showError) {
+            System.err.println(
+                "ExceptionHelp hint for " + ehelp.getException() + " is empty");
+          }
+        } else {
+          errors += checkText(hint);
+        }
+      }
+    }
+    assertEquals(0, errors);
+  }
+
+  @Test
   public void testPropertiesAreFields() throws Exception {
     boolean show = true;
-    String locales[] = { "en", "de" };
     List<String> fieldList = new ArrayList<String>();
     for (Field field : I18n.class.getFields()) {
       fieldList.add(field.getName());
@@ -147,13 +168,12 @@ public class TestI18n {
       Enumeration<String> keys = bundle.getKeys();
       while (keys.hasMoreElements()) {
         String key = keys.nextElement();
-        String constantName=asUnderScore(key);
+        String constantName = asUnderScore(key);
         if (!fieldList.contains(constantName)) {
           errors++;
           if (show)
-            System.out
-                .println("  public static final String " + constantName
-                    + "=\"" + key + "\"; //" + bundle.getString(key));
+            System.out.println("  public static final String " + constantName
+                + "=\"" + key + "\"; //" + bundle.getString(key));
         }
       }
     }

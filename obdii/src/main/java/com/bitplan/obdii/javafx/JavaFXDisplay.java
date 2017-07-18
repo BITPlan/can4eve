@@ -22,7 +22,6 @@ package com.bitplan.obdii.javafx;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +38,7 @@ import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.SoftwareVersion;
 import com.bitplan.can4eve.Vehicle;
 import com.bitplan.can4eve.gui.App;
+import com.bitplan.can4eve.gui.ExceptionHelp;
 import com.bitplan.can4eve.gui.Form;
 import com.bitplan.can4eve.gui.Group;
 import com.bitplan.can4eve.gui.javafx.GenericControl;
@@ -53,7 +53,6 @@ import com.bitplan.elm327.Config.ConfigMode;
 import com.bitplan.i18n.Translator;
 import com.bitplan.obdii.CANValueDisplay;
 import com.bitplan.obdii.I18n;
-import com.bitplan.obdii.LabelField;
 import com.bitplan.obdii.OBDApp;
 import com.bitplan.obdii.Preferences;
 import com.bitplan.obdii.Preferences.LangChoice;
@@ -198,7 +197,10 @@ public class JavaFXDisplay extends WaitableApp
       if (!title.startsWith("Raw"))
         LOGGER.log(Level.WARNING, "could not find field " + title);
     } else {
-      Platform.runLater(() -> control.setValue(value));
+      Platform.runLater(() -> {
+        control.setValue(value);
+        control.setToolTip(String.format("%6d", updateCount));
+      });
     }
   }
 
@@ -599,6 +601,9 @@ public class JavaFXDisplay extends WaitableApp
     }
   }
 
+  /**
+   * close the log File
+   */
   private void fileClose() {
     try {
       obdApp.getLogPlayer().close();
@@ -608,6 +613,9 @@ public class JavaFXDisplay extends WaitableApp
     }
   }
 
+  /**
+   * open the log File
+   */
   private void fileOpen() {
     FileChooser fileChooser = new FileChooser();
     if (Config.getInstance() != null)
@@ -695,8 +703,10 @@ public class JavaFXDisplay extends WaitableApp
    * @param th
    */
   private void handleException(Throwable th) {
-    Platform.runLater(() -> GenericDialog.showException((I18n.get(I18n.ERROR)),
-        I18n.get(I18n.PROBLEM_OCCURED), th, softwareVersion));
+    ExceptionHelp ehelp = app.getExceptionHelpByName(th.getClass().getName()+":"+th.getMessage());   
+      Platform
+          .runLater(() -> GenericDialog.showException((I18n.get(I18n.ERROR)),
+              I18n.get(I18n.PROBLEM_OCCURED), th, ehelp, softwareVersion,this));
   }
 
   /**

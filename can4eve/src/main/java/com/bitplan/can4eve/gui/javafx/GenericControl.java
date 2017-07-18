@@ -194,6 +194,16 @@ public class GenericControl {
       }
     }
   }
+  
+  /**
+   * set the toolTip
+   * @param toolTip
+   */
+  public void setToolTip(String toolTip) {
+    if (control.getTooltip()==null)
+      control.setTooltip(new Tooltip());
+    control.getTooltip().setText(toolTip);
+  }
 
   /**
    * get the value of a control
@@ -248,5 +258,7 @@ public class GenericControl {
   public void setDirectoryChooser(DirectoryChooser directoryChooser) {
     this.directoryChooser = directoryChooser;
   }
+
+  
 
 }

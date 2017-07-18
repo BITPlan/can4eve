@@ -25,7 +25,7 @@ package com.bitplan.can4eve.gui;
  * @author wf
  *
  */
-public interface Display {
+public interface Display extends Linker {
   public void show() throws Exception; 
   public void waitOpen();
   public void waitClose();

@@ -36,7 +36,10 @@ import java.util.logging.Logger;
 
 import com.bitplan.can4eve.ErrorHandler;
 import com.bitplan.can4eve.SoftwareVersion;
+import com.bitplan.can4eve.gui.ExceptionHelp;
 import com.bitplan.can4eve.gui.Form;
+import com.bitplan.can4eve.gui.Linker;
+import com.bitplan.i18n.Translator;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -48,9 +51,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
@@ -93,20 +98,20 @@ public class GenericDialog {
     Map<String, GenericControl> controls = new HashMap<String, GenericControl>();
     for (com.bitplan.can4eve.gui.Field field : form.getFields()) {
       GenericControl gcontrol = GenericControl.create(stage, field);
-      int x=0;
-      int y=ypos;
-      if (field.getGridX()!=null)
-        x=field.getGridX();
-      if (field.getGridY()!=null)
-        y=field.getGridY();
+      int x = 0;
+      int y = ypos;
+      if (field.getGridX() != null)
+        x = field.getGridX();
+      if (field.getGridY() != null)
+        y = field.getGridY();
       grid.add(gcontrol.label, x, y);
       if (gcontrol.control != null) {
-        grid.add(gcontrol.control, x+1, y);
+        grid.add(gcontrol.control, x + 1, y);
       }
       if (gcontrol.button != null) {
-        grid.add(gcontrol.button, x+2, y);
+        grid.add(gcontrol.button, x + 2, y);
       }
-      if (field.getGridY()==null)
+      if (field.getGridY() == null)
         ypos++;
       controls.put(field.getId(), gcontrol);
     }
@@ -288,24 +293,50 @@ public class GenericDialog {
   }
 
   /**
+   * get the flowPane for the Exception Help
+   * 
+   * @param ehelp
+   * @param linker
+   */
+  public static FlowPane getFlowPane(ExceptionHelp ehelp, Linker linker) {
+    FlowPane fp = new FlowPane();
+    Label lbl = new Label(Translator.translate(ehelp.getI18nHint()));
+    Hyperlink link = new Hyperlink(Translator.translate("help"));
+
+    fp.getChildren().addAll(lbl, link);
+    link.setOnAction((evt) -> {
+      linker.browse(ehelp.getUrl());
+    });
+    return fp;
+  }
+
+  /**
    * show the Exception
    * 
    * @param title
    * @param headerText
    * @param th
+   * @param ehelp
    * @param softwareVersion
    *          - the mail address to send exceptions to
    */
   public static void showException(String title, String headerText,
-      Throwable th, SoftwareVersion softwareVersion) {
+      Throwable th, ExceptionHelp ehelp, SoftwareVersion softwareVersion,
+      Linker linker) {
     Alert alert = new Alert(AlertType.ERROR);
     alert.setTitle(title);
     alert.setHeaderText(headerText);
     String exceptionText = getStackTraceText(th);
     LOGGER.log(Level.INFO, exceptionText);
+    if (ehelp != null) {
+      FlowPane flowPane = getFlowPane(ehelp, linker);
+      alert.getDialogPane().contentProperty().set(flowPane);
+    } else {
+      String errMessage = th.getClass().getSimpleName() + ":\n"
+          + th.getLocalizedMessage();
 
-    alert.setContentText(
-        th.getClass().getSimpleName() + ":\n" + th.getLocalizedMessage());
+      alert.setContentText(errMessage);
+    }
     Label label = new Label("The exception stacktrace is:");
 
     Button button = new Button("Report Issue ...");

@@ -199,8 +199,8 @@ public class OBDMain extends Main implements OBDApp {
       break;
     case Simulator:
       if (config.isDebug())
-        LOGGER.log(Level.INFO, "Using simulator on server port %5d",
-            ElmSimulator.DEFAULT_PORT);
+        LOGGER.log(Level.INFO, String.format("Using simulator on server port %5d",
+            ElmSimulator.DEFAULT_PORT));
       elm = ElmSimulator.getSimulation(vehicleGroup, config.isDebug(),
           ElmSimulator.SIMULATOR_TIMEOUT);
       obdTriplet = new OBDTriplet(vehicleGroup, elm);
@@ -250,7 +250,7 @@ public class OBDMain extends Main implements OBDApp {
         }
       }
     }
-    obdTriplet.startDisplay(canValueDisplay);
+    obdTriplet.startDisplay(canValueDisplay,333);
     if (this.reportFileName != null) {
       obdTriplet.report(reportFileName, frameLimit);
     } else if (pid != null)
@@ -259,7 +259,7 @@ public class OBDMain extends Main implements OBDApp {
       obdTriplet.pidMonitor(obdTriplet.getCANValues(),
           frameLimit);
     }
-    obdTriplet.startDisplay(canValueDisplay);
+    obdTriplet.stopDisplay();
     return elm;
   }
 

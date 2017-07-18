@@ -587,5 +587,11 @@
 				]
 			}
 		]
-	}
+	},
+	"exceptionHelps": [{
+	   "exception": "java.net.BindException:Address already in use (Bind failed)",
+	   "url": "http://can4eve.bitplan.com/index.php/Help#java.net.BindException:_Address_already_in_use_.28Bind_failed.29",
+	   "i18nHint": "addressAlreadyInUse"
+	  }
+	]
 }

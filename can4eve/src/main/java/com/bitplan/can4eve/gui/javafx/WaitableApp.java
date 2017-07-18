@@ -32,6 +32,7 @@ import javax.imageio.ImageIO;
 import com.bitplan.can4eve.gui.Display;
 
 import javafx.application.Application;
+import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
@@ -61,7 +62,7 @@ public abstract class WaitableApp extends Application implements Display {
   public static double getScreenHeight() {
     return Screen.getPrimary().getVisualBounds().getHeight();
   }
-
+  
   /**
    * allow startup without launch
    */
@@ -104,6 +105,11 @@ public abstract class WaitableApp extends Application implements Display {
 
   public void setStage(Stage stage) {
     this.stage = stage;
+  }
+  
+  @Override
+  public void browse(String url) {
+    this.getHostServices().showDocument(url);
   }
 
   /**

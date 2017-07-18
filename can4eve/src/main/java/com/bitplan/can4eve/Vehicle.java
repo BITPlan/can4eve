@@ -28,7 +28,7 @@ import com.bitplan.can4eve.json.JsonManager;
 import com.bitplan.can4eve.json.JsonManagerImpl;
 
 /**
- * Vehicle description
+ * POJO for Vehicle description
  * @author wf
  *
  */

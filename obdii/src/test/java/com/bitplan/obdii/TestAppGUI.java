@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.Notifications;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -40,7 +41,9 @@ import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.gui.App;
+import com.bitplan.can4eve.gui.ExceptionHelp;
 import com.bitplan.can4eve.gui.Group;
+import com.bitplan.can4eve.gui.Linker;
 import com.bitplan.can4eve.gui.javafx.CANProperty;
 import com.bitplan.can4eve.gui.javafx.CANPropertyManager;
 import com.bitplan.can4eve.gui.javafx.GenericDialog;
@@ -87,6 +90,9 @@ import javafx.beans.property.SimpleLongProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
@@ -103,6 +109,10 @@ public class TestAppGUI {
   public static final int SHOW_TIME = 4000;
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii");
 
+  @Before
+  public void initGUI() {
+    WaitableApp.toolkitInit();
+  }
   @Test
   public void testAppGUI() throws Exception {
     App app = App.getInstance();
@@ -115,6 +125,7 @@ public class TestAppGUI {
       assertEquals(expected[i++], group.getForms().size());
     }
   }
+  
 
   @Test
   public void testJoin() {
@@ -181,7 +192,6 @@ public class TestAppGUI {
 
   @Test
   public void testLCDPane() throws Exception {
-    WaitableApp.toolkitInit();
     int cols = 3;
     int rows = 4;
     String[] texts = new String[rows * cols];
@@ -197,6 +207,29 @@ public class TestAppGUI {
       }
     }
     SampleApp.createAndShow("LCDPane", lcdPane, SHOW_TIME);
+  }
+  
+  @Test
+  public void testExceptionHelp() throws Exception {
+    App app = App.getInstance();
+    String exception="java.net.BindException:Address already in use (Bind failed)";
+    ExceptionHelp ehelp = app.getExceptionHelpByName(exception);
+    assertNotNull(ehelp);
+    FlowPane fp = new FlowPane();
+    Label lbl = new Label(I18n.get(ehelp.getI18nHint()));
+    Hyperlink link = new Hyperlink(ehelp.getUrl());
+   
+    fp.getChildren().addAll( lbl, link);
+    SampleApp sampleApp = new SampleApp("help",
+        fp);
+    final Linker linker=sampleApp;
+    link.setOnAction( (evt) -> {
+      linker.browse(link.getText());
+    } );
+    sampleApp.show();
+    sampleApp.waitOpen();
+    Thread.sleep(SHOW_TIME);
+    sampleApp.close();
   }
 
   @Test

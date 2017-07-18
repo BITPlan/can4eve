@@ -42,7 +42,8 @@ public class App {
   String feedback;
   String help;
   private List<Group> groups = new ArrayList<Group>();
-
+  private List<ExceptionHelp> exceptionHelps=new ArrayList<ExceptionHelp>();
+  private Map<String,ExceptionHelp> exceptionHelpByName=new HashMap<String,ExceptionHelp>();
   private Map<String,Group> groupById=new HashMap<String,Group>();
   private Menu mainMenu;
 
@@ -106,6 +107,10 @@ public class App {
       if (group.getId()!=null)
         this.groupById.put(group.getId(), group);
     }
+    for (ExceptionHelp help:this.exceptionHelps) {
+      help.reinit();
+      this.exceptionHelpByName.put(help.getException(), help);
+    }
   }
   
   /**
@@ -129,6 +134,15 @@ public class App {
     Form form=group.getFormById(formId);
     return form;
   }
+  
+  /**
+   * get the exception help by the given name
+   * @param exception
+   * @return - the exception help
+   */
+  public ExceptionHelp getExceptionHelpByName(String exception) {
+    return this.exceptionHelpByName.get(exception);
+  }
 
   /**
    * get the App from the given Json Stream
@@ -150,6 +164,14 @@ public class App {
     Gson gson = gsonBuilder.setPrettyPrinting().create();
     String json = gson.toJson(this);
     return json;
+  }
+  
+  public List<ExceptionHelp> getExceptionHelps() {
+    return exceptionHelps;
+  }
+
+  public void setExceptionHelps(List<ExceptionHelp> exceptionHelps) {
+    this.exceptionHelps = exceptionHelps;
   }
 
   private static App instance;
