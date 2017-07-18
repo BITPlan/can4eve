@@ -57,6 +57,7 @@ import com.bitplan.triplet.ShifterPosition.ShiftPosition;
 
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 
 /**
@@ -152,11 +153,16 @@ public class OBDTriplet extends OBDHandler {
   public void initCanValues(String... canInfoNames) {
     super.initCanValues(canInfoNames);
     VIN = new VINValue(getCanInfo("VIN"));
+    cpm.addCanProperty(VIN, new SimpleStringProperty());
     VIN2 = new VINValue(getCanInfo("VIN"));
+    cpm.addCanProperty(VIN2,new SimpleStringProperty());
     climateValue = new ClimateValue(getCanInfo("Climate"));
+    cpm.addCanProperty(climateValue, new SimpleObjectProperty<Climate>());
     ventDirection = new StringValue(getCanInfo("VentDirection"));
+    cpm.addCanProperty(ventDirection, new SimpleStringProperty());
     shifterPositionValue = new ShifterPositionValue(
         getCanInfo("ShifterPosition"));
+    cpm.addCanProperty(shifterPositionValue, new SimpleObjectProperty<ShifterPosition>());
   }
 
   /**

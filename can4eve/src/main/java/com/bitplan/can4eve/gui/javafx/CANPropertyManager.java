@@ -174,7 +174,7 @@ public class CANPropertyManager {
    * @param property
    *          - the Property
    */
-  protected <CT extends CANValue<T>, T> void addCanProperty(CT canValue,
+  public <CT extends CANValue<T>, T> void addCanProperty(CT canValue,
       Property<T> property) {
     CANProperty<CT, T> canProperty = new CANProperty<CT, T>(canValue, property);
     getCanProperties().put(canValue.canInfo.getName(), canProperty);

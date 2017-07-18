@@ -518,8 +518,8 @@ public class TestELM327 extends TestOBDII {
   public void testCanValues() throws Exception {
     OBDTriplet lOBDTriplet = new OBDTriplet(getVehicleGroup());
     List<CANValue<?>> canValues = lOBDTriplet.getCANValues();
-    assertEquals(30, canValues.size());
-    @SuppressWarnings("unused")
+    assertEquals(34, canValues.size());
+
     String names = "";
     String delim = "";
     for (CANValue<?> canValue : canValues) {
@@ -527,13 +527,11 @@ public class TestELM327 extends TestOBDII {
       delim = ",";
       assertTrue(canValue.isRead());
     }
-    /*
-     * debug = true; if (debug) { LOGGER.log(Level.INFO, names); }
-     * assertTrue(names.startsWith(
-     * "VIN,# of Cells,Battery Capacity,Key,total km,Trip Odo,Trip Rounds,Speed,RPM,RPM Speed,Range,SOC,Climate,Vent Dir,AC Amps,AC Volts,DC Amps,DC Volts,Motor temp,Charger temp,Shifter,Steering Position,Steering Movement,Accelerator,Break Pressed,Break Pedal,Blinker Left,Blinker Right,Door Open,Parking Light,Head Light,High Beam,Cell Temperature,Cell Voltage"
-     * ));
-     */
-  }
+    //debug = true; 
+    if (debug) { LOGGER.log(Level.INFO, names); }
+    assertTrue(names.startsWith("Door Open,Climate,RPM Speed,Battery Capacity,AC Amps,Blinker Right,High Beam,RPM,Vent Dir,Blinker Left,DC Amps,Shifter,Charger temp,Cell Voltage,Head Light,Speed,Trip Rounds,SOC,AC Volts,Break Pressed,total km,Motor temp,Range,Cell Temperature,Steering Position,Break Pedal,Parking Light,Steering Movement,Trip Odo,VIN,# of Cells,Key,Accelerator,DC Volts"
+     ));
+    }
 
   @Test
   public void testPidFromPid() throws Exception {
@@ -563,7 +561,7 @@ public class TestELM327 extends TestOBDII {
     // debug=true;
     OBDTriplet lOBDTriplet = new OBDTriplet(getVehicleGroup());
     List<CANValue<?>> canValues = lOBDTriplet.getCANValues();
-    assertEquals(30, canValues.size());
+    assertEquals(34, canValues.size());
     for (CANValue<?> canValue : canValues) {
       if (debug) {
         LOGGER.log(Level.INFO, canValue.canInfo.getTitle() + ":"
