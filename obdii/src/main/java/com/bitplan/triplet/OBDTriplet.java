@@ -361,10 +361,14 @@ public class OBDTriplet extends OBDHandler {
       cpm.setValue("Speed", speedNum, timeStamp);
       break;
     case "Range": // 0x346
-      Integer rangeNum = pr.d[7];
-      if (rangeNum == 255)
-        rangeNum = null;
-      cpm.setValue("Range", rangeNum, timeStamp);
+      if (pr.d.length == 8) {
+        Integer rangeNum = pr.d[7];
+        if (rangeNum == 255)
+          rangeNum = null;
+        cpm.setValue("Range", rangeNum, timeStamp);
+      } else {
+        LOGGER.log(Level.SEVERE,"invalid length for Range 0x346 "+pr.d.length);
+      }
       break;
     case "Steering_Wheel":
       cpm.setValue("SteeringWheelPosition",
