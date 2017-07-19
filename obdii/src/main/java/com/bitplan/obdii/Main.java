@@ -30,7 +30,7 @@ import com.bitplan.can4eve.ErrorHandler;
 import com.bitplan.can4eve.SoftwareVersion;
 
 /**
- * generatic Main class
+ * generic Main class
  * @author wf
  *
  */
