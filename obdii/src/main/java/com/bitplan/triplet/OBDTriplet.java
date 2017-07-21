@@ -188,8 +188,15 @@ public class OBDTriplet extends OBDHandler {
     if (debug)
       LOGGER.log(Level.INFO, "triplet handling PID Response " + pr.pidId + " ("
           + pr.pid.getName() + ")");
+    Pid pid=pr.pid;
+    if (pid.getLength()!=null && pr.d.length != pid.getLength()) {
+      LOGGER.log(Level.SEVERE,String.format("invalid response length %2d!=%2 for %s (%s)",pr.d.length,pid.getLength(),pid.getName(),pid.getPid()));
+      // do not try to handle corrupted data ... to avoid exceptions in accessing
+      // the d[] array
+      return;
+    }
     Date timeStamp = pr.getResponse().getTime();
-    String pidName = pr.pid.getName();
+    String pidName = pid.getName();
     switch (pidName) {
     case "Accelerator":
       cpm.setValue(pidName, pr.d[2] / 250.0 * 100, timeStamp);
@@ -361,14 +368,10 @@ public class OBDTriplet extends OBDHandler {
       cpm.setValue("Speed", speedNum, timeStamp);
       break;
     case "Range": // 0x346
-      if (pr.d.length == 8) {
-        Integer rangeNum = pr.d[7];
-        if (rangeNum == 255)
-          rangeNum = null;
-        cpm.setValue("Range", rangeNum, timeStamp);
-      } else {
-        LOGGER.log(Level.SEVERE,"invalid length for Range 0x346 "+pr.d.length);
-      }
+      Integer rangeNum = pr.d[7];
+      if (rangeNum == 255)
+        rangeNum = null;
+      cpm.setValue("Range", rangeNum, timeStamp);
       break;
     case "Steering_Wheel":
       cpm.setValue("SteeringWheelPosition",

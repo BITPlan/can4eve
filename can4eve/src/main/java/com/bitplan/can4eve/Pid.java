@@ -41,6 +41,7 @@ import java.util.List;
 public class Pid {
   String name;     // name of the PID e.g. VIN
   String pid;      // hexadecimal code for the PID 
+  Integer length;  // expected length of PID frame     
   int freq;        // frequency of transmission on bus per second
   String examples;
   String isoTp;    // if this is an ISO-TP frame based Pid 
@@ -57,13 +58,13 @@ public class Pid {
   public CANInfo getFirstInfo() {
     return caninfos.get(0);
   }
-  
-  public List<CANInfo> getCaninfos() {
-    return caninfos;
+
+  public Integer getLength() {
+    return length;
   }
 
-  public void setCaninfos(List<CANInfo> caninfos) {
-    this.caninfos = caninfos;
+  public void setLength(Integer length) {
+    this.length = length;
   }
 
   public String getName() {
@@ -103,6 +104,14 @@ public class Pid {
   }
   public void setIsoTp(String isoTp) {
     this.isoTp = isoTp;
+  }
+  
+  public List<CANInfo> getCaninfos() {
+    return caninfos;
+  }
+
+  public void setCaninfos(List<CANInfo> caninfos) {
+    this.caninfos = caninfos;
   }
   
   public String toString() {

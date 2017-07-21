@@ -26,6 +26,7 @@
       "name": "Accelerator",
       "pid": "210",
       "freq": 50,
+      "length": 7,
       "examples": "210 7 00 00 E9 80 80 00 00",
       "caninfos": [
         {
@@ -52,12 +53,13 @@
       "name": "AmpsVolts",
       "pid": "373",
       "freq": 100,
+      "length": 8,
       "examples": "373 8 C7 C6 7F 5E 0C C0 00 06",
       "caninfos": [
         {
-          "name": "Raw375",
-          "title": "Raw375",
-          "description": "Raw Value 375",
+          "name": "Raw373",
+          "title": "Raw373",
+          "description": "Raw Value 373",
           "format": "%s",
           "type": "StringValue",
           "historyValuesPerMinute": 1,
@@ -89,7 +91,8 @@
       "name": "ACAmpsVolts",
       "pid": "389",
       "freq": 10,
-      "examples": "",
+      "examples": "389 8 9A E6 2F 5E 5C 4A 4A 00",
+      "length": 8,
       "caninfos": [
         {
           "name": "Raw389",
@@ -124,6 +127,7 @@
       "name": "BreakPedal",
       "pid": "208",
       "freq": 50,
+      "length": 8,
       "examples": "208 8 00 20 60 E3 C0 00 C0 00",
       "caninfos": [
         {
@@ -150,6 +154,7 @@
       "name": "BreakPressed",
       "pid": "231",
       "freq": 50,
+      "length": 8,
       "examples": "states:\n# off: 231 8 00 00 00 00 00 00 00 00\n#on: 231 8 00 00 00 00 02 00 00 00",
       "caninfos": [
         {
@@ -178,6 +183,7 @@
       "name": "CellInfo1",
       "pid": "6E1",
       "freq": 25,
+      "length": 8,
       "examples": "6E1 8 01 00 49 4B 01 71 01 72",
       "caninfos": [
         {
@@ -213,6 +219,7 @@
       "name": "CellInfo2",
       "pid": "6E2",
       "freq": 25,
+      "length": 8,
       "examples": "6E2 8 07 4B 4B 01 01 7F 01 80",
       "caninfos": [
         {
@@ -248,6 +255,7 @@
       "name": "CellInfo3",
       "pid": "6E3",
       "freq": 25,
+      "length": 8,
       "examples": "6E3 8 01 4A 48 00 01 7C 01 7C",
       "caninfos": [
         {
@@ -283,6 +291,7 @@
       "name": "CellInfo4",
       "pid": "6E4",
       "freq": 25,
+      "length": 8,
       "examples": "6E4 8 07 00 00 00 01 5B 01 5B",
       "caninfos": [
         {
@@ -318,6 +327,7 @@
       "name": "ChargerTemp",
       "pid": "286",
       "freq": 10,
+      "length": 8,
       "examples": "286 8 00 00 00 38 00 00 00 00",
       "caninfos": [
         {
@@ -344,6 +354,7 @@
       "name": "Climate",
       "pid": "3A4",
       "freq": 10,
+      "length": 8,
       "examples": "3A4 8 09 55 96 7C 6C 84 00 60",
       "caninfos": [
         {
@@ -379,6 +390,7 @@
       "name": "Key",
       "pid": "101",
       "freq": 10,
+      "length": 1,
       "examples": "states:\n# off:101 1 00\n# on:101 1 04",
       "caninfos": [
         {
@@ -407,6 +419,7 @@
       "name": "Lights",
       "pid": "424",
       "freq": 25,
+      "length": 8,
       "examples": "424 8 87 60 0C 00 45 CB 01 FF",
       "caninfos": [
         {
@@ -490,6 +503,7 @@
       "name": "MotorTemp_RPM",
       "pid": "298",
       "freq": 10,
+      "length": 8,
       "examples": "298 8 5E 3A 43 39 3C 00 41 E0",
       "caninfos": [
         {
@@ -552,6 +566,7 @@
       "name": "Odometer_Speed",
       "pid": "412",
       "freq": 10,
+      "length": 8,
       "examples": "412 8 FE 71 00 0B 97 00 21 12",
       "caninfos": [
         {
@@ -589,6 +604,7 @@
       "name": "Range",
       "pid": "346",
       "freq": 50,
+      "length": 8,
       "examples": "346 8 37 31 57 20 00 00 00 3B",
       "caninfos": [
         {
@@ -615,7 +631,8 @@
       "name": "SOC",
       "pid": "374",
       "freq": 10,
-      "examples": "",
+      "length": 8,
+      "examples": "374 8 B8 BF 58 FE 51 4E 5A 14",
       "caninfos": [
         {
           "name": "Raw374",
@@ -641,7 +658,8 @@
       "name": "ShifterPosition",
       "pid": "418",
       "freq": 20,
-      "examples": "",
+       "length": 8,
+      "examples": "418 7 50 00 00 06 00 00 00",
       "caninfos": [
         {
           "name": "Raw418",
@@ -667,7 +685,8 @@
       "name": "Steering_Wheel",
       "pid": "236",
       "freq": 100,
-      "examples": "",
+      "length": 8,
+      "examples": "236 8 10 24 0E 2D 30 00 00 A5",
       "caninfos": [
         {
           "name": "Raw236",
@@ -702,6 +721,7 @@
       "name": "VIN",
       "pid": "29A",
       "freq": 10,
+      "length": 8,
       "examples": "3 indices:\n#29A 8 00 56 46 33 31 4E 5A 4B\n#29A 8 01 59 5A 48 55 38 30 30\n#29A 8 02 37 36 39 FF FF FF FF",
       "caninfos": [
         {
@@ -737,7 +757,8 @@
       "name": "VIN2",
       "pid": "6FA",
       "freq": 10,
-      "examples": "",
+      "length": 8,
+      "examples": "6FA 8 00 56 46 33 31 4E 5A 4B,6FA 8 01 59 5A 48 55 38 30 30, 6FA 8 02 37 36 39 00 00 00 00",
       "caninfos": [
         {
           "name": "Raw6FA",
@@ -763,7 +784,8 @@
       "name": "PID1B6",
       "pid": "1B6",
       "freq": 25,
-      "examples": "",
+      "length": 8,
+      "examples": "1B6 8 00 C0 FF C0 FF C0 FF 01",
       "caninfos": [
         {
           "name": "Raw1B6",
@@ -780,7 +802,8 @@
       "name": "PID212",
       "pid": "212",
       "freq": 50,
-      "examples": "",
+      "examples": "212 8 00 00 00 00 27 D0 00 00",
+      "length": 8,
       "caninfos": [
         {
           "name": "Raw212",
@@ -797,7 +820,8 @@
       "name": "PID285",
       "pid": "285",
       "freq": 100,
-      "examples": "",
+      "length": 8,
+      "examples": "285 8 09 41 14 00 8D 57 0E 10",
       "caninfos": [
         {
           "name": "Raw285",
@@ -848,7 +872,7 @@
       "name": "PID375",
       "pid": "375",
       "freq": 10,
-      "examples": "",
+      "examples": "375 8 0F 0F 00 00 00 00 00 00",
       "caninfos": [
         {
           "name": "Raw375",
@@ -1257,7 +1281,8 @@
       "pid": "762",
       "freq": -1,
       "isoTp": "761",
-      "examples": "",
+      "length": 8,
+      "examples": "762 8 24 0F 0F 01 C4 01 0F A6",
       "caninfos": [
         {
           "name": "BatteryCapacity",
