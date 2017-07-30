@@ -24,7 +24,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import com.bitplan.can4eve.ErrorHandler;
 import com.bitplan.can4eve.states.StopWatch;
 
 import eu.hansolo.LcdGauge;
@@ -38,6 +41,8 @@ import javafx.scene.image.ImageView;
  *
  */
 public class JFXStopWatch implements StopWatch {
+  protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.javafx");
+  
   private Clock stopWatch;
   ImageView icon;
   private boolean active;
@@ -69,9 +74,10 @@ public class JFXStopWatch implements StopWatch {
   public Clock get() {
     return stopWatch;
   }
-  
+
   public String asIsoDateStr() {
-    String isoDateStr=stopWatch.getTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+    String isoDateStr = stopWatch.getTime()
+        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     return isoDateStr;
   }
 
@@ -81,29 +87,35 @@ public class JFXStopWatch implements StopWatch {
    * @param mSecs
    */
   public void setTime(long mSecs) {
-    long epochSecond = mSecs / 1000;
-    int nanoOfSecond = (int) ((mSecs % 1000) * 1000000);
-    ZoneOffset zoneoffset = ZoneOffset.ofHours(0);
-    LocalDateTime localDateTime = LocalDateTime.ofEpochSecond(epochSecond,
-        nanoOfSecond, zoneoffset);
-    ZonedDateTime time = ZonedDateTime.of(localDateTime, zoneoffset);
-    stopWatch.setTime(time);
+    try {
+      long epochSecond = mSecs / 1000;
+      int nanoOfSecond = (int) ((mSecs % 1000) * 1000000);
+      ZoneOffset zoneoffset = ZoneOffset.ofHours(0);
+      LocalDateTime localDateTime = LocalDateTime.ofEpochSecond(epochSecond,
+          nanoOfSecond, zoneoffset);
+      ZonedDateTime time = ZonedDateTime.of(localDateTime, zoneoffset);
+      stopWatch.setTime(time);
+    } catch (java.time.DateTimeException dte) {
+      LOGGER.log(Level.WARNING, String.format("setTime with invalidTime %7d msecs",mSecs));
+      ErrorHandler.handle(dte);
+    }
   }
 
   @Override
-  public long getTime() {    
+  public long getTime() {
     ZonedDateTime time = stopWatch.getTime();
-    long mSecs =((time.getDayOfMonth()-1)*86400+time.getHour()*3600+time.getMinute()*60+time.getSecond())*1000+time.getNano()/1000000;
+    long mSecs = ((time.getDayOfMonth() - 1) * 86400 + time.getHour() * 3600
+        + time.getMinute() * 60 + time.getSecond()) * 1000
+        + time.getNano() / 1000000;
     /*
-    int offset=time.getOffset().getTotalSeconds();
-    System.out.println(" d:"+(time.getDayOfMonth()-1));
-    System.out.println(" h:"+time.getHour());
-    System.out.println(" m:"+time.getMinute());
-    System.out.println(" s:"+time.getSecond());
-    System.out.println(" n:"+time.getNano());
-    System.out.println(" o:"+offset);
-    System.out.println("ms:"+mSecs);
-    */
+     * int offset=time.getOffset().getTotalSeconds();
+     * System.out.println(" d:"+(time.getDayOfMonth()-1));
+     * System.out.println(" h:"+time.getHour());
+     * System.out.println(" m:"+time.getMinute());
+     * System.out.println(" s:"+time.getSecond());
+     * System.out.println(" n:"+time.getNano());
+     * System.out.println(" o:"+offset); System.out.println("ms:"+mSecs);
+     */
     return mSecs;
   }
 

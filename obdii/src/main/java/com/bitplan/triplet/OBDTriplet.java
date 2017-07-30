@@ -190,7 +190,7 @@ public class OBDTriplet extends OBDHandler {
           + pr.pid.getName() + ")");
     Pid pid=pr.pid;
     if (pid.getLength()!=null && pr.d.length != pid.getLength()) {
-      LOGGER.log(Level.SEVERE,String.format("invalid response length %2d!=%2 for %s (%s)",pr.d.length,pid.getLength(),pid.getName(),pid.getPid()));
+      LOGGER.log(Level.SEVERE,String.format("invalid response length %2d!=%2d for %s (%s)",pr.d.length,pid.getLength(),pid.getName(),pid.getPid()));
       // do not try to handle corrupted data ... to avoid exceptions in accessing
       // the d[] array
       return;
