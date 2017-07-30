@@ -455,7 +455,6 @@ public class TestELM327 extends TestOBDII {
     final int slow = 0;
     // boolean withHistory = false;
     // final int slow=20; // msecs for slower motion
-    boolean withHistory = true;
     // debug=true;
     // prepareOBDTriplet(true);
     String[] fileNames = {
@@ -471,7 +470,6 @@ public class TestELM327 extends TestOBDII {
 
     for (String fileName : fileNames) {
       obdTriplet = new OBDTriplet(getVehicleGroup());
-      obdTriplet.setWithHistory(withHistory);
       // obdTriplet.setDebug(true);
       obdTriplet.getElm327().setHeader(true);
       obdTriplet.getElm327().setLength(true);

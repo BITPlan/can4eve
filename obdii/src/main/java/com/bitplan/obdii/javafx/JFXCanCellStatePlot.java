@@ -31,9 +31,14 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 
+/**
+ * plot CellState Values
+ * @author wf
+ *
+ */
 public class JFXCanCellStatePlot {
-  protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii");
-  public static boolean debug = false;
+  protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.javafx");
+  public static boolean debug = true;
 
   String title;
   String xTitle;

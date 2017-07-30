@@ -40,7 +40,7 @@ import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 
 /**
- * plot a histor of CanValues
+ * plot a history of CanValues
  * @author wf
  *
  */

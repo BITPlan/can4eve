@@ -35,12 +35,11 @@ import java.util.logging.Level;
 
 import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue;
-import com.bitplan.can4eve.Pid;
-import com.bitplan.can4eve.Vehicle;
-import com.bitplan.can4eve.Vehicle.State;
-import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.CANValue.CANRawValue;
 import com.bitplan.can4eve.ErrorHandler;
+import com.bitplan.can4eve.Pid;
+import com.bitplan.can4eve.Vehicle;
+import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.gui.javafx.CANProperty;
 import com.bitplan.can4eve.gui.javafx.CANPropertyManager;
 import com.bitplan.elm327.Connection;
@@ -60,21 +59,12 @@ public abstract class OBDHandler extends AbstractOBDHandler {
   protected CANPropertyManager cpm;
   public static boolean withRawValues = false;
   protected Integer mmPerRound = 261; // FIXME do we need a default here?
-  protected boolean withHistory = true;
   protected boolean monitoring;
   protected ScheduledExecutorService displayexecutor;
   protected Runnable displayTask;
   protected SimpleLongProperty msecsRunningProperty;
   protected SimpleObjectProperty<Vehicle.State> vehicleStateProperty;
   public Date displayStart;
-
-  public boolean isWithHistory() {
-    return withHistory;
-  }
-
-  public void setWithHistory(boolean withHistory) {
-    this.withHistory = withHistory;
-  }
 
   public Integer getMmPerRound() {
     return mmPerRound;

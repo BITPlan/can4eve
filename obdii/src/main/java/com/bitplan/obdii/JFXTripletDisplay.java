@@ -74,6 +74,8 @@ public class JFXTripletDisplay extends JavaFXDisplay {
     }
   }
 
+  Map<String,JFXCanValueHistoryPlot> historyMap=new HashMap<String,JFXCanValueHistoryPlot>();
+  
   /**
    * update the history
    * 
@@ -89,7 +91,7 @@ public class JFXTripletDisplay extends JavaFXDisplay {
     if (activeTab == null)
       return;
     String activePanelTitle = activeTab.getText();
-    if ("history".equals(activePanelTitle)) {
+    if ("SOC/RR".equals(activePanelTitle)) {
       Map<String, CANProperty> plotValues = new HashMap<String, CANProperty>();
       plotValues.put(xValue.getName(), xValue);
       plotValues.put(yValue.getName(), yValue);

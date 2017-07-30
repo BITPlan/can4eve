@@ -435,7 +435,6 @@ public class OBDTriplet extends OBDHandler {
   int fpsUpdateCount = 0;
   Date latestUpdate;
   long latestTotalUpdates;
-  private Date latestHistoryUpdate;
 
   /**
    * show the values
@@ -460,13 +459,8 @@ public class OBDTriplet extends OBDHandler {
     }
     if (latestUpdate == null) {
       latestUpdate = now;
-      latestHistoryUpdate = now;
     } else {
-      // TODO configure frequency
-      if (now.getTime() - latestHistoryUpdate.getTime() >= 500
-          && isWithHistory()) {
-        latestHistoryUpdate = showHistory(display, now);
-      }
+      showHistory(display, now);
       long msecs = now.getTime() - latestUpdate.getTime();
       // every second
       if (msecs >= 1000) {
