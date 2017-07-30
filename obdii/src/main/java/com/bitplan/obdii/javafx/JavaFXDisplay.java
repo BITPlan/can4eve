@@ -139,6 +139,8 @@ public class JavaFXDisplay extends WaitableApp
 
   public static final String DASH_BOARD_GROUP = "dashBoardGroup";
 
+  protected static final String HISTORY_GROUP = "historyGroup";
+
   /**
    * construct me from an abstract application description and a software
    * version
@@ -583,7 +585,7 @@ public class JavaFXDisplay extends WaitableApp
           this.setActiveTabPane(DASH_BOARD_GROUP);
           break;
         case I18n.VIEW_HISTORY_VIEW_MENU_ITEM:
-          this.setActiveTabPane("historyGroup");
+          this.setActiveTabPane(HISTORY_GROUP);
           break;
         case I18n.VIEW_SETTINGS_VIEW_MENU_ITEM:
           this.setActiveTabPane("preferencesGroup");
@@ -859,8 +861,18 @@ public class JavaFXDisplay extends WaitableApp
    * @return - the active Tab Pane
    */
   public TabPane getActiveTabPane() {
-    TabPane activeTabPane = this.tabPaneByView.get(this.activeView);
+    TabPane activeTabPane = getTabPane(this.activeView);
     return activeTabPane;
+  }
+  
+  /**
+   * get the tabPane with the given view name
+   * @param view
+   * @return the tabPane
+   */
+  public TabPane getTabPane(String view) {
+    TabPane tabPane=this.tabPaneByView.get(view);
+    return tabPane;
   }
 
 }

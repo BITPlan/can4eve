@@ -27,9 +27,12 @@ import java.util.Map.Entry;
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.SoftwareVersion;
+import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.Vehicle.State;
 import com.bitplan.can4eve.gui.App;
 import com.bitplan.can4eve.gui.javafx.CANProperty;
+import com.bitplan.can4eve.gui.javafx.CANPropertyManager;
+import com.bitplan.can4eve.gui.javafx.SampleApp;
 import com.bitplan.obdii.javafx.CANValuePane;
 import com.bitplan.obdii.javafx.JFXCanCellStatePlot;
 import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
@@ -75,32 +78,6 @@ public class JFXTripletDisplay extends JavaFXDisplay {
   }
 
   Map<String,JFXCanValueHistoryPlot> historyMap=new HashMap<String,JFXCanValueHistoryPlot>();
-  
-  /**
-   * update the history
-   * 
-   * @param xValue
-   * @param yValue
-   * @param title
-   * @param xTitle
-   * @param yTitle
-   */
-  public void updateHistory(CANProperty xValue, CANProperty yValue,
-      String title, String xTitle, String yTitle) {
-    Tab activeTab = super.getActiveTab();
-    if (activeTab == null)
-      return;
-    String activePanelTitle = activeTab.getText();
-    if ("SOC/RR".equals(activePanelTitle)) {
-      Map<String, CANProperty> plotValues = new HashMap<String, CANProperty>();
-      plotValues.put(xValue.getName(), xValue);
-      plotValues.put(yValue.getName(), yValue);
-      final JFXCanValueHistoryPlot valuePlot = new JFXCanValueHistoryPlot(title,
-          xTitle, yTitle, plotValues);
-      Platform
-          .runLater(() -> updateTab(activeTab, valuePlot.createLineChart()));
-    }
-  }
 
   /**
    * special handling for Cell Temperature and Cell Voltage
@@ -183,4 +160,14 @@ public class JFXTripletDisplay extends JavaFXDisplay {
     }
   }
 
+  public void setupHistory(CANPropertyManager cpm) throws Exception {
+    String title = "SOC/RR";
+    String xTitle = "time";
+    String yTitle = "%/km";
+    Map<String, CANProperty> properties = cpm.getCANProperties("SOC", "Range");
+    final JFXCanValueHistoryPlot valuePlot = new JFXCanValueHistoryPlot(title,
+        xTitle, yTitle, properties);
+    Platform
+    .runLater(() -> updateTab(super.getTabPane(HISTORY_GROUP).getTabs().get(0), valuePlot.createLineChart()));
+  }
 }

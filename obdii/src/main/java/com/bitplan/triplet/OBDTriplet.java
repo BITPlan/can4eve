@@ -460,7 +460,6 @@ public class OBDTriplet extends OBDHandler {
     if (latestUpdate == null) {
       latestUpdate = now;
     } else {
-      showHistory(display, now);
       long msecs = now.getTime() - latestUpdate.getTime();
       // every second
       if (msecs >= 1000) {
@@ -481,22 +480,6 @@ public class OBDTriplet extends OBDHandler {
         latestUpdate = now;
       }
     }
-  }
-
-  /**
-   * show the history
-   * 
-   * @param display
-   * @param now
-   * @return the now value
-   */
-  private Date showHistory(CANValueDisplay display, Date now) {
-    if (display instanceof JFXTripletDisplay) {
-      final JFXTripletDisplay tripletDisplay = (JFXTripletDisplay) display;
-      tripletDisplay.updateHistory(cpm.get("SOC"), cpm.get("Range"),
-          "SOC/RR over time", "time", "SOC/RR");
-    }
-    return now;
   }
 
   /**

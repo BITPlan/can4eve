@@ -311,6 +311,7 @@ public abstract class OBDHandler extends AbstractOBDHandler {
     }
     // TODO make this more systematic
     if (display instanceof JFXTripletDisplay) {
+      JFXTripletDisplay tripletDisplay = (JFXTripletDisplay)display;
       Map<String, ObservableValue<?>> canBindings = new HashMap<String, ObservableValue<?>>();
       // fixed bindings
       canBindings.put("msecs", this.msecsRunningProperty);
@@ -324,7 +325,12 @@ public abstract class OBDHandler extends AbstractOBDHandler {
         canBindings.put(name + "-max", canProperty.getMax());
         canBindings.put(name + "-avg", canProperty.getAvg());
       }
-      ((JFXTripletDisplay) display).bind(canBindings);
+      tripletDisplay.bind(canBindings);
+      try {
+        tripletDisplay.setupHistory(cpm);
+      } catch (Exception e) {
+        ErrorHandler.handle(e);
+      }
     }
     displayexecutor = Executors.newSingleThreadScheduledExecutor();
     displayStart = new Date();
