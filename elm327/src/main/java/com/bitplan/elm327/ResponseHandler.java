@@ -20,6 +20,11 @@
  */
 package com.bitplan.elm327;
 
+/**
+ * the ReponseHandler interface
+ * @author wf
+ *
+ */
 public interface ResponseHandler {
 
   /**

@@ -55,7 +55,6 @@ import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.obdii.elm327.ElmSimulator;
 import com.bitplan.obdii.elm327.LogPlayerImpl;
 import com.bitplan.obdii.elm327.LogReader;
-import com.bitplan.obdii.elm327.Monitor;
 import com.bitplan.obdii.javafx.JavaFXDisplay;
 import com.bitplan.triplet.OBDTriplet;
 
@@ -231,19 +230,17 @@ public class TestELM327 extends TestOBDII {
 
   @Test
   public void testOBDTriplet() throws Exception {
-    /*debug=true;
-    PIDResponse.debug=true;
-    Monitor.debug=true;*/
+    /*
+     * debug=true; PIDResponse.debug=true; Monitor.debug=true;
+     */
     this.prepareOBDTriplet(simulated, debug);
     obdTriplet.initOBD();
     int frameLimit = 1;
     obdTriplet.readPid(byName("BatteryCapacity"));
     obdTriplet.monitorPid(byName("Range").getPid(), frameLimit);
     obdTriplet.monitorPid(byName("SOC").getPid(), frameLimit);
-    obdTriplet.monitorPid(byName("Steering_Wheel").getPid(),
-        frameLimit);
-    obdTriplet.monitorPid(byName("Odometer_Speed").getPid(),
-        frameLimit);
+    obdTriplet.monitorPid(byName("Steering_Wheel").getPid(), frameLimit);
+    obdTriplet.monitorPid(byName("Odometer_Speed").getPid(), frameLimit);
     obdTriplet.monitorPid(byName("VIN").getPid(), frameLimit * 3);
     /*
      * 3 should be enough but somehow on travis the test then fails let's wait a
@@ -257,7 +254,7 @@ public class TestELM327 extends TestOBDII {
     assertEquals(new Double(44.8), batteryCapacity.getValue(), 0.1);
     DoubleValue SOC = obdTriplet.getValue("SOC");
     assertNotNull(SOC);
-    assertNotNull("SOC should not be null",SOC.getValue());
+    assertNotNull("SOC should not be null", SOC.getValue());
     assertEquals(new Double(100.0), SOC.getValue(), 0.1);
     IntegerValue range = obdTriplet.getValue("Range");
     assertEquals(new Integer(95), range.getValue());
@@ -305,7 +302,8 @@ public class TestELM327 extends TestOBDII {
     for (int i = 0; i < loops; i++) {
       int count = 0;
       for (CANValue<?> canvalue : canvalues) {
-        obdTriplet.monitorPid(canvalue.canInfo.getPid().getPid().toString(), frameLimit);
+        obdTriplet.monitorPid(canvalue.canInfo.getPid().getPid().toString(),
+            frameLimit);
         if (debug)
           obdTriplet.showValues(display);
         if (count++ > max)
@@ -475,9 +473,10 @@ public class TestELM327 extends TestOBDII {
       obdTriplet.getElm327().setLength(true);
       File logCAN = new File("src/test/data/" + fileName + ".zip");
       assertTrue("" + logCAN.getPath() + " should exist", logCAN.exists());
-      LogReader logReader = new LogReader(logCAN, obdTriplet);
+      LogReader logReader = new LogReader(logCAN);
+      logReader.addReponseHandler(obdTriplet);
       final int updates = 300; // how often shall we update?
-      logReader.read(logReader.new LogListener() {
+      logReader.addLogListener(logReader.new LogListener() {
 
         @Override
         public boolean onUpdate(String line, int len, int index, int count) {
@@ -504,6 +503,7 @@ public class TestELM327 extends TestOBDII {
         }
 
       });
+      logReader.read();
     }
 
     if (debug)
@@ -524,11 +524,13 @@ public class TestELM327 extends TestOBDII {
       delim = ",";
       assertTrue(canValue.isRead());
     }
-    //debug = true; 
-    if (debug) { LOGGER.log(Level.INFO, names); }
-    assertTrue(names.startsWith("Door Open,Climate,RPM Speed,Battery Capacity,AC Amps,Blinker Right,High Beam,RPM,Vent Dir,Blinker Left,DC Amps,Shifter,Charger temp,Cell Voltage,Head Light,Speed,Trip Rounds,SOC,AC Volts,Break Pressed,total km,Motor temp,Range,Cell Temperature,Steering Position,Break Pedal,Parking Light,Steering Movement,Trip Odo,VIN,# of Cells,Key,Accelerator,DC Volts"
-     ));
+    // debug = true;
+    if (debug) {
+      LOGGER.log(Level.INFO, names);
     }
+    assertTrue(names.startsWith(
+        "Door Open,Climate,RPM Speed,Battery Capacity,AC Amps,Blinker Right,High Beam,RPM,Vent Dir,Blinker Left,DC Amps,Shifter,Charger temp,Cell Voltage,Head Light,Speed,Trip Rounds,SOC,AC Volts,Break Pressed,total km,Motor temp,Range,Cell Temperature,Steering Position,Break Pedal,Parking Light,Steering Movement,Trip Odo,VIN,# of Cells,Key,Accelerator,DC Volts"));
+  }
 
   @Test
   public void testPidFromPid() throws Exception {

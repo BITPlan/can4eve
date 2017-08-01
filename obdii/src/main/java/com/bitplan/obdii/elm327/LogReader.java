@@ -26,8 +26,10 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -46,7 +48,6 @@ public class LogReader {
   public static boolean debug = false;
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii");
   private BufferedReader logReader;
-  private ResponseHandler responseHandler;
 
   int index = 0;
   public static SimpleDateFormat captureDateFormatter = new SimpleDateFormat(
@@ -54,7 +55,15 @@ public class LogReader {
   public static SimpleDateFormat logDateFormatter = new SimpleDateFormat(
       "yyyy-MM-dd hh:mm:ss.SSS");
   private ZipFile zipFile;
+  List<LogListener> logListeners = new ArrayList<LogListener>();
+  List<ResponseHandler> responseHandlers=new ArrayList<ResponseHandler>();
 
+  /**
+   * Loglistener
+   * 
+   * @author wf
+   *
+   */
   public abstract class LogListener {
     /**
      * handler for updates
@@ -69,17 +78,23 @@ public class LogReader {
         int count);
   }
 
+  public void addLogListener(LogListener logListener) {
+    this.logListeners.add(logListener);
+  }
+  
+  public void addReponseHandler(ResponseHandler responseHandler) {
+    this.responseHandlers.add(responseHandler);
+  }
+
   /**
    * construct a Log Reader for the given logFile
    * 
    * @param logFile
-   * @param responseHandler
    * @throws Exception
    */
-  public LogReader(File logFile, ResponseHandler responseHandler)
+  public LogReader(File logFile)
       throws Exception {
     // this.logFile = logFile;
-    this.responseHandler = responseHandler;
     InputStream inputStream;
     if (logFile.getName().endsWith(".zip")) {
       zipFile = new ZipFile(logFile);
@@ -145,16 +160,22 @@ public class LogReader {
    * 
    * @throws Exception
    */
-  public void read(LogListener logListener) throws Exception {
+  public void read() throws Exception {
     String line; // a line read
     int count = 0;
-    while ((line = logReader.readLine()) != null) {
+    boolean stop = false;
+    while (!stop && (line = logReader.readLine()) != null) {
       count++;
       Packet p = lineAsPacket(line);
-      if (p != null)
-        this.responseHandler.handleResponse(p);
-      if (!logListener.onUpdate(line, line.length(), index, count))
-        break;
+      if (p != null) {
+        for(ResponseHandler responseHandler:this.responseHandlers) {
+          responseHandler.handleResponse(p);
+        }
+      }
+      for (LogListener logListener : this.logListeners) {
+        if (!logListener.onUpdate(line, line.length(), index, count))
+          stop = true;
+      }
     }
     logReader.close();
     if (zipFile != null)
