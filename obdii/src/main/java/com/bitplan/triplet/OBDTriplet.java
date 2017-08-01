@@ -368,7 +368,7 @@ public class OBDTriplet extends OBDHandler {
       // more importantly the line is probably not reliable e.g. baud rate is too high and user
       // should get feedback (together with BUFFER OVERRUNS CAN ERRORS and the like
       if (km > 500000 || km < 0)
-        LOGGER.log(Level.SEVERE, "invalide odometer value " + km);
+        LOGGER.log(Level.SEVERE, "invalid odometer value " + km);
       else {
         cpm.setValue("Odometer", km, timeStamp);
         Integer speedNum = pr.d[1];
