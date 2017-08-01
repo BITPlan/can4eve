@@ -188,10 +188,13 @@ public class OBDTriplet extends OBDHandler {
     if (debug)
       LOGGER.log(Level.INFO, "triplet handling PID Response " + pr.pidId + " ("
           + pr.pid.getName() + ")");
-    Pid pid=pr.pid;
-    if (pid.getLength()!=null && pr.d.length != pid.getLength()) {
-      LOGGER.log(Level.SEVERE,String.format("invalid response length %2d!=%2d for %s (%s)",pr.d.length,pid.getLength(),pid.getName(),pid.getPid()));
-      // do not try to handle corrupted data ... to avoid exceptions in accessing
+    Pid pid = pr.pid;
+    if (pid.getLength() != null && pr.d.length != pid.getLength()) {
+      LOGGER.log(Level.SEVERE,
+          String.format("invalid response length %2d!=%2d for %s (%s)",
+              pr.d.length, pid.getLength(), pid.getName(), pid.getPid()));
+      // do not try to handle corrupted data ... to avoid exceptions in
+      // accessing
       // the d[] array
       return;
     }
@@ -360,12 +363,19 @@ public class OBDTriplet extends OBDHandler {
       }
       break;
     case "Odometer_Speed":
-      cpm.setValue("Odometer", pr.d[2] * 65536 + pr.d[3] * 256 + pr.d[4],
-          timeStamp);
-      Integer speedNum = pr.d[1];
-      if (speedNum == 255)
-        speedNum = null;
-      cpm.setValue("Speed", speedNum, timeStamp);
+      int km = pr.d[2] * 65536 + pr.d[3] * 256 + pr.d[4];
+      // TODO - systematic check needed e.g. by change rate of values and 3/4 - 4/4 voting
+      // more importantly the line is probably not reliable e.g. baud rate is too high and user
+      // should get feedback (together with BUFFER OVERRUNS CAN ERRORS and the like
+      if (km > 500000 || km < 0)
+        LOGGER.log(Level.SEVERE, "invalide odometer value " + km);
+      else {
+        cpm.setValue("Odometer", km, timeStamp);
+        Integer speedNum = pr.d[1];
+        if (speedNum == 255)
+          speedNum = null;
+        cpm.setValue("Speed", speedNum, timeStamp);
+      }
       break;
     case "Range": // 0x346
       Integer rangeNum = pr.d[7];
