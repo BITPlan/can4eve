@@ -155,9 +155,9 @@ public class TestLogs {
     Preferences prefs = Preferences.getInstance();
     if (prefs != null) {
       String logDirectoryName = prefs.logDirectory;
-      if (logDirectoryName != null) {
+      if (!logDirectoryName.isEmpty()) {
         File logDirectory = new File(logDirectoryName);
-        assertTrue(logDirectory.isDirectory());
+        assertTrue("'"+logDirectory.getName()+"' should be a directory",logDirectory.isDirectory());
         File[] logFiles = logDirectory.listFiles();
         OBDTriplet obdTriplet = new OBDTriplet(VehicleGroup.get("triplet"));
         obdTriplet.getElm327().setHeader(true);
