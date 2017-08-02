@@ -75,7 +75,7 @@ public class TestLogs {
         return;
       if (this.names.contains(name)) {
         printWriter.println(String.format("%s%s%s%s%f",
-            isoDateFormatter.format(timeStamp), DELIM,name,DELIM, value));
+            isoDateFormatter.format(timeStamp), DELIM, name, DELIM, value));
       }
     }
 
@@ -85,7 +85,7 @@ public class TestLogs {
         return;
       if (this.names.contains(name)) {
         printWriter.println(String.format("%s%s%s%s%d",
-            isoDateFormatter.format(timeStamp), DELIM,name,DELIM,value));
+            isoDateFormatter.format(timeStamp), DELIM, name, DELIM, value));
       }
     }
 
@@ -100,7 +100,7 @@ public class TestLogs {
     }
 
   }
-  
+
   public class KWAnalyzer implements CANValueHandler {
     SimpleDateFormat isoDateFormatter = new SimpleDateFormat(
         "yyyy-MM-dd HH:mm:ss");
@@ -108,42 +108,42 @@ public class TestLogs {
     private Double dcvolts;
     private File csvFile;
     private PrintWriter printWriter;
-    
-    public KWAnalyzer(String csvFileName)
-        throws Exception {
+
+    public KWAnalyzer(String csvFileName) throws Exception {
       csvFile = new File(csvFileName);
       printWriter = new PrintWriter(csvFile);
     }
 
     @Override
     public void setValue(String name, Double value, Date timeStamp) {
-      if (value==null)
+      if (value == null)
         return;
       if ("DCAmps".equals(name))
-        dcamps=value;
+        dcamps = value;
       if ("DCVolts".equals(name))
-        dcvolts=value;
+        dcvolts = value;
     }
 
     @Override
     public void setValue(String name, Integer value, Date timeStamp) {
-      if (value==null)
+      if (value == null)
         return;
       if ("Speed".equals(name)) {
-        if (dcamps!=null && dcvolts!=null) {
-          double kw = dcamps*dcvolts/-1000.0;
+        if (dcamps != null && dcvolts != null) {
+          double kw = dcamps * dcvolts / -1000.0;
           printWriter.println(String.format("%s;%3d;%5.1f\n",
-             isoDateFormatter.format(timeStamp),value,kw));
+              isoDateFormatter.format(timeStamp), value, kw));
         }
       }
-      
+
     }
 
     @Override
     public void setValue(String name, Boolean value, Date timeStamp) {
       // TODO Auto-generated method stub
-      
+
     }
+
     public void close() {
       printWriter.close();
     }
@@ -157,27 +157,29 @@ public class TestLogs {
       String logDirectoryName = prefs.logDirectory;
       if (!logDirectoryName.isEmpty()) {
         File logDirectory = new File(logDirectoryName);
-        assertTrue("'"+logDirectory.getName()+"' should be a directory",logDirectory.isDirectory());
-        File[] logFiles = logDirectory.listFiles();
-        OBDTriplet obdTriplet = new OBDTriplet(VehicleGroup.get("triplet"));
-        obdTriplet.getElm327().setHeader(true);
-        obdTriplet.getElm327().setLength(true);
-        //CANValueAnalyzer analyzer = new CANValueAnalyzer("/tmp/canlog.csv","Speed", "DCAmps","DCVolts");
-        KWAnalyzer analyzer=new KWAnalyzer("/tmp/kwlog.csv");
-        obdTriplet.setCanValueHandler(analyzer);
-        int count = 0;
-        long sum = 0;
-        for (File logFile : logFiles) {
-          if (logFile.getName().endsWith(".log")) {
-            sum += logFile.length() / 1024 / 1024;
-            System.out.println(String.format("%3d: %5d m %7d k %s \n", ++count,
-                sum, logFile.length() / 1024, logFile.getName()));
-            LogReader logReader = new LogReader(logFile);
-            logReader.addReponseHandler(obdTriplet);
-            logReader.read();
-          }
-        } // for
-        analyzer.close();
+        if (logDirectory.isDirectory()) {
+          File[] logFiles = logDirectory.listFiles();
+          OBDTriplet obdTriplet = new OBDTriplet(VehicleGroup.get("triplet"));
+          obdTriplet.getElm327().setHeader(true);
+          obdTriplet.getElm327().setLength(true);
+          // CANValueAnalyzer analyzer = new
+          // CANValueAnalyzer("/tmp/canlog.csv","Speed", "DCAmps","DCVolts");
+          KWAnalyzer analyzer = new KWAnalyzer("/tmp/kwlog.csv");
+          obdTriplet.setCanValueHandler(analyzer);
+          int count = 0;
+          long sum = 0;
+          for (File logFile : logFiles) {
+            if (logFile.getName().endsWith(".log")) {
+              sum += logFile.length() / 1024 / 1024;
+              System.out.println(String.format("%3d: %5d m %7d k %s \n",
+                  ++count, sum, logFile.length() / 1024, logFile.getName()));
+              LogReader logReader = new LogReader(logFile);
+              logReader.addReponseHandler(obdTriplet);
+              logReader.read();
+            }
+          } // for
+          analyzer.close();
+        }
       }
     }
   }
