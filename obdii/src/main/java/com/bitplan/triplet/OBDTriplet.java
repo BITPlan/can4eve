@@ -33,6 +33,7 @@ import com.bitplan.can4eve.CANValue.CANRawValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.CANValue.IntegerValue;
 import com.bitplan.can4eve.CANValue.StringValue;
+import com.bitplan.can4eve.CANValueHandler;
 import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.Vehicle;
 import com.bitplan.can4eve.VehicleGroup;
@@ -176,6 +177,7 @@ public class OBDTriplet extends OBDHandler {
     // properties
     msecsRunningProperty = new SimpleLongProperty();
     vehicleStateProperty = new SimpleObjectProperty<Vehicle.State>();
+
   }
 
   /**
@@ -189,6 +191,7 @@ public class OBDTriplet extends OBDHandler {
       LOGGER.log(Level.INFO, "triplet handling PID Response " + pr.pidId + " ("
           + pr.pid.getName() + ")");
     Pid pid = pr.pid;
+    CANValueHandler cvh=super.getCanValueHandler();
     if (pid.getLength() != null && pr.d.length != pid.getLength()) {
       LOGGER.log(Level.SEVERE,
           String.format("invalid response length %2d!=%2d for %s (%s)",
@@ -202,16 +205,16 @@ public class OBDTriplet extends OBDHandler {
     String pidName = pid.getName();
     switch (pidName) {
     case "Accelerator":
-      cpm.setValue(pidName, pr.d[2] / 250.0 * 100, timeStamp);
+      cvh.setValue(pidName, pr.d[2] / 250.0 * 100, timeStamp);
       break;
     case "AmpsVolts":
-      cpm.setValue("DCAmps", ((pr.d[2] * 256 + pr.d[3]) - 128 * 256) / 100.0,
+      cvh.setValue("DCAmps", ((pr.d[2] * 256 + pr.d[3]) - 128 * 256) / 100.0,
           timeStamp);
-      cpm.setValue("DCVolts", (pr.d[4] * 256 + pr.d[5]) / 10.0, timeStamp);
+      cvh.setValue("DCVolts", (pr.d[4] * 256 + pr.d[5]) / 10.0, timeStamp);
       break;
     case "ACAmpsVolts":
-      cpm.setValue("ACVolts", pr.d[1] * 1.0, timeStamp);
-      cpm.setValue("ACAmps", pr.d[6] / 10.0, timeStamp);
+      cvh.setValue("ACVolts", pr.d[1] * 1.0, timeStamp);
+      cvh.setValue("ACAmps", pr.d[6] / 10.0, timeStamp);
       break;
     case "BatteryCapacity":
       int bindex = pr.d[0];
@@ -219,19 +222,19 @@ public class OBDTriplet extends OBDHandler {
         double ah = (pr.d[3] * 256 + pr.d[4]) / 10.0;
         // LOGGER.log(Level.INFO,String.format("Battery capacity is: %4.1f Ah",
         // ah));
-        cpm.setValue("BatteryCapacity", ah, timeStamp);
+        cvh.setValue("BatteryCapacity", ah, timeStamp);
       }
       break;
     case "BreakPedal":
       // TODO 6F FF FF FF FF FF
-      cpm.setValue(pidName, ((pr.d[2] * 256 + pr.d[3]) - 24576.0) / 640 * 100.0,
+      cvh.setValue(pidName, ((pr.d[2] * 256 + pr.d[3]) - 24576.0) / 640 * 100.0,
           timeStamp);
       break;
     case "BreakPressed":
-      cpm.setValue(pidName, pr.d[4] == 2, timeStamp);
+      cvh.setValue(pidName, pr.d[4] == 2, timeStamp);
       break;
     case "ChargerTemp":
-      cpm.setValue(pidName, pr.d[3] - 40, timeStamp);
+      cvh.setValue(pidName, pr.d[3] - 40, timeStamp);
       break;
     case "CellInfo1":
     case "CellInfo2":
@@ -323,20 +326,20 @@ public class OBDTriplet extends OBDHandler {
       break;
     case "Key":
       int keyVal = pr.d[0];
-      cpm.setValue(pidName, keyVal == 4, timeStamp);
+      cvh.setValue(pidName, keyVal == 4, timeStamp);
       break;
     case "Lights":
       int lightNum = pr.d[0] * 256 + pr.d[1];
       int ilightNum = pr.d[2];
-      cpm.setValue("DoorOpen", (ilightNum & 0x01) != 0, timeStamp);
-      cpm.setValue("BlinkerRight", (lightNum & 0x01) != 0, timeStamp);
-      cpm.setValue("BlinkerLeft", (lightNum & 0x02) != 0, timeStamp);
-      cpm.setValue("HighBeam", (lightNum & 0x04) != 0, timeStamp);
-      cpm.setValue("HeadLight", (lightNum & 0x20) != 0, timeStamp);
-      cpm.setValue("ParkingLight", (lightNum & 0x40) != 0, timeStamp);
+      cvh.setValue("DoorOpen", (ilightNum & 0x01) != 0, timeStamp);
+      cvh.setValue("BlinkerRight", (lightNum & 0x01) != 0, timeStamp);
+      cvh.setValue("BlinkerLeft", (lightNum & 0x02) != 0, timeStamp);
+      cvh.setValue("HighBeam", (lightNum & 0x04) != 0, timeStamp);
+      cvh.setValue("HeadLight", (lightNum & 0x20) != 0, timeStamp);
+      cvh.setValue("ParkingLight", (lightNum & 0x40) != 0, timeStamp);
       break;
     case "MotorTemp_RPM":
-      cpm.setValue("MotorTemp", pr.d[3] - 40, timeStamp);
+      cvh.setValue("MotorTemp", pr.d[3] - 40, timeStamp);
       // fetch teh rounds per minute
       int rpmValue = (pr.d[6] * 256 + pr.d[7]) - 10000;
       // if we have a previous value we can start integrating
@@ -348,18 +351,18 @@ public class OBDTriplet extends OBDHandler {
             rpm.getValueItem().getTimeStamp(), Math.abs(rpmValue), timeStamp,
             1 / 60000.0);
         // calc distance based on rounds
-        cpm.setValue("TripOdo",
+        cvh.setValue("TripOdo",
             tripRounds.getValueItem().getValue() * mmPerRound / 1000000.0,
             timeStamp);
       }
-      cpm.setValue("RPM", rpmValue, timeStamp);
+      cvh.setValue("RPM", rpmValue, timeStamp);
       IntegerValue speed = this.getValue("Speed");
       if (speed.getValueItem().isAvailable()) {
         // m per round
         // speed.getValueItem().getValue() * 1000.0 / 60
         // / rpm.getValueItem().getValue()
         double rpmSpeed = rpm.getValue() * this.mmPerRound * 60 / 1000000.0;
-        cpm.setValue("RPMSpeed", rpmSpeed, timeStamp);
+        cvh.setValue("RPMSpeed", rpmSpeed, timeStamp);
       }
       break;
     case "Odometer_Speed":
@@ -370,23 +373,23 @@ public class OBDTriplet extends OBDHandler {
       if (km > 500000 || km < 0)
         LOGGER.log(Level.SEVERE, "invalid odometer value " + km);
       else {
-        cpm.setValue("Odometer", km, timeStamp);
+        cvh.setValue("Odometer", km, timeStamp);
         Integer speedNum = pr.d[1];
         if (speedNum == 255)
           speedNum = null;
-        cpm.setValue("Speed", speedNum, timeStamp);
+        cvh.setValue("Speed", speedNum, timeStamp);
       }
       break;
     case "Range": // 0x346
       Integer rangeNum = pr.d[7];
       if (rangeNum == 255)
         rangeNum = null;
-      cpm.setValue("Range", rangeNum, timeStamp);
+      cvh.setValue("Range", rangeNum, timeStamp);
       break;
     case "Steering_Wheel":
-      cpm.setValue("SteeringWheelPosition",
+      cvh.setValue("SteeringWheelPosition",
           (pr.d[0] * 256 + pr.d[1] - 4096) / 2.0, timeStamp);
-      cpm.setValue("SteeringWheelMovement",
+      cvh.setValue("SteeringWheelMovement",
           (pr.d[2] * 256 + pr.d[3] - 4096) / 2.0, timeStamp);
       break;
     case "ShifterPosition":
@@ -416,7 +419,7 @@ public class OBDTriplet extends OBDHandler {
       double soc = ((pr.d[1]) - 10) / 2.0;
       // FIXME - workaround for binding timing issue
       soc = soc - Math.random() * 0.001;
-      cpm.setValue("SOC", soc, timeStamp);
+      cvh.setValue("SOC", soc, timeStamp);
       break;
 
     case "VIN":
@@ -424,7 +427,7 @@ public class OBDTriplet extends OBDHandler {
       String partVal = pr.getString(1);
       VIN.set(indexVal, partVal, timeStamp);
       if (VIN.getValueItem().isAvailable()) {
-        cpm.setValue("CellCount", VIN.getCellCount(), timeStamp);
+        cvh.setValue("CellCount", VIN.getCellCount(), timeStamp);
       }
       break;
 

@@ -36,6 +36,7 @@ import java.util.logging.Level;
 import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.CANRawValue;
+import com.bitplan.can4eve.CANValueHandler;
 import com.bitplan.can4eve.ErrorHandler;
 import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.Vehicle;
@@ -65,6 +66,7 @@ public abstract class OBDHandler extends AbstractOBDHandler {
   protected SimpleLongProperty msecsRunningProperty;
   protected SimpleObjectProperty<Vehicle.State> vehicleStateProperty;
   public Date displayStart;
+  private CANValueHandler canValueHandler;
 
   public Integer getMmPerRound() {
     return mmPerRound;
@@ -80,6 +82,14 @@ public abstract class OBDHandler extends AbstractOBDHandler {
 
   public void setMonitoring(boolean monitoring) {
     this.monitoring = monitoring;
+  }
+
+  public CANValueHandler getCanValueHandler() {
+    return canValueHandler;
+  }
+
+  public void setCanValueHandler(CANValueHandler canValueHandler) {
+    this.canValueHandler = canValueHandler;
   }
 
   public OBDHandler(VehicleGroup vehicleGroup) {
@@ -140,6 +150,7 @@ public abstract class OBDHandler extends AbstractOBDHandler {
    */
   public void initCanValues(String... canInfoNames) {
     cpm = new CANPropertyManager(getVehicleGroup());
+    setCanValueHandler(cpm);
     for (String canInfoName : canInfoNames) {
       cpm.addValue(canInfoName);
     }

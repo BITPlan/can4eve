@@ -29,6 +29,7 @@ import java.util.Map;
 
 import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue;
+import com.bitplan.can4eve.CANValueHandler;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.CANValue.BooleanValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
@@ -45,7 +46,7 @@ import javafx.beans.property.SimpleIntegerProperty;
  * @author wf
  *
  */
-public class CANPropertyManager {
+public class CANPropertyManager implements CANValueHandler {
   private Map<String, CANProperty> canProperties = new HashMap<String, CANProperty>();
   VehicleGroup vehicleGroup;
 

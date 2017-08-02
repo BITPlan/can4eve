@@ -27,12 +27,10 @@ import java.util.Map.Entry;
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.SoftwareVersion;
-import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.Vehicle.State;
 import com.bitplan.can4eve.gui.App;
 import com.bitplan.can4eve.gui.javafx.CANProperty;
 import com.bitplan.can4eve.gui.javafx.CANPropertyManager;
-import com.bitplan.can4eve.gui.javafx.SampleApp;
 import com.bitplan.obdii.javafx.CANValuePane;
 import com.bitplan.obdii.javafx.JFXCanCellStatePlot;
 import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
@@ -43,6 +41,7 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.Region;
 
 /**
@@ -77,7 +76,7 @@ public class JFXTripletDisplay extends JavaFXDisplay {
     }
   }
 
-  Map<String,JFXCanValueHistoryPlot> historyMap=new HashMap<String,JFXCanValueHistoryPlot>();
+  Map<String, JFXCanValueHistoryPlot> historyMap = new HashMap<String, JFXCanValueHistoryPlot>();
 
   /**
    * special handling for Cell Temperature and Cell Voltage
@@ -160,6 +159,12 @@ public class JFXTripletDisplay extends JavaFXDisplay {
     }
   }
 
+  /**
+   * setup the history
+   * 
+   * @param cpm
+   * @throws Exception
+   */
   public void setupHistory(CANPropertyManager cpm) throws Exception {
     String title = "SOC/RR";
     String xTitle = "time";
@@ -167,7 +172,12 @@ public class JFXTripletDisplay extends JavaFXDisplay {
     Map<String, CANProperty> properties = cpm.getCANProperties("SOC", "Range");
     final JFXCanValueHistoryPlot valuePlot = new JFXCanValueHistoryPlot(title,
         xTitle, yTitle, properties);
-    Platform
-    .runLater(() -> updateTab(super.getTabPane(HISTORY_GROUP).getTabs().get(0), valuePlot.createLineChart()));
+    TabPane tabPane = super.getTabPane(HISTORY_GROUP);
+    if (tabPane != null) {
+      Tab tab = tabPane.getTabs().get(0);
+      if (tab != null) {
+        Platform.runLater(() -> updateTab(tab, valuePlot.createLineChart()));
+      }
+    }
   }
 }
