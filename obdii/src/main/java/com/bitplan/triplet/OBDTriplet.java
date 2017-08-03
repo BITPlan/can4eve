@@ -213,14 +213,14 @@ public class OBDTriplet extends OBDHandler {
           timeStamp);
       double volts=(pr.d[4] * 256 + pr.d[5]) / 10.0;
       cvh.setValue("DCVolts",volts , timeStamp);
-      cvh.setValue("DCPower", amps*volts, timeStamp);
+      cvh.setValue("DCPower", amps*volts/1000.0, timeStamp);
       break;
     case "ACAmpsVolts":
       double acvolts=pr.d[1] * 1.0;
       cvh.setValue("ACVolts", acvolts, timeStamp);
       double acamps= pr.d[6] / 10.0;
       cvh.setValue("ACAmps",acamps, timeStamp);
-      cvh.setValue("ACPower",acamps*acvolts*AC_POWER_FACTOR,timeStamp);
+      cvh.setValue("ACPower",acamps*acvolts*AC_POWER_FACTOR/1000.0,timeStamp);
       break;
     case "BatteryCapacity":
       int bindex = pr.d[0];
