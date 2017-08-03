@@ -167,7 +167,7 @@ public class TestVehicle extends TestOBDII {
     }
     if (debug)
       System.out.println(String.format("history size=%7d items", historySize));
-    assertEquals(225000, historySize);
+    assertEquals(237000, historySize);
   }
 
   @Test
