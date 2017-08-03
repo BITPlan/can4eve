@@ -39,7 +39,6 @@ import com.bitplan.can4eve.Vehicle;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.csv.CSVUtil;
 import com.bitplan.obdii.CANValueDisplay;
-import com.bitplan.obdii.JFXTripletDisplay;
 import com.bitplan.obdii.OBDHandler;
 import com.bitplan.obdii.PIDResponse;
 import com.bitplan.obdii.elm327.ELM327;
@@ -58,6 +57,7 @@ import javafx.beans.property.SimpleStringProperty;
  */
 public class OBDTriplet extends OBDHandler {
 
+  private static final double AC_POWER_FACTOR = 0.9;
   // car parameters
   public VINValue VIN;
   VINValue VIN2;
@@ -156,10 +156,10 @@ public class OBDTriplet extends OBDHandler {
    * things to do / initialize after I a was constructed
    */
   public void postConstruct() {
-    initCanValues("ACAmps", "ACVolts", "Accelerator", "BatteryCapacity",
+    initCanValues("ACAmps", "ACVolts","ACPower", "Accelerator", "BatteryCapacity",
         "BlinkerLeft", "BlinkerRight", "BreakPedal", "BreakPressed",
         "CellCount", "CellTemperature", "CellVoltage", "ChargerTemp", "DCAmps",
-        "DCVolts", "DoorOpen", "HeadLight", "HighBeam", "Key", "MotorTemp",
+        "DCVolts", "DCPower","DoorOpen", "HeadLight", "HighBeam", "Key", "MotorTemp",
         "Odometer", "ParkingLight", "Range", "RPM", "RPMSpeed", "SOC", "Speed",
         "SteeringWheelPosition", "SteeringWheelMovement", "TripRounds",
         "TripOdo");
@@ -208,13 +208,19 @@ public class OBDTriplet extends OBDHandler {
       cvh.setValue(pidName, pr.d[2] / 250.0 * 100, timeStamp);
       break;
     case "AmpsVolts":
-      cvh.setValue("DCAmps", ((pr.d[2] * 256 + pr.d[3]) - 128 * 256) / 100.0,
+      double amps=((pr.d[2] * 256 + pr.d[3]) - 128 * 256) / 100.0;
+      cvh.setValue("DCAmps", amps,
           timeStamp);
-      cvh.setValue("DCVolts", (pr.d[4] * 256 + pr.d[5]) / 10.0, timeStamp);
+      double volts=(pr.d[4] * 256 + pr.d[5]) / 10.0;
+      cvh.setValue("DCVolts",volts , timeStamp);
+      cvh.setValue("DCPower", amps*volts, timeStamp);
       break;
     case "ACAmpsVolts":
-      cvh.setValue("ACVolts", pr.d[1] * 1.0, timeStamp);
-      cvh.setValue("ACAmps", pr.d[6] / 10.0, timeStamp);
+      double acvolts=pr.d[1] * 1.0;
+      cvh.setValue("ACVolts", acvolts, timeStamp);
+      double acamps= pr.d[6] / 10.0;
+      cvh.setValue("ACAmps",acamps, timeStamp);
+      cvh.setValue("ACPower",acamps*acvolts*AC_POWER_FACTOR,timeStamp);
       break;
     case "BatteryCapacity":
       int bindex = pr.d[0];
@@ -398,8 +404,8 @@ public class OBDTriplet extends OBDHandler {
       if (newShifterPosition.shiftPosition == ShiftPosition.P) {
         this.vehicleStateProperty.set(Vehicle.State.Parking);
         // are we charging?
-        DoubleValue acvolts = getValue("ACVolts");
-        if (acvolts.getValueItem().isAvailable() && acvolts.getValue() > 50) {
+        DoubleValue lacvolts = getValue("ACVolts");
+        if (lacvolts.getValueItem().isAvailable() && lacvolts.getValue() > 50) {
           // AC charging
           this.vehicleStateProperty.set(Vehicle.State.Charging);
         }

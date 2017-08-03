@@ -114,6 +114,9 @@ public class I18n {
   public static final String ODO_INFO = "odoInfo";
   public static final String FROM = "from";
   public static final String TO="to";
+  public static final String K_WATT = "kWatt";
+  public static final String AC_POWER = "acPower";
+  public static final String DC_POWER = "dcPower";
  
   
   /**

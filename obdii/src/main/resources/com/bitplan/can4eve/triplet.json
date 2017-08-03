@@ -84,6 +84,15 @@
           "type": "DoubleValue",
           "historyValuesPerMinute": 30,
           "maxIndex": 0
+        },
+        {
+          "name": "DCPower",
+          "title": "DCPower",
+          "description": "Power",
+          "format": "%6.1f kWatt",
+          "type": "DoubleValue",
+          "historyValuesPerMinute": 30,
+          "maxIndex": 0
         }
       ]
     },
@@ -117,6 +126,15 @@
           "title": "AC Volts",
           "description": "Charging Current Volts",
           "format": "%5.1f V",
+          "type": "DoubleValue",
+          "historyValuesPerMinute": 10,
+          "maxIndex": 0
+        },
+        {
+          "name": "ACPower",
+          "title": "ACPower",
+          "description": "Power",
+          "format": "%4.1f kWatt",
           "type": "DoubleValue",
           "historyValuesPerMinute": 10,
           "maxIndex": 0

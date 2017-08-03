@@ -55,11 +55,13 @@ public class ChargePane extends CANValuePane {
     
     super.addGauge("SOC",socGauge,0,0);
     super.addGauge("Range",I18n.RR,I18n.KM,1,0).setDecimals(1);;
-    super.addGauge("ACVolts",I18n.AC_VOLTS,I18n.VOLTS,0,1);
-    super.addGauge("ACAmps",I18n.AC_AMPS,I18n.AMPS,1,1).setDecimals(1);;
-    super.addGauge("DCVolts",I18n.DC_VOLTS,I18n.VOLTS,0,2);
-    super.addGauge("DCAmps",I18n.DC_AMPS,I18n.AMPS,1,2).setDecimals(1);;    
-    this.fixColumnSizes(4, 50,50);
+    super.addGauge("ACPower",I18n.AC_POWER,I18n.K_WATT,0,1).setDecimals(1);
+    super.addGauge("ACVolts",I18n.AC_VOLTS,I18n.VOLTS,1,1);
+    super.addGauge("ACAmps",I18n.AC_AMPS,I18n.AMPS,2,1).setDecimals(1);;
+    super.addGauge("DCPower",I18n.DC_POWER,I18n.K_WATT,0,2).setDecimals(1);    
+    super.addGauge("DCVolts",I18n.DC_VOLTS,I18n.VOLTS,1,2);
+    super.addGauge("DCAmps",I18n.DC_AMPS,I18n.AMPS,2,2).setDecimals(1);;    
+    this.fixColumnSizes(4, 33,33,33);
     this.fixRowSizes(4, 33,33,33);
   }
 }

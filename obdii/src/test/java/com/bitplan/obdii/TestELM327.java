@@ -515,7 +515,7 @@ public class TestELM327 extends TestOBDII {
   public void testCanValues() throws Exception {
     OBDHandler lOBDTriplet = new OBDTriplet(getVehicleGroup());
     List<CANValue<?>> canValues = lOBDTriplet.getCANValues();
-    assertEquals(34, canValues.size());
+    assertEquals(36, canValues.size());
 
     String names = "";
     String delim = "";
@@ -524,12 +524,12 @@ public class TestELM327 extends TestOBDII {
       delim = ",";
       assertTrue(canValue.isRead());
     }
-    // debug = true;
+    //debug = true;
     if (debug) {
       LOGGER.log(Level.INFO, names);
     }
     assertTrue(names.startsWith(
-        "Door Open,Climate,RPM Speed,Battery Capacity,AC Amps,Blinker Right,High Beam,RPM,Vent Dir,Blinker Left,DC Amps,Shifter,Charger temp,Cell Voltage,Head Light,Speed,Trip Rounds,SOC,AC Volts,Break Pressed,total km,Motor temp,Range,Cell Temperature,Steering Position,Break Pedal,Parking Light,Steering Movement,Trip Odo,VIN,# of Cells,Key,Accelerator,DC Volts"));
+        "Door Open,Climate,RPM Speed,Battery Capacity,AC Amps,Blinker Right,High Beam,RPM,Vent Dir,Blinker Left,DC Amps,Shifter,Charger temp,DCPower,Cell Voltage,Head Light,Speed,Trip Rounds,ACPower,SOC,AC Volts,Break Pressed,total km,Motor temp,Range,Cell Temperature,Steering Position,Break Pedal,Parking Light,Steering Movement,Trip Odo,VIN,# of Cells,Key,Accelerator,DC Volts"));
   }
 
   @Test
@@ -560,7 +560,7 @@ public class TestELM327 extends TestOBDII {
     // debug=true;
     OBDHandler lOBDTriplet = new OBDTriplet(getVehicleGroup());
     List<CANValue<?>> canValues = lOBDTriplet.getCANValues();
-    assertEquals(34, canValues.size());
+    assertEquals(36, canValues.size());
     for (CANValue<?> canValue : canValues) {
       if (debug) {
         LOGGER.log(Level.INFO, canValue.canInfo.getTitle() + ":"
