@@ -87,7 +87,7 @@
         },
         {
           "name": "DCPower",
-          "title": "DCPower",
+          "title": "DC Power",
           "description": "Power",
           "format": "%6.1f kWatt",
           "type": "DoubleValue",
@@ -132,7 +132,7 @@
         },
         {
           "name": "ACPower",
-          "title": "ACPower",
+          "title": "AC Power",
           "description": "Power",
           "format": "%4.1f kWatt",
           "type": "DoubleValue",

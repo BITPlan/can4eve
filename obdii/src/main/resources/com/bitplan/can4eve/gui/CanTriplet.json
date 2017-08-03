@@ -286,6 +286,12 @@
 							"fieldSize": 40
 						},
 						{
+							"title": "AC Power",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
 							"title": "DC Amps",
 							"format": "%s",
 							"labelSize": 13,
@@ -293,6 +299,12 @@
 						},
 						{
 							"title": "DC Volts",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
+							"title": "DC Power",
 							"format": "%s",
 							"labelSize": 13,
 							"fieldSize": 40
