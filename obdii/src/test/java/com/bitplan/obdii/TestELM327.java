@@ -529,7 +529,7 @@ public class TestELM327 extends TestOBDII {
       LOGGER.log(Level.INFO, names);
     }
     assertTrue(names.startsWith(
-        "Door Open,Climate,RPM Speed,Battery Capacity,AC Amps,Blinker Right,High Beam,RPM,Vent Dir,Blinker Left,DC Amps,Shifter,Charger temp,DCPower,Cell Voltage,Head Light,Speed,Trip Rounds,ACPower,SOC,AC Volts,Break Pressed,total km,Motor temp,Range,Cell Temperature,Steering Position,Break Pedal,Parking Light,Steering Movement,Trip Odo,VIN,# of Cells,Key,Accelerator,DC Volts"));
+        "Door Open,Climate,RPM Speed,Battery Capacity,AC Amps,Blinker Right,High Beam,RPM,Vent Dir,Blinker Left,DC Amps,Shifter,Charger temp,DC Power,Cell Voltage,Head Light,Speed,Trip Rounds,AC Power,SOC,AC Volts,Break Pressed,total km,Motor temp,Range,Cell Temperature,Steering Position,Break Pedal,Parking Light,Steering Movement,Trip Odo,VIN,# of Cells,Key,Accelerator,DC Volts"));
   }
 
   @Test
