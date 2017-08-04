@@ -20,7 +20,9 @@
  */
 package com.bitplan.can4eve;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,8 +36,10 @@ import com.bitplan.csv.CSVUtil;
  * @author wf
  *
  */
-public abstract class CANValue<ValueType> implements CANData<ValueType>{
-  public static final int MAX_HISTORY_MINUTES=300; // maximum length of history (300 minutes=5 hours)
+public abstract class CANValue<ValueType> implements CANData<ValueType> {
+  public static final int MAX_HISTORY_MINUTES = 300; // maximum length of
+                                                     // history (300 minutes=5
+                                                     // hours)
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.can4eve");
   protected static boolean debug = false;
 
@@ -46,7 +50,7 @@ public abstract class CANValue<ValueType> implements CANData<ValueType>{
    *
    * @param <ValueType>
    */
-  public static class ValueItem<ValueType> {
+  public static class ValueItem<ValueType> implements CANValueItem<ValueType> {
     boolean available = false;
     ValueType value;
     Date timeStamp;
@@ -77,9 +81,15 @@ public abstract class CANValue<ValueType> implements CANData<ValueType>{
   }
 
   public CANInfo canInfo;
-  public CANInfo getCANInfo() { return canInfo; };
+
+  public CANInfo getCANInfo() {
+    return canInfo;
+  };
+
   ValueItem<ValueType> valueItem = new ValueItem<ValueType>();
-  private ValueItem<ValueType>[] valueItems; // for indexed CANValues
+  private List<CANValueItem<ValueType>> valueItems = new ArrayList<CANValueItem<ValueType>>(); // for
+                                                                                               // indexed
+                                                                                               // CANValues
 
   private CircularFifoQueue<ValueItem<ValueType>> history;
   private Date previousHistoryTimeStamp;
@@ -89,6 +99,14 @@ public abstract class CANValue<ValueType> implements CANData<ValueType>{
   private boolean read = false;
   private int updateCount;
   private Class<?> clazz;
+
+  public List<CANValueItem<ValueType>> getValueItems() {
+    return valueItems;
+  }
+
+  public void setValueItems(List<CANValueItem<ValueType>> valueItems) {
+    this.valueItems = valueItems;
+  }
 
   /**
    * create a canValue for the given CANInfo
@@ -109,6 +127,9 @@ public abstract class CANValue<ValueType> implements CANData<ValueType>{
    */
   public void init(CANInfo canInfo) {
     this.canInfo = canInfo;
+    for (int i = 0; i < canInfo.getMaxIndex(); i++) {
+      getValueItems().add(new ValueItem<ValueType>());
+    }
     if (canInfo.getHistoryValuesPerMinute() > 0)
       this.historyMSecs = 60000 / canInfo.getHistoryValuesPerMinute();
     else
@@ -125,13 +146,13 @@ public abstract class CANValue<ValueType> implements CANData<ValueType>{
     setRead(true);
     setDisplay(true);
   }
-  
+
   public boolean isAvailable() {
-    if (this.valueItem==null)
+    if (this.valueItem == null)
       return false;
     return this.valueItem.isAvailable();
   }
-  
+
   public Date getTimeStamp() {
     return this.valueItem.timeStamp;
   }
@@ -144,11 +165,11 @@ public abstract class CANValue<ValueType> implements CANData<ValueType>{
    * @param timeStamp
    * @return
    */
-  public ValueItem<ValueType> assign(ValueItem<ValueType> item, ValueType value,
+  public CANValueItem<ValueType> assign(CANValueItem<ValueType> item, ValueType value,
       Date timeStamp) {
-    item.value = value;
-    item.available = value != null;
-    item.timeStamp = timeStamp;
+    item.setValue(value);
+    item.setAvailable(value != null);
+    item.setTimeStamp(timeStamp);
     return item;
   }
 
@@ -162,18 +183,12 @@ public abstract class CANValue<ValueType> implements CANData<ValueType>{
   public void setValue(int index, ValueType value, Date timeStamp) {
     if (this.startTime == null)
       startTime = timeStamp;
-    ValueItem<ValueType> currentItem = null;
+    CANValueItem<ValueType> currentItem = null;
     if (index < 0) {
       currentItem = assign(this.valueItem, value, timeStamp);
     } else {
-      if (getValueItems() == null) {
-        setValueItems(new ValueItem[canInfo.getMaxIndex()]);
-        for (int i = 0; i < getValueItems().length; i++) {
-          getValueItems()[i] = new ValueItem<ValueType>();
-        }
-      }
       try {
-        currentItem = assign(getValueItems()[index], value, timeStamp);
+        currentItem = assign(getValueItems().get(index), value, timeStamp);
       } catch (ArrayStoreException ase) {
         throw new RuntimeException(
             "setValue fails due to ArrayStore Exception");
@@ -201,14 +216,14 @@ public abstract class CANValue<ValueType> implements CANData<ValueType>{
    * 
    * @param currentItem
    */
-  private void addToHistory(ValueItem<ValueType> currentItem) {
-    if (currentItem.available) {
+  private void addToHistory(CANValueItem<ValueType> currentItem) {
+    if (currentItem.isAvailable()) {
       ValueItem<ValueType> historyItem = new ValueItem<ValueType>();
       historyItem.available = true;
-      historyItem.timeStamp = currentItem.timeStamp;
-      historyItem.value = currentItem.value;
+      historyItem.timeStamp = currentItem.getTimeStamp();
+      historyItem.value = currentItem.getValue();
       getHistory().add(historyItem);
-      previousHistoryTimeStamp = currentItem.timeStamp;
+      previousHistoryTimeStamp = currentItem.getTimeStamp();
     }
   }
 
@@ -220,7 +235,7 @@ public abstract class CANValue<ValueType> implements CANData<ValueType>{
    */
   public String get(int i) {
     if (getValueItems() != null) {
-      ValueType value = getValueItems()[i].value;
+      ValueType value = getValueItems().get(i).getValue();
       return asString(value);
     } else {
       return "?";
@@ -261,14 +276,6 @@ public abstract class CANValue<ValueType> implements CANData<ValueType>{
 
   public ValueType getValue() {
     return valueItem.value;
-  }
-
-  public ValueItem<ValueType>[] getValueItems() {
-    return valueItems;
-  }
-
-  public void setValueItems(ValueItem<ValueType>[] valueItems) {
-    this.valueItems = valueItems;
   }
 
   public CircularFifoQueue<ValueItem<ValueType>> getHistory() {
@@ -487,12 +494,13 @@ public abstract class CANValue<ValueType> implements CANData<ValueType>{
 
     /**
      * construct me from a canInfo
+     * 
      * @param canInfo
      */
     public BooleanValue(CANInfo canInfo) {
-      super(canInfo,Boolean.class);
+      super(canInfo, Boolean.class);
     }
-       
+
     public String asString() {
       String result = "?";
       if (valueItem.available) {

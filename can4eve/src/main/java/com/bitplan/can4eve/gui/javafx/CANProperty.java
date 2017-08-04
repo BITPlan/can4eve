@@ -32,6 +32,7 @@ import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.collections.ObservableList;
 
 /**
  * generic JavaFX CANProperty
@@ -43,6 +44,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 public class CANProperty<CT extends CANValue<T>,T> implements CANData<T>{
   CT canValue;
   private Property<T>property;
+  private ObservableList<T> propertyList;
   private Property<T>max;
   private Property<T>avg;
   
@@ -73,6 +75,16 @@ public class CANProperty<CT extends CANValue<T>,T> implements CANData<T>{
   public void setAvg(Property<T> avg) {
     this.avg = avg;
   }
+  
+  /**
+   * initialize me with the given CANValue and property
+   * @param canValue
+   * @param property
+   */
+  public void init(CT canValue, Property<T> property){
+    this.canValue=canValue;
+    this.setProperty(property);
+  }
 
   /**
    * construct me
@@ -80,8 +92,7 @@ public class CANProperty<CT extends CANValue<T>,T> implements CANData<T>{
    * @param property
    */
   public CANProperty(CT canValue, Property<T> property) {
-    this.canValue=canValue;
-    this.setProperty(property);
+    init(canValue,property);
   }
   
   /**
@@ -91,8 +102,7 @@ public class CANProperty<CT extends CANValue<T>,T> implements CANData<T>{
    */
   @SuppressWarnings({ "unchecked"})
   public CANProperty(DoubleValue canValue, SimpleDoubleProperty property) {
-    this.canValue=(CT)canValue;
-    this.setProperty((Property<T>)property);
+    init((CT)canValue,(Property<T>)property);
     this.setAvg((Property<T>) new SimpleDoubleProperty());
     this.setMax((Property<T>) new SimpleDoubleProperty());
   }
@@ -105,8 +115,7 @@ public class CANProperty<CT extends CANValue<T>,T> implements CANData<T>{
   @SuppressWarnings({ "unchecked"})
   public CANProperty(IntegerValue canValue,
       SimpleIntegerProperty property) {
-    this.canValue=(CT)canValue;
-    this.setProperty((Property<T>)property);
+    init((CT)canValue,(Property<T>)property);
     this.setAvg((Property<T>) new SimpleIntegerProperty());
     this.setMax((Property<T>) new SimpleIntegerProperty());
   }
@@ -123,7 +132,7 @@ public class CANProperty<CT extends CANValue<T>,T> implements CANData<T>{
   
   /**
    * set the value for CANValue and property
-   * @parm index - the index of the value
+   * @param index - the index of the value
    * @param value - the value to set
    * @param timeStamp
    */
@@ -133,12 +142,12 @@ public class CANProperty<CT extends CANValue<T>,T> implements CANData<T>{
   }
   
   /**
-   * set the value at the given index
+   * set the value at the given index (needs to be run on JavaFX thread!)
    * @param index
    * @param value
    */
   private void setValue(int index, T value) {
-    
+    setMinMax(value);
   }
 
   /**
@@ -148,6 +157,10 @@ public class CANProperty<CT extends CANValue<T>,T> implements CANData<T>{
   @SuppressWarnings({ "unchecked"})
   private void setValue(T value) {  
     getProperty().setValue(value);
+    setMinMax(value);
+  }
+  
+  private void setMinMax(T value) {
     if (canValue instanceof DoubleValue) {
       DoubleValue dv=(DoubleValue) canValue;
       if (dv.getMax()!=null)

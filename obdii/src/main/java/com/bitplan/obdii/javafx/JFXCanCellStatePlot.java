@@ -92,10 +92,10 @@ public class JFXCanCellStatePlot extends JFXCanValuePlot implements CanValuePlot
           + " values of " + canInfo.getTitle());
     for (int i = 0; i < canInfo.getMaxIndex(); i++) {
       if (cellValues.getValueItems() != null)
-        if (cellValues.getValueItems()[i].isAvailable()) {
+        if (cellValues.getValueItems().get(i).isAvailable()) {
           String cellnum = "" + (i + 1);
           series.getData().add(new XYChart.Data<String, Number>(cellnum,
-              cellValues.getValueItems()[i].getValue()));
+              cellValues.getValueItems().get(i).getValue()));
         }
     }
     barChart.getData().add(series);
