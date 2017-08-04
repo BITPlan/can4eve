@@ -335,7 +335,7 @@ public abstract class OBDHandler extends AbstractOBDHandler {
       }
       tripletDisplay.bind(canBindings);
       try {
-        tripletDisplay.setupHistory(cpm);
+        tripletDisplay.setupSpecial(cpm);
       } catch (Exception e) {
         ErrorHandler.handle(e);
       }

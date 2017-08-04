@@ -27,11 +27,13 @@ import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.CANValue.IntegerValue;
+import com.bitplan.can4eve.CANValueItem;
 
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /**
@@ -44,7 +46,7 @@ import javafx.collections.ObservableList;
 public class CANProperty<CT extends CANValue<T>,T> implements CANData<T>{
   CT canValue;
   private Property<T>property;
-  private ObservableList<T> propertyList;
+  private ObservableList<CANValueItem<T>> propertyList;
   private Property<T>max;
   private Property<T>avg;
   
@@ -84,6 +86,7 @@ public class CANProperty<CT extends CANValue<T>,T> implements CANData<T>{
   public void init(CT canValue, Property<T> property){
     this.canValue=canValue;
     this.setProperty(property);
+    this.propertyList=FXCollections.observableList(canValue.getValueItems());
   }
 
   /**
@@ -137,8 +140,7 @@ public class CANProperty<CT extends CANValue<T>,T> implements CANData<T>{
    * @param timeStamp
    */
   public void setValue(int index,T value, Date timeStamp) {
-    canValue.setValue(index,value, timeStamp);
-    Platform.runLater(()->setValue(index,value));
+    Platform.runLater(()->doSetValue(index,value,timeStamp));
   }
   
   /**
@@ -146,7 +148,8 @@ public class CANProperty<CT extends CANValue<T>,T> implements CANData<T>{
    * @param index
    * @param value
    */
-  private void setValue(int index, T value) {
+  private void doSetValue(int index, T value, Date timeStamp) {
+    canValue.setValue(index,value, timeStamp);
     setMinMax(value);
   }
 

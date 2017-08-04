@@ -27,14 +27,12 @@ import java.net.Socket;
 import java.util.Date;
 import java.util.logging.Level;
 
+import com.bitplan.can4eve.CANData;
 import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue;
-import com.bitplan.can4eve.CANData;
 import com.bitplan.can4eve.CANValue.CANRawValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
-import com.bitplan.can4eve.CANValue.IntegerValue;
 import com.bitplan.can4eve.CANValue.StringValue;
-import com.bitplan.can4eve.CANValue.ValueItem;
 import com.bitplan.can4eve.CANValueHandler;
 import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.Vehicle;

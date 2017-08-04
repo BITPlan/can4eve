@@ -24,11 +24,14 @@ import java.util.logging.Level;
 
 import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue.DoubleValue;
+import com.bitplan.can4eve.gui.javafx.CANProperty;
 
+import javafx.application.Platform;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Series;
 
 /**
  * plot CellState Values
@@ -36,9 +39,10 @@ import javafx.scene.chart.XYChart;
  *
  */
 public class JFXCanCellStatePlot extends JFXCanValuePlot implements CanValuePlot {
-  private DoubleValue cellValues;
+  private CANProperty<DoubleValue,Double> cellValues;
   private Double rangeExtra;
   private Double tickUnit;
+  XYChart.Series<String, Number> series;
 
   /**
    * create a Plot for a History of CANValues
@@ -49,7 +53,7 @@ public class JFXCanCellStatePlot extends JFXCanValuePlot implements CanValuePlot
    * @param cellValues
    */
   public JFXCanCellStatePlot(String title, String xTitle, String yTitle,
-      DoubleValue cellValues, Double rangeExtra, Double tickUnit) {
+      CANProperty<DoubleValue,Double> cellValues, Double rangeExtra, Double tickUnit) {
     super(title,xTitle,yTitle);
     this.cellValues = cellValues;
     this.rangeExtra = rangeExtra;
@@ -67,9 +71,10 @@ public class JFXCanCellStatePlot extends JFXCanValuePlot implements CanValuePlot
     // defining the axes
     final CategoryAxis xAxis = new CategoryAxis();
     NumberAxis yAxis;
-    if ((cellValues.getMax() != null) && (cellValues.getMax() != null)) {
-      yAxis = new NumberAxis(cellValues.getMin() - rangeExtra,
-          cellValues.getMax() + rangeExtra, tickUnit);
+    DoubleValue cellDoubleValues = cellValues.getCanValue();
+    if ((cellDoubleValues.getMin() != null) && (cellValues.getMax() != null)) {
+      yAxis = new NumberAxis(cellDoubleValues.getMin() - rangeExtra,
+          cellDoubleValues.getMax() + rangeExtra, tickUnit);
     } else {
       yAxis= new NumberAxis();
     }
@@ -82,30 +87,42 @@ public class JFXCanCellStatePlot extends JFXCanValuePlot implements CanValuePlot
     barChart.setTitle(title);
     barChart.setCategoryGap(0);
     barChart.setBarGap(1);
-    final CANInfo canInfo = cellValues.canInfo;
+    final CANInfo canInfo = cellValues.getCANInfo();
 
     // defining a series
-    XYChart.Series<String, Number> series = new XYChart.Series<String, Number>();
+    series = new XYChart.Series<String, Number>();
     series.setName(canInfo.getTitle());
     if (debug)
       LOGGER.log(Level.INFO, "plotting for " + canInfo.getMaxIndex()
           + " values of " + canInfo.getTitle());
+    updateSeries(series,cellValues);
+    barChart.getData().add(series);
+    return barChart;
+  }
+
+  /**
+   * update the series
+   * @param series
+   * @param cellValues
+   */
+  private void updateSeries(Series<String, Number> series,
+      CANProperty<DoubleValue, Double> cellValues) {
+    CANInfo canInfo = cellValues.getCANInfo();
+    DoubleValue cellDoubleValues = cellValues.getCanValue();
+    series.getData().clear();
     for (int i = 0; i < canInfo.getMaxIndex(); i++) {
-      if (cellValues.getValueItems() != null)
-        if (cellValues.getValueItems().get(i).isAvailable()) {
+      if (cellDoubleValues.getValueItems() != null)
+        if (cellDoubleValues.getValueItems().get(i).isAvailable()) {
           String cellnum = "" + (i + 1);
           series.getData().add(new XYChart.Data<String, Number>(cellnum,
-              cellValues.getValueItems().get(i).getValue()));
+              cellDoubleValues.getValueItems().get(i).getValue()));
         }
     }
-    barChart.getData().add(series);
-
-    return barChart;
+    
   }
 
   @Override
   public void update() {
-    // TODO Auto-generated method stub
-    
+    Platform.runLater(()->updateSeries(series,cellValues));
   }
 }

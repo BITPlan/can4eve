@@ -237,10 +237,11 @@ public class TestAppGUI {
     VehicleGroup vg = VehicleGroup.get("triplet");
     CANInfo cellInfo = vg.getCANInfoByName("CellTemperature");
     assertNotNull(cellInfo);
-    DoubleValue cellTemp = new DoubleValue(cellInfo);
+    DoubleValue cellTempValue=new DoubleValue(cellInfo);
+    CANProperty<DoubleValue,Double> cellTemp = new CANProperty<DoubleValue,Double>(cellTempValue,new SimpleDoubleProperty());
     Date timeStamp = new Date();
-    for (int i = 0; i < cellTemp.canInfo.getMaxIndex(); i++) {
-      cellTemp.setValue(i, 15 + Math.random() * 15, timeStamp);
+    for (int i = 0; i < cellTemp.getCANInfo().getMaxIndex(); i++) {
+      cellTemp.setValue(i, 25 + Math.random() * 10, timeStamp);
     }
     String title = "Cell Temperature";
     String xTitle = "cell";
@@ -252,7 +253,14 @@ public class TestAppGUI {
         valuePlot.getBarChart());
     sampleApp.show();
     sampleApp.waitOpen();
-    Thread.sleep(SHOW_TIME);
+    int loops=4;
+    for (int j=0;j<loops;j++) {
+      for (int i = 0; i < cellTemp.getCANInfo().getMaxIndex(); i++) {
+        cellTemp.setValue(i, 25 + Math.random() * 10, timeStamp);
+      }
+      valuePlot.update();
+      Thread.sleep(SHOW_TIME*3/loops);
+    }
     sampleApp.close();
   }
 

@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.bitplan.can4eve.CANData;
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.SoftwareVersion;
@@ -75,46 +76,7 @@ public class JFXTripletDisplay extends JavaFXDisplay {
       tab.setContent(region);
     }
   }
-
-  Map<String, JFXCanValueHistoryPlot> historyMap = new HashMap<String, JFXCanValueHistoryPlot>();
-
-  /**
-   * special handling for Cell Temperature and Cell Voltage
-   */
-  @Override
-  public void updateCanValueField(CANValue<?> canValue) {
-    if (!available)
-      return;
-    String title = canValue.canInfo.getTitle();
-    Tab activeTab = super.getActiveTab();
-    if (activeTab == null)
-      return;
-    String activePanelTitle = activeTab.getText();
-    if (title.toLowerCase().startsWith("cell")) {
-      // TODO - use some kind of id to clearly identify plotable stuff
-      // Cell Temp / Cell Voltage e.g. might not work in i18n
-      if (title.startsWith(activePanelTitle)) {
-        if ("Cell Temp".equals(activePanelTitle)) {
-          DoubleValue cellTemperature = (DoubleValue) canValue;
-          final JFXCanCellStatePlot cellStatePlot = new JFXCanCellStatePlot(
-              "cellTemperature", "cell", "Temperature", cellTemperature, 1.0,
-              0.5);
-          Platform.runLater(
-              () -> updateTab(activeTab, cellStatePlot.getBarChart()));
-        }
-        if ("Cell Voltage".equals(activePanelTitle)) {
-          DoubleValue cellVoltage = (DoubleValue) canValue;
-          final JFXCanCellStatePlot cellStatePlot = new JFXCanCellStatePlot(
-              "cellVoltage", "cell", "Voltage", cellVoltage, 0.01, 0.1);
-          Platform.runLater(
-              () -> updateTab(activeTab, cellStatePlot.getBarChart()));
-        }
-      }
-    } else {
-      super.updateCanValueField(canValue);
-    }
-  }
-
+  
   /**
    * set bindings
    * 
@@ -160,12 +122,28 @@ public class JFXTripletDisplay extends JavaFXDisplay {
   }
 
   /**
-   * setup the history
+   * setup the special parts e.g. history
    * 
    * @param cpm
    * @throws Exception
    */
-  public void setupHistory(CANPropertyManager cpm) throws Exception {
+  public void setupSpecial(CANPropertyManager cpm) throws Exception {
+    CANData<Double> temperatureData = cpm.getValue("CellTemperature");
+    CANProperty<DoubleValue,Double> cellTemperature = (CANProperty<DoubleValue, Double>) temperatureData;
+    final JFXCanCellStatePlot cellStatePlot = new JFXCanCellStatePlot(
+        "cellTemperature", "cell", "Temperature", cellTemperature, 1.0,
+        0.5);
+    final Tab cellTemperatureTab = super.getTab("mainGroup", "Cell Temp");
+    Platform.runLater(
+        () -> updateTab(cellTemperatureTab, cellStatePlot.getBarChart()));
+    CANData<Double> voltageData = cpm.getValue("CellTemperature");
+    CANProperty<DoubleValue,Double> cellVoltage = (CANProperty<DoubleValue, Double>) voltageData;
+    final JFXCanCellStatePlot cellVoltagePlot = new JFXCanCellStatePlot(
+        "cellVoltage", "cell", "Voltage", cellVoltage, 0.01, 0.1);
+    final Tab cellVoltageTab = super.getTab("mainGroup", "Cell Voltage");
+    Platform.runLater(
+        () -> updateTab(cellVoltageTab, cellVoltagePlot.getBarChart()));
+    // setup history
     String title = "SOC/RR";
     String xTitle = "time";
     String yTitle = "%/km";
