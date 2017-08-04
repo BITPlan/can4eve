@@ -21,7 +21,6 @@
 package com.bitplan.obdii.javafx;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue.DoubleValue;
@@ -36,13 +35,7 @@ import javafx.scene.chart.XYChart;
  * @author wf
  *
  */
-public class JFXCanCellStatePlot {
-  protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.javafx");
-  public static boolean debug = true;
-
-  String title;
-  String xTitle;
-  String yTitle;
+public class JFXCanCellStatePlot extends JFXCanValuePlot implements CanValuePlot {
   private DoubleValue cellValues;
   private Double rangeExtra;
   private Double tickUnit;
@@ -57,9 +50,7 @@ public class JFXCanCellStatePlot {
    */
   public JFXCanCellStatePlot(String title, String xTitle, String yTitle,
       DoubleValue cellValues, Double rangeExtra, Double tickUnit) {
-    this.title = title;
-    this.xTitle = xTitle;
-    this.yTitle = yTitle;
+    super(title,xTitle,yTitle);
     this.cellValues = cellValues;
     this.rangeExtra = rangeExtra;
     this.tickUnit = tickUnit;
@@ -110,5 +101,11 @@ public class JFXCanCellStatePlot {
     barChart.getData().add(series);
 
     return barChart;
+  }
+
+  @Override
+  public void update() {
+    // TODO Auto-generated method stub
+    
   }
 }

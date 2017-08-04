@@ -20,10 +20,7 @@
  */
 package com.bitplan.obdii;
 
-import static org.junit.Assert.*;
-
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -32,6 +29,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.bitplan.can4eve.CANData;
 import com.bitplan.can4eve.CANValueHandler;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.gui.javafx.WaitableApp;
@@ -70,39 +68,29 @@ public class TestLogs {
         "yyyy-MM-dd HH:mm:ss");
 
     @Override
-    public void setValue(String name, Double value, Date timeStamp) {
+    public <T> void setValue(String name, T value, Date timeStamp) {
       if (value == null)
         return;
       if (this.names.contains(name)) {
-        printWriter.println(String.format("%s%s%s%s%f",
+        String format="s";
+        if (value instanceof Integer)
+          format="d";
+        if (value instanceof Double)
+          format="f";
+        printWriter.println(String.format("%s%s%s%s%"+format,
             isoDateFormatter.format(timeStamp), DELIM, name, DELIM, value));
       }
-    }
-
-    @Override
-    public void setValue(String name, Integer value, Date timeStamp) {
-      if (value == null)
-        return;
-      if (this.names.contains(name)) {
-        printWriter.println(String.format("%s%s%s%s%d",
-            isoDateFormatter.format(timeStamp), DELIM, name, DELIM, value));
-      }
-    }
-
-    @Override
-    public void setValue(String name, Boolean value, Date timeStamp) {
-      // TODO Auto-generated method stub
-
     }
 
     public void close() {
       printWriter.close();
     }
 
+
     @Override
-    public void setValue(String name, String value, Date timeStamp) {
+    public <T> CANData<T> getValue(String name) {
       // TODO Auto-generated method stub
-      
+      return null;
     }
 
   }
@@ -119,21 +107,15 @@ public class TestLogs {
       csvFile = new File(csvFileName);
       printWriter = new PrintWriter(csvFile);
     }
-
+    
     @Override
-    public void setValue(String name, Double value, Date timeStamp) {
+    public <T> void setValue(String name, T value, Date timeStamp) {
       if (value == null)
         return;
       if ("DCAmps".equals(name))
-        dcamps = value;
+        dcamps = (Double) value;
       if ("DCVolts".equals(name))
-        dcvolts = value;
-    }
-
-    @Override
-    public void setValue(String name, Integer value, Date timeStamp) {
-      if (value == null)
-        return;
+        dcvolts = (Double) value;
       if ("Speed".equals(name)) {
         if (dcamps != null && dcvolts != null) {
           double kw = dcamps * dcvolts / -1000.0;
@@ -141,24 +123,19 @@ public class TestLogs {
               isoDateFormatter.format(timeStamp), value, kw));
         }
       }
-
-    }
-
-    @Override
-    public void setValue(String name, Boolean value, Date timeStamp) {
-      // TODO Auto-generated method stub
-
     }
 
     public void close() {
       printWriter.close();
     }
 
+
     @Override
-    public void setValue(String name, String value, Date timeStamp) {
+    public <T> CANData<T> getValue(String name) {
       // TODO Auto-generated method stub
-      
+      return null;
     }
+
   }
 
   @Test

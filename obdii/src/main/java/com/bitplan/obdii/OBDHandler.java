@@ -33,6 +33,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+import com.bitplan.can4eve.CANData;
 import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.CANRawValue;
@@ -157,19 +158,6 @@ public abstract class OBDHandler extends AbstractOBDHandler {
   }
 
   /**
-   * get the CANValue
-   * 
-   * @param canInfoName
-   * @return the canValue
-   */
-  public <CT extends CANValue<T>, T> CT getValue(String canInfoName) {
-    CANProperty<CT, T> property = cpm.get(canInfoName);
-    if (property == null)
-      throw new RuntimeException("invalid canInfoName " + canInfoName);
-    return property.getCanValue();
-  }
-
-  /**
    * get the CANValues
    * 
    * @return - the array of CAN Values in order of appearance
@@ -209,6 +197,15 @@ public abstract class OBDHandler extends AbstractOBDHandler {
     return canValues;
   }
 
+  /**
+   * delegating function
+   * @param canInfoName
+   * @return the CANData for the given name
+   */
+  public <T> CANData<T>  getValue(String canInfoName) {
+    return cpm.getValue(canInfoName);
+  }
+  
   /**
    * set the ELM327 to filter the given canValues in preparation of an AT STM
    * command

@@ -21,7 +21,6 @@
 package com.bitplan.can4eve;
 
 import java.util.Date;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,11 +34,10 @@ import com.bitplan.csv.CSVUtil;
  * @author wf
  *
  */
-public abstract class CANValue<ValueType> {
+public abstract class CANValue<ValueType> implements CANData<ValueType>{
   public static final int MAX_HISTORY_MINUTES=300; // maximum length of history (300 minutes=5 hours)
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.can4eve");
   protected static boolean debug = false;
-  protected static List<CANValue<?>> canValues;
 
   /**
    * a value to be stored
@@ -79,7 +77,7 @@ public abstract class CANValue<ValueType> {
   }
 
   public CANInfo canInfo;
-
+  public CANInfo getCANInfo() { return canInfo; };
   ValueItem<ValueType> valueItem = new ValueItem<ValueType>();
   private ValueItem<ValueType>[] valueItems; // for indexed CANValues
 
@@ -126,6 +124,16 @@ public abstract class CANValue<ValueType> {
   public void activate() {
     setRead(true);
     setDisplay(true);
+  }
+  
+  public boolean isAvailable() {
+    if (this.valueItem==null)
+      return false;
+    return this.valueItem.isAvailable();
+  }
+  
+  public Date getTimeStamp() {
+    return this.valueItem.timeStamp;
   }
 
   /**

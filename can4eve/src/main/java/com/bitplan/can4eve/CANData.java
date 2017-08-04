@@ -23,10 +23,16 @@ package com.bitplan.can4eve;
 import java.util.Date;
 
 /**
- * handler for CANValues
+ * generic CANData interface
  * @author wf
+ *
+ * @param <T>
  */
-public interface CANValueHandler {
-  public <T> void setValue(String name, T value,  Date timeStamp);
-  public <T> CANData<T> getValue(String name);
+public interface CANData<T> {
+  public void setValue(T value, Date timeStamp);
+  public void setValue(int index,T value,Date timeStamp);
+  public T getValue();
+  public boolean isAvailable();
+  public CANInfo getCANInfo();
+  public Date getTimeStamp();
 }

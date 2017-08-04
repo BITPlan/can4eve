@@ -39,10 +39,10 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.bitplan.can4eve.CANData;
 import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
-import com.bitplan.can4eve.CANValue.IntegerValue;
 import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.SoftwareVersion;
 import com.bitplan.can4eve.gui.App;
@@ -222,7 +222,7 @@ public class TestELM327 extends TestOBDII {
     // obdTriplet.setDebug(true);
     obdTriplet.readPid(byName("BatteryCapacity"));
     Thread.sleep(200);
-    DoubleValue batteryCapacity = obdTriplet.getValue("BatteryCapacity");
+    CANData<Double> batteryCapacity = obdTriplet.getValue("BatteryCapacity");
     assertNotNull("the battery capacity should be set",
         batteryCapacity.getValue());
     assertEquals(new Double(44.7), batteryCapacity.getValue(), 0.01);
@@ -248,22 +248,22 @@ public class TestELM327 extends TestOBDII {
      */
     Thread.sleep(1000);
     // display.waitClose();
-    DoubleValue batteryCapacity = obdTriplet.getValue("BatteryCapacity");
+    CANData<Double> batteryCapacity = obdTriplet.getValue("BatteryCapacity");
     assertNotNull("the battery capacity should be set",
         batteryCapacity.getValue());
     assertEquals(new Double(44.8), batteryCapacity.getValue(), 0.1);
-    DoubleValue SOC = obdTriplet.getValue("SOC");
+    CANData<Double> SOC = obdTriplet.getValue("SOC");
     assertNotNull(SOC);
     assertNotNull("SOC should not be null", SOC.getValue());
     assertEquals(new Double(100.0), SOC.getValue(), 0.1);
-    IntegerValue range = obdTriplet.getValue("Range");
+    CANData<Integer> range = obdTriplet.getValue("Range");
     assertEquals(new Integer(95), range.getValue());
-    IntegerValue odometer = obdTriplet.getValue("Odometer");
+    CANData<Integer> odometer = obdTriplet.getValue("Odometer");
     assertEquals(new Integer(721), odometer.getValue());
-    DoubleValue steeringWheelPosition = obdTriplet
+    CANData<Double> steeringWheelPosition = obdTriplet
         .getValue("SteeringWheelPosition");
     assertEquals(new Double(-9.5), steeringWheelPosition.getValue(), 0.01);
-    DoubleValue steeringWheelMovement = obdTriplet
+    CANData<Double> steeringWheelMovement = obdTriplet
         .getValue("SteeringWheelMovement");
     assertEquals(new Double(2.5), steeringWheelMovement.getValue(), 0.01);
     assertEquals("VF31NZKYZHU900769", obdTriplet.VIN.getValue());

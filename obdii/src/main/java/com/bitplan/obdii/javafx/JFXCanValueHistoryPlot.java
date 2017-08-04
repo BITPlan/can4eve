@@ -24,7 +24,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 
@@ -44,13 +43,8 @@ import javafx.scene.chart.XYChart.Series;
  * @author wf
  *
  */
-public class JFXCanValueHistoryPlot {
-  protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.javafx");
-  public static boolean debug=false;
-  
-  String title;
-  String xTitle;
-  String yTitle;
+public class JFXCanValueHistoryPlot extends JFXCanValuePlot implements CanValuePlot  {
+ 
   @SuppressWarnings("rawtypes")
   private Map<String, CANProperty> canProperties;
   private Map<String,XYChart.Series<Number, Number>> seriesMap=new HashMap<String,XYChart.Series<Number, Number>>();
@@ -71,9 +65,7 @@ public class JFXCanValueHistoryPlot {
   @SuppressWarnings("rawtypes")
   public JFXCanValueHistoryPlot(String title, String xTitle, String yTitle,
       Map<String, CANProperty> properties) {
-    this.title = title;
-    this.xTitle = xTitle;
-    this.yTitle = yTitle;
+    super(title,xTitle,yTitle);
     this.canProperties = properties;
   }
   
@@ -160,6 +152,9 @@ public class JFXCanValueHistoryPlot {
     return lineChart;
   }
 
+  /**
+   * update me
+   */
   public void update() {
     for (CANProperty canProperty : this.canProperties.values()) {
       Series<Number, Number> series = seriesMap.get(canProperty.getName());

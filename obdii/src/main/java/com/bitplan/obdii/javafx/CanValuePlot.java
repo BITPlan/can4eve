@@ -18,15 +18,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bitplan.can4eve;
-
-import java.util.Date;
+package com.bitplan.obdii.javafx;
 
 /**
- * handler for CANValues
+ * interface for property based CanValuePlots
  * @author wf
+ *
  */
-public interface CANValueHandler {
-  public <T> void setValue(String name, T value,  Date timeStamp);
-  public <T> CANData<T> getValue(String name);
+public interface CanValuePlot {
+  public void update();
 }

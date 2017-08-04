@@ -18,15 +18,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bitplan.can4eve;
+package com.bitplan.obdii.javafx;
 
-import java.util.Date;
+import java.util.logging.Logger;
 
 /**
- * handler for CANValues
+ * base class for value plotting
  * @author wf
+ *
  */
-public interface CANValueHandler {
-  public <T> void setValue(String name, T value,  Date timeStamp);
-  public <T> CANData<T> getValue(String name);
+public class JFXCanValuePlot {
+ 
+  protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.javafx");
+  public static boolean debug = true;
+
+  String title;
+  String xTitle;
+  String yTitle;
+  
+  /**
+   * construct me with the given title, xTitle and yTitle
+   * @param title
+   * @param xTitle
+   * @param yTitle
+   */
+  public JFXCanValuePlot(String title, String xTitle, String yTitle) {
+    this.title = title;
+    this.xTitle = xTitle;
+    this.yTitle = yTitle;
+  }
+
 }

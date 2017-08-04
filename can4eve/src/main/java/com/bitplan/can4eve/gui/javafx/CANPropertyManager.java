@@ -21,19 +21,19 @@
 package com.bitplan.can4eve.gui.javafx;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.bitplan.can4eve.CANData;
 import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue;
-import com.bitplan.can4eve.CANValueHandler;
-import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.CANValue.BooleanValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.CANValue.IntegerValue;
+import com.bitplan.can4eve.CANValueHandler;
+import com.bitplan.can4eve.VehicleGroup;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -108,7 +108,7 @@ public class CANPropertyManager implements CANValueHandler {
       IntegerValue integerValue = new IntegerValue(canInfo);
       addValue(integerValue);
     } else if (type.equals("BooleanValue")) {
-      BooleanValue booleanValue=new BooleanValue(canInfo);
+      BooleanValue booleanValue = new BooleanValue(canInfo);
       addValue(booleanValue);
     } else {
       try {
@@ -219,26 +219,10 @@ public class CANPropertyManager implements CANValueHandler {
         canValue, property);
     getCanProperties().put(canValue.canInfo.getName(), canProperty);
   }
-  
+
   @SuppressWarnings("unchecked")
   @Override
-  public void setValue(String name, String value, Date timeStamp) {
-    getCanProperties().get(name).setValue(value, timeStamp);
-  }
-
-  @SuppressWarnings("unchecked")
-  public void setValue(String name, Double value, Date timeStamp) {
-    getCanProperties().get(name).setValue(value, timeStamp);
-  }
-
-  @SuppressWarnings("unchecked")
-  public void setValue(final String name, final Integer value,
-      final Date timeStamp) {
-    getCanProperties().get(name).setValue(value, timeStamp);
-  }
-  
-  @SuppressWarnings("unchecked")
-  public void setValue(String name, Boolean value, Date timeStamp) {
+  public <T> void setValue(String name, T value, Date timeStamp) {
     getCanProperties().get(name).setValue(value, timeStamp);
   }
 
@@ -248,21 +232,32 @@ public class CANPropertyManager implements CANValueHandler {
    * @param CANInfoName
    * @return
    */
-  public <CT extends CANValue<T>,T> CANProperty<CT,T> get(String CANInfoName) {
+  public <CT extends CANValue<T>, T> CANProperty<CT, T> get(
+      String CANInfoName) {
     CANProperty result = getCanProperties().get(CANInfoName);
     return result;
   }
 
   /**
    * get the CANValues
+   * 
    * @return
    */
   public List<CANValue<?>> getCANValues() {
     List<CANValue<?>> canValues = new ArrayList<CANValue<?>>();
-    for (CANProperty canProperty:this.canProperties.values()) {
+    for (CANProperty canProperty : this.canProperties.values()) {
       canValues.add(canProperty.getCanValue());
     }
     return canValues;
+  }
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  @Override
+  public <T> CANData<T> getValue(String name) {
+    CANProperty property = get(name);
+    if (property == null)
+      throw new RuntimeException("invalid canInfoName " + name);
+    return property;
   }
 
 }

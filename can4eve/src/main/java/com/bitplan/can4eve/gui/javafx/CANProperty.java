@@ -22,6 +22,8 @@ package com.bitplan.can4eve.gui.javafx;
 
 import java.util.Date;
 
+import com.bitplan.can4eve.CANData;
+import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.CANValue.IntegerValue;
@@ -38,7 +40,7 @@ import javafx.beans.property.SimpleIntegerProperty;
  * @param <CT>
  * @param <T>
  */
-public class CANProperty<CT extends CANValue<T>,T> {
+public class CANProperty<CT extends CANValue<T>,T> implements CANData<T>{
   CT canValue;
   private Property<T>property;
   private Property<T>max;
@@ -120,6 +122,26 @@ public class CANProperty<CT extends CANValue<T>,T> {
   }
   
   /**
+   * set the value for CANValue and property
+   * @parm index - the index of the value
+   * @param value - the value to set
+   * @param timeStamp
+   */
+  public void setValue(int index,T value, Date timeStamp) {
+    canValue.setValue(index,value, timeStamp);
+    Platform.runLater(()->setValue(index,value));
+  }
+  
+  /**
+   * set the value at the given index
+   * @param index
+   * @param value
+   */
+  private void setValue(int index, T value) {
+    
+  }
+
+  /**
    * set the value (needs to be run on JavaFX thread!)
    * @param value
    */
@@ -149,5 +171,27 @@ public class CANProperty<CT extends CANValue<T>,T> {
   public String getName() {
     String name=canValue.canInfo.getName();
     return name;
+  }
+
+  @Override
+  public T getValue() {
+    return this.getCanValue().getValue();
+  }
+
+  @Override
+  public boolean isAvailable() {
+    if (this.canValue==null)
+      return false;
+    return this.getCanValue().isAvailable();
+  }
+
+  @Override
+  public CANInfo getCANInfo() {
+    return this.getCanValue().getCANInfo();
+  }
+
+  @Override
+  public Date getTimeStamp() {
+    return this.getCanValue().getTimeStamp();
   }
 }

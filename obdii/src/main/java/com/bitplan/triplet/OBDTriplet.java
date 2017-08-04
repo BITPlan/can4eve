@@ -29,14 +29,17 @@ import java.util.logging.Level;
 
 import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue;
+import com.bitplan.can4eve.CANData;
 import com.bitplan.can4eve.CANValue.CANRawValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.CANValue.IntegerValue;
 import com.bitplan.can4eve.CANValue.StringValue;
+import com.bitplan.can4eve.CANValue.ValueItem;
 import com.bitplan.can4eve.CANValueHandler;
 import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.Vehicle;
 import com.bitplan.can4eve.VehicleGroup;
+import com.bitplan.can4eve.gui.javafx.CANProperty;
 import com.bitplan.csv.CSVUtil;
 import com.bitplan.obdii.CANValueDisplay;
 import com.bitplan.obdii.OBDHandler;
@@ -156,13 +159,13 @@ public class OBDTriplet extends OBDHandler {
    * things to do / initialize after I a was constructed
    */
   public void postConstruct() {
-    initCanValues("ACAmps", "ACVolts","ACPower", "Accelerator", "BatteryCapacity",
-        "BlinkerLeft", "BlinkerRight", "BreakPedal", "BreakPressed",
-        "CellCount", "CellTemperature", "CellVoltage", "ChargerTemp", "DCAmps",
-        "DCVolts", "DCPower","DoorOpen", "HeadLight", "HighBeam", "Key", "MotorTemp",
-        "Odometer", "ParkingLight", "Range", "RPM", "RPMSpeed", "SOC", "Speed",
-        "SteeringWheelPosition", "SteeringWheelMovement", "TripRounds",
-        "TripOdo");
+    initCanValues("ACAmps", "ACVolts", "ACPower", "Accelerator",
+        "BatteryCapacity", "BlinkerLeft", "BlinkerRight", "BreakPedal",
+        "BreakPressed", "CellCount", "CellTemperature", "CellVoltage",
+        "ChargerTemp", "DCAmps", "DCVolts", "DCPower", "DoorOpen", "HeadLight",
+        "HighBeam", "Key", "MotorTemp", "Odometer", "ParkingLight", "Range",
+        "RPM", "RPMSpeed", "SOC", "Speed", "SteeringWheelPosition",
+        "SteeringWheelMovement", "TripRounds", "TripOdo");
     // add all available PIDs to the available raw values
     for (Pid pid : getVehicleGroup().getPids()) {
       // FIXME - do we keep the convention for raw values?
@@ -191,7 +194,7 @@ public class OBDTriplet extends OBDHandler {
       LOGGER.log(Level.INFO, "triplet handling PID Response " + pr.pidId + " ("
           + pr.pid.getName() + ")");
     Pid pid = pr.pid;
-    CANValueHandler cvh=super.getCanValueHandler();
+    CANValueHandler cvh = super.getCanValueHandler();
     if (pid.getLength() != null && pr.d.length != pid.getLength()) {
       LOGGER.log(Level.SEVERE,
           String.format("invalid response length %2d!=%2d for %s (%s)",
@@ -208,19 +211,19 @@ public class OBDTriplet extends OBDHandler {
       cvh.setValue(pidName, pr.d[2] / 250.0 * 100, timeStamp);
       break;
     case "AmpsVolts":
-      double amps=((pr.d[2] * 256 + pr.d[3]) - 128 * 256) / 100.0;
-      cvh.setValue("DCAmps", amps,
-          timeStamp);
-      double volts=(pr.d[4] * 256 + pr.d[5]) / 10.0;
-      cvh.setValue("DCVolts",volts , timeStamp);
-      cvh.setValue("DCPower", amps*volts/1000.0, timeStamp);
+      double amps = ((pr.d[2] * 256 + pr.d[3]) - 128 * 256) / 100.0;
+      cvh.setValue("DCAmps", amps, timeStamp);
+      double volts = (pr.d[4] * 256 + pr.d[5]) / 10.0;
+      cvh.setValue("DCVolts", volts, timeStamp);
+      cvh.setValue("DCPower", amps * volts / 1000.0, timeStamp);
       break;
     case "ACAmpsVolts":
-      double acvolts=pr.d[1] * 1.0;
+      double acvolts = pr.d[1] * 1.0;
       cvh.setValue("ACVolts", acvolts, timeStamp);
-      double acamps= pr.d[6] / 10.0;
-      cvh.setValue("ACAmps",acamps, timeStamp);
-      cvh.setValue("ACPower",acamps*acvolts*AC_POWER_FACTOR/1000.0,timeStamp);
+      double acamps = pr.d[6] / 10.0;
+      cvh.setValue("ACAmps", acamps, timeStamp);
+      cvh.setValue("ACPower", acamps * acvolts * AC_POWER_FACTOR / 1000.0,
+          timeStamp);
       break;
     case "BatteryCapacity":
       int bindex = pr.d[0];
@@ -259,15 +262,15 @@ public class OBDTriplet extends OBDHandler {
       // ignore voltages for cmu id 6 and 12 on 6E3 and 6E4
       boolean voltageIgnore = (pidindex == 2 || pidindex == 3)
           && (cmu_id == 6 || cmu_id == 12);
-      DoubleValue cellVoltage = this.getValue("CellVoltage");
-      if (index < cellVoltage.canInfo.getMaxIndex()) {
+      CANData<Double> cellVoltage = cvh.getValue("CellVoltage");
+      if (index < cellVoltage.getCANInfo().getMaxIndex()) {
         if (!voltageIgnore) {
           cellVoltage.setValue(index, voltage1, timeStamp);
           cellVoltage.setValue(index + 1, voltage2, timeStamp);
         }
       }
-      DoubleValue cellTemperature = this.getValue("CellTemperature");
-      if (index < cellTemperature.canInfo.getMaxIndex()) {
+      CANData<Double> cellTemperature = cvh.getValue("CellTemperature");
+      if (index < cellTemperature.getCANInfo().getMaxIndex()) {
         switch (pr.pid.getName()) {
         case "CellInfo1":
           cellTemperature.setValue(index, temp2, timeStamp);
@@ -349,21 +352,23 @@ public class OBDTriplet extends OBDHandler {
       // fetch teh rounds per minute
       int rpmValue = (pr.d[6] * 256 + pr.d[7]) - 10000;
       // if we have a previous value we can start integrating
-      IntegerValue rpm = getValue("RPM");
-      if (rpm.getValueItem().isAvailable()) {
-        DoubleValue tripRounds = this.getValue("TripRounds");
-        // calc numerical integral - how many rounds total on this trip?
-        tripRounds.integrate(rpm.getValueItem().getValue(),
-            rpm.getValueItem().getTimeStamp(), Math.abs(rpmValue), timeStamp,
-            1 / 60000.0);
-        // calc distance based on rounds
-        cvh.setValue("TripOdo",
-            tripRounds.getValueItem().getValue() * mmPerRound / 1000000.0,
-            timeStamp);
+      CANData<Integer> rpm = cvh.getValue("RPM");
+      if (rpm.isAvailable()) {
+        CANData<Double> tripRoundsData = cvh.getValue("TripRounds");
+        if (tripRoundsData instanceof CANProperty) {
+          CANProperty<DoubleValue, Double> tripRounds;
+          tripRounds = (CANProperty<DoubleValue, Double>) tripRoundsData;
+          // calc numerical integral - how many rounds total on this trip?
+          tripRounds.getCanValue().integrate(rpm.getValue(), rpm.getTimeStamp(),
+              Math.abs(rpmValue), timeStamp, 1 / 60000.0);
+          // calc distance based on rounds
+          cvh.setValue("TripOdo", tripRounds.getValue() * mmPerRound / 1000000.0,
+              timeStamp);
+        }
       }
       cvh.setValue("RPM", rpmValue, timeStamp);
-      IntegerValue speed = this.getValue("Speed");
-      if (speed.getValueItem().isAvailable()) {
+      CANData<Integer> speed = cvh.getValue("Speed");
+      if (speed.isAvailable()) {
         // m per round
         // speed.getValueItem().getValue() * 1000.0 / 60
         // / rpm.getValueItem().getValue()
@@ -373,9 +378,12 @@ public class OBDTriplet extends OBDHandler {
       break;
     case "Odometer_Speed":
       int km = pr.d[2] * 65536 + pr.d[3] * 256 + pr.d[4];
-      // TODO - systematic check needed e.g. by change rate of values and 3/4 - 4/4 voting
-      // more importantly the line is probably not reliable e.g. baud rate is too high and user
-      // should get feedback (together with BUFFER OVERRUNS CAN ERRORS and the like
+      // TODO - systematic check needed e.g. by change rate of values and 3/4 -
+      // 4/4 voting
+      // more importantly the line is probably not reliable e.g. baud rate is
+      // too high and user
+      // should get feedback (together with BUFFER OVERRUNS CAN ERRORS and the
+      // like
       if (km > 500000 || km < 0)
         LOGGER.log(Level.SEVERE, "invalid odometer value " + km);
       else {
@@ -404,15 +412,15 @@ public class OBDTriplet extends OBDHandler {
       if (newShifterPosition.shiftPosition == ShiftPosition.P) {
         this.vehicleStateProperty.set(Vehicle.State.Parking);
         // are we charging?
-        DoubleValue lacvolts = getValue("ACVolts");
-        if (lacvolts.getValueItem().isAvailable() && lacvolts.getValue() > 50) {
+        CANData<Double> lacvolts = cvh.getValue("ACVolts");
+        if (lacvolts.isAvailable() && lacvolts.getValue() > 50) {
           // AC charging
           this.vehicleStateProperty.set(Vehicle.State.Charging);
         }
         // DC charging
         // FIXME is 1 amp the minimum?
-        DoubleValue dcamps = getValue("DCAmps");
-        if (dcamps.getValueItem().isAvailable() && dcamps.getValue() > 1.0) {
+        CANData<Double> dcamps = cvh.getValue("DCAmps");
+        if (dcamps.isAvailable() && dcamps.getValue() > 1.0) {
           this.vehicleStateProperty.set(Vehicle.State.Charging);
         }
       } else {
