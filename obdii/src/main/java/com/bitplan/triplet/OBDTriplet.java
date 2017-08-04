@@ -433,6 +433,7 @@ public class OBDTriplet extends OBDHandler {
       String partVal = pr.getString(1);
       VIN.set(indexVal, partVal, timeStamp);
       if (VIN.getValueItem().isAvailable()) {
+        cvh.setValue("VIN", VIN.asString(), timeStamp);
         cvh.setValue("CellCount", VIN.getCellCount(), timeStamp);
       }
       break;

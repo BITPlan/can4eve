@@ -99,6 +99,12 @@ public class TestLogs {
       printWriter.close();
     }
 
+    @Override
+    public void setValue(String name, String value, Date timeStamp) {
+      // TODO Auto-generated method stub
+      
+    }
+
   }
 
   public class KWAnalyzer implements CANValueHandler {
@@ -146,6 +152,12 @@ public class TestLogs {
 
     public void close() {
       printWriter.close();
+    }
+
+    @Override
+    public void setValue(String name, String value, Date timeStamp) {
+      // TODO Auto-generated method stub
+      
     }
   }
 

@@ -219,6 +219,12 @@ public class CANPropertyManager implements CANValueHandler {
         canValue, property);
     getCanProperties().put(canValue.canInfo.getName(), canProperty);
   }
+  
+  @SuppressWarnings("unchecked")
+  @Override
+  public void setValue(String name, String value, Date timeStamp) {
+    getCanProperties().get(name).setValue(value, timeStamp);
+  }
 
   @SuppressWarnings("unchecked")
   public void setValue(String name, Double value, Date timeStamp) {

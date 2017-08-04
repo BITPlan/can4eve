@@ -22,9 +22,13 @@ package com.bitplan.can4eve;
 
 import java.util.Date;
 
+/**
+ * handler for CANValues
+ * @author wf
+ */
 public interface CANValueHandler {
-  public void setValue(String name, Double value, Date timeStamp);
-  public void setValue(final String name, final Integer value,
-      final Date timeStamp);
+  public void setValue(String name, String value,  Date timeStamp);
+  public void setValue(String name, Double value,  Date timeStamp);
+  public void setValue(String name, Integer value, Date timeStamp);
   public void setValue(String name, Boolean value, Date timeStamp);
 }
