@@ -29,7 +29,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.bitplan.can4eve.json.JsonAble;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.graph.GraphAdapterBuilder;
 
 /**
  * a group of vehicles that share the same OBDII-Diagnosis infrastructure see
@@ -38,7 +42,10 @@ import com.google.gson.Gson;
  * @author wf
  *
  */
-public class VehicleGroup {
+public class VehicleGroup implements JsonAble {
+  public static boolean asTree = false;
+  public static Gson gson = null;
+
   String name;
   String description;
   private List<VehicleModel> models = new ArrayList<VehicleModel>();
@@ -88,6 +95,7 @@ public class VehicleGroup {
 
   /**
    * add the given Pid to the maps
+   * 
    * @param pid
    */
   public void addToMaps(Pid pid) {
@@ -111,10 +119,25 @@ public class VehicleGroup {
    */
   public void reinit() {
     this.pidByPid.clear();
+    // add the pids to the maps including the canInfos
     for (Pid pid : pids) {
       addToMaps(pid);
+    }
+    // loop over all pid
+    for (Pid pid : pids) {
+      // get names of the caninfos
+      List<String> names=new ArrayList<String>();
       for (CANInfo caninfo : pid.caninfos) {
-        caninfo.pid = pid;
+        names.add(caninfo.getName());
+      }
+      // clear the (partially redundant) caninfo list
+      pid.caninfos.clear();
+      // reassign the caninfos by the unique caninfo from the map
+      for (String name:names) {
+        CANInfo caninfo=this.getCANInfoByName(name);
+        pid.caninfos.add(caninfo);
+        // and set the n:m backword links
+        caninfo.getPids().add(pid);
       }
     }
   }
@@ -133,15 +156,44 @@ public class VehicleGroup {
   }
 
   /**
+   * get the Gson
+   * 
+   * @return
+   */
+  public static Gson getGsonStatic() {
+    if (gson == null) {
+      GsonBuilder gsonBuilder = new GsonBuilder();
+      if (asTree) {
+        new GraphAdapterBuilder().addType(VehicleGroup.class)
+            .addType(VehicleModel.class).addType(CANInfo.class)
+            .addType(Pid.class).registerOn(gsonBuilder);
+      }
+      gsonBuilder.setPrettyPrinting();
+      gson = gsonBuilder.create();
+    }
+    return gson;
+  }
+
+  /**
+   * get the Gson
+   * 
+   * @return
+   */
+  public Gson getGson() {
+    return getGsonStatic();
+  }
+
+  /**
    * get the VehicleGroup from the given Json Stream
    * 
    * @param jsonStream
+   * @param asTree
    * @return
    * @throws Exception
    */
   public static VehicleGroup fromJsonStream(InputStream jsonStream)
       throws Exception {
-    Gson gson = new Gson();
+    Gson gson = getGsonStatic();
     VehicleGroup vehicleGroup = gson.fromJson(new InputStreamReader(jsonStream),
         VehicleGroup.class);
     vehicleGroup.reinit();
@@ -204,13 +256,25 @@ public class VehicleGroup {
           + " missing canInfo in vehicle Group " + getName());
     return result;
   }
-  
+
   /**
    * get all CANInfo items
+   * 
    * @return - the list of CANInfos
    */
   public Collection<CANInfo> getCANInfos() {
     return this.canInfoByName.values();
+  }
+
+  public String asJson() {
+    String json = getGson().toJson(this);
+    return json;
+  }
+
+  @Override
+  public void fromMap(Map<String, Object> map) {
+    // TODO Auto-generated method stub
+
   }
 
 }

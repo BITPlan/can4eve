@@ -252,7 +252,6 @@ public class CANPropertyManager implements CANValueHandler {
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
-  @Override
   public <T> CANData<T> getValue(String name) {
     CANProperty property = get(name);
     if (property == null)

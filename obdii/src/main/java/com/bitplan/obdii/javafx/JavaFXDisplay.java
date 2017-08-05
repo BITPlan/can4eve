@@ -885,7 +885,7 @@ public class JavaFXDisplay extends WaitableApp
     TabPane tabPane=getTabPane(view);
     if (tabPane != null) {
       for (Tab tab:tabPane.getTabs()) {
-        if (tabId.equals(tab.getId())) {
+        if (tabId.equals(tab.getText())) {
           return tab;
         }
       }

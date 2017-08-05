@@ -20,6 +20,9 @@
  */
 package com.bitplan.can4eve;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * a unit of information on the CAN bus
  * @author wf
@@ -38,7 +41,7 @@ public class CANInfo {
   int historyValuesPerMinute;
   int maxIndex;
   
-  transient Pid pid;
+  transient List<Pid> pids=new ArrayList<Pid>();
   
   public String getName() {
     return name;
@@ -58,11 +61,11 @@ public class CANInfo {
   public void setDescription(String description) {
     this.description = description;
   }
-  public Pid getPid() {
-    return pid;
+  public List<Pid> getPids() {
+    return pids;
   }
-  public void setPid(Pid pid) {
-    this.pid = pid;
+  public void setPids(List<Pid> pids) {
+    this.pids = pids;
   }
   public String getFormat() {
     return format;

@@ -28,5 +28,4 @@ import java.util.Date;
  */
 public interface CANValueHandler {
   public <T> void setValue(String name, T value,  Date timeStamp);
-  public <T> CANData<T> getValue(String name);
 }

@@ -35,7 +35,6 @@ import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.VehicleModel;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
  * test the loadable vehicle concept
@@ -60,7 +59,7 @@ public class TestVehicle extends TestOBDII {
     for (com.bitplan.triplet.pids.CANInfo oinfo : opid.getInfos()) {
       CANInfo caninfo = new CANInfo();
       caninfo.setName(oinfo.name());
-      caninfo.setPid(pid);
+      caninfo.getPids().add(pid);
       caninfo.setTitle(oinfo.title);
       caninfo.setDescription(oinfo.description);
       caninfo.setFormat(oinfo.format);
@@ -84,16 +83,12 @@ public class TestVehicle extends TestOBDII {
    */
   public JsonResult checkJson(VehicleGroup vehicleGroup) {
     JsonResult result = new JsonResult();
-    GsonBuilder gsonBuilder = new GsonBuilder();
-    // new GraphAdapterBuilder().addType(Pid.class).registerOn(gsonBuilder);
-    Gson gson = gsonBuilder.setPrettyPrinting().create();
-    ;
-    String json = gson.toJson(vehicleGroup);
+    String json = vehicleGroup.asJson();
     assertNotNull(json);
     if (debug)
       System.out.println(json);
     result.json = json;
-    result.gson = gson;
+    result.gson = vehicleGroup.getGson();
     return result;
   }
 
@@ -143,6 +138,11 @@ public class TestVehicle extends TestOBDII {
     // debug=true;
     JsonResult jr = this.checkJson(vg);
     assertNotNull(jr.gson);
+    // VehicleGroup.asTree=true;
+    VehicleGroup.gson = null;
+    String json = vg.asJson();
+    if (debug)
+      System.out.println(json);
   }
 
   @Test
@@ -150,7 +150,7 @@ public class TestVehicle extends TestOBDII {
     VehicleGroup vg = getVehicleGroup();
     CANInfo bc = vg.getCANInfoByName("BatteryCapacity");
     assertNotNull("There should be a pid for the battery capacity", bc);
-    assertEquals("761", bc.getPid().getIsoTp());
+    assertEquals("761", bc.getPids().get(0).getIsoTp());
   }
 
   @Test
@@ -209,5 +209,23 @@ public class TestVehicle extends TestOBDII {
     }
     if (debug)
       System.out.println(String.format("%5d baud", bytesPerSec * 8));
+  }
+
+  @Test
+  public void testMultiplePIDsPerCANInfo() throws Exception {
+    VehicleGroup vg = getVehicleGroup();
+    Pid pid = vg.getPidById("6E3");
+    assertNotNull(pid);
+    List<CANInfo> canInfos = pid.getCaninfos();
+    String infos = "";
+    String delim = "";
+    for (CANInfo canInfo : canInfos) {
+      infos += delim + canInfo.getName();
+      delim = ",";
+    }
+    assertEquals("Raw6E3,CellVoltage,CellTemperature", infos);
+    CANInfo canInfo = vg.getCANInfoByName("CellVoltage");
+    List<Pid> pids = canInfo.getPids();
+    assertEquals(4, pids.size());
   }
 }

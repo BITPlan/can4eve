@@ -99,9 +99,6 @@ public class JFXCanCellStatePlot extends JFXCanValuePlot
     // defining a series
     series = new XYChart.Series<String, Number>();
     series.setName(canInfo.getTitle());
-    if (debug)
-      LOGGER.log(Level.INFO, "plotting for " + canInfo.getMaxIndex()
-          + " values of " + canInfo.getTitle());
     updateSeries(series, cellValues);
     barChart.getData().add(series);
     return barChart;
@@ -118,6 +115,11 @@ public class JFXCanCellStatePlot extends JFXCanValuePlot
     DoubleValue cellDoubleValues = cellValues.getCanValue();
     List<CANValueItem<Double>> valueItems = cellDoubleValues.getValueItems();
     ObservableList<Data<String, Number>> seriesData = series.getData();
+    if (debug) {
+      CANInfo canInfo = cellValues.getCANInfo();
+      LOGGER.log(Level.INFO, "plotting for " + canInfo.getMaxIndex()
+          + " values of " + canInfo.getTitle());
+    }
     int i = 0;
     for (CANValueItem<Double> valueItem : valueItems) {
       if (valueItem.isAvailable()) {

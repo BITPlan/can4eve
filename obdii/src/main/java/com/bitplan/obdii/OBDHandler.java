@@ -172,8 +172,8 @@ public abstract class OBDHandler extends AbstractOBDHandler {
         HashMap<Pid, CANValue<?>> canValueMap = new HashMap<Pid, CANValue<?>>();
         for (CANValue<?> canValue : canValues) {
           CANInfo canInfo = canValue.canInfo;
-          Pid pid = canInfo.getPid();
-          canValueMap.put(pid, canValue);
+          for (Pid pid : canInfo.getPids())
+            canValueMap.put(pid, canValue);
         } // for
         // now add all raw values
         for (Pid pid : getVehicleGroup().getPids()) {
@@ -199,13 +199,14 @@ public abstract class OBDHandler extends AbstractOBDHandler {
 
   /**
    * delegating function
+   * 
    * @param canInfoName
    * @return the CANData for the given name
    */
-  public <T> CANData<T>  getValue(String canInfoName) {
+  public <T> CANData<T> getValue(String canInfoName) {
     return cpm.getValue(canInfoName);
   }
-  
+
   /**
    * set the ELM327 to filter the given canValues in preparation of an AT STM
    * command
@@ -218,9 +219,10 @@ public abstract class OBDHandler extends AbstractOBDHandler {
     Set<String> pidFilter = new HashSet<String>();
     for (CANValue<?> canValue : canValues) {
       if (canValue.isRead()) {
-        Pid pid = canValue.canInfo.getPid();
-        if (pid.getIsoTp() == null) {
-          pidFilter.add(pid.getPid());
+        for (Pid pid : canValue.canInfo.getPids()) {
+          if (pid.getIsoTp() == null) {
+            pidFilter.add(pid.getPid());
+          }
         }
       }
     }
@@ -260,10 +262,11 @@ public abstract class OBDHandler extends AbstractOBDHandler {
     if (lelm.isSTN()) {
       for (CANValue<?> canValue : canValues) {
         if (canValue.isRead()) {
-          Pid pid = canValue.canInfo.getPid();
-          // handle ISO-TP based frames differently by direct reading
-          if (pid.getIsoTp() != null)
-            this.readPid(pid);
+          for (Pid pid : canValue.canInfo.getPids()) {
+            // handle ISO-TP based frames differently by direct reading
+            if (pid.getIsoTp() != null)
+              this.readPid(pid);
+          }
         }
       }
     }
@@ -283,21 +286,21 @@ public abstract class OBDHandler extends AbstractOBDHandler {
         LOGGER.log(Level.INFO,
             String.format("%3d PIDs to loop thru", canValues.size()));
       setMonitoring(true);
-      for (long frameIndex = 0; frameIndex < frameLimit
-          && isMonitoring();) {
+      for (long frameIndex = 0; frameIndex < frameLimit && isMonitoring();) {
         for (CANValue<?> canValue : canValues) {
           if (canValue.isRead()) {
-            Pid pid = canValue.canInfo.getPid();
-            // handle ISO-TP based frames differently by direct reading
-            if (pid.getIsoTp() == null) {
-              if (debug) {
-                LOGGER.log(Level.INFO, String.format("pid %s (%s) ",
-                    pid.getPid(), canValue.canInfo.getTitle()));
-              }
-              int pidFrameLimit=canValue.canInfo.getMaxIndex()+5;
-              super.monitorPid(pid.getPid(), pidFrameLimit);
-              frameIndex+=pidFrameLimit;
-            } // if not ISO-TP
+            for (Pid pid : canValue.canInfo.getPids()) {
+              // handle ISO-TP based frames differently by direct reading
+              if (pid.getIsoTp() == null) {
+                if (debug) {
+                  LOGGER.log(Level.INFO, String.format("pid %s (%s) ",
+                      pid.getPid(), canValue.canInfo.getTitle()));
+                }
+                int pidFrameLimit = canValue.canInfo.getMaxIndex() + 5;
+                super.monitorPid(pid.getPid(), pidFrameLimit);
+                frameIndex += pidFrameLimit;
+              } // if not ISO-TP
+            }
           } // is isREAD
         } // for canValues
       } // for frames
@@ -319,7 +322,7 @@ public abstract class OBDHandler extends AbstractOBDHandler {
     }
     // TODO make this more systematic
     if (display instanceof JFXTripletDisplay) {
-      JFXTripletDisplay tripletDisplay = (JFXTripletDisplay)display;
+      JFXTripletDisplay tripletDisplay = (JFXTripletDisplay) display;
       Map<String, ObservableValue<?>> canBindings = new HashMap<String, ObservableValue<?>>();
       // fixed bindings
       canBindings.put("msecs", this.msecsRunningProperty);

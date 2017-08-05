@@ -302,12 +302,13 @@ public class TestELM327 extends TestOBDII {
     for (int i = 0; i < loops; i++) {
       int count = 0;
       for (CANValue<?> canvalue : canvalues) {
-        obdTriplet.monitorPid(canvalue.canInfo.getPid().getPid().toString(),
-            frameLimit);
-        if (debug)
-          obdTriplet.showValues(display);
-        if (count++ > max)
-          break;
+        for (Pid pid : canvalue.canInfo.getPids()) {
+          obdTriplet.monitorPid(pid.getPid().toString(), frameLimit);
+          if (debug)
+            obdTriplet.showValues(display);
+          if (count++ > max)
+            break;
+        }
       }
       if (debug)
         obdTriplet.showValues(display);
@@ -524,7 +525,7 @@ public class TestELM327 extends TestOBDII {
       delim = ",";
       assertTrue(canValue.isRead());
     }
-    //debug = true;
+    // debug = true;
     if (debug) {
       LOGGER.log(Level.INFO, names);
     }
@@ -541,11 +542,14 @@ public class TestELM327 extends TestOBDII {
       for (CANValue<?> canValue : canValues) {
         CANInfo canInfo = canValue.canInfo;
         assertNotNull(canInfo);
-        assertNotNull("pid should not be null for " + canInfo.getTitle(),
-            canInfo.getPid());
-        String pidId = canInfo.getPid().getPid();
-        Pid pid = lOBDTriplet.getElm327().getVehicleGroup().getPidById(pidId);
-        assertEquals(pid.getPid(), canValue.canInfo.getPid().getPid());
+        for (Pid pid : canInfo.getPids()) {
+          assertNotNull("pid should not be null for " + canInfo.getTitle(),
+              pid);
+          String pidId = pid.getPid();
+          Pid lpid = lOBDTriplet.getElm327().getVehicleGroup()
+              .getPidById(pidId);
+          assertEquals(lpid.getPid(), pid.getPid());
+        }
       }
     }
     long done = System.nanoTime();
@@ -562,9 +566,11 @@ public class TestELM327 extends TestOBDII {
     List<CANValue<?>> canValues = lOBDTriplet.getCANValues();
     assertEquals(36, canValues.size());
     for (CANValue<?> canValue : canValues) {
-      if (debug) {
-        LOGGER.log(Level.INFO, canValue.canInfo.getTitle() + ":"
-            + canValue.canInfo.getPid().getPid());
+      for (Pid pid : canValue.canInfo.getPids()) {
+        if (debug) {
+          LOGGER.log(Level.INFO,
+              canValue.canInfo.getTitle() + ":" + pid.getPid());
+        }
       }
     }
     List<Pid> pids = lOBDTriplet.getElm327().getVehicleGroup().getPids();

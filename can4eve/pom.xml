@@ -23,6 +23,12 @@
 			<artifactId>commons-collections4</artifactId>
 			<version>4.1</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.danilopianini/gson-extras -->
+		<dependency>
+			<groupId>org.danilopianini</groupId>
+			<artifactId>gson-extras</artifactId>
+			<version>0.2.1</version>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/eu.hansolo/SteelSeries 
 		we are using JavaFX Medusa now
 		<dependency>

@@ -23,16 +23,63 @@ package com.bitplan.can4eve;
 import java.util.Date;
 
 /**
- * generic CANData interface
+ * generic CANData interface for "translated" values e.g.
+ * a speed value. The CANData may be indexed - an list of values
+ * may be behind a single CANData entry
+ * 
  * @author wf
  *
  * @param <T>
  */
 public interface CANData<T> {
+  /**
+   * set a value at the given time e.g. the speed in km/h
+   * 
+   * @param value
+   * @param timeStamp
+   */
   public void setValue(T value, Date timeStamp);
-  public void setValue(int index,T value,Date timeStamp);
+
+  /**
+   * set an indexed value e.g. the temperature of a cell with the given index
+   * 
+   * @param index
+   * @param value
+   * @param timeStamp
+   */
+  public void setValue(int index, T value, Date timeStamp);
+
+  /**
+   * get the value
+   * 
+   * @return the value
+   */
   public T getValue();
+
+  /**
+   * check whether the value is available - the value must be set and non null
+   * 
+   * @return false if not
+   */
   public boolean isAvailable();
+
+  /**
+   * get the CANInfo - the field information about this value
+   * e.g. the name of the value and the PID it is derived from
+   * 
+   * @return
+   */
   public CANInfo getCANInfo();
+
+  /**
+   * get the time stamp of the value
+   * @return the timestamp
+   */
   public Date getTimeStamp();
+
+  /**
+   * get the update counter - how often has the value been set so far?
+   * @return the updateCounter
+   */
+  public int getUpdateCount();
 }

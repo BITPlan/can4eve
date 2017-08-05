@@ -22,20 +22,31 @@ package com.bitplan.obdii.javafx;
 
 import java.util.logging.Logger;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+
 /**
  * base class for value plotting
  * @author wf
  *
  */
-public class JFXCanValuePlot {
+public abstract class JFXCanValuePlot {
  
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.javafx");
   public static boolean debug = true;
+  
+  IntegerProperty updateCount=new SimpleIntegerProperty();
 
   String title;
   String xTitle;
   String yTitle;
   
+  public IntegerProperty getUpdateCount() {
+    return updateCount;
+  }
+
   /**
    * construct me with the given title, xTitle and yTitle
    * @param title
@@ -46,6 +57,16 @@ public class JFXCanValuePlot {
     this.title = title;
     this.xTitle = xTitle;
     this.yTitle = yTitle;
+    updateCount.addListener(new ChangeListener<Number>() {
+
+      @Override
+      public void changed(ObservableValue<? extends Number> observable,
+          Number oldValue, Number newValue) {
+        update();
+      }
+
+     });
   }
 
+  public abstract void update();
 }

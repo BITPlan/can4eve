@@ -86,13 +86,6 @@ public class TestLogs {
       printWriter.close();
     }
 
-
-    @Override
-    public <T> CANData<T> getValue(String name) {
-      // TODO Auto-generated method stub
-      return null;
-    }
-
   }
 
   public class KWAnalyzer implements CANValueHandler {
@@ -129,15 +122,10 @@ public class TestLogs {
       printWriter.close();
     }
 
-
-    @Override
-    public <T> CANData<T> getValue(String name) {
-      // TODO Auto-generated method stub
-      return null;
-    }
-
   }
 
+  public static int limit=5;
+  
   @Test
   public void testLogs() throws Exception {
     WaitableApp.toolkitInit();
@@ -162,6 +150,8 @@ public class TestLogs {
               sum += logFile.length() / 1024 / 1024;
               System.out.println(String.format("%3d: %5d m %7d k %s \n",
                   ++count, sum, logFile.length() / 1024, logFile.getName()));
+              if (count>=limit)
+                break;
               LogReader logReader = new LogReader(logFile);
               logReader.addReponseHandler(obdTriplet);
               logReader.read();

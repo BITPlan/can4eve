@@ -20,12 +20,11 @@
  */
 package com.bitplan.obdii;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 
 import com.bitplan.can4eve.CANData;
-import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.SoftwareVersion;
 import com.bitplan.can4eve.Vehicle.State;
@@ -42,7 +41,6 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 import javafx.scene.layout.Region;
 
 /**
@@ -68,12 +66,25 @@ public class JFXTripletDisplay extends JavaFXDisplay {
   /**
    * update the given tab with the given region
    * 
-   * @param tab
+   * @param view
+   * @param tabId
    * @param region
    */
-  private void updateTab(Tab tab, Region region) {
-    if (region != null) {
+  private void updateTab(String view, String tabId, Region region) {
+    Tab tab=super.getTab(view, tabId);
+    if (tab!=null && region != null) {
       tab.setContent(region);
+    } else {
+      String problem="";
+      String delim="";
+      if (tab==null) {
+        problem+="tab is null";
+        delim=", ";
+      }
+      if (region==null) {
+        problem+=delim+"region is null";
+      }
+      LOGGER.log(Level.SEVERE,String.format("updateTab %s %s: %s",view,tabId,problem));
     }
   }
   
@@ -127,22 +138,25 @@ public class JFXTripletDisplay extends JavaFXDisplay {
    * @param cpm
    * @throws Exception
    */
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public void setupSpecial(CANPropertyManager cpm) throws Exception {
     CANData<Double> temperatureData = cpm.getValue("CellTemperature");
     CANProperty<DoubleValue,Double> cellTemperature = (CANProperty<DoubleValue, Double>) temperatureData;
     final JFXCanCellStatePlot cellStatePlot = new JFXCanCellStatePlot(
         "cellTemperature", "cell", "Temperature", cellTemperature, 1.0,
         0.5);
-    final Tab cellTemperatureTab = super.getTab("mainGroup", "Cell Temp");
     Platform.runLater(
-        () -> updateTab(cellTemperatureTab, cellStatePlot.getBarChart()));
+        () -> updateTab("mainGroup", "Cell Temp", cellStatePlot.getBarChart()));
+    cellStatePlot.getUpdateCount().bind(cellTemperature.getUpdateCountProperty());;
+    
     CANData<Double> voltageData = cpm.getValue("CellTemperature");
     CANProperty<DoubleValue,Double> cellVoltage = (CANProperty<DoubleValue, Double>) voltageData;
     final JFXCanCellStatePlot cellVoltagePlot = new JFXCanCellStatePlot(
         "cellVoltage", "cell", "Voltage", cellVoltage, 0.01, 0.1);
-    final Tab cellVoltageTab = super.getTab("mainGroup", "Cell Voltage");
     Platform.runLater(
-        () -> updateTab(cellVoltageTab, cellVoltagePlot.getBarChart()));
+        () -> updateTab("mainGroup", "Cell Voltage", cellVoltagePlot.getBarChart()));
+    cellVoltagePlot.getUpdateCount().bind(cellVoltage.getUpdateCountProperty());
+    
     // setup history
     String title = "SOC/RR";
     String xTitle = "time";
@@ -150,12 +164,7 @@ public class JFXTripletDisplay extends JavaFXDisplay {
     Map<String, CANProperty> properties = cpm.getCANProperties("SOC", "Range");
     final JFXCanValueHistoryPlot valuePlot = new JFXCanValueHistoryPlot(title,
         xTitle, yTitle, properties);
-    TabPane tabPane = super.getTabPane(HISTORY_GROUP);
-    if (tabPane != null) {
-      Tab tab = tabPane.getTabs().get(0);
-      if (tab != null) {
-        Platform.runLater(() -> updateTab(tab, valuePlot.createLineChart()));
-      }
-    }
+    Platform.runLater(() -> updateTab(HISTORY_GROUP,"SOC/RR", valuePlot.createLineChart()));
+    valuePlot.getUpdateCount().bind(cpm.get("SOC").getUpdateCountProperty());
   }
 }

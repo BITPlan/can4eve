@@ -260,6 +260,7 @@ public class TestAppGUI {
     SampleApp.toolkitInit();
     final JFXCanCellStatePlot valuePlot = new JFXCanCellStatePlot(title, xTitle,
         yTitle, cellTemp, 2.0, 0.5);
+    valuePlot.getUpdateCount().bind(cellTemp.getUpdateCountProperty());
     GridPane gp=new GridPane();
     /*Button button=new Button("next");
     gp.add(button, 0, 0);
@@ -279,7 +280,6 @@ public class TestAppGUI {
     int loops=4;
     for (int j=0;j<loops;j++) {  
       randomValues(cellTemp);
-      valuePlot.update();
       Thread.sleep(SHOW_TIME/loops);
     }
     sampleApp.close();

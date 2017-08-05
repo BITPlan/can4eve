@@ -21,6 +21,7 @@
 package com.bitplan.triplet;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -34,6 +35,7 @@ import com.bitplan.can4eve.CANValue.CANRawValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.CANValue.StringValue;
 import com.bitplan.can4eve.CANValueHandler;
+import com.bitplan.can4eve.ErrorHandler;
 import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.Vehicle;
 import com.bitplan.can4eve.VehicleGroup;
@@ -256,33 +258,37 @@ public class OBDTriplet extends OBDHandler {
       double temp3 = pr.d[3] - 50;
       double voltage1 = (pr.d[4] * 256 + pr.d[5]) / 100.0;
       double voltage2 = (pr.d[6] * 256 + pr.d[7]) / 100.0;
-      int index = pidindex * 2 + (cmu_id - 1) * 8;
-      // ignore voltages for cmu id 6 and 12 on 6E3 and 6E4
-      boolean voltageIgnore = (pidindex == 2 || pidindex == 3)
-          && (cmu_id == 6 || cmu_id == 12);
-      CANData<Double> cellVoltage = cvh.getValue("CellVoltage");
-      if (index < cellVoltage.getCANInfo().getMaxIndex()) {
-        if (!voltageIgnore) {
-          cellVoltage.setValue(index, voltage1, timeStamp);
-          cellVoltage.setValue(index + 1, voltage2, timeStamp);
-        }
+      // calculate the start index
+      int voltage_index = pidindex + (cmu_id - 1) * 8;
+      int temp_index = pidindex + (cmu_id - 1) * 6;
+      // cmu_06 and cmu_12 only have 4 / 3 sensors
+      if (cmu_id >= 7) {
+        voltage_index -= 4;
+        temp_index -= 3;
       }
-      CANData<Double> cellTemperature = cvh.getValue("CellTemperature");
-      if (index < cellTemperature.getCANInfo().getMaxIndex()) {
+      log(pr.pid.getName(), pidindex, cmu_id, voltage_index, temp_index);
+      CANData<Double> cellVoltage = cpm.getValue("CellVoltage");
+      if (voltage_index < cellVoltage.getCANInfo().getMaxIndex() - 1) {
+        cellVoltage.setValue(voltage_index, voltage1, timeStamp);
+        cellVoltage.setValue(voltage_index + 1, voltage2, timeStamp);
+      }
+
+      CANData<Double> cellTemperature = cpm.getValue("CellTemperature");
+      if (temp_index < cellTemperature.getCANInfo().getMaxIndex() - 1) {
         switch (pr.pid.getName()) {
         case "CellInfo1":
-          cellTemperature.setValue(index, temp2, timeStamp);
-          cellTemperature.setValue(index + 1, temp3, timeStamp);
+          cellTemperature.setValue(temp_index, temp2, timeStamp);
+          cellTemperature.setValue(temp_index + 1, temp3, timeStamp);
           break;
         case "CellInfo2":
-          cellTemperature.setValue(index, temp1, timeStamp);
+          cellTemperature.setValue(temp_index, temp1, timeStamp);
           if (cmu_id != 6 && cmu_id != 12)
-            cellTemperature.setValue(index + 1, temp2, timeStamp);
+            cellTemperature.setValue(temp_index + 1, temp2, timeStamp);
           break;
         case "CellInfo3":
           if (cmu_id != 6 && cmu_id != 12) {
-            cellTemperature.setValue(index, temp1, timeStamp);
-            cellTemperature.setValue(index + 1, temp2, timeStamp);
+            cellTemperature.setValue(temp_index, temp1, timeStamp);
+            cellTemperature.setValue(temp_index + 1, temp2, timeStamp);
           }
         default:
           // ignore
@@ -350,9 +356,9 @@ public class OBDTriplet extends OBDHandler {
       // fetch teh rounds per minute
       int rpmValue = (pr.d[6] * 256 + pr.d[7]) - 10000;
       // if we have a previous value we can start integrating
-      CANData<Integer> rpm = cvh.getValue("RPM");
+      CANData<Integer> rpm = cpm.getValue("RPM");
       if (rpm.isAvailable()) {
-        CANData<Double> tripRoundsData = cvh.getValue("TripRounds");
+        CANData<Double> tripRoundsData = cpm.getValue("TripRounds");
         if (tripRoundsData instanceof CANProperty) {
           CANProperty<DoubleValue, Double> tripRounds;
           tripRounds = (CANProperty<DoubleValue, Double>) tripRoundsData;
@@ -360,12 +366,12 @@ public class OBDTriplet extends OBDHandler {
           tripRounds.getCanValue().integrate(rpm.getValue(), rpm.getTimeStamp(),
               Math.abs(rpmValue), timeStamp, 1 / 60000.0);
           // calc distance based on rounds
-          cvh.setValue("TripOdo", tripRounds.getValue() * mmPerRound / 1000000.0,
-              timeStamp);
+          cvh.setValue("TripOdo",
+              tripRounds.getValue() * mmPerRound / 1000000.0, timeStamp);
         }
       }
       cvh.setValue("RPM", rpmValue, timeStamp);
-      CANData<Integer> speed = cvh.getValue("Speed");
+      CANData<Integer> speed = cpm.getValue("Speed");
       if (speed.isAvailable()) {
         // m per round
         // speed.getValueItem().getValue() * 1000.0 / 60
@@ -410,14 +416,14 @@ public class OBDTriplet extends OBDHandler {
       if (newShifterPosition.shiftPosition == ShiftPosition.P) {
         this.vehicleStateProperty.set(Vehicle.State.Parking);
         // are we charging?
-        CANData<Double> lacvolts = cvh.getValue("ACVolts");
+        CANData<Double> lacvolts = cpm.getValue("ACVolts");
         if (lacvolts.isAvailable() && lacvolts.getValue() > 50) {
           // AC charging
           this.vehicleStateProperty.set(Vehicle.State.Charging);
         }
         // DC charging
         // FIXME is 1 amp the minimum?
-        CANData<Double> dcamps = cvh.getValue("DCAmps");
+        CANData<Double> dcamps = cpm.getValue("DCAmps");
         if (dcamps.isAvailable() && dcamps.getValue() > 1.0) {
           this.vehicleStateProperty.set(Vehicle.State.Charging);
         }
@@ -429,8 +435,6 @@ public class OBDTriplet extends OBDHandler {
     case "SOC":
       // state of charging in %
       double soc = ((pr.d[1]) - 10) / 2.0;
-      // FIXME - workaround for binding timing issue
-      soc = soc - Math.random() * 0.001;
       cvh.setValue("SOC", soc, timeStamp);
       break;
 
@@ -455,6 +459,25 @@ public class OBDTriplet extends OBDHandler {
     } // switch
     CANRawValue canRawValue = this.getCanRawValues().get(pr.pid.getPid());
     canRawValue.setRawValue(pr.getRawString(), timeStamp);
+  }
+
+  private PrintWriter cellPrintLog;
+
+  private void log(String name, int pidindex, int cmu_id, int voltage_index,
+      int temp_index) {
+    if (cellPrintLog == null) {
+      try {
+        cellPrintLog = new PrintWriter(new File("/tmp/cells.csv"));
+        cellPrintLog.println("name;pidindex;cmu;voltage;temperature");
+      } catch (FileNotFoundException e) {
+        ErrorHandler.handle(e);
+      }
+    }
+    if (cellPrintLog != null) {
+      cellPrintLog.write(String.format("%s;%3d;%3d;%3d;%3d\n", name,
+          pidindex, cmu_id, voltage_index, temp_index));
+      cellPrintLog.flush();
+    }
   }
 
   int dateUpdateCount = 0;
