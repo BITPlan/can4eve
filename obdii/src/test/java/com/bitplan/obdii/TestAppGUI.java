@@ -87,9 +87,12 @@ import javafx.beans.binding.LongBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleLongProperty;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
@@ -232,6 +235,17 @@ public class TestAppGUI {
     sampleApp.close();
   }
 
+  /**
+   * set random values for the cell Temperature
+   * @param cellTemp
+   */
+  public void randomValues(CANProperty<DoubleValue,Double> cellTemp) {
+    Date timeStamp = new Date();
+    for (int i = 0; i < cellTemp.getCANInfo().getMaxIndex(); i++) {
+      cellTemp.setValue(i, 25 + Math.random() * 10, timeStamp);
+    }
+  }
+
   @Test
   public void testBarChartJavaFx() throws Exception {
     VehicleGroup vg = VehicleGroup.get("triplet");
@@ -239,27 +253,34 @@ public class TestAppGUI {
     assertNotNull(cellInfo);
     DoubleValue cellTempValue=new DoubleValue(cellInfo);
     CANProperty<DoubleValue,Double> cellTemp = new CANProperty<DoubleValue,Double>(cellTempValue,new SimpleDoubleProperty());
-    Date timeStamp = new Date();
-    for (int i = 0; i < cellTemp.getCANInfo().getMaxIndex(); i++) {
-      cellTemp.setValue(i, 25 + Math.random() * 10, timeStamp);
-    }
+    randomValues(cellTemp);
     String title = "Cell Temperature";
     String xTitle = "cell";
     String yTitle = "° Celsius";
     SampleApp.toolkitInit();
     final JFXCanCellStatePlot valuePlot = new JFXCanCellStatePlot(title, xTitle,
         yTitle, cellTemp, 2.0, 0.5);
+    GridPane gp=new GridPane();
+    /*Button button=new Button("next");
+    gp.add(button, 0, 0);
+    button.setOnAction(new EventHandler<ActionEvent>(){
+
+      @Override
+      public void handle(ActionEvent event) {
+        randomValues(cellTemp);
+        valuePlot.update();
+      }});
+    gp.add(valuePlot.getBarChart(), 0,1);
+    */
     SampleApp sampleApp = new SampleApp("Cell Temperature",
         valuePlot.getBarChart());
     sampleApp.show();
     sampleApp.waitOpen();
     int loops=4;
-    for (int j=0;j<loops;j++) {
-      for (int i = 0; i < cellTemp.getCANInfo().getMaxIndex(); i++) {
-        cellTemp.setValue(i, 25 + Math.random() * 10, timeStamp);
-      }
+    for (int j=0;j<loops;j++) {  
+      randomValues(cellTemp);
       valuePlot.update();
-      Thread.sleep(SHOW_TIME*3/loops);
+      Thread.sleep(SHOW_TIME/loops);
     }
     sampleApp.close();
   }
