@@ -21,6 +21,8 @@
 package com.bitplan.obdii.javafx;
 
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.bitplan.can4eve.Vehicle.State;
 import com.bitplan.can4eve.states.StopWatch;
@@ -38,6 +40,7 @@ import javafx.scene.layout.BorderPane;
  * Clock display
  */
 public class ClockPane extends ConstrainedGridPane {
+  protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.javafx");
   public enum Watch {
     Moving, Charging, Parking, Total
   };
@@ -157,7 +160,10 @@ public class ClockPane extends ConstrainedGridPane {
       this.msecsStart[lWatch.ordinal()]=newValue.longValue()-lStopWatch.getTime();
     }
     long mSecsDiff=newValue.longValue()-this.msecsStart[lWatch.ordinal()];
-    setWatch(lWatch, mSecsDiff);
+    if (mSecsDiff>=0)
+      setWatch(lWatch, mSecsDiff);
+    else
+      LOGGER.log(Level.WARNING,"Invalid negative mSecsDiff "+mSecsDiff+" for stopWatch "+lWatch.name());
     currentWatch=lWatch;
   }
 }
