@@ -24,7 +24,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
@@ -63,7 +62,8 @@ public abstract class JFXCanValuePlot {
           Number oldValue, Number newValue) {
         if (debug)
           LOGGER.log(Level.INFO, "Plot "+JFXCanValuePlot.this.title+" "+newValue+" updates");
-        update();
+        if (newValue.doubleValue()>3)
+          update();
       }
 
      });

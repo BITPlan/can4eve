@@ -131,13 +131,14 @@ public class JFXCanCellStatePlot extends JFXCanValuePlot
     yAxis.setTickUnit(this.tickUnit);
     for (CANValueItem<Double> valueItem : valueItems) {
       if (valueItem.isAvailable()) {
+        Double value = valueItem.getValue();
         if (seriesData.size() > i) {
           Data<String, Number> seriesEntry = seriesData.get(i);
-          seriesEntry.setYValue(valueItem.getValue());
+          seriesEntry.setYValue(value);
         } else {
-          String cellnum = "" + (i);
+          String cellnum = "" + (i+1);
           seriesData.add(
-              new XYChart.Data<String, Number>(cellnum, valueItem.getValue()));
+              new XYChart.Data<String, Number>(cellnum, value));
         } // if seriesEntry exists
       } // if available
       i++;

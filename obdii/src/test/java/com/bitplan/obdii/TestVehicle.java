@@ -227,5 +227,12 @@ public class TestVehicle extends TestOBDII {
     CANInfo canInfo = vg.getCANInfoByName("CellVoltage");
     List<Pid> pids = canInfo.getPids();
     assertEquals(4, pids.size());
+    assertEquals(0.0,canInfo.getMinValue(),0.01);
+    assertEquals(5.0,canInfo.getMaxValue(),0.01);
+    canInfo = vg.getCANInfoByName("CellTemperature");
+    pids = canInfo.getPids();
+    assertEquals(4, pids.size());
+    assertEquals(-40.0,canInfo.getMinValue(),0.01);
+    assertEquals(60,canInfo.getMaxValue(),0.01);
   }
 }

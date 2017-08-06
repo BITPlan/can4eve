@@ -37,6 +37,8 @@ public class CANInfo {
   String type;
   String trueSymbol;  // symbol to display for true
   String falseSymbol; // symbol to display for false
+  Double minValue;
+  Double maxValue;
 
   int historyValuesPerMinute;
   int maxIndex;
@@ -96,6 +98,18 @@ public class CANInfo {
   }
   public void setFalseSymbol(String falseSymbol) {
     this.falseSymbol = falseSymbol;
+  }
+  public Double getMinValue() {
+    return minValue;
+  }
+  public void setMinValue(Double minValue) {
+    this.minValue = minValue;
+  }
+  public Double getMaxValue() {
+    return maxValue;
+  }
+  public void setMaxValue(Double maxValue) {
+    this.maxValue = maxValue;
   }
   public int getHistoryValuesPerMinute() {
     return historyValuesPerMinute;

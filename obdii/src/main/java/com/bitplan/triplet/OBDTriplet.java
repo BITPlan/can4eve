@@ -480,6 +480,14 @@ public class OBDTriplet extends OBDHandler {
   private void setValue(CANData<Double> data, int index, int maxIndex,
       double value, Date timeStamp) {
     if (index < maxIndex) {
+      if (data.getCANInfo().getMaxValue()!=null) {
+        if (value>data.getCANInfo().getMaxValue())
+          return;
+      }
+      if (data.getCANInfo().getMinValue()!=null) {
+        if (value<data.getCANInfo().getMinValue())
+          return;
+      }
       data.setValue(index,value, timeStamp);
     }
   }
