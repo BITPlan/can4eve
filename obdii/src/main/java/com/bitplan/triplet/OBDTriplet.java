@@ -250,51 +250,57 @@ public class OBDTriplet extends OBDHandler {
     case "CellInfo3":
     case "CellInfo4":
       Pid cellInfo1 = getVehicleGroup().getPidByName("CellInfo1");
+      // pid index 0-3
       int pidindex = pr.pidHex - PIDResponse.hex2decimal(cellInfo1.getPid());
-      // cell monitoring unit index
-      int cmu_id = pr.d[0]; // 1-12
+      // cell monitoring unit index 1-12
+      int cmu_id = pr.d[0];
       double temp1 = pr.d[1] - 50;
       double temp2 = pr.d[2] - 50;
       double temp3 = pr.d[3] - 50;
       double voltage1 = (pr.d[4] * 256 + pr.d[5]) / 100.0;
       double voltage2 = (pr.d[6] * 256 + pr.d[7]) / 100.0;
-      // calculate the start index
-      int voltage_index = pidindex + (cmu_id - 1) * 8;
-      int temp_index = pidindex + (cmu_id - 1) * 6;
+      // calculate the indexes of the sensors
+      // cmu_id + pidindex give 48 possible combinations
+      // http://can4eve.bitplan.com/index.php/File:BatterySensors.png
+      int voltage_index = (cmu_id - 1) * 8 + 2 * pidindex;
+      int temp_index = (cmu_id - 1) * 6 + 2 * pidindex;
       // cmu_06 and cmu_12 only have 4 / 3 sensors
       if (cmu_id >= 7) {
         voltage_index -= 4;
         temp_index -= 3;
       }
-      log(pr.pid.getName(), pidindex, cmu_id, voltage_index, temp_index);
+      // debug the index handling
+      log(pr.pid.getName(), pidindex, cmu_id, voltage_index, temp_index,
+          voltage1, voltage2, temp1, temp2, temp3);
+      
       CANData<Double> cellVoltage = cpm.getValue("CellVoltage");
-      if (voltage_index < cellVoltage.getCANInfo().getMaxIndex() - 1) {
-        cellVoltage.setValue(voltage_index, voltage1, timeStamp);
-        cellVoltage.setValue(voltage_index + 1, voltage2, timeStamp);
-      }
+      int maxVoltageIndex=cellVoltage.getCANInfo().getMaxIndex();
+      setValue(cellVoltage,voltage_index,maxVoltageIndex, voltage1, timeStamp);
+      setValue(cellVoltage,voltage_index + 1,maxVoltageIndex, voltage2, timeStamp);
 
       CANData<Double> cellTemperature = cpm.getValue("CellTemperature");
-      if (temp_index < cellTemperature.getCANInfo().getMaxIndex() - 1) {
-        switch (pr.pid.getName()) {
-        case "CellInfo1":
-          cellTemperature.setValue(temp_index, temp2, timeStamp);
-          cellTemperature.setValue(temp_index + 1, temp3, timeStamp);
-          break;
-        case "CellInfo2":
-          cellTemperature.setValue(temp_index, temp1, timeStamp);
-          if (cmu_id != 6 && cmu_id != 12)
-            cellTemperature.setValue(temp_index + 1, temp2, timeStamp);
-          break;
-        case "CellInfo3":
-          if (cmu_id != 6 && cmu_id != 12) {
-            cellTemperature.setValue(temp_index, temp1, timeStamp);
-            cellTemperature.setValue(temp_index + 1, temp2, timeStamp);
-          }
-        default:
-          // ignore
+      int maxTempIndex = cellTemperature.getCANInfo().getMaxIndex();
+      switch (pr.pid.getName()) {
+      case "CellInfo1":
+        setValue(cellTemperature, temp_index, maxTempIndex, temp2, timeStamp);
+        setValue(cellTemperature, temp_index + 1, maxTempIndex, temp3,
+            timeStamp);
+        break;
+      case "CellInfo2":
+        setValue(cellTemperature,temp_index,maxTempIndex, temp1, timeStamp);
+        if (cmu_id != 6 && cmu_id != 12)
+          setValue(cellTemperature,temp_index + 1,maxTempIndex, temp2, timeStamp);
+        break;
+      case "CellInfo3":
+        setValue(cellTemperature,temp_index, maxTempIndex,temp1, timeStamp);
+        if (cmu_id != 6 && cmu_id != 12) {
+          setValue(cellTemperature,temp_index + 1,maxTempIndex, temp2, timeStamp);
         }
+      default:
+        // ignore
       }
       break;
+
     case "Climate":
       Climate climate = new Climate();
       climate.setClimate(pr.d[0], pr.d[1]);
@@ -456,26 +462,47 @@ public class OBDTriplet extends OBDHandler {
     default:
       // ignore - this case is handled by the raw values below
       break;
-    } // switch
+    }
+
+    // switch
     CANRawValue canRawValue = this.getCanRawValues().get(pr.pid.getPid());
     canRawValue.setRawValue(pr.getRawString(), timeStamp);
+  }
+
+  /**
+   * set the value of the given data at the proposed index checking not to overrunt he maximum index
+   * @param data
+   * @param index
+   * @param maxIndex
+   * @param value
+   * @param timeStamp
+   */
+  private void setValue(CANData<Double> data, int index, int maxIndex,
+      double value, Date timeStamp) {
+    if (index < maxIndex) {
+      data.setValue(index,value, timeStamp);
+    }
   }
 
   private PrintWriter cellPrintLog;
 
   private void log(String name, int pidindex, int cmu_id, int voltage_index,
-      int temp_index) {
+      int temp_index, double voltage1, double voltage2, double temp1,
+      double temp2, double temp3) {
     if (cellPrintLog == null) {
       try {
         cellPrintLog = new PrintWriter(new File("/tmp/cells.csv"));
-        cellPrintLog.println("name;pidindex;cmu;voltage;temperature");
+        cellPrintLog.println(
+            "name;pidindex;cmu;voltage;temperature;voltage1;voltage2;temp1;temp2;temp3");
       } catch (FileNotFoundException e) {
         ErrorHandler.handle(e);
       }
     }
     if (cellPrintLog != null) {
-      cellPrintLog.write(String.format("%s;%3d;%3d;%3d;%3d\n", name,
-          pidindex, cmu_id, voltage_index, temp_index));
+      cellPrintLog.write(
+          String.format("%s;%3d;%3d;%3d;%3d;%6.2f;%6.2f;%6.1f;%6.1f;%6.1f;\n",
+              name, pidindex, cmu_id, voltage_index, temp_index, voltage1,
+              voltage2, temp1, temp2, temp3));
       cellPrintLog.flush();
     }
   }

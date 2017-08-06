@@ -188,7 +188,8 @@ public abstract class CANValue<ValueType> implements CANData<ValueType> {
       currentItem = assign(this.valueItem, value, timeStamp);
     } else {
       try {
-        currentItem = assign(getValueItems().get(index), value, timeStamp);
+        valueItems=getValueItems();
+        currentItem = assign(valueItems.get(index), value, timeStamp);
       } catch (ArrayStoreException ase) {
         throw new RuntimeException(
             "setValue fails due to ArrayStore Exception");

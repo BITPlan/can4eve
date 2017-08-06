@@ -149,7 +149,7 @@ public class JFXTripletDisplay extends JavaFXDisplay {
         () -> updateTab("mainGroup", "Cell Temp", cellStatePlot.getBarChart()));
     cellStatePlot.getUpdateCount().bind(cellTemperature.getUpdateCountProperty());;
     
-    CANData<Double> voltageData = cpm.getValue("CellTemperature");
+    CANData<Double> voltageData = cpm.getValue("CellVoltage");
     CANProperty<DoubleValue,Double> cellVoltage = (CANProperty<DoubleValue, Double>) voltageData;
     final JFXCanCellStatePlot cellVoltagePlot = new JFXCanCellStatePlot(
         "cellVoltage", "cell", "Voltage", cellVoltage, 0.01, 0.1);

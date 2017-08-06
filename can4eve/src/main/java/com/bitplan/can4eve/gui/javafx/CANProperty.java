@@ -158,8 +158,6 @@ public class CANProperty<CT extends CANValue<T>,T> implements CANData<T>{
     canValue.setValue(index,value, timeStamp);
     setMinMax(value);
     int triggerIndex=canValue.getCANInfo().getMaxIndex()-1;
-    // FIXME check
-    triggerIndex=0;
     if (index==triggerIndex) {
       this.updateCountProperty.setValue(this.updateCountProperty.getValue()+1);
     }
