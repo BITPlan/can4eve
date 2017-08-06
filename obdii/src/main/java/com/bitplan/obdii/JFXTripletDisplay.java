@@ -147,7 +147,7 @@ public class JFXTripletDisplay extends JavaFXDisplay {
         0.5);
     Platform.runLater(
         () -> updateTab("mainGroup", "Cell Temp", cellStatePlot.getBarChart()));
-    cellStatePlot.getUpdateCount().bind(cellTemperature.getUpdateCountProperty());;
+    cellStatePlot.updateOn(cellTemperature.getUpdateCountProperty());
     
     CANData<Double> voltageData = cpm.getValue("CellVoltage");
     CANProperty<DoubleValue,Double> cellVoltage = (CANProperty<DoubleValue, Double>) voltageData;
@@ -155,7 +155,7 @@ public class JFXTripletDisplay extends JavaFXDisplay {
         "cellVoltage", "cell", "Voltage", cellVoltage, 0.01, 0.1);
     Platform.runLater(
         () -> updateTab("mainGroup", "Cell Voltage", cellVoltagePlot.getBarChart()));
-    cellVoltagePlot.getUpdateCount().bind(cellVoltage.getUpdateCountProperty());
+    cellVoltagePlot.updateOn(cellVoltage.getUpdateCountProperty());
     
     // setup history
     String title = "SOC/RR";
@@ -165,6 +165,6 @@ public class JFXTripletDisplay extends JavaFXDisplay {
     final JFXCanValueHistoryPlot valuePlot = new JFXCanValueHistoryPlot(title,
         xTitle, yTitle, properties);
     Platform.runLater(() -> updateTab(HISTORY_GROUP,"SOC/RR", valuePlot.createLineChart()));
-    valuePlot.getUpdateCount().bind(cpm.get("SOC").getUpdateCountProperty());
+    valuePlot.updateOn(cpm.get("SOC").getUpdateCountProperty());
   }
 }

@@ -20,6 +20,7 @@
  */
 package com.bitplan.obdii.javafx;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.beans.property.IntegerProperty;
@@ -35,17 +36,12 @@ import javafx.beans.value.ObservableValue;
 public abstract class JFXCanValuePlot {
  
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.javafx");
-  public static boolean debug = true;
-  
-  IntegerProperty updateCount=new SimpleIntegerProperty();
+  public static boolean debug = false;
 
   String title;
   String xTitle;
   String yTitle;
   
-  public IntegerProperty getUpdateCount() {
-    return updateCount;
-  }
 
   /**
    * construct me with the given title, xTitle and yTitle
@@ -57,11 +53,16 @@ public abstract class JFXCanValuePlot {
     this.title = title;
     this.xTitle = xTitle;
     this.yTitle = yTitle;
-    updateCount.addListener(new ChangeListener<Number>() {
+  }
+  
+  public void updateOn(IntegerProperty updateCountProperty) {
+    updateCountProperty.addListener(new ChangeListener<Number>() {
 
       @Override
       public void changed(ObservableValue<? extends Number> observable,
           Number oldValue, Number newValue) {
+        if (debug)
+          LOGGER.log(Level.INFO, "Plot "+JFXCanValuePlot.this.title+" "+newValue+" updates");
         update();
       }
 

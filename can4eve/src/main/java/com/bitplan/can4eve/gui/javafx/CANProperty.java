@@ -21,6 +21,8 @@
 package com.bitplan.can4eve.gui.javafx;
 
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.bitplan.can4eve.CANData;
 import com.bitplan.can4eve.CANInfo;
@@ -45,6 +47,9 @@ import javafx.collections.ObservableList;
  * @param <T>
  */
 public class CANProperty<CT extends CANValue<T>,T> implements CANData<T>{
+  protected static Logger LOGGER = Logger.getLogger("com.bitplan.can4eve.gui.javafx");
+  public static boolean debug=false;
+  
   CT canValue;
   private Property<T>property;
   private IntegerProperty updateCountProperty=new SimpleIntegerProperty();
@@ -159,7 +164,10 @@ public class CANProperty<CT extends CANValue<T>,T> implements CANData<T>{
     setMinMax(value);
     int triggerIndex=canValue.getCANInfo().getMaxIndex()-1;
     if (index==triggerIndex) {
-      this.updateCountProperty.setValue(this.updateCountProperty.getValue()+1);
+      int newUpdateCount=this.updateCountProperty.getValue()+1;
+      this.updateCountProperty.setValue(newUpdateCount);
+      if (debug)
+        LOGGER.log(Level.INFO,this.getCANInfo().getName()+" "+newUpdateCount+" updates");
     }
   }
 

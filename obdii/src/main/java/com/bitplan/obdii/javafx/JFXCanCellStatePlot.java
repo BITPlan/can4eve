@@ -46,9 +46,10 @@ import javafx.scene.chart.XYChart.Series;
 public class JFXCanCellStatePlot extends JFXCanValuePlot
     implements CanValuePlot {
   private CANProperty<DoubleValue, Double> cellValues;
-  private Double rangeExtra;
+  private Double rangeExtra=0.0;
   private Double tickUnit;
   XYChart.Series<String, Number> series;
+  private NumberAxis yAxis;
 
   /**
    * create a Plot for a History of CANValues
@@ -73,11 +74,10 @@ public class JFXCanCellStatePlot extends JFXCanValuePlot
    * @return - the barchart
    */
   public BarChart<String, Number> getBarChart() {
-    if (cellValues == null)
-      return null;
+    if (cellValues == null) 
+      throw new IllegalStateException("can not call getBarChart if cellValues are null");
     // defining the axes
     final CategoryAxis xAxis = new CategoryAxis();
-    NumberAxis yAxis;
     DoubleValue cellDoubleValues = cellValues.getCanValue();
     if ((cellDoubleValues.getMin() != null) && (cellValues.getMax() != null)) {
       yAxis = new NumberAxis(cellDoubleValues.getMin() - rangeExtra,
@@ -113,6 +113,10 @@ public class JFXCanCellStatePlot extends JFXCanValuePlot
   private void updateSeries(Series<String, Number> series,
       CANProperty<DoubleValue, Double> cellValues) {
     DoubleValue cellDoubleValues = cellValues.getCanValue();
+    if (cellDoubleValues.getMax()==null || cellDoubleValues.getMin()==null) {
+      return;
+    }
+    
     List<CANValueItem<Double>> valueItems = cellDoubleValues.getValueItems();
     ObservableList<Data<String, Number>> seriesData = series.getData();
     if (debug) {
@@ -121,6 +125,10 @@ public class JFXCanCellStatePlot extends JFXCanValuePlot
           + " values of " + canInfo.getTitle());
     }
     int i = 0;
+    yAxis.setAutoRanging(false);
+    yAxis.setLowerBound(cellDoubleValues.getMin()-rangeExtra);
+    yAxis.setUpperBound(cellDoubleValues.getMax()+rangeExtra);
+    yAxis.setTickUnit(this.tickUnit);
     for (CANValueItem<Double> valueItem : valueItems) {
       if (valueItem.isAvailable()) {
         if (seriesData.size() > i) {
@@ -139,6 +147,7 @@ public class JFXCanCellStatePlot extends JFXCanValuePlot
 
   @Override
   public void update() {
-    Platform.runLater(() -> updateSeries(series, cellValues));
+    if (series!=null)
+      Platform.runLater(() -> updateSeries(series, cellValues));
   }
 }

@@ -126,7 +126,7 @@ public class CANPropertyManager implements CANValueHandler {
             canInfoName, type, th.getMessage()));
       }
     }
-    CANProperty result = this.getCanProperties().get(canInfoName);
+    CANProperty result = this.get(canInfoName);
     if (result == null)
       throw new RuntimeException(String.format(
           "invalid CANInfo configuration %s could not add to CANProperties",

@@ -87,12 +87,9 @@ import javafx.beans.binding.LongBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleLongProperty;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
@@ -260,7 +257,7 @@ public class TestAppGUI {
     SampleApp.toolkitInit();
     final JFXCanCellStatePlot valuePlot = new JFXCanCellStatePlot(title, xTitle,
         yTitle, cellTemp, 2.0, 0.5);
-    valuePlot.getUpdateCount().bind(cellTemp.getUpdateCountProperty());
+    valuePlot.updateOn(cellTemp.getUpdateCountProperty());
     GridPane gp=new GridPane();
     /*Button button=new Button("next");
     gp.add(button, 0, 0);
