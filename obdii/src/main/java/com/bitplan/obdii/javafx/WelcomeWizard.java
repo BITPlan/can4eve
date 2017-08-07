@@ -174,20 +174,29 @@ public class WelcomeWizard extends Wizard {
   }
 
   /**
+   * animate Selections
+   * @param imageSelector
+   * @param showTime
+   * @throws Exception
+   */
+  public void animateSelections(ImageSelector imageSelector,int showTime) throws Exception {
+     Object[] selections = imageSelector.getSelections();
+    for (int i = 0; i < selections.length; i++) {
+      final int index = i;
+      Platform.runLater(
+          () -> imageSelector.getChoice().getSelectionModel().select(index));
+      Thread.sleep(showTime /selections.length);
+    }
+  }
+  /**
    * animate this wizard for testing purposes
    * @param showTime
    * @throws Exception
    */
   public void animate(int showTime) throws Exception {
-    for (int i = 0; i < carSelections.length; i++) {
-      final int index = i;
-      Platform.runLater(
-          () -> carSelector.getChoice().getSelectionModel().select(index));
-      Thread.sleep(showTime / 2 / carSelections.length);
-    }
+    animateSelections(this.carSelector,showTime/2);
     Platform.runLater(()->this.findNextButton(carPane).fire());
-    // Platform.runLater(()->this.getFlow().advance(carPane));
-    Thread.sleep(showTime/2);
+    animateSelections(this.connectionSelector,showTime/2);
     Platform.runLater(() -> close());
   }
 

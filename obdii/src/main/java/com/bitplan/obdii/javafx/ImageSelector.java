@@ -42,6 +42,8 @@ public class ImageSelector<T> extends GridPane {
 
   private ChoiceBox<T> choice;
   List<ImageView> imageViews=new ArrayList<ImageView>();
+  private T[] selections;
+  private String[] pictures;
   
   /**
    * get the choice
@@ -51,12 +53,22 @@ public class ImageSelector<T> extends GridPane {
     return choice;
   }
   
+  public T[] getSelections() {
+    return selections;
+  }
+
+  public void setSelections(T[] selections) {
+    this.selections = selections;
+  }
+
   /**
    * create an Image Selector for the given selection and images 
    * @param selections
    * @param pictures
    */
   public ImageSelector(T[] selections, String[] pictures) {
+    this.setSelections(selections);
+    this.pictures=pictures;
     choice=new ChoiceBox<T>(
         FXCollections.observableArrayList(
              selections));
