@@ -20,6 +20,7 @@
  */
 package com.bitplan.obdii.javafx;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,16 +38,16 @@ import javafx.scene.layout.GridPane;
  * @author wf
  *
  */
-public class ImageSelector extends GridPane {
+public class ImageSelector<T> extends GridPane {
 
-  private ChoiceBox<String> choice;
+  private ChoiceBox<T> choice;
   List<ImageView> imageViews=new ArrayList<ImageView>();
   
   /**
    * get the choice
    * @return
    */
-  public ChoiceBox<String> getChoice() {
+  public ChoiceBox<T> getChoice() {
     return choice;
   }
   
@@ -55,13 +56,17 @@ public class ImageSelector extends GridPane {
    * @param selections
    * @param pictures
    */
-  public ImageSelector(String[] selections, String[] pictures) {
-    choice=new ChoiceBox<String>(
+  public ImageSelector(T[] selections, String[] pictures) {
+    choice=new ChoiceBox<T>(
         FXCollections.observableArrayList(
              selections));
     BorderPane imageFrame = new BorderPane();
     for (String picture:pictures) {
-      String imgUrl = getClass().getResource("/pictures/"+picture).toExternalForm();
+      URL resource = getClass().getResource("/pictures/"+picture);
+      if (resource==null) {
+        throw new RuntimeException("picture "+picture+" missing");
+      }
+      String imgUrl=resource.toExternalForm();
       Image img=new Image(imgUrl);
       ImageView imageView=new ImageView(img);
       imageView.setUserData(imgUrl);
@@ -77,6 +82,10 @@ public class ImageSelector extends GridPane {
     choice.getSelectionModel().select(0);
     add(choice, 0, 1);
     add(imageFrame, 0,2);
+  }
+  
+  public T getSelection() {
+    return choice.getSelectionModel().getSelectedItem();
   }
 
 }

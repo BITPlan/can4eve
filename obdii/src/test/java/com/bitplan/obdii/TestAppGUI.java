@@ -30,6 +30,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
@@ -64,7 +65,6 @@ import com.bitplan.obdii.elm327.LogPlayerImpl;
 import com.bitplan.obdii.javafx.ChargePane;
 import com.bitplan.obdii.javafx.ClockPane;
 import com.bitplan.obdii.javafx.ClockPane.Watch;
-import com.bitplan.obdii.javafx.ImageSelector;
 import com.bitplan.obdii.javafx.JFXCanCellStatePlot;
 import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
 import com.bitplan.obdii.javafx.JFXStopWatch;
@@ -471,7 +471,7 @@ public class TestAppGUI {
     }
   }
 
-  @Test
+  @Ignore
   public void testFXML() throws Exception {
     WaitableApp.toolkitInit();
     Parent root = FXMLLoader.load(
@@ -568,52 +568,56 @@ public class TestAppGUI {
   @Test
   public void testWelcomeWizard() throws Exception {
     WaitableApp.toolkitInit();
-    String[] pageNames = { "connection" };
-    String selections[]={"Citroën C-Zero","Mitsubishi i-Miev", "Misubishi Outlander PHEV", "Peugeot Ion"};
-    String pictures[]={"c-zero.jpg","i-miev.jpg","outlanderphev.jpg","ion.jpg"};      
-    ImageSelector carSelector =  new ImageSelector(selections,pictures);
-    WelcomeWizard[] wizards=new WelcomeWizard[1];
-    Platform.runLater(() ->{
+    WelcomeWizard[] wizards = new WelcomeWizard[1];
+
+    Platform.runLater(() -> {
       try {
-        WelcomeWizard wizard=new WelcomeWizard(I18n.WELCOME);
-        wizards[0]=wizard;
-        WizardPane carPane=new WizardPane();
-        carPane.setHeaderText("Welcome to the Can4Eve software!\nPlease select a vehicle");
-        // SampleApp.createAndShow("select", selectPane, SHOW_TIME);
-        carPane.setContent(carSelector);
-        wizard.addPage(carPane);
-        // wizard.setPages(pageNames);
-        wizard.prepare();
+        WelcomeWizard wizard = new WelcomeWizard(I18n.WELCOME);
+        wizards[0] = wizard;
         wizard.display();
       } catch (Exception e) {
-        fail("There should be no exception but we got "+e.getMessage());
+        fail("There should be no exception but we got " + e.getMessage());
       }
     });
-    for (int i=0;i<selections.length;i++) {
-      final int index=i;
-      Platform.runLater(()->carSelector.getChoice() .getSelectionModel().select(index));
-      Thread.sleep(SHOW_TIME/selections.length);
+    while (wizards[0]==null)
+      Thread.sleep(10);
+    WelcomeWizard wizard=wizards[0];
+    boolean animated = true;
+    if (animated) {
+      wizard.animate(SHOW_TIME);
+    } else {
+      wizard.waitShow(1000);
+      while (wizard.getDialog().isShowing()) {
+        Thread.sleep(10);
+      }
     }
-    Platform.runLater(()->wizards[0].close());
+    for (Entry<String, Object> setting:wizard.getSettings().entrySet()) {
+      System.out.println(setting.getKey()+"="+setting.getValue());
+    }
   }
-  
-  
+
   /**
    * run the wizard with the given title
-   * @param title - of the wizard
-   * @param resourcePath - where to load the fxml files from
-   * @param pageNames - without .fxml extenion
-   * @throws Exception - e.g. IOException
+   * 
+   * @param title
+   *          - of the wizard
+   * @param resourcePath
+   *          - where to load the fxml files from
+   * @param pageNames
+   *          - without .fxml extenion
+   * @throws Exception
+   *           - e.g. IOException
    */
-  public void runWizard(String title,String resourcePath,String ...pageNames) throws Exception {
+  public void runWizard(String title, String resourcePath, String... pageNames)
+      throws Exception {
     Wizard wizard = new Wizard();
     wizard.setTitle(title);
-    
+
     WizardPane[] pages = new WizardPane[pageNames.length];
     int i = 0;
     for (String pageName : pageNames) {
-      Parent root = FXMLLoader.load(getClass()
-          .getResource(resourcePath + pageName + ".fxml"));
+      Parent root = FXMLLoader
+          .load(getClass().getResource(resourcePath + pageName + ".fxml"));
       WizardPane page = new WizardPane();
       page.setHeaderText(I18n.get(pageName));
       page.setContent(root);
