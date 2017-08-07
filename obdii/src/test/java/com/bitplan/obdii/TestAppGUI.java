@@ -23,6 +23,7 @@ package com.bitplan.obdii;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -33,6 +34,9 @@ import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.Notifications;
+import org.controlsfx.dialog.Wizard;
+import org.controlsfx.dialog.Wizard.LinearFlow;
+import org.controlsfx.dialog.WizardPane;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -60,11 +64,13 @@ import com.bitplan.obdii.elm327.LogPlayerImpl;
 import com.bitplan.obdii.javafx.ChargePane;
 import com.bitplan.obdii.javafx.ClockPane;
 import com.bitplan.obdii.javafx.ClockPane.Watch;
+import com.bitplan.obdii.javafx.ImageSelector;
 import com.bitplan.obdii.javafx.JFXCanCellStatePlot;
 import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
 import com.bitplan.obdii.javafx.JFXStopWatch;
 import com.bitplan.obdii.javafx.LCDPane;
 import com.bitplan.obdii.javafx.SimulatorPane;
+import com.bitplan.obdii.javafx.WelcomeWizard;
 
 import eu.hansolo.OverviewDemo;
 import eu.hansolo.medusa.FGauge;
@@ -90,6 +96,7 @@ import javafx.beans.property.SimpleLongProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
@@ -113,6 +120,7 @@ public class TestAppGUI {
   public void initGUI() {
     WaitableApp.toolkitInit();
   }
+
   @Test
   public void testAppGUI() throws Exception {
     App app = App.getInstance();
@@ -125,7 +133,6 @@ public class TestAppGUI {
       assertEquals(expected[i++], group.getForms().size());
     }
   }
-  
 
   @Test
   public void testJoin() {
@@ -208,24 +215,23 @@ public class TestAppGUI {
     }
     SampleApp.createAndShow("LCDPane", lcdPane, SHOW_TIME);
   }
-  
+
   @Test
   public void testExceptionHelp() throws Exception {
     App app = App.getInstance();
-    String exception="java.net.BindException:Address already in use (Bind failed)";
+    String exception = "java.net.BindException:Address already in use (Bind failed)";
     ExceptionHelp ehelp = app.getExceptionHelpByName(exception);
     assertNotNull(ehelp);
     FlowPane fp = new FlowPane();
     Label lbl = new Label(I18n.get(ehelp.getI18nHint()));
     Hyperlink link = new Hyperlink(ehelp.getUrl());
-   
-    fp.getChildren().addAll( lbl, link);
-    SampleApp sampleApp = new SampleApp("help",
-        fp);
-    final Linker linker=sampleApp;
-    link.setOnAction( (evt) -> {
+
+    fp.getChildren().addAll(lbl, link);
+    SampleApp sampleApp = new SampleApp("help", fp);
+    final Linker linker = sampleApp;
+    link.setOnAction((evt) -> {
       linker.browse(link.getText());
-    } );
+    });
     sampleApp.show();
     sampleApp.waitOpen();
     Thread.sleep(SHOW_TIME);
@@ -234,9 +240,10 @@ public class TestAppGUI {
 
   /**
    * set random values for the cell Temperature
+   * 
    * @param cellTemp
    */
-  public void randomValues(CANProperty<DoubleValue,Double> cellTemp) {
+  public void randomValues(CANProperty<DoubleValue, Double> cellTemp) {
     Date timeStamp = new Date();
     for (int i = 0; i < cellTemp.getCANInfo().getMaxIndex(); i++) {
       cellTemp.setValue(i, 25 + Math.random() * 10, timeStamp);
@@ -248,8 +255,9 @@ public class TestAppGUI {
     VehicleGroup vg = VehicleGroup.get("triplet");
     CANInfo cellInfo = vg.getCANInfoByName("CellTemperature");
     assertNotNull(cellInfo);
-    DoubleValue cellTempValue=new DoubleValue(cellInfo);
-    CANProperty<DoubleValue,Double> cellTemp = new CANProperty<DoubleValue,Double>(cellTempValue,new SimpleDoubleProperty());
+    DoubleValue cellTempValue = new DoubleValue(cellInfo);
+    CANProperty<DoubleValue, Double> cellTemp = new CANProperty<DoubleValue, Double>(
+        cellTempValue, new SimpleDoubleProperty());
     randomValues(cellTemp);
     String title = "Cell Temperature";
     String xTitle = "cell";
@@ -258,26 +266,22 @@ public class TestAppGUI {
     final JFXCanCellStatePlot valuePlot = new JFXCanCellStatePlot(title, xTitle,
         yTitle, cellTemp, 2.0, 0.5);
     valuePlot.updateOn(cellTemp.getUpdateCountProperty());
-    GridPane gp=new GridPane();
-    /*Button button=new Button("next");
-    gp.add(button, 0, 0);
-    button.setOnAction(new EventHandler<ActionEvent>(){
-
-      @Override
-      public void handle(ActionEvent event) {
-        randomValues(cellTemp);
-        valuePlot.update();
-      }});
-    gp.add(valuePlot.getBarChart(), 0,1);
-    */
+    GridPane gp = new GridPane();
+    /*
+     * Button button=new Button("next"); gp.add(button, 0, 0);
+     * button.setOnAction(new EventHandler<ActionEvent>(){
+     * 
+     * @Override public void handle(ActionEvent event) { randomValues(cellTemp);
+     * valuePlot.update(); }}); gp.add(valuePlot.getBarChart(), 0,1);
+     */
     SampleApp sampleApp = new SampleApp("Cell Temperature",
         valuePlot.getBarChart());
     sampleApp.show();
     sampleApp.waitOpen();
-    int loops=4;
-    for (int j=0;j<loops;j++) {  
+    int loops = 4;
+    for (int j = 0; j < loops; j++) {
       randomValues(cellTemp);
-      Thread.sleep(SHOW_TIME/loops);
+      Thread.sleep(SHOW_TIME / loops);
     }
     sampleApp.close();
   }
@@ -406,23 +410,23 @@ public class TestAppGUI {
   public void testSimulatorPane() throws Exception {
     WaitableApp.toolkitInit();
     Translator.initialize(Preferences.getInstance().getLanguage().name());
-    LogPlayer logPlayer=new LogPlayerImpl();
+    LogPlayer logPlayer = new LogPlayerImpl();
     logPlayer.setLogFile(TestSimulatorLogReader.getTestFile());
-    SimulatorPane simulatorPane = new SimulatorPane(logPlayer,null);
+    SimulatorPane simulatorPane = new SimulatorPane(logPlayer, null);
     logPlayer.open();
     SampleApp sampleApp = new SampleApp("simulator", simulatorPane);
     sampleApp.show();
     sampleApp.waitOpen();
     Notifications notification = Notifications.create();
-    notification.hideAfter(new Duration(SHOW_TIME/2));
+    notification.hideAfter(new Duration(SHOW_TIME / 2));
     notification.title("simulator running");
     notification.text("Simulation started");
-    Platform.runLater(()->notification.showInformation());
+    Platform.runLater(() -> notification.showInformation());
     int loops = 50;
     for (int i = 0; i < loops; i++) {
-      Thread.sleep(SHOW_TIME/loops);
-      double seconds = simulatorPane.getDuration().toSeconds()/loops*i;
-      Platform.runLater(()->simulatorPane.setElapsed(seconds));
+      Thread.sleep(SHOW_TIME / loops);
+      double seconds = simulatorPane.getDuration().toSeconds() / loops * i;
+      Platform.runLater(() -> simulatorPane.setElapsed(seconds));
     }
     sampleApp.close();
   }
@@ -559,5 +563,68 @@ public class TestAppGUI {
     lp.setValue(1);
     assertEquals(2, calledEffect);
     assertEquals(2, keepBinding.get());
+  }
+
+  @Test
+  public void testWelcomeWizard() throws Exception {
+    WaitableApp.toolkitInit();
+    String[] pageNames = { "connection" };
+    String selections[]={"Citroën C-Zero","Mitsubishi i-Miev", "Misubishi Outlander PHEV", "Peugeot Ion"};
+    String pictures[]={"c-zero.jpg","i-miev.jpg","outlanderphev.jpg","ion.jpg"};      
+    ImageSelector carSelector =  new ImageSelector(selections,pictures);
+    WelcomeWizard[] wizards=new WelcomeWizard[1];
+    Platform.runLater(() ->{
+      try {
+        WelcomeWizard wizard=new WelcomeWizard(I18n.WELCOME);
+        wizards[0]=wizard;
+        WizardPane carPane=new WizardPane();
+        carPane.setHeaderText("Welcome to the Can4Eve software!\nPlease select a vehicle");
+        // SampleApp.createAndShow("select", selectPane, SHOW_TIME);
+        carPane.setContent(carSelector);
+        wizard.addPage(carPane);
+        // wizard.setPages(pageNames);
+        wizard.prepare();
+        wizard.display();
+      } catch (Exception e) {
+        fail("There should be no exception but we got "+e.getMessage());
+      }
+    });
+    for (int i=0;i<selections.length;i++) {
+      final int index=i;
+      Platform.runLater(()->carSelector.getChoice() .getSelectionModel().select(index));
+      Thread.sleep(SHOW_TIME/selections.length);
+    }
+    Platform.runLater(()->wizards[0].close());
+  }
+  
+  
+  /**
+   * run the wizard with the given title
+   * @param title - of the wizard
+   * @param resourcePath - where to load the fxml files from
+   * @param pageNames - without .fxml extenion
+   * @throws Exception - e.g. IOException
+   */
+  public void runWizard(String title,String resourcePath,String ...pageNames) throws Exception {
+    Wizard wizard = new Wizard();
+    wizard.setTitle(title);
+    
+    WizardPane[] pages = new WizardPane[pageNames.length];
+    int i = 0;
+    for (String pageName : pageNames) {
+      Parent root = FXMLLoader.load(getClass()
+          .getResource(resourcePath + pageName + ".fxml"));
+      WizardPane page = new WizardPane();
+      page.setHeaderText(I18n.get(pageName));
+      page.setContent(root);
+      pages[i++] = page;
+    }
+    wizard.setFlow(new LinearFlow(pages));
+    wizard.showAndWait().ifPresent(result -> {
+      if (result == ButtonType.FINISH) {
+        System.out
+            .println("Wizard finished, settings: " + wizard.getSettings());
+      }
+    });
   }
 }

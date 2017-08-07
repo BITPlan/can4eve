@@ -117,6 +117,7 @@ public class I18n {
   public static final String K_WATT = "kWatt";
   public static final String AC_POWER = "acPower";
   public static final String DC_POWER = "dcPower";
+  public static final String WELCOME = "welcome";
  
   
   /**
