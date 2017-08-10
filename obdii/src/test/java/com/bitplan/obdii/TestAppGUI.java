@@ -71,6 +71,7 @@ import com.bitplan.obdii.javafx.JFXStopWatch;
 import com.bitplan.obdii.javafx.LCDPane;
 import com.bitplan.obdii.javafx.SimulatorPane;
 import com.bitplan.obdii.javafx.WelcomeWizard;
+import com.bitplan.obdii.javafx.WelcomeWizard.NetworkController;
 
 import eu.hansolo.OverviewDemo;
 import eu.hansolo.medusa.FGauge;
@@ -561,11 +562,13 @@ public class TestAppGUI {
   public void testWelcomeWizard() throws Exception {
     Translator.initialize();
     WaitableApp.toolkitInit();
+    NetworkController nc = new WelcomeWizard.NetworkController();
+    System.out.println(nc.getClass().getName());
     WelcomeWizard[] wizards = new WelcomeWizard[1];
 
     Platform.runLater(() -> {
       try {
-        WelcomeWizard wizard = new WelcomeWizard(I18n.WELCOME);
+        WelcomeWizard wizard = new WelcomeWizard(I18n.WELCOME,null);
         wizards[0] = wizard;
         wizard.display();
       } catch (Exception e) {
@@ -578,7 +581,7 @@ public class TestAppGUI {
     WelcomeWizard wizard=wizards[0];
     boolean animated = true;
     if (animated) {
-      wizard.animate(SHOW_TIME);
+      wizard.animate(SHOW_TIME*2);
     } else {
       wizard.waitShow(1000);
       while (wizard.getPrivateDialog().isShowing()) {

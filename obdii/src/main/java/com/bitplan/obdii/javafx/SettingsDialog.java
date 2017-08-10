@@ -63,13 +63,13 @@ public class SettingsDialog extends GenericDialog {
     GenericControl serialDeviceControl = super.controls.get("serialDevice");
     Button serialButton = new Button("...");
     grid.add(serialButton, 2, 2);
-    serialButton.setOnAction(new EventHandler<ActionEvent>() {
+    EventHandler<ActionEvent> eventHandler = new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
         SerialImpl serial = SerialImpl.getInstance();
         List<String> serialPorts = serial.getSerialPorts(true);
         if (serialPorts.size()==0) {
-          SettingsDialog.super.showAlert(I18n.get(I18n.SERIAL_PORT_SELECT), I18n.get(I18n.SERIAL_PORT_NONE_FOUND), I18n.get(I18n.SERIAL_PORT_PLEASE_CONNECT));
+          GenericDialog.showAlert(I18n.get(I18n.SERIAL_PORT_SELECT), I18n.get(I18n.SERIAL_PORT_NONE_FOUND), I18n.get(I18n.SERIAL_PORT_PLEASE_CONNECT));
         } else {
           ChoiceDialog<String> serialChoices=new ChoiceDialog<String>(serialPorts.get(0),serialPorts);
           serialChoices.setTitle(I18n.get(I18n.SERIAL_PORT_SELECT));
@@ -80,14 +80,15 @@ public class SettingsDialog extends GenericDialog {
           }
         }
       }
-    });
+    };
+    serialButton.setOnAction(eventHandler);
     Button button = new Button("test Connection");
     button.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
         Config config=new Config();
         config.fromMap(SettingsDialog.this.getResult());
-        Platform.runLater(()->testConnection(config));
+        testConnection(obdApp,config);
       }
     });
     grid.add(button, 2,0);
@@ -97,15 +98,15 @@ public class SettingsDialog extends GenericDialog {
    * test the connection for the given configuration
    * @param config
    */
-  protected void testConnection(Config config) {
+  public static void testConnection(OBDApp obdApp,Config config) {
     // FIXME - use Task/Lamba instead
     Platform.runLater(() ->{
     try {
       ELM327 elm = obdApp.testConnection(config);
       String info=elm.getInfo();
-      super.showAlert(I18n.get(I18n.SUCCESS),I18n.get(I18n.CONNECTION_OK), info);
+      GenericDialog.showAlert(I18n.get(I18n.SUCCESS),I18n.get(I18n.CONNECTION_OK), info);
     } catch (Exception e) {
-      super.showError(I18n.get(I18n.ERROR), I18n.get(I18n.CONNECTION_FAILED),e.getClass().getSimpleName()+":"+e.getMessage());
+      GenericDialog.showError(I18n.get(I18n.ERROR), I18n.get(I18n.CONNECTION_FAILED),e.getClass().getSimpleName()+":"+e.getMessage());
       ErrorHandler.handle(e);
     }
     });

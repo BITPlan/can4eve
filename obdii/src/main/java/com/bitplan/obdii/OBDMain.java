@@ -318,10 +318,15 @@ public class OBDMain extends Main implements OBDApp {
    */
   public void work() throws Exception {
     Preferences preferences = Preferences.getInstance();
+    // a command line language setting overrides the preferences setting
     if (this.language != LangChoice.notSet) {
       Translator.initialize(this.language.name());
     } else {
-      Translator.initialize(preferences.getLanguage().name());
+      LangChoice langChoice = preferences.getLanguage();
+      String lang=null;
+      if (langChoice!=LangChoice.notSet)
+        lang=preferences.getLanguage().name();
+      Translator.initialize(lang);
     }
 
     if (this.showVersion || this.debug)

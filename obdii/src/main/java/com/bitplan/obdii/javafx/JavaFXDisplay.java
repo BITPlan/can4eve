@@ -307,6 +307,25 @@ public class JavaFXDisplay extends WaitableApp
     stage.setY(sceneBounds.getMinY());
     stage.show();
     available = true;
+    // TODO activate
+    // optionalShowWelcomeWizard();
+  }
+
+  /**
+   * check whether this is the first start of the application
+   * (that is there are not stored preferences yet)
+   * and then show the welcome wizard for the initial configuration
+   */
+  private void optionalShowWelcomeWizard()  {
+    try {
+      Preferences preferences=Preferences.getInstance();
+      if (preferences.getLanguage()==LangChoice.notSet) {
+        WelcomeWizard wizard = new WelcomeWizard(I18n.WELCOME,this.obdApp);
+        wizard.display();
+      }
+    } catch (Throwable th) {
+      this.handleException(th);
+    }
   }
 
   private void setUpStatusBar() {
@@ -564,7 +583,7 @@ public class JavaFXDisplay extends WaitableApp
           showSettings(false);
           break;
         case I18n.SETTINGS_WELCOME_MENU_ITEM:
-          WelcomeWizard wizard = new WelcomeWizard(I18n.WELCOME);
+          WelcomeWizard wizard = new WelcomeWizard(I18n.WELCOME,this.obdApp);
           wizard.display();
           break;
         case I18n.OBD_START_MENU_ITEM:
@@ -798,7 +817,7 @@ public class JavaFXDisplay extends WaitableApp
     if (config == null)
       config = new Config();
     if (test)
-      settingsDialog.testConnection(config);
+      SettingsDialog.testConnection(this.obdApp,config);
     else {
       Optional<Map<String, Object>> result = settingsDialog
           .show(config.asMap());

@@ -20,17 +20,28 @@
  */
 package com.bitplan.obdii.javafx;
 
+import java.net.URL;
+import java.util.List;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 
 import org.controlsfx.dialog.Wizard;
 import org.controlsfx.dialog.WizardPane;
 
-import com.bitplan.can4eve.ErrorHandler;
+import com.bitplan.can4eve.gui.javafx.GenericDialog;
+import com.bitplan.elm327.Config;
+import com.bitplan.elm327.SerialImpl;
+import com.bitplan.i18n.Translator;
 import com.bitplan.obdii.I18n;
+import com.bitplan.obdii.OBDApp;
+import com.bitplan.obdii.elm327.ELM327;
 
 import javafx.application.Platform;
-import javafx.scene.Parent;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
 
 /**
  * the Welcome wizard
@@ -39,6 +50,10 @@ import javafx.scene.control.ButtonType;
  *
  */
 public class WelcomeWizard extends JFXWizard {
+  String langs[] = { "English", "Deutsch" };
+  String langPictures[] = { "en-flag.jpg", "de-flag.jpg" };
+  ImageSelector<String> langSelector = new ImageSelector<String>("language",
+      langs, langPictures);
 
   String carSelections[] = { "Citroën C-Zero", "Mitsubishi i-Miev",
       "Misubishi Outlander PHEV", "Peugeot Ion" };
@@ -46,48 +61,141 @@ public class WelcomeWizard extends JFXWizard {
       "ion.jpg" };
   ImageSelector<String> carSelector = new ImageSelector<String>("vehicle",
       carSelections, carPictures);
+
   String conSelections[] = { "USB", "Wifi", "Bluetooth" };
   String conPictures[] = { "obd-usb.jpg", "obd-wifi.jpg", "obd-bluetooth.jpg" };
 
   ImageSelector<String> connectionSelector = new ImageSelector<String>("obd",
       conSelections, conPictures);
-  private WizardPane carPane;
-  private WizardPane connectionPane;
-  private WizardPane conSettingsPane;
+
+  private JFXWizardPane carPane;
+  private JFXWizardPane connectionPane;
+  private JFXWizardPane conSettingsPane;
+  private JFXWizardPane languagePane;
+  private JFXWizardPane conTestResultPane;
+  private OBDApp obdApp;
+
+  public static class NetworkController implements Initializable {
+    @FXML
+    TextField hostName;
+    @FXML
+    TextField port;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+      hostName.setText("192.168.0.10");
+      port.setText("35000");
+    }
+
+  }
+
+  public static class SerialController implements Initializable {
+    @FXML
+    ComboBox<String> serialDevice;
+    @FXML
+    ComboBox<String> baudRate;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+      SerialImpl serial = SerialImpl.getInstance();
+      List<String> serialPorts = serial.getSerialPorts(true);
+      serialDevice.getItems().clear();
+      serialDevice.getItems().addAll(serialPorts);
+      if (serialPorts.size()>0) {
+        serialDevice.getSelectionModel().select(0);
+      }
+      String[] baudRates = { "38400", "115200", "230400" };
+      baudRate.getItems().clear();
+      baudRate.getItems().addAll(baudRates);
+      baudRate.getSelectionModel().select(0);
+    }
+
+  }
 
   /**
    * construct the welcome Wizard
+   * @param obdApp 
    * 
    * @param title
    * @param pageNames
    * @throws Exception
    */
-  public WelcomeWizard(String i18nTitle) {
+  public WelcomeWizard(String i18nTitle, OBDApp obdApp) {
     super();
+    this.obdApp=obdApp;
     setTitle(I18n.get(i18nTitle));
-    carPane = new JFXWizardPane(I18n.WELCOME_VEHICLE, carSelector);
+    int steps = 5;
+    languagePane = new JFXWizardPane(1, steps, I18n.WELCOME_LANGUAGE,
+        langSelector) {
+      @Override
+      public void onExitingPage(Wizard wizard) {
+        String lang = langSelector.getSelection();
+        switch (lang) {
+        case "English":
+          lang = "en";
+          break;
+        case "Deutsch":
+          lang = "de";
+          break;
+        }
+        Translator.initialize(lang);
+        WelcomeWizard.this.refreshI18n();
+      }
+    };
+    addPage(languagePane);
+    carPane = new JFXWizardPane(2, steps, I18n.WELCOME_VEHICLE, carSelector);
     // SampleApp.createAndShow("select", selectPane, SHOW_TIME);
     carPane.setContent(carSelector);
     addPage(carPane);
-    conSettingsPane = new JFXWizardPane(I18n.WELCOME_CON) {
+    conTestResultPane = new JFXWizardPane(5, steps, I18n.WELCOME_TEST_RESULT);
+    
+    conSettingsPane = new JFXWizardPane(4, steps, I18n.WELCOME_CON) {
       @Override
       public void onExitingPage(Wizard wizard) {
-
+        Config config = new Config();
+        if (controller instanceof SerialController) {
+          SerialController serialController = (SerialController) controller;
+          config.setDeviceType(Config.DeviceType.USB);
+          config.setSerialDevice(serialController.serialDevice.getSelectionModel().getSelectedItem());
+          int serialBaud = Integer.parseInt(
+              serialController.baudRate.getSelectionModel().getSelectedItem());
+          config.setBaudRate(serialBaud);
+        } else if (controller instanceof NetworkController) {
+          NetworkController networkController=(NetworkController) controller;
+          config.setDeviceType(Config.DeviceType.Network);
+          config.setHostname(networkController.hostName.getText());
+          config.setPort(Integer.parseInt(networkController.port.getText()));
+        }
+        if (obdApp!=null) {
+          ELM327 elm;
+          try {
+            elm = obdApp.testConnection(config);
+            String info=elm.getInfo();
+            conTestResultPane.setContentText(info);
+          } catch (Throwable th) {
+            conTestResultPane.setContentText(I18n.get(I18n.PROBLEM_OCCURED)+"\n"+GenericDialog.getStackTraceText(th));
+          }
+          
+        }
       }
     };
-    connectionPane = new JFXWizardPane(I18n.WELCOME_OBD, connectionSelector) {
+    
+    connectionPane = new JFXWizardPane(3, steps, I18n.WELCOME_OBD,
+        connectionSelector) {
       @Override
       public void onExitingPage(Wizard wizard) {
         super.onExitingPage(wizard);
-        Parent content = null;
+        LoadResult loadResult = null;
         String con = selector.getSelection();
         if ("USB".equals(con) || "Bluetooth".equals(con)) {
-          content = loadParent("usb");
+          loadResult= loadParent("usb");
         } else {
-          content=loadParent("network");
+          loadResult = loadParent("network");
         }
-        if (content != null)
-          conSettingsPane.setContent(content);
+        if (loadResult.parent != null) {
+          conSettingsPane.setContent(loadResult.parent);
+          conSettingsPane.setController(loadResult.controller);
+        }
         else
           LOGGER.log(Level.SEVERE, "missing fxml for " + con);
       }
@@ -97,7 +205,18 @@ public class WelcomeWizard extends JFXWizard {
 
     // wizard.setPages(pageNames);
     addPage(conSettingsPane);
+    addPage(conTestResultPane);
     prepare();
+  }
+
+  protected void refreshI18n() {
+    for (WizardPane page : this.pages) {
+      if (page instanceof JFXWizardPane) {
+        JFXWizardPane jfxpage = (JFXWizardPane) page;
+        jfxpage.refreshI18n();
+      }
+    }
+
   }
 
   /**
@@ -107,15 +226,18 @@ public class WelcomeWizard extends JFXWizard {
    * @throws Exception
    */
   public void animate(int showTime) throws Exception {
-    animateSelections(this.carSelector, showTime / 3);
-    Platform.runLater(() -> this.findButton(carPane, ButtonType.NEXT).fire());
-    animateSelections(this.connectionSelector, showTime / 3);
-    Platform.runLater(
-        () -> this.findButton(connectionPane, ButtonType.NEXT).fire());
-    Thread.sleep(showTime / 6);
+    animateSelections(this.langSelector, showTime / 5);
+    Platform.runLater(() -> languagePane.findButton(ButtonType.NEXT).fire());
+    animateSelections(this.carSelector, showTime / 5);
+    Platform.runLater(() -> carPane.findButton(ButtonType.NEXT).fire());
+    animateSelections(this.connectionSelector, showTime / 5);
+    Platform.runLater(() -> connectionPane.findButton(ButtonType.NEXT).fire());
+    Thread.sleep(showTime / 10);
+    Platform.runLater(() -> conSettingsPane.findButton(ButtonType.NEXT).fire());
+    Thread.sleep(showTime / 10);
     Platform
-        .runLater(() -> this.findButton(conSettingsPane, ButtonType.FINISH));
-    Thread.sleep(showTime / 6);
+        .runLater(() -> conTestResultPane.findButton(ButtonType.FINISH).fire());
+    Thread.sleep(showTime / 10);
   }
 
 }

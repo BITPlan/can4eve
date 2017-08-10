@@ -38,7 +38,7 @@ public class Preferences implements JsonAble {
     en, de, notSet
   }
 
-  private LangChoice language = LangChoice.en;
+  private LangChoice language = LangChoice.notSet;
   Boolean debug;
   int screenPercent = 100;
   String logDirectory="can4eveLogs";

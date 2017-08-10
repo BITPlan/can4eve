@@ -122,6 +122,8 @@ public class I18n {
   public static final String WELCOME_VEHICLE = "welcomeVehicle";
   public static final String WELCOME_OBD = "welcomeObd";
   public static final String WELCOME_CON = "welcomeCon";
+  public static final String WELCOME_LANGUAGE = "welcomeLanguage";
+  public static final String WELCOME_TEST_RESULT="welcomeTestResult";
  
   
   /**

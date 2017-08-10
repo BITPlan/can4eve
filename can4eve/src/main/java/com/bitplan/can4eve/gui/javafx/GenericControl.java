@@ -48,7 +48,7 @@ import javafx.stage.Stage;
  * @author wf
  *
  */
-public class GenericControl {
+public class GenericControl implements ValueHolder {
   protected static Logger LOGGER = Logger
       .getLogger("com.bitplan.can4eve.gui.javafx");
   Control control;

@@ -86,13 +86,15 @@ public class Translator {
    * @return the resource Bundle for the given localName
    */
   public static ResourceBundle initialize(String localeName) {
+    if (localeName==null)
+      localeName=Locale.getDefault().getLanguage();
     Locale locale = new Locale(localeName);
+    Locale.setDefault(locale);
     return loadBundle(locale);
   }
   
   public static void initialize() {
-    String localeName=Locale.getDefault().getLanguage();
-    initialize(localeName);
+    initialize(null);
   }
 
   /**
@@ -104,6 +106,10 @@ public class Translator {
     resourceBundle = ResourceBundle.getBundle("i18n/"+BUNDLE_NAME, locale);
     formatter = new MessageFormat("");
     formatter.setLocale(locale);
+    return resourceBundle;
+  }
+
+  public static ResourceBundle getBundle() {
     return resourceBundle;
   }
 }
