@@ -40,10 +40,11 @@ import javafx.scene.layout.GridPane;
  */
 public class ImageSelector<T> extends GridPane {
 
-  private ChoiceBox<T> choice;
+  ChoiceBox<T> choice;
   List<ImageView> imageViews=new ArrayList<ImageView>();
-  private T[] selections;
-  private String[] pictures;
+  T[] selections;
+  String[] pictures;
+  String title;
   
   /**
    * get the choice
@@ -61,12 +62,22 @@ public class ImageSelector<T> extends GridPane {
     this.selections = selections;
   }
 
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
   /**
    * create an Image Selector for the given selection and images 
+   * @param title 
    * @param selections
    * @param pictures
    */
-  public ImageSelector(T[] selections, String[] pictures) {
+  public ImageSelector(String title, T[] selections, String[] pictures) {
+    this.title=title;
     this.setSelections(selections);
     this.pictures=pictures;
     choice=new ChoiceBox<T>(

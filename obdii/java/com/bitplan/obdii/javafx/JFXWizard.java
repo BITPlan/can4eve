@@ -23,17 +23,17 @@ package com.bitplan.obdii.javafx;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.controlsfx.dialog.Wizard;
 import org.controlsfx.dialog.WizardPane;
 
+import com.bitplan.can4eve.ErrorHandler;
 import com.bitplan.obdii.I18n;
-import com.sun.media.jfxmedia.logging.Logger;
 
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -44,54 +44,80 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 
 /**
- * the Welcome wizard
+ * a generic Wizard based on the controls FX Wizard which needs some tweaks to
+ * work properly as of 2017-08
  * 
  * @author wf
  *
  */
-public class WelcomeWizard extends Wizard {
+public class JFXWizard extends Wizard {
+  protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.javafx");
   public static final String resourcePath = "/com/bitplan/can4eve/gui/";
   List<WizardPane> pages = new ArrayList<WizardPane>();
 
-  String carSelections[] = { "Citroën C-Zero", "Mitsubishi i-Miev",
-      "Misubishi Outlander PHEV", "Peugeot Ion" };
-  String carPictures[] = { "c-zero.jpg", "i-miev.jpg", "outlanderphev.jpg",
-      "ion.jpg" };
-  ImageSelector<String> carSelector = new ImageSelector<String>(carSelections, carPictures);
-  String conSelections[] = { "USB", "Wifi", "Bluetooth" };
-  String conPictures[] = { "usb.jpg", "wifi.jpg", "bluetooth.jpg" };
+  public class JFXWizardPane extends WizardPane {
+    ImageSelector<String> selector;
 
-  ImageSelector<String>connectionSelector = new ImageSelector<String>(conSelections,
-      conPictures);
-  private WizardPane carPane;
+    /**
+     * construct me with the given title
+     * @param i18nTitle
+     */
+    public JFXWizardPane(String i18nTitle) {
+      setHeaderText(I18n.get(i18nTitle));
+    }
 
+    /**
+     * construct me with the given title and selector
+     * @param i18nTitle
+     * @param selector
+     */
+    public JFXWizardPane(String i18nTitle,
+        final ImageSelector<String> selector) {
+      this(i18nTitle);
+      this.selector=selector;
+      setContent(selector);
+    }
+
+    /**
+     * https://bitbucket.org/controlsfx/controlsfx/issues/769/encoding-problem-all-german-umlauts-are
+     * 
+     * @param wizardPane
+     */
+    protected void fixNextButton() {
+      Button nextButton = findButton(this, ButtonType.NEXT);
+      if (nextButton != null) {
+        nextButton.setText(ButtonType.NEXT.getText());
+      }
+    }
+
+    @Override
+    public void onEnteringPage(Wizard wizard) {
+      fixNextButton();
+    }
+    
+    @Override
+    public void onExitingPage(Wizard wizard) {
+      if (selector!=null)
+        wizard.getSettings().put(selector.getTitle(), selector.getSelection());
+    }
+  }
+  
   /**
-   * construct the welcome Wizard
-   * 
-   * @param title
-   * @param pageNames
+   * load the parent with the given pageName
+   * @param pageName
+   * @return the parent
    * @throws Exception
    */
-  public WelcomeWizard(String i18nTitle) {
-    setTitle(I18n.get(i18nTitle));
-    carPane = new WizardPane();
-    carPane.setHeaderText(
-        "Welcome to the Can4Eve software!\nPlease select a vehicle");
-    // SampleApp.createAndShow("select", selectPane, SHOW_TIME);
-    carPane.setContent(carSelector);
-    addPage(carPane);
-    WizardPane connectionPane = new WizardPane() {
-      // behavior on exit of connectionPane
-      @Override
-      public void onExitingPage(Wizard wizard) {
-        wizard.getSettings().put("connection", connectionSelector.getSelection());
-      }
-    };
-    connectionPane.setHeaderText("Please select an OBDII Connection");
-    connectionPane.setContent(connectionSelector);
-    addPage(connectionPane);
-    // wizard.setPages(pageNames);
-    prepare();
+  public Parent loadParent(String pageName) {
+    Parent parent=null;
+    try {
+      parent = FXMLLoader
+          .load(getClass().getResource(resourcePath + pageName + ".fxml"));
+    } catch (Throwable th) {
+      
+      ErrorHandler.handle(th);
+    }
+    return parent;
   }
 
   /**
@@ -102,10 +128,8 @@ public class WelcomeWizard extends Wizard {
    */
   public void setPages(String... pageNames) throws Exception {
     for (String pageName : pageNames) {
-      Parent root = FXMLLoader
-          .load(getClass().getResource(resourcePath + pageName + ".fxml"));
-      WizardPane page = new WizardPane();
-      page.setHeaderText(I18n.get(pageName));
+      Parent root=loadParent(pageName);
+      WizardPane page = new JFXWizardPane(pageName);
       page.setContent(root);
       this.pages.add(page);
     }
@@ -115,16 +139,20 @@ public class WelcomeWizard extends Wizard {
     this.pages.add(page);
   }
 
+  /**
+   * prepare me
+   */
   public void prepare() {
     setFlow(new LinearFlow(pages));
   }
 
   /**
    * display the Wizard and return the results
+   * 
    * @return the map of settings
    */
   public ObservableMap<String, Object> display() {
-    BooleanProperty finished=new SimpleBooleanProperty();
+    BooleanProperty finished = new SimpleBooleanProperty();
     showAndWait().ifPresent(result -> {
       if (result == ButtonType.FINISH) {
         finished.set(true);
@@ -136,15 +164,15 @@ public class WelcomeWizard extends Wizard {
   }
 
   public void close() {
-    getDialog().close();
+    getPrivateDialog().close();
   }
-  
-  public Dialog getDialog() {
+
+  @SuppressWarnings("rawtypes")
+  public Dialog getPrivateDialog() {
     Field field;
     try {
       field = Wizard.class.getDeclaredField("dialog");
       field.setAccessible(true);
-      @SuppressWarnings("rawtypes")
       Dialog dlg = (Dialog) field.get(this);
       return dlg;
     } catch (Exception e) {
@@ -152,19 +180,25 @@ public class WelcomeWizard extends Wizard {
       return null;
     }
   }
-  
+
   /**
-   * get the next Button for the given wizardPane
+   * get the Button for the given wizardPane
+   * 
    * @param wizardPane
    * @return the button
    */
-  public Button findNextButton(WizardPane wizardPane) {
-    for (Node node:wizardPane.getChildren()) {
+  public Button findButton(WizardPane wizardPane, ButtonType buttonType) {
+    for (Node node : wizardPane.getChildren()) {
       if (node instanceof ButtonBar) {
-        ButtonBar buttonBar=(ButtonBar) node;
-        for (Node buttonNode:buttonBar.getButtons()) {
-          Button button=(Button) buttonNode;
-          if (button.getText().startsWith("N")) {
+        ButtonBar buttonBar = (ButtonBar) node;
+        for (Node buttonNode : buttonBar.getButtons()) {
+          Button button = (Button) buttonNode;
+          // System.out.println(buttonType.getText() + "<->" +
+          // button.getText());
+          // https://bitbucket.org/controlsfx/controlsfx/issues/787/next-button-in-wizard-doesnt-show
+          if (buttonType.getText().equals(button.getText())
+              || (buttonType == ButtonType.NEXT
+                  && button.getText().startsWith("N"))) {
             return button;
           }
         }
@@ -175,45 +209,37 @@ public class WelcomeWizard extends Wizard {
 
   /**
    * animate Selections
+   * 
    * @param imageSelector
    * @param showTime
    * @throws Exception
    */
-  public void animateSelections(ImageSelector imageSelector,int showTime) throws Exception {
-     Object[] selections = imageSelector.getSelections();
+  @SuppressWarnings("rawtypes")
+  public void animateSelections(ImageSelector imageSelector, int showTime)
+      throws Exception {
+    Object[] selections = imageSelector.getSelections();
     for (int i = 0; i < selections.length; i++) {
       final int index = i;
       Platform.runLater(
           () -> imageSelector.getChoice().getSelectionModel().select(index));
-      Thread.sleep(showTime /selections.length);
+      Thread.sleep(showTime / selections.length);
     }
-  }
-  /**
-   * animate this wizard for testing purposes
-   * @param showTime
-   * @throws Exception
-   */
-  public void animate(int showTime) throws Exception {
-    animateSelections(this.carSelector,showTime/2);
-    Platform.runLater(()->this.findNextButton(carPane).fire());
-    animateSelections(this.connectionSelector,showTime/2);
-    Platform.runLater(() -> close());
   }
 
   /**
    * wait for the Wizard to show
+   * 
    * @param mSecs
    * @throws Exception
    */
   public void waitShow(int mSecs) throws Exception {
-    int count=0;
-    while (getDialog()==null) {
+    int count = 0;
+    while (getPrivateDialog() == null) {
       Thread.sleep(10);
-      count+=10;
-      if (count>mSecs)
+      count += 10;
+      if (count > mSecs)
         throw new Exception("dialog wait timed out");
     }
-    
-  }
 
+  }
 }

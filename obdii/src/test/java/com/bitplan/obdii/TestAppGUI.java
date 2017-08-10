@@ -266,14 +266,6 @@ public class TestAppGUI {
     final JFXCanCellStatePlot valuePlot = new JFXCanCellStatePlot(title, xTitle,
         yTitle, cellTemp, 2.0, 0.5);
     valuePlot.updateOn(cellTemp.getUpdateCountProperty());
-    GridPane gp = new GridPane();
-    /*
-     * Button button=new Button("next"); gp.add(button, 0, 0);
-     * button.setOnAction(new EventHandler<ActionEvent>(){
-     * 
-     * @Override public void handle(ActionEvent event) { randomValues(cellTemp);
-     * valuePlot.update(); }}); gp.add(valuePlot.getBarChart(), 0,1);
-     */
     SampleApp sampleApp = new SampleApp("Cell Temperature",
         valuePlot.getBarChart());
     sampleApp.show();
@@ -567,6 +559,7 @@ public class TestAppGUI {
 
   @Test
   public void testWelcomeWizard() throws Exception {
+    Translator.initialize();
     WaitableApp.toolkitInit();
     WelcomeWizard[] wizards = new WelcomeWizard[1];
 
@@ -577,6 +570,7 @@ public class TestAppGUI {
         wizard.display();
       } catch (Exception e) {
         fail("There should be no exception but we got " + e.getMessage());
+        e.printStackTrace();
       }
     });
     while (wizards[0]==null)
@@ -587,7 +581,7 @@ public class TestAppGUI {
       wizard.animate(SHOW_TIME);
     } else {
       wizard.waitShow(1000);
-      while (wizard.getDialog().isShowing()) {
+      while (wizard.getPrivateDialog().isShowing()) {
         Thread.sleep(10);
       }
     }

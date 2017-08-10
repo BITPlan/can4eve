@@ -532,6 +532,11 @@
 						"id": "settingsPreferencesMenuItem",
 						"title": "Preferences",
 						"shortCut": "P"
+					},
+					{
+						"id": "settingsWelcomeMenuItem",
+						"title": "Welcome",
+						"shortCut": "W"
 					}
 
 				]

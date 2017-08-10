@@ -563,6 +563,10 @@ public class JavaFXDisplay extends WaitableApp
         case I18n.SETTINGS_SETTINGS_MENU_ITEM:
           showSettings(false);
           break;
+        case I18n.SETTINGS_WELCOME_MENU_ITEM:
+          WelcomeWizard wizard = new WelcomeWizard(I18n.WELCOME);
+          wizard.display();
+          break;
         case I18n.OBD_START_MENU_ITEM:
           startMonitoring(false);
           break;

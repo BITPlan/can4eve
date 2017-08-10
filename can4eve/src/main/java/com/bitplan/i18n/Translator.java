@@ -89,6 +89,11 @@ public class Translator {
     Locale locale = new Locale(localeName);
     return loadBundle(locale);
   }
+  
+  public static void initialize() {
+    String localeName=Locale.getDefault().getLanguage();
+    initialize(localeName);
+  }
 
   /**
    * load the bundle

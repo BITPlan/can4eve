@@ -42,6 +42,7 @@ public class I18n {
   public static final String SETTINGS_MENU="settingsMenu"; //Settings
   public static final String SETTINGS_PREFERENCES_MENU_ITEM="settingsPreferencesMenuItem"; //Preferences
   public static final String SETTINGS_SETTINGS_MENU_ITEM="settingsSettingsMenuItem"; //OBDII
+  public static final String SETTINGS_WELCOME_MENU_ITEM="settingsWelcomeMenuItem"; //Wizard
   public static final String MENU="Menu"; //Menu
   public static final String LANGUAGE_CHANGED_TITLE="language_changed_title"; //New language
   public static final String LANGUAGE_CHANGED="language_changed"; //You have selected english as your new language
@@ -118,6 +119,9 @@ public class I18n {
   public static final String AC_POWER = "acPower";
   public static final String DC_POWER = "dcPower";
   public static final String WELCOME = "welcome";
+  public static final String WELCOME_VEHICLE = "welcomeVehicle";
+  public static final String WELCOME_OBD = "welcomeObd";
+  public static final String WELCOME_CON = "welcomeCon";
  
   
   /**
