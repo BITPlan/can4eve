@@ -18,13 +18,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bitplan.can4eve.gui;
+package com.bitplan.can4eve;
 
 /**
- * generic Browser interface
+ * Exception Handler
  * @author wf
  *
  */
-public interface Linker {
-  public void browse(String url);
+public interface ExceptionHandler {
+  public void handleException(Throwable th);
 }

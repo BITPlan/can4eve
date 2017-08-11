@@ -119,6 +119,7 @@ public class I18n {
   public static final String AC_POWER = "acPower";
   public static final String DC_POWER = "dcPower";
   public static final String WELCOME = "welcome";
+  public static final String WELCOME_STEP="welcomeStep"; //Step %d of %d
   public static final String WELCOME_VEHICLE = "welcomeVehicle";
   public static final String WELCOME_OBD = "welcomeObd";
   public static final String WELCOME_CON = "welcomeCon";
@@ -126,6 +127,7 @@ public class I18n {
   public static final String WELCOME_TEST_RESULT="welcomeTestResult";
   public static final String BAUD_RATE="baudRate"; //baudrate
   public static final String DEVICE="device"; //device
+  public static final String REPORT_ISSUE="reportIssue"; //Report Issue ...
   
   /**
    * Translate the given text
@@ -134,6 +136,16 @@ public class I18n {
    */
   public static String get(String text) {
     return Translator.translate(text);
+  }
+
+  /**
+   * translate the given text with the given params
+   * @param text
+   * @param params
+   * @return the translated string
+   */
+  public static String get(String text, Object ...params) {
+    return Translator.translate(text, params);
   }
 
 }

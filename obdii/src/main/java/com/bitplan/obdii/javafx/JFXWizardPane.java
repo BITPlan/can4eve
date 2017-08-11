@@ -21,16 +21,26 @@
 package com.bitplan.obdii.javafx;
 
 import java.lang.reflect.Field;
+import java.net.URL;
+import java.util.Map.Entry;
+import java.util.ResourceBundle;
 
 import org.controlsfx.dialog.Wizard;
 import org.controlsfx.dialog.WizardPane;
 
+import com.bitplan.can4eve.ErrorHandler;
+import com.bitplan.i18n.Translator;
 import com.bitplan.obdii.I18n;
 
+import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 
 /**
@@ -40,6 +50,7 @@ import javafx.scene.control.ButtonType;
  *
  */
 public class JFXWizardPane extends WizardPane {
+  public static final String resourcePath = "/com/bitplan/can4eve/gui/";
   /**
    * 
    */
@@ -48,6 +59,16 @@ public class JFXWizardPane extends WizardPane {
   private int step;
   private int steps;
   protected Object controller;
+  private String pageName;
+
+  public String getI18nTitle() {
+    return i18nTitle;
+  }
+
+  public void setI18nTitle(String i18nTitle) {
+    this.i18nTitle = i18nTitle;
+    refreshI18n();
+  }
 
   /**
    * construct me with the given title
@@ -57,11 +78,15 @@ public class JFXWizardPane extends WizardPane {
   public JFXWizardPane(int step, int steps, String i18nTitle) {
     this.step = step;
     this.steps = steps;
-    this.i18nTitle = i18nTitle;
+    this.setI18nTitle(i18nTitle);
   }
 
+  /**
+   * refresh my Internationalization content
+   */
   public void refreshI18n() {
-    setHeaderText(I18n.get(i18nTitle));
+    setHeaderText(I18n.get(I18n.WELCOME_STEP, step, steps) + "\n\n"
+        + I18n.get(i18nTitle));
     this.fixButtons();
   }
 
@@ -95,9 +120,7 @@ public class JFXWizardPane extends WizardPane {
   }
 
   /**
-   * get the Button for the given wizardPane
-   * 
-   * @param wizardPane
+   * get the Button for the given buttonType
    * @return the button
    */
   public Button findButton(ButtonType buttonType) {
@@ -105,38 +128,15 @@ public class JFXWizardPane extends WizardPane {
       if (node instanceof ButtonBar) {
         ButtonBar buttonBar = (ButtonBar) node;
         ObservableList<Node> buttons = buttonBar.getButtons();
-        Field field;
-        int index = -1;
-        try {
-          field = ButtonType.class.getDeclaredField("key");
-          field.setAccessible(true);
-          String key = (String) field.get(buttonType);
-          switch (key) {
-          case "Dialog.next.button":
-            if (step < steps)
-              index = 1;
-            break;
-          case "Dialog.previous.button":
-            index = 0;
-            break;
-          case "Dialog.cancel.button":
-            index = 2;
-            break;
-          case "Dialog.finish.button":
-            if (step == steps)
-              index = 1;
-            break;
-          }
-        } catch (Throwable th) {
-
-        }
-        if (index >= 0 && buttons.size() > index) {
-          Node buttonNode = buttons.get(index);
+        for (Node buttonNode : buttons) {
           Button button = (Button) buttonNode;
-          // System.out.println(buttonType.getText() + "<->" +
-          // button.getText());
-          // https://bitbucket.org/controlsfx/controlsfx/issues/787/next-button-in-wizard-doesnt-show
-          return button;
+          @SuppressWarnings("unchecked")
+          ObjectProperty<ButtonData> prop = (ObjectProperty<ButtonData>) button
+              .getProperties().get("javafx.scene.control.ButtonBar.ButtonData");
+          ButtonData buttonData = prop.getValue();
+          if (buttonData.equals(buttonType.getButtonData())) {
+            return button;
+          }
         }
       }
     }
@@ -156,5 +156,24 @@ public class JFXWizardPane extends WizardPane {
 
   public void setController(Object controller) {
     this.controller = controller;
+  }
+
+  /**
+   * load me from the given fxml pageName
+   * 
+   * @param pageName
+   */
+  public void load(String pageName) {
+    this.pageName = pageName;
+    try {
+      ResourceBundle resourceBundle = Translator.getBundle();
+      URL fxml = getClass().getResource(resourcePath + pageName + ".fxml");
+      FXMLLoader fxmlLoader = new FXMLLoader(fxml, resourceBundle);
+      Parent parent = fxmlLoader.load();
+      this.setContent(parent);
+      controller = fxmlLoader.getController();
+    } catch (Throwable th) {
+      ErrorHandler.handle(th);
+    }
   }
 }

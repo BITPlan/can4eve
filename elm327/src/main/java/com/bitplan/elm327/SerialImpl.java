@@ -121,6 +121,12 @@ public class SerialImpl extends ConnectionImpl {
       openPorts.remove(serialPort);
     }
     
+    @Override
+    public void halt() {
+      super.halt();
+      close();
+    }
+    
     /**
      * close all open serial ports
      */

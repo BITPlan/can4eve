@@ -21,24 +21,17 @@
 package com.bitplan.obdii.javafx;
 
 import java.lang.reflect.Field;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 import org.controlsfx.dialog.Wizard;
 import org.controlsfx.dialog.WizardPane;
 
-import com.bitplan.can4eve.ErrorHandler;
-import com.bitplan.i18n.Translator;
-
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableMap;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 
@@ -51,33 +44,7 @@ import javafx.scene.control.Dialog;
  */
 public class JFXWizard extends Wizard {
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.javafx");
-  public static final String resourcePath = "/com/bitplan/can4eve/gui/";
   List<WizardPane> pages = new ArrayList<WizardPane>();
-
-  public class LoadResult {
-    Parent parent;
-    Object controller;
-  }
-  /**
-   * load the parent with the given pageName
-   * 
-   * @param pageName
-   * @return the parent
-   * @throws Exception
-   */
-  public LoadResult loadParent(String pageName) {
-    LoadResult result=new LoadResult();
-    try {
-      ResourceBundle resourceBundle = Translator.getBundle();
-      URL fxml = getClass().getResource(resourcePath + pageName + ".fxml");
-      FXMLLoader fxmlLoader = new FXMLLoader(fxml, resourceBundle);
-      result.parent = fxmlLoader.load();
-      result.controller = fxmlLoader.getController();
-    } catch (Throwable th) {
-      ErrorHandler.handle(th);
-    }
-    return result;
-  }
 
   /**
    * https://stackoverflow.com/a/45540425/1497139
@@ -89,10 +56,8 @@ public class JFXWizard extends Wizard {
     int step=0;
     int steps=pageNames.length;
     for (String pageName : pageNames) {
-      LoadResult loadResult= loadParent(pageName);
       JFXWizardPane page = new JFXWizardPane(++step,steps, pageName);
-      page.setContent(loadResult.parent);
-      page.setController(loadResult.controller);
+      page.load(pageName);
       this.pages.add(page);
     }
   }

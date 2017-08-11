@@ -161,6 +161,7 @@ public class OBDMain extends Main implements OBDApp {
   public ELM327 testConnection(Config config) throws Exception {
     prepareOBD(config);
     elm.identify();
+    elm.getCon().halt();
     return elm;
   }
 

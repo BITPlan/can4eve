@@ -43,7 +43,7 @@ public class Translator {
    * @param params
    * @return - the translated text
    */
-  public static String translate(String messageName, Object[] params) {
+  public static String translate(String messageName, Object ... params) {
     formatter.applyPattern(resourceBundle.getString(messageName));
     return formatter.format(params);
   }

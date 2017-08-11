@@ -35,12 +35,13 @@ import org.controlsfx.control.Notifications;
 import org.controlsfx.control.StatusBar;
 
 import com.bitplan.can4eve.CANValue;
+import com.bitplan.can4eve.ExceptionHandler;
 import com.bitplan.can4eve.SoftwareVersion;
 import com.bitplan.can4eve.Vehicle;
 import com.bitplan.can4eve.gui.App;
-import com.bitplan.can4eve.gui.ExceptionHelp;
 import com.bitplan.can4eve.gui.Form;
 import com.bitplan.can4eve.gui.Group;
+import com.bitplan.can4eve.gui.javafx.ExceptionController;
 import com.bitplan.can4eve.gui.javafx.GenericControl;
 import com.bitplan.can4eve.gui.javafx.GenericDialog;
 import com.bitplan.can4eve.gui.javafx.GenericPanel;
@@ -92,7 +93,7 @@ import javafx.util.Duration;
  *
  */
 public class JavaFXDisplay extends WaitableApp
-    implements MonitorControl, CANValueDisplay, EventHandler<ActionEvent> {
+    implements MonitorControl, CANValueDisplay, ExceptionHandler,EventHandler<ActionEvent> {
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.javafx");
 
   private static com.bitplan.can4eve.gui.App app;
@@ -157,6 +158,9 @@ public class JavaFXDisplay extends WaitableApp
     // new JFXPanel();
     this.setApp(app);
     this.setSoftwareVersion(softwareVersion);
+    ExceptionController.setApp(app);
+    ExceptionController.setSoftwareVersion(softwareVersion);
+    ExceptionController.setLinker(this);
   }
 
   public SoftwareVersion getSoftwareVersion() {
@@ -307,6 +311,7 @@ public class JavaFXDisplay extends WaitableApp
     stage.setY(sceneBounds.getMinY());
     stage.show();
     available = true;
+    // if this is the first Start then show the Welcome Wizard
     // TODO activate
     // optionalShowWelcomeWizard();
   }
@@ -727,11 +732,10 @@ public class JavaFXDisplay extends WaitableApp
    * 
    * @param th
    */
-  private void handleException(Throwable th) {
-    ExceptionHelp ehelp = app.getExceptionHelpByName(th.getClass().getName()+":"+th.getMessage());   
+  public void handleException(Throwable th) { 
       Platform
           .runLater(() -> GenericDialog.showException((I18n.get(I18n.ERROR)),
-              I18n.get(I18n.PROBLEM_OCCURED), th, ehelp, softwareVersion,this));
+              I18n.get(I18n.PROBLEM_OCCURED), th,this));
   }
 
   /**

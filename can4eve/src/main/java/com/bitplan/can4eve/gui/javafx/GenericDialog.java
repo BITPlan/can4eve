@@ -31,19 +31,15 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.bitplan.can4eve.ErrorHandler;
 import com.bitplan.can4eve.SoftwareVersion;
-import com.bitplan.can4eve.gui.ExceptionHelp;
 import com.bitplan.can4eve.gui.Form;
 import com.bitplan.can4eve.gui.Linker;
 import com.bitplan.i18n.Translator;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -51,11 +47,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
@@ -291,64 +285,22 @@ public class GenericDialog {
     String exceptionText = sw.toString();
     return exceptionText;
   }
-
-  /**
-   * get the flowPane for the Exception Help
-   * 
-   * @param ehelp
-   * @param linker
-   */
-  public static FlowPane getFlowPane(ExceptionHelp ehelp, Linker linker) {
-    FlowPane fp = new FlowPane();
-    Label lbl = new Label(Translator.translate(ehelp.getI18nHint()));
-    Hyperlink link = new Hyperlink(Translator.translate("help"));
-
-    fp.getChildren().addAll(lbl, link);
-    link.setOnAction((evt) -> {
-      linker.browse(ehelp.getUrl());
-    });
-    return fp;
-  }
-
+  
   /**
    * show the Exception
    * 
    * @param title
    * @param headerText
    * @param th
-   * @param ehelp
-   * @param softwareVersion
-   *          - the mail address to send exceptions to
    */
   public static void showException(String title, String headerText,
-      Throwable th, ExceptionHelp ehelp, SoftwareVersion softwareVersion,
-      Linker linker) {
+      Throwable th, Linker linker) {
     Alert alert = new Alert(AlertType.ERROR);
     alert.setTitle(title);
     alert.setHeaderText(headerText);
-    String exceptionText = getStackTraceText(th);
-    LOGGER.log(Level.INFO, exceptionText);
-    if (ehelp != null) {
-      FlowPane flowPane = getFlowPane(ehelp, linker);
-      alert.getDialogPane().contentProperty().set(flowPane);
-    } else {
-      String errMessage = th.getClass().getSimpleName() + ":\n"
-          + th.getLocalizedMessage();
-
-      alert.setContentText(errMessage);
-    }
-    Label label = new Label("The exception stacktrace is:");
-
-    Button button = new Button("Report Issue ...");
-    button.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(final ActionEvent e) {
-        GenericDialog.sendReport(softwareVersion, "can4eve issue",
-            "There seems to be trouble with the exception:\n" + exceptionText);
-      }
-    });
-
-    TextArea textArea = new TextArea(exceptionText);
+    Button reportIssueButton = new Button(Translator.translate("reportIssue"));
+    Label label = new Label("stacktrace:");
+    TextArea textArea = new TextArea();
     textArea.setEditable(false);
     textArea.setWrapText(true);
 
@@ -360,13 +312,13 @@ public class GenericDialog {
     GridPane expContent = new GridPane();
     expContent.setMaxWidth(Double.MAX_VALUE);
 
-    expContent.add(button, 0, 0);
+    expContent.add(reportIssueButton, 0, 0);
     expContent.add(label, 0, 1);
     expContent.add(textArea, 0, 2);
 
     // Set expandable Exception into the dialog pane.
     alert.getDialogPane().setExpandableContent(expContent);
-
+    ExceptionController.handleException(th, alert.getDialogPane(), reportIssueButton,textArea,alert.contentTextProperty());
     alert.showAndWait();
   }
 
