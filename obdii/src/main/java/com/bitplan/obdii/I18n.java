@@ -124,7 +124,8 @@ public class I18n {
   public static final String WELCOME_CON = "welcomeCon";
   public static final String WELCOME_LANGUAGE = "welcomeLanguage";
   public static final String WELCOME_TEST_RESULT="welcomeTestResult";
- 
+  public static final String BAUD_RATE="baudRate"; //baudrate
+  public static final String DEVICE="device"; //device
   
   /**
    * Translate the given text
