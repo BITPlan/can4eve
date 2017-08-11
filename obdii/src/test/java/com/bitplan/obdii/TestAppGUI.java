@@ -352,7 +352,7 @@ public class TestAppGUI {
   @Test
   public void testClockPanel() throws Exception {
     WaitableApp.toolkitInit();
-    Translator.initialize(Preferences.getInstance().getLanguage().name());
+    Translator.initialize();
     ClockPane clockPane = new ClockPane();
     clockPane.setWatch(Watch.Charging, 1320 * 1000);
     clockPane.setWatch(Watch.Parking, 390 * 1000);
@@ -369,7 +369,7 @@ public class TestAppGUI {
   @Test
   public void testChargePanel() throws Exception {
     WaitableApp.toolkitInit();
-    Translator.initialize(Preferences.getInstance().getLanguage().name());
+    Translator.initialize();
     ChargePane chargePane = new ChargePane();
     Map<String, SimpleDoubleProperty> props = new HashMap<String, SimpleDoubleProperty>();
     String propnames[] = { "SOC", "Range", "ACVolts", "ACAmps", "DCVolts",
@@ -402,7 +402,7 @@ public class TestAppGUI {
   @Test
   public void testSimulatorPane() throws Exception {
     WaitableApp.toolkitInit();
-    Translator.initialize(Preferences.getInstance().getLanguage().name());
+    Translator.initialize();
     LogPlayer logPlayer = new LogPlayerImpl();
     logPlayer.setLogFile(TestSimulatorLogReader.getTestFile());
     SimulatorPane simulatorPane = new SimulatorPane(logPlayer, null);
