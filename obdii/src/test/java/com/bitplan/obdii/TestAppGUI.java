@@ -562,8 +562,6 @@ public class TestAppGUI {
   public void testWelcomeWizard() throws Exception {
     Translator.initialize();
     WaitableApp.toolkitInit();
-    NetworkController nc = new WelcomeWizard.NetworkController();
-    System.out.println(nc.getClass().getName());
     WelcomeWizard[] wizards = new WelcomeWizard[1];
 
     Platform.runLater(() -> {

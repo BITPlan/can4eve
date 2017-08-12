@@ -23,6 +23,7 @@ package com.bitplan.obdii.javafx;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.controlsfx.dialog.Wizard;
@@ -32,8 +33,10 @@ import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableMap;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
 
 /**
  * a generic Wizard based on the controls FX Wizard which needs some tweaks to
@@ -47,23 +50,44 @@ public class JFXWizard extends Wizard {
   List<WizardPane> pages = new ArrayList<WizardPane>();
 
   /**
+   * construct me
+   */
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  public JFXWizard() {
+
+  }
+
+  /**
    * https://stackoverflow.com/a/45540425/1497139
    * 
    * @param pageNames
    * @throws Exception
    */
   public void setPages(String... pageNames) throws Exception {
-    int step=0;
-    int steps=pageNames.length;
+    int step = 0;
+    int steps = pageNames.length;
     for (String pageName : pageNames) {
-      JFXWizardPane page = new JFXWizardPane(++step,steps, pageName);
+      JFXWizardPane page = new JFXWizardPane(this,++step, steps, pageName);
       page.load(pageName);
       this.pages.add(page);
     }
   }
 
-  public void addPage(WizardPane page) {
+  /**
+   * add the given page with the given help
+   * @param page
+   * @param help
+   */
+  public void addPage(WizardPane page, String help) {
+    if ((help!=null) && (page instanceof JFXWizardPane)) {
+      JFXWizardPane jfxpage = (JFXWizardPane)page;
+      jfxpage.setHelp(help);
+    }
     this.pages.add(page);
+  }
+  
+  public void addPage(WizardPane page) {
+    addPage(page,null);
   }
 
   /**
@@ -94,21 +118,24 @@ public class JFXWizard extends Wizard {
     getPrivateDialog().close();
   }
 
-  @SuppressWarnings("rawtypes")
-  public Dialog getPrivateDialog() {
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  public <T> T getPrivate(Class clazz,String fieldName, Object instance) {
     Field field;
     try {
-      field = Wizard.class.getDeclaredField("dialog");
+      field = clazz.getDeclaredField(fieldName);
       field.setAccessible(true);
-      Dialog dlg = (Dialog) field.get(this);
-      return dlg;
+      T result = (T) field.get(instance);
+      return result;
     } catch (Exception e) {
-      e.printStackTrace();
+      LOGGER.log(Level.SEVERE,"this shouldn't happen - getPrivate failed "+e.getClass().getSimpleName()+" - "+e.getMessage());
       return null;
     }
   }
-
- 
+  
+  public Dialog<ButtonType> getPrivateDialog() {
+    return getPrivate(Wizard.class,"dialog",this);
+  }
+  
   /**
    * animate Selections
    * 
@@ -129,6 +156,32 @@ public class JFXWizard extends Wizard {
   }
 
   /**
+   * animate this wizard for testing purposes
+   * 
+   * @param showTime
+   * @throws Exception
+   */
+  public void animate(int showTime) throws Exception {
+    int pageTime = showTime / this.pages.size();
+    for (WizardPane page : this.pages) {
+      if (page instanceof JFXWizardPane) {
+        JFXWizardPane jfxpage = (JFXWizardPane) page;
+        if (jfxpage.selector != null) {
+          animateSelections(jfxpage.selector, pageTime);
+        } else {
+          Thread.sleep(pageTime);
+        }
+        ButtonType buttonType = ButtonType.NEXT;
+        if (jfxpage.getStep() == jfxpage.getSteps()) {
+          buttonType = ButtonType.FINISH;
+        }
+        final ButtonType buttonToClick = buttonType;
+        Platform.runLater(() -> jfxpage.findButton(buttonToClick).fire());
+      }
+    }
+  }
+
+  /**
    * wait for the Wizard to show
    * 
    * @param mSecs
@@ -141,6 +194,19 @@ public class JFXWizard extends Wizard {
       count += 10;
       if (count > mSecs)
         throw new Exception("dialog wait timed out");
+    }
+
+  }
+  
+  /**
+   * refresh the internationalization of all wizard pages
+   */
+  protected void refreshI18n() {
+    for (WizardPane page : this.pages) {
+      if (page instanceof JFXWizardPane) {
+        JFXWizardPane jfxpage = (JFXWizardPane) page;
+        jfxpage.refreshI18n();
+      }
     }
 
   }

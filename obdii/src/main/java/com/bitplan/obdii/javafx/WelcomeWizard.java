@@ -22,6 +22,7 @@ package com.bitplan.obdii.javafx;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 import org.controlsfx.dialog.Wizard;
@@ -29,6 +30,7 @@ import org.controlsfx.dialog.WizardPane;
 
 import com.bitplan.can4eve.gui.javafx.ExceptionController;
 import com.bitplan.elm327.Config;
+import com.bitplan.elm327.OBDException;
 import com.bitplan.elm327.SerialImpl;
 import com.bitplan.i18n.Translator;
 import com.bitplan.obdii.I18n;
@@ -41,10 +43,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Pane;
 
 /**
  * the Welcome wizard
@@ -78,11 +83,15 @@ public class WelcomeWizard extends JFXWizard {
   private JFXWizardPane conTestResultPane;
   private OBDApp obdApp;
   private Config config;
+  private JFXWizardPane vehiclePane;
+
   public static class NetworkController implements Initializable {
     @FXML
     TextField hostName;
     @FXML
     TextField port;
+    @FXML
+    Pane pane;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -97,6 +106,10 @@ public class WelcomeWizard extends JFXWizard {
     ComboBox<String> serialDevice;
     @FXML
     ComboBox<String> baudRate;
+    @FXML
+    CheckBox direct;
+    @FXML
+    Pane pane;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -107,7 +120,8 @@ public class WelcomeWizard extends JFXWizard {
       if (serialPorts.size() > 0) {
         serialDevice.getSelectionModel().select(0);
       }
-      String[] baudRates = { "38400", "115200", "230400" };
+      String[] baudRates = { "automatic", "19200", "38400", "57600", "115200",
+          "230400", "500000" };
       baudRate.getItems().clear();
       baudRate.getItems().addAll(baudRates);
       baudRate.getSelectionModel().select(0);
@@ -124,8 +138,16 @@ public class WelcomeWizard extends JFXWizard {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-      // TODO Auto-generated method stub
+    }
 
+  }
+
+  public static class VehicleController implements Initializable {
+    @FXML
+    TextField vin;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
     }
 
   }
@@ -140,11 +162,13 @@ public class WelcomeWizard extends JFXWizard {
     super();
     this.obdApp = obdApp;
     setTitle(I18n.get(i18nTitle));
-    int steps = 5;
-    languagePane = new JFXWizardPane(1, steps, I18n.WELCOME_LANGUAGE,
+    int steps = 6;
+    languagePane = new JFXWizardPane(this, 1, steps, I18n.WELCOME_LANGUAGE,
         langSelector) {
+
       @Override
       public void onExitingPage(Wizard wizard) {
+        super.onExitingPage(wizard);
         String lang = langSelector.getSelection();
         switch (lang) {
         case "English":
@@ -158,67 +182,79 @@ public class WelcomeWizard extends JFXWizard {
         WelcomeWizard.this.refreshI18n();
       }
     };
-    addPage(languagePane);
-    carPane = new JFXWizardPane(2, steps, I18n.WELCOME_VEHICLE, carSelector);
-    // SampleApp.createAndShow("select", selectPane, SHOW_TIME);
-    carPane.setContent(carSelector);
-    addPage(carPane);
-    conTestResultPane = new JFXWizardPane(5, steps, I18n.WELCOME_TEST_RESULT) {
-      Button finishButton=null;
-      
-      public void handleException(Throwable th) {
-        load("exception");
-        setI18nTitle(I18n.PROBLEM_OCCURED);
-        ExceptionController exceptionController = (ExceptionController) conTestResultPane.controller;
-        exceptionController.handleException(th);
+    Locale locale = Locale.getDefault();
+    String currentLang = locale.getLanguage();
+    SingleSelectionModel<String> langSelect = langSelector.choice
+        .getSelectionModel();
+    switch (currentLang) {
+    case "de":
+      langSelect.select("Deutsch");
+      break;
+    case "en":
+      langSelect.select("English");
+      break;
+    }
+    addPage(languagePane, "http://can4eve.bitplan.com/index.php/Help/Language");
+
+    carPane = new JFXWizardPane(this, 2, steps, I18n.WELCOME_VEHICLE_TYPE,
+        carSelector);
+    addPage(carPane, "http://can4eve.bitplan.com/index.php/Help/VehicleTypes");
+
+    connectionPane = new JFXWizardPane(this, 3, steps, I18n.WELCOME_OBD,
+        connectionSelector) {
+      @Override
+      public void onExitingPage(Wizard wizard) {
+        super.onExitingPage(wizard);
       }
+
+    };
+    addPage(connectionPane, "http://can4eve.bitplan.com/index.php/Help/OBDII");
+
+    conSettingsPane = new JFXWizardPane(this, 4, steps, I18n.WELCOME_CON) {
+      SerialController serialController;
+      NetworkController networkController;
 
       @Override
       public void onEnteringPage(Wizard wizard) {
-        if (obdApp != null) {
-          finishButton = conTestResultPane.findButton(ButtonType.FINISH);
-          if (finishButton != null)
-            finishButton.setVisible(false);
-          load("connectiontest");
-          ConnectionTestController testController=(ConnectionTestController)controller;
-          Task<Void> task = new Task<Void>() {
-            @Override
-            public Void call() {
-              try {
-                ELM327 elm = obdApp.testConnection(config);
-                final String info = elm.getInfo();
-                Platform.runLater(()->{
-                  this.updateProgress(100, 100);
-                  testController.textArea.setText(info); 
-                  if (finishButton != null)
-                     finishButton.setVisible(true);
-                });
-              } catch (Throwable th) {
-                Platform.runLater(()->handleException(th));
-              }
-              return null;
-            }
-          };
-          testController.progressBar.progressProperty().bind(task.progressProperty());
-          new Thread(task).start();
+        super.onEnteringPage(wizard);
+        String con = (String) wizard.getSettings().get("obd");
+        if ("USB".equals(con) || "Bluetooth".equals(con)) {
+          if (serialController == null) {
+            load("usb");
+            serialController = (SerialController) controller;
+          } else {
+            this.setContentNode(serialController.pane);
+            this.controller = serialController;
+          }
+          this.setHelp(
+              "http://can4eve.bitplan.com/index.php?title=Help/SerialConnection");
+        } else {
+          if (networkController == null) {
+            load("network");
+            networkController = (NetworkController) controller;
+          } else {
+            this.setContentNode(networkController.pane);
+            this.controller = networkController;
+          }
         }
       }
-    };
-
-    conSettingsPane = new JFXWizardPane(4, steps, I18n.WELCOME_CON) {
- 
 
       @Override
       public void onExitingPage(Wizard wizard) {
+        super.onExitingPage(wizard);
         config = new Config();
         if (controller instanceof SerialController) {
           SerialController serialController = (SerialController) controller;
           config.setDeviceType(Config.DeviceType.USB);
           config.setSerialDevice(serialController.serialDevice
               .getSelectionModel().getSelectedItem());
-          int serialBaud = Integer.parseInt(
-              serialController.baudRate.getSelectionModel().getSelectedItem());
+          String baudStr = serialController.baudRate.getSelectionModel()
+              .getSelectedItem();
+          int serialBaud = -1;
+          if (!"automatic".equals(baudStr))
+            serialBaud = Integer.parseInt(baudStr);
           config.setBaudRate(serialBaud);
+          config.setDirect(serialController.direct.isSelected());
         } else if (controller instanceof NetworkController) {
           NetworkController networkController = (NetworkController) controller;
           config.setDeviceType(Config.DeviceType.Network);
@@ -228,57 +264,116 @@ public class WelcomeWizard extends JFXWizard {
       }
     };
 
-    connectionPane = new JFXWizardPane(3, steps, I18n.WELCOME_OBD,
-        connectionSelector) {
-      @Override
-      public void onExitingPage(Wizard wizard) {
-        super.onExitingPage(wizard);
-        String con = selector.getSelection();
-        if ("USB".equals(con) || "Bluetooth".equals(con)) {
-          conSettingsPane.load("usb");
-        } else {
-          conSettingsPane.load("network");
-        }
-      }
-
-    };
-    addPage(connectionPane);
-
     // wizard.setPages(pageNames);
     addPage(conSettingsPane);
-    addPage(conTestResultPane);
-    prepare();
-  }
+    conTestResultPane = new JFXWizardPane(this, 5, steps,
+        I18n.WELCOME_TEST_RESULT) {
+      ConnectionTestController testController;
+      private Button nextButton = null;
 
-  protected void refreshI18n() {
-    for (WizardPane page : this.pages) {
-      if (page instanceof JFXWizardPane) {
-        JFXWizardPane jfxpage = (JFXWizardPane) page;
-        jfxpage.refreshI18n();
+      /**
+       * handle an exception in the test
+       * 
+       * @param th
+       */
+      public void handleException(Throwable th) {
+        load("exception");
+        setI18nTitle(I18n.PROBLEM_OCCURED);
+        ExceptionController exceptionController = (ExceptionController) conTestResultPane.controller;
+        exceptionController.handleException(th);
       }
-    }
 
-  }
+      @Override
+      public void onEnteringPage(Wizard wizard) {
+        super.onEnteringPage(wizard);
+        if (WelcomeWizard.this.obdApp != null) {
+          setI18nTitle(I18n.WELCOME_TEST_RESULT);
+          load("connectiontest");
+          testController = (ConnectionTestController) controller;
+          nextButton = findButton(ButtonType.NEXT);
+          if (nextButton != null) {
+            nextButton.setDisable(true);
+          }
+          Task<Void> task = new Task<Void>() {
+            @Override
+            public Void call() {
+              boolean ok = false;
+              try {
+                int baudrates[];
+                // automatic baudRate check
+                if (config.getBaudRate() < 0) {
+                  int trybaudrates[] = { 115200, 230400, 57600, 38400, 19200,
+                      500000 };
+                  baudrates = trybaudrates;
+                } else {
+                  int trybaudrates[] = { config.getBaudRate() };
+                  baudrates = trybaudrates;
+                }
+                int progressmax = baudrates.length + 1;
+                int index = 0;
+                for (int baudrate : baudrates) {
+                  if (baudrates.length > 1) {
+                    this.updateProgress(++index, progressmax);
+                    config.setBaudRate(baudrate);
+                    Platform.runLater(() -> testController.textArea
+                        .setText("" + baudrate + " baud"));
+                  }
+                  try {
+                    ELM327 elm = WelcomeWizard.this.obdApp
+                        .testConnection(config);
+                    final String info = elm.getInfo();
+                    ok = true;
+                    Platform.runLater(() -> {
+                      this.updateProgress(progressmax, progressmax);
+                      testController.textArea.setText(info);
+                      if (nextButton != null)
+                        nextButton.setDisable(false);
+                    });
+                    // leave the baud rate checking loop
+                    break;
+                  } catch (Throwable th0) {
+                    if (th0 instanceof OBDException) {
+                      // failed attempt
+                    } else {
+                      throw th0;
+                    }
+                  }
+                } // for
+                if (!ok)
+                  Platform.runLater(() -> {
+                    this.updateProgress(progressmax, progressmax);
+                    testController.textArea
+                        .setText(I18n.get(I18n.CONNECTION_UNUSABLE));
+                  });
+              } catch (Throwable th) {
+                Platform.runLater(() -> handleException(th));
+              }
+              return null;
+            }
+          };
+          testController.progressBar.progressProperty()
+              .bind(task.progressProperty());
+          new Thread(task).start();
+        }
+      }
+    };
 
-  /**
-   * animate this wizard for testing purposes
-   * 
-   * @param showTime
-   * @throws Exception
-   */
-  public void animate(int showTime) throws Exception {
-    animateSelections(this.langSelector, showTime / 5);
-    Platform.runLater(() -> languagePane.findButton(ButtonType.NEXT).fire());
-    animateSelections(this.carSelector, showTime / 5);
-    Platform.runLater(() -> carPane.findButton(ButtonType.NEXT).fire());
-    animateSelections(this.connectionSelector, showTime / 5);
-    Platform.runLater(() -> connectionPane.findButton(ButtonType.NEXT).fire());
-    Thread.sleep(showTime / 10);
-    Platform.runLater(() -> conSettingsPane.findButton(ButtonType.NEXT).fire());
-    Thread.sleep(showTime / 10);
-    Platform
-        .runLater(() -> conTestResultPane.findButton(ButtonType.FINISH).fire());
-    Thread.sleep(showTime / 10);
+    addPage(conTestResultPane);
+
+    vehiclePane = new JFXWizardPane(this, 6, steps, I18n.WELCOME_VEHICLE) {
+      private VehicleController vehicleController;
+
+      @Override
+      public void onEnteringPage(Wizard wizard) {
+        if (vehicleController == null) {
+          load("vehicle");
+          vehicleController = (VehicleController) controller;
+        }
+        // vehicleForm= app.getFormById("preferencesGroup", "vehicleForm");
+      }
+    };
+    addPage(vehiclePane);
+    prepare();
   }
 
 }

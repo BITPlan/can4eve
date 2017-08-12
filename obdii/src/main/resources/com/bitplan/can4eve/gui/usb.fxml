@@ -4,25 +4,39 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-	minWidth="-Infinity" prefHeight="220.0" prefWidth="520.0"
-	xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1"
+<Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity"
+	minHeight="-Infinity" minWidth="-Infinity" prefHeight="220.0"
+	prefWidth="520.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="com.bitplan.obdii.javafx.WelcomeWizard$SerialController">
 	<children>
 		<AnchorPane prefHeight="220.0" prefWidth="520.0">
 			<children>
-				<Label layoutX="23.0" layoutY="19.0" text="%device" />
+				<Label layoutX="23.0" layoutY="19.0" text="%serialDevice" />
 				<Label layoutX="14.0" layoutY="57.0" text="%baudRate" />
-				<ComboBox fx:id="baudRate" id="baudRate" layoutX="89.0" layoutY="52.0"
-					prefHeight="27.0" prefWidth="99.0" promptText="%baudRate" />
-				<ComboBox fx:id="serialDevice" layoutX="89.0" layoutY="14.0" prefHeight="27.0"
-					prefWidth="294.0" />
+				<ComboBox fx:id="serialDevice" layoutX="90.0" layoutY="14.0"
+					prefHeight="27.0" prefWidth="300" editable="true">
+					<tooltip>
+						<Tooltip text="%serialDeviceTooltip" />
+					</tooltip>
+				</ComboBox>
+				<ComboBox fx:id="baudRate" id="baudRate" layoutX="90.0"
+					layoutY="52.0" prefHeight="27.0" prefWidth="120" promptText="%baudRate"
+					editable="true">
+					<tooltip>
+						<Tooltip text="%baudRateTooltip" />
+					</tooltip>
+				</ComboBox>
+				<CheckBox fx:id="direct" layoutX="90.0" layoutY="95.0"
+					mnemonicParsing="false" text="direct" >
+					<tooltip>
+						<Tooltip text="%directSerialTooltip" />
+					</tooltip>
+				</CheckBox>	
 			</children>
 		</AnchorPane>
-		<CheckBox layoutX="90.0" layoutY="95.0" mnemonicParsing="false"
-			text="direct" />
 	</children>
 </Pane>

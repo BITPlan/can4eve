@@ -27,8 +27,8 @@ import java.util.logging.Logger;
 
 import com.bitplan.can4eve.ExceptionHandler;
 import com.bitplan.can4eve.SoftwareVersion;
-import com.bitplan.can4eve.gui.App;
 import com.bitplan.can4eve.gui.ExceptionHelp;
+import com.bitplan.can4eve.gui.ExceptionHelper;
 import com.bitplan.can4eve.gui.Linker;
 import com.bitplan.i18n.Translator;
 
@@ -65,12 +65,12 @@ public class ExceptionController  implements Initializable, ExceptionHandler {
   @FXML
   Label contentLabel;
   
-  private static App app;
+  private static ExceptionHelper exceptionHelper;
   private static SoftwareVersion softwareVersion;
   private static Linker linker;
   
-  public static void setApp(App papp) {
-    app=papp;
+  public static void setExceptionHelper(ExceptionHelper pExceptionHelper) {
+    exceptionHelper=pExceptionHelper;
   }
   
   public static void setSoftwareVersion(SoftwareVersion pSoftwareVersion) {
@@ -124,7 +124,7 @@ public class ExceptionController  implements Initializable, ExceptionHandler {
             "There seems to be trouble with the exception:\n" + exceptionText);
       }
     });
-    ExceptionHelp ehelp = app.getExceptionHelpByName(th.getClass().getName()+":"+th.getMessage());  
+    ExceptionHelp ehelp = exceptionHelper.getExceptionHelp(th);  
     if (ehelp != null) {
       FlowPane flowPane = getFlowPane(ehelp, linker);
       dialogPane.contentProperty().set(flowPane);

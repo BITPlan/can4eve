@@ -136,6 +136,8 @@ public class JavaFXDisplay extends WaitableApp
 
   private SimulatorPane simulatorPane;
 
+  private Form vehicleForm;
+
   public static final boolean debug = false;
 
   public static final String DASH_BOARD_GROUP = "dashBoardGroup";
@@ -158,9 +160,10 @@ public class JavaFXDisplay extends WaitableApp
     // new JFXPanel();
     this.setApp(app);
     this.setSoftwareVersion(softwareVersion);
-    ExceptionController.setApp(app);
+    ExceptionController.setExceptionHelper(app);
     ExceptionController.setSoftwareVersion(softwareVersion);
     ExceptionController.setLinker(this);
+    JFXWizardPane.setLinker(this);
   }
 
   public SoftwareVersion getSoftwareVersion() {
@@ -312,7 +315,6 @@ public class JavaFXDisplay extends WaitableApp
     stage.show();
     available = true;
     // if this is the first Start then show the Welcome Wizard
-    // TODO activate
     // optionalShowWelcomeWizard();
   }
 
@@ -481,7 +483,7 @@ public class JavaFXDisplay extends WaitableApp
     statusBar.getRightItems().add(screenShotButton);
     statusBar.getRightItems().add(hideMenuButton);
     statusBar.getRightItems().add(fullScreenButton);
-
+    vehicleForm= app.getFormById("preferencesGroup", "vehicleForm");
   }
 
   /**
@@ -746,7 +748,7 @@ public class JavaFXDisplay extends WaitableApp
   private void showVehicle() throws Exception {
     Vehicle vehicle = Vehicle.getInstance();
     GenericDialog vehicleDialog = new GenericDialog(stage,
-        app.getFormById("preferencesGroup", "vehicleForm"));
+       vehicleForm);
     Optional<Map<String, Object>> result = vehicleDialog.show(vehicle.asMap());
     if (result.isPresent()) {
       vehicle.fromMap(result.get());

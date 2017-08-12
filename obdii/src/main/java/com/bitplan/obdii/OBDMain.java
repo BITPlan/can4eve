@@ -125,7 +125,7 @@ public class OBDMain extends Main implements OBDApp {
   public String getUrl() {
     return "http://can4eve.bitplan.com";
   };
-  
+
   @Override
   public String getSupportEMail() {
     return "support@bitplan.com";
@@ -139,7 +139,7 @@ public class OBDMain extends Main implements OBDApp {
         "Dear can4eve support\nI am using version %s of the software on %s using Java %s\n",
         VERSION, os, javaversion);
   }
-  
+
   @Override
   public LogPlayer getLogPlayer() {
     return LogPlayerImpl.getInstance();
@@ -200,8 +200,8 @@ public class OBDMain extends Main implements OBDApp {
       break;
     case Simulator:
       if (config.isDebug())
-        LOGGER.log(Level.INFO, String.format("Using simulator on server port %5d",
-            ElmSimulator.DEFAULT_PORT));
+        LOGGER.log(Level.INFO, String.format(
+            "Using simulator on server port %5d", ElmSimulator.DEFAULT_PORT));
       elm = ElmSimulator.getSimulation(vehicleGroup, config.isDebug(),
           ElmSimulator.SIMULATOR_TIMEOUT);
       obdTriplet = new OBDTriplet(vehicleGroup, elm);
@@ -212,11 +212,11 @@ public class OBDMain extends Main implements OBDApp {
     if (obdTriplet == null) {
       throw new Exception(I18n.get(I18n.INVALID_CONFIGURATION));
     }
-    Vehicle vehicle=Vehicle.getInstance();
-    if (vehicle!=null) {
-      if (vehicle.getMmPerRound()!=null)
+    Vehicle vehicle = Vehicle.getInstance();
+    if (vehicle != null) {
+      if (vehicle.getMmPerRound() != null)
         obdTriplet.setMmPerRound(vehicle.getMmPerRound());
-    } 
+    }
     // the simulator is pre started and timeout and debug set
     // all other devices are configured here
     if (config.getDeviceType() != DeviceType.Simulator) {
@@ -231,7 +231,12 @@ public class OBDMain extends Main implements OBDApp {
       }
       con.start();
     }
-    elm.initOBD2();
+    try {
+      elm.initOBD2();
+    } catch (Exception e) {
+      elm.getCon().halt();
+      throw(e);
+    }
   }
 
   @Override
@@ -245,20 +250,19 @@ public class OBDMain extends Main implements OBDApp {
       if (this.logFileName != null) {
         obdTriplet.logResponses(new File(logFileName), vehicleGroup.getName());
       } else {
-        Preferences pref=Preferences.getInstance();
-        if (pref!=null) {
+        Preferences pref = Preferences.getInstance();
+        if (pref != null) {
           obdTriplet.logResponses(new File(pref.logDirectory), pref.logPrefix);
         }
       }
     }
-    obdTriplet.startDisplay(canValueDisplay,333);
+    obdTriplet.startDisplay(canValueDisplay, 333);
     if (this.reportFileName != null) {
       obdTriplet.report(reportFileName, frameLimit);
     } else if (pid != null)
       obdTriplet.checkPid(pid, frameLimit);
     else {
-      obdTriplet.pidMonitor(obdTriplet.getCANValues(),
-          frameLimit);
+      obdTriplet.pidMonitor(obdTriplet.getCANValues(), frameLimit);
     }
     obdTriplet.stopDisplay();
     return elm;
@@ -267,7 +271,7 @@ public class OBDMain extends Main implements OBDApp {
   @Override
   public ELM327 stop() throws Exception {
     // stop monitoring;
-    if (obdTriplet!=null) {
+    if (obdTriplet != null) {
       obdTriplet.setMonitoring(false);
     }
     if (elm != null) {
@@ -324,9 +328,9 @@ public class OBDMain extends Main implements OBDApp {
       Translator.initialize(this.language.name());
     } else {
       LangChoice langChoice = preferences.getLanguage();
-      String lang=null;
-      if (langChoice!=LangChoice.notSet)
-        lang=preferences.getLanguage().name();
+      String lang = null;
+      if (langChoice != LangChoice.notSet)
+        lang = preferences.getLanguage().name();
       Translator.initialize(lang);
     }
 
@@ -344,9 +348,9 @@ public class OBDMain extends Main implements OBDApp {
       default:
       }
       if (this.monitor) {
-        TaskLaunch.start(()-> {
+        TaskLaunch.start(() -> {
           try {
-            start(this.logFileName!=null);
+            start(this.logFileName != null);
           } catch (Exception e) {
             ErrorHandler.handle(e);
           }
@@ -375,7 +379,7 @@ public class OBDMain extends Main implements OBDApp {
     obd = new OBDMain();
     int result = obd.maininstance(args);
     if (!testMode) {
-      //LOGGER.log(Level.INFO, "System exit " + result);
+      // LOGGER.log(Level.INFO, "System exit " + result);
       System.exit(result);
     }
   }

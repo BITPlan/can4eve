@@ -111,6 +111,23 @@ public class GenericDialog {
     }
     return controls;
   }
+  public static class SetupResult {
+    GridPane grid;
+    Map<String,GenericControl>controls;
+  }
+  public static SetupResult getSetup(Stage stage, Form form) {
+    SetupResult setupResult=new SetupResult();
+    // Create labels and fields.
+    GridPane grid = new GridPane();
+    grid.setHgap(10);
+    grid.setVgap(10);
+    grid.setPadding(new Insets(20, 150, 10, 10));
+
+    int ypos = 0;
+    setupResult.controls = getFields(stage, grid, form, ypos);
+    setupResult.grid=grid;
+    return setupResult;
+  }
 
   /**
    * setup the control according to the given valueMap
@@ -134,14 +151,9 @@ public class GenericDialog {
     dialog.getDialogPane().getButtonTypes().addAll(okButtonType,
         ButtonType.CANCEL);
 
-    // Create labels and fields.
-    grid = new GridPane();
-    grid.setHgap(10);
-    grid.setVgap(10);
-    grid.setPadding(new Insets(20, 150, 10, 10));
-
-    int ypos = 0;
-    controls = getFields(stage, grid, form, ypos);
+    SetupResult setupResult=getSetup(stage,form);
+    grid=setupResult.grid;
+    controls=setupResult.controls;
     dialog.getDialogPane().setContent(grid);
     if (valueMap != null) {
       for (GenericControl control : controls.values()) {

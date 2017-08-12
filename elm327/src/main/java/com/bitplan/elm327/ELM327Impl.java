@@ -195,7 +195,7 @@ public class ELM327Impl extends ELM327DeviceImpl implements ELM327 {
           msg+=String.format(" for request '%s'", response.getRequest().getData());
         }
       }
-      throw new Exception(msg);
+      throw new OBDException(msg,response);
     }
   }
 

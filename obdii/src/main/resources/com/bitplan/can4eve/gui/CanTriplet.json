@@ -609,6 +609,16 @@
 	   "exception": "java.net.BindException:Address already in use (Bind failed)",
 	   "url": "http://can4eve.bitplan.com/index.php/Help#java.net.BindException:_Address_already_in_use_.28Bind_failed.29",
 	   "i18nHint": "addressAlreadyInUse"
+	  },
+	  {
+	   "exception": "java.net.SocketException:Network is unreachable (connect failed)",
+	   "url": "http://can4eve.bitplan.com/index.php/Help#java.net.SocketException:_Network_is_unreachable_.28connect_failed.29",
+	   "i18nHint": "networkIsUnreachable"
+	  },
+	  {
+	   "exception": "com.bitplan.elm327.OBDException",
+	   "url": "http://can4eve.bitplan.com/index.php/Help#com.bitplan.elm327.OBDException",
+	   "i18nHint": "obdException"
 	  }
 	]
 }

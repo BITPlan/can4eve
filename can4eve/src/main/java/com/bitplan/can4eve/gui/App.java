@@ -36,7 +36,7 @@ import com.google.gson.GsonBuilder;
  * @author wf
  *
  */
-public class App {
+public class App implements ExceptionHelper {
   String name;
   String home;
   String feedback;
@@ -140,8 +140,21 @@ public class App {
    * @param exception
    * @return - the exception help
    */
-  public ExceptionHelp getExceptionHelpByName(String exception) {
-    return this.exceptionHelpByName.get(exception);
+  public ExceptionHelp getExceptionHelpByName(String exceptionKey) {
+    return this.exceptionHelpByName.get(exceptionKey);
+  }
+  
+  /**
+   * get the ExceptionHelp for the given Throwable
+   * @param th
+   * @return - the ExceptionHelp
+   */
+  public ExceptionHelp getExceptionHelp(Throwable th) {
+    ExceptionHelp eHelp=this.getExceptionHelpByName(th.getClass().getName()+":"+th.getMessage());
+    if (eHelp==null) {
+      eHelp=this.getExceptionHelpByName(th.getClass().getName());
+    }
+    return eHelp;
   }
 
   /**
@@ -196,6 +209,8 @@ public class App {
     }
     return instance;
   }
+
+ 
 
   
 }

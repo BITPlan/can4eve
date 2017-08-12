@@ -58,6 +58,7 @@ public class I18n {
   public static final String ERROR = "error";
   public static final String PROBLEM_OCCURED = "problem_occured";
   public static final String CONNECTION_FAILED="connection_failed";
+  public static final String CONNECTION_UNUSABLE = "connectionUnusable";
   public static final String SUPPORT_EMAIL = "support_email";
   public static final String MONITORING = "monitoring";
   public static final String HALTED = "halted";
@@ -121,6 +122,7 @@ public class I18n {
   public static final String WELCOME = "welcome";
   public static final String WELCOME_STEP="welcomeStep"; //Step %d of %d
   public static final String WELCOME_VEHICLE = "welcomeVehicle";
+  public static final String WELCOME_VEHICLE_TYPE="welcomeVehicleType";
   public static final String WELCOME_OBD = "welcomeObd";
   public static final String WELCOME_CON = "welcomeCon";
   public static final String WELCOME_LANGUAGE = "welcomeLanguage";
@@ -128,6 +130,8 @@ public class I18n {
   public static final String BAUD_RATE="baudRate"; //baudrate
   public static final String DEVICE="device"; //device
   public static final String REPORT_ISSUE="reportIssue"; //Report Issue ...
+
+
   
   /**
    * Translate the given text
