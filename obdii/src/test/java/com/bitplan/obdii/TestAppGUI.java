@@ -71,7 +71,6 @@ import com.bitplan.obdii.javafx.JFXStopWatch;
 import com.bitplan.obdii.javafx.LCDPane;
 import com.bitplan.obdii.javafx.SimulatorPane;
 import com.bitplan.obdii.javafx.WelcomeWizard;
-import com.bitplan.obdii.javafx.WelcomeWizard.NetworkController;
 
 import eu.hansolo.OverviewDemo;
 import eu.hansolo.medusa.FGauge;
@@ -114,6 +113,7 @@ import javafx.util.Duration;
  *
  */
 public class TestAppGUI {
+  public static boolean debug=false;
   public static final int SHOW_TIME = 4000;
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii");
 
@@ -587,7 +587,8 @@ public class TestAppGUI {
       }
     }
     for (Entry<String, Object> setting:wizard.getSettings().entrySet()) {
-      System.out.println(setting.getKey()+"="+setting.getValue());
+      if (debug)
+        System.out.println(setting.getKey()+"="+setting.getValue());
     }
   }
 

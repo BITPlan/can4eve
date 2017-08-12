@@ -36,6 +36,7 @@ import com.bitplan.elm327.Config.ConfigMode;
 import com.bitplan.elm327.Config.DeviceType;
 import com.bitplan.elm327.Connection;
 import com.bitplan.elm327.LogImpl;
+import com.bitplan.elm327.util.OSCheck;
 import com.bitplan.i18n.Translator;
 import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.elm327.ELM327;
@@ -69,7 +70,7 @@ public class OBDMain extends Main implements OBDApp {
   String vehicleGroupName = "triplet";
 
   @Option(name = "--port", aliases = {
-      "--portnumber" }, usage = "port\nthe port to connect to")
+      "--portnumber" }, usage = "port\nthe port to use")
   int portNumber = 7000;
 
   @Option(name = "--limit", aliases = {
@@ -78,8 +79,12 @@ public class OBDMain extends Main implements OBDApp {
   protected long frameLimit = 500 * 4800; // some 1 1/2 hours at 500fps
 
   @Option(name = "-l", aliases = {
-      "--log" }, usage = "log\nthe logdirectory to use")
+      "--log" }, usage = "log\nthe logfile to use")
   String logFileName;
+  
+  @Option(name = "-s", aliases = {
+  "--simulator" }, usage = "simulator\nrun the simulator using the given port and logfile (if any)")
+  boolean simulate;
 
   enum DisplayChoice {
     None, JavaFX
@@ -164,6 +169,12 @@ public class OBDMain extends Main implements OBDApp {
     elm.getCon().halt();
     return elm;
   }
+  
+  @Override
+  public void readVehicleInfo(Config config,Vehicle vehicle) throws Exception {
+    prepareOBD(config);
+    obdTriplet.monitorPid(pid, frameLimit);
+  }
 
   /**
    * prepare the OBD connection
@@ -176,11 +187,19 @@ public class OBDMain extends Main implements OBDApp {
     switch (config.getDeviceType()) {
     case USB:
       if (config.getDirect()) {
+        String deviceName=config.getSerialDevice();
+        switch (OSCheck.getOperatingSystemType()) {
+        case MacOS:
+        case Linux:
+          deviceName="/dev/"+deviceName;
+        default:
+          break;
+        }
         if (config.isDebug())
           LOGGER.log(Level.INFO,
-              "using device (direct)" + config.getSerialDevice());
+              "using device (direct)" +deviceName);
         obdTriplet = new OBDTriplet(vehicleGroup,
-            new File(config.getSerialDevice()));
+            new File(deviceName));
       } else {
         if (config.isDebug())
           LOGGER.log(Level.INFO, String.format("using device %s at %6d baud",
@@ -338,6 +357,14 @@ public class OBDMain extends Main implements OBDApp {
       showVersion();
     if (this.showHelp) {
       showHelp();
+    } else if (this.simulate) {
+      // ElmSimulator.verbose=this.debug;
+      String args[]={"--port",""+this.portNumber,"--vg",this.vehicleGroupName};
+      if (this.logFileName!=null) {
+        String args2[]={"--port",""+this.portNumber,"--vg",this.vehicleGroupName,"--file",this.logFileName};
+        args=args2;
+      }
+      ElmSimulator.main(args);
     } else {
       JavaFXDisplay jfxDisplay;
       switch (displayChoice) {

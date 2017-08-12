@@ -22,7 +22,9 @@ package com.bitplan.obdii.javafx;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -42,6 +44,7 @@ public class ImageSelector<T> extends GridPane {
 
   ChoiceBox<T> choice;
   List<ImageView> imageViews=new ArrayList<ImageView>();
+  Map<T,ImageView> imageViewMap=new HashMap<T,ImageView>();
   T[] selections;
   String[] pictures;
   String title;
@@ -84,6 +87,7 @@ public class ImageSelector<T> extends GridPane {
         FXCollections.observableArrayList(
              selections));
     BorderPane imageFrame = new BorderPane();
+    int index=0;
     for (String picture:pictures) {
       URL resource = getClass().getResource("/pictures/"+picture);
       if (resource==null) {
@@ -94,6 +98,7 @@ public class ImageSelector<T> extends GridPane {
       ImageView imageView=new ImageView(img);
       imageView.setUserData(imgUrl);
       imageViews.add(imageView);
+      imageViewMap.put(selections[index++], imageView);
     }
     choice.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
       @Override
@@ -109,6 +114,10 @@ public class ImageSelector<T> extends GridPane {
   
   public T getSelection() {
     return choice.getSelectionModel().getSelectedItem();
+  }
+  
+  public ImageView getImageView(T t) {
+    return imageViewMap.get(t);
   }
 
 }

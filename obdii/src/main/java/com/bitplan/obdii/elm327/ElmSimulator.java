@@ -58,7 +58,7 @@ public class ElmSimulator extends Main {
   String vehicleGroupName = "triplet";
   
   @Option(name = "-f", aliases = {
-  "-file" }, usage = "file\ntthe log file to use for simulation")
+  "--file" }, usage = "file\nthe log file to use for simulation")
   public String fileName = null;
 
   public static int SIMULATOR_TIMEOUT = 50; // Simulator should be quick 2 msecs is

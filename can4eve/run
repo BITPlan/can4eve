@@ -3,7 +3,7 @@
 # https://stackoverflow.com/questions/16976214/gradle-build-only-one-module
 # ../gradlew :can4eve:fatjar
 #jar="./build/libs/can4eve-all-0.0.1.jar"
-./rebuild
+#./rebuild
 jar=target/com.bitplan.can4eve.can4eve-0.0.1-jar-with-dependencies.jar
 #forward
 #java -jar $jar  -f -d -dv cu.usbserial -lf logfile.txt

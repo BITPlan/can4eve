@@ -37,5 +37,6 @@ public interface OBDApp {
   public ELM327 start(boolean withLog) throws Exception;
   public ELM327 stop() throws Exception;
   public LogPlayer getLogPlayer();
+  public void readVehicleInfo(Config config,Vehicle vehicle) throws Exception;
   public Vehicle getVehicle();
 }

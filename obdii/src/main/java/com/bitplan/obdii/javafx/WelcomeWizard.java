@@ -26,7 +26,6 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import org.controlsfx.dialog.Wizard;
-import org.controlsfx.dialog.WizardPane;
 
 import com.bitplan.can4eve.gui.javafx.ExceptionController;
 import com.bitplan.elm327.Config;
@@ -49,6 +48,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 
 /**
@@ -84,6 +84,7 @@ public class WelcomeWizard extends JFXWizard {
   private OBDApp obdApp;
   private Config config;
   private JFXWizardPane vehiclePane;
+  SerialController serialController;
 
   public static class NetworkController implements Initializable {
     @FXML
@@ -136,8 +137,45 @@ public class WelcomeWizard extends JFXWizard {
     @FXML
     TextArea textArea;
 
+    @FXML
+    TextArea hint;
+
+    @FXML
+    ImageView obdImage;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+    }
+
+    /**
+     * show the info about the test Result
+     * 
+     * @param elm
+     * @param config
+     * @param imageSelector
+     */
+    public void testResultInfo(ELM327 elm, Config config,
+        ImageSelector<String> imageSelector) {
+      String info = elm.getInfo();
+      ImageView imageView = null;
+      switch (config.getDeviceType()) {
+      case Network:
+        imageView = imageSelector.getImageView("Wifi");
+        break;
+      case USB:
+        imageView = imageSelector.getImageView("USB");
+        info += "\nbaudrate: " + config.getBaudRate();
+        break;
+      case Bluetooth:
+        imageView = imageSelector.getImageView("Bluetooth");
+        info += "\nbaudrate: " + config.getBaudRate();
+      default:
+        break;
+      }
+      if (imageView != null)
+        obdImage.setImage(imageView.getImage());
+      textArea.setText(info);
+      hint.setText(I18n.get(I18n.WELCOME_TEST_VEHICLE));
     }
 
   }
@@ -211,7 +249,6 @@ public class WelcomeWizard extends JFXWizard {
     addPage(connectionPane, "http://can4eve.bitplan.com/index.php/Help/OBDII");
 
     conSettingsPane = new JFXWizardPane(this, 4, steps, I18n.WELCOME_CON) {
-      SerialController serialController;
       NetworkController networkController;
 
       @Override
@@ -236,6 +273,8 @@ public class WelcomeWizard extends JFXWizard {
             this.setContentNode(networkController.pane);
             this.controller = networkController;
           }
+          this.setHelp(
+              "http://can4eve.bitplan.com/index.php?title=Help/NetworkConnection");
         }
       }
 
@@ -292,16 +331,17 @@ public class WelcomeWizard extends JFXWizard {
           testController = (ConnectionTestController) controller;
           nextButton = findButton(ButtonType.NEXT);
           if (nextButton != null) {
-            nextButton.setDisable(true);
+            Platform.runLater(() -> nextButton.setDisable(true));
           }
           Task<Void> task = new Task<Void>() {
             @Override
             public Void call() {
               boolean ok = false;
+              boolean autoBaudRate = config.getBaudRate() < 0;
               try {
                 int baudrates[];
                 // automatic baudRate check
-                if (config.getBaudRate() < 0) {
+                if (autoBaudRate) {
                   int trybaudrates[] = { 115200, 230400, 57600, 38400, 19200,
                       500000 };
                   baudrates = trybaudrates;
@@ -312,7 +352,7 @@ public class WelcomeWizard extends JFXWizard {
                 int progressmax = baudrates.length + 1;
                 int index = 0;
                 for (int baudrate : baudrates) {
-                  if (baudrates.length > 1) {
+                  if (autoBaudRate) {
                     this.updateProgress(++index, progressmax);
                     config.setBaudRate(baudrate);
                     Platform.runLater(() -> testController.textArea
@@ -321,14 +361,17 @@ public class WelcomeWizard extends JFXWizard {
                   try {
                     ELM327 elm = WelcomeWizard.this.obdApp
                         .testConnection(config);
-                    final String info = elm.getInfo();
-                    ok = true;
+                    if (autoBaudRate) {
+                      Platform.runLater(() -> serialController.baudRate
+                          .getSelectionModel().select("" + baudrate));
+                    }
                     Platform.runLater(() -> {
                       this.updateProgress(progressmax, progressmax);
-                      testController.textArea.setText(info);
-                      if (nextButton != null)
-                        nextButton.setDisable(false);
+                      testController.testResultInfo(elm, config,
+                          connectionSelector);
                     });
+                    // we have a positive result
+                    ok = true;
                     // leave the baud rate checking loop
                     break;
                   } catch (Throwable th0) {
@@ -339,12 +382,17 @@ public class WelcomeWizard extends JFXWizard {
                     }
                   }
                 } // for
-                if (!ok)
+                if (ok) {
+
+                  if (nextButton != null)
+                    Platform.runLater(() -> nextButton.setDisable(false));
+                } else {
                   Platform.runLater(() -> {
                     this.updateProgress(progressmax, progressmax);
                     testController.textArea
                         .setText(I18n.get(I18n.CONNECTION_UNUSABLE));
                   });
+                }
               } catch (Throwable th) {
                 Platform.runLater(() -> handleException(th));
               }

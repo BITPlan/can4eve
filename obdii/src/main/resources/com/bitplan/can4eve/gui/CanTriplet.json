@@ -616,6 +616,11 @@
 	   "i18nHint": "networkIsUnreachable"
 	  },
 	  {
+	   "exception": "java.net.ConnectException:Connection refused (Connection refused)",
+	   "url": "http://can4eve.bitplan.com/index.php/Help#java.net.ConnectException:_Connection_refused_.28Connection_refused.29",
+	   "i18nHint": "connectionRefused"
+	  },
+	  {
 	   "exception": "com.bitplan.elm327.OBDException",
 	   "url": "http://can4eve.bitplan.com/index.php/Help#com.bitplan.elm327.OBDException",
 	   "i18nHint": "obdException"

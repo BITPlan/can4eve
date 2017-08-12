@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
 
 <Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity"
 	minHeight="-Infinity" minWidth="-Infinity" prefHeight="220.0"
@@ -15,27 +18,45 @@
 	<children>
 		<AnchorPane prefHeight="220.0" prefWidth="520.0">
 			<children>
-				<Label layoutX="23.0" layoutY="19.0" text="%serialDevice" />
-				<Label layoutX="14.0" layoutY="57.0" text="%baudRate" />
-				<ComboBox fx:id="serialDevice" layoutX="90.0" layoutY="14.0"
-					prefHeight="27.0" prefWidth="300" editable="true">
-					<tooltip>
-						<Tooltip text="%serialDeviceTooltip" />
-					</tooltip>
-				</ComboBox>
-				<ComboBox fx:id="baudRate" id="baudRate" layoutX="90.0"
-					layoutY="52.0" prefHeight="27.0" prefWidth="120" promptText="%baudRate"
-					editable="true">
-					<tooltip>
-						<Tooltip text="%baudRateTooltip" />
-					</tooltip>
-				</ComboBox>
-				<CheckBox fx:id="direct" layoutX="90.0" layoutY="95.0"
-					mnemonicParsing="false" text="direct" >
-					<tooltip>
-						<Tooltip text="%directSerialTooltip" />
-					</tooltip>
-				</CheckBox>	
+				<GridPane layoutX="10.0" layoutY="10.0" prefHeight="100" hgap="10"
+					prefWidth="500.0">
+					<columnConstraints>
+						<ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES"
+							minWidth="40.0" percentWidth="15.0" />
+						<ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" />
+					</columnConstraints>
+					<rowConstraints>
+						<RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+						<RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+						<RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+					</rowConstraints>
+					<children>
+						<Label text="%serialDevice" GridPane.columnIndex="0"
+							GridPane.rowIndex="0" />
+						<Label text="%baudRate" GridPane.columnIndex="0"
+							GridPane.rowIndex="1" />
+						<ComboBox fx:id="serialDevice" editable="true"
+							prefHeight="25.0" prefWidth="420.0" GridPane.columnIndex="1"
+							GridPane.rowIndex="0">
+							<tooltip>
+								<Tooltip text="%serialDeviceTooltip" />
+							</tooltip>
+						</ComboBox>
+						<ComboBox id="baudRate" fx:id="baudRate" editable="true"
+							prefHeight="27.0" prefWidth="120" promptText="%baudRate"
+							GridPane.columnIndex="1" GridPane.rowIndex="1">
+							<tooltip>
+								<Tooltip text="%baudRateTooltip" />
+							</tooltip>
+						</ComboBox>
+						<CheckBox fx:id="direct" mnemonicParsing="false" text="direct"
+							GridPane.columnIndex="1" GridPane.rowIndex="2">
+							<tooltip>
+								<Tooltip text="%directSerialTooltip" />
+							</tooltip>
+						</CheckBox>
+					</children>
+				</GridPane>
 			</children>
 		</AnchorPane>
 	</children>

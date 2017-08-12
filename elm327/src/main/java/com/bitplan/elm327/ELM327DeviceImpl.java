@@ -106,9 +106,9 @@ public class ELM327DeviceImpl implements ELM327Device {
       info+="\n"+this.getDescription();
     }
     if (STN) {
-      info+="\nthis device is using the recommended STN chip";
-      info+="\n"+this.firmwareId;
-      info+="\n"+this.hardwareId;
+      info+="\n\nthis device is using the recommended STN chip";
+      info+="\nfirmware: "+this.firmwareId;
+      info+="\nhardware: "+this.hardwareId;
     }
     return info;
   }
