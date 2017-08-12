@@ -30,12 +30,15 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.apache.commons.io.FileUtils;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -45,6 +48,7 @@ import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.SoftwareVersion;
+import com.bitplan.can4eve.Vehicle;
 import com.bitplan.can4eve.gui.App;
 import com.bitplan.elm327.Config;
 import com.bitplan.elm327.Config.ConfigMode;
@@ -57,6 +61,7 @@ import com.bitplan.obdii.elm327.LogPlayerImpl;
 import com.bitplan.obdii.elm327.LogReader;
 import com.bitplan.obdii.javafx.JavaFXDisplay;
 import com.bitplan.triplet.OBDTriplet;
+import com.bitplan.triplet.VINValue;
 
 import javafx.application.Platform;
 
@@ -79,6 +84,11 @@ public class TestELM327 extends TestOBDII {
   private Socket elmSocket;
   private OBDTriplet obdTriplet;
   private JavaFXDisplay display;
+
+  @BeforeClass
+  public static void setTestMode() {
+    JavaFXDisplay.testMode = true;
+  }
 
   /**
    * get the Socket for the testVehicle
@@ -642,6 +652,33 @@ public class TestELM327 extends TestOBDII {
     Date date2 = new Date(1000);
     tripRounds.integrate(rpm1, date1, rpm2, date2, 1 / 60000.0);
     assertEquals(50.0, tripRounds.getValueItem().getValue(), 0.1);
+  }
+  
+
+  @SuppressWarnings("rawtypes")
+  @Test
+  public void testReadVehicleInfo() throws Exception {
+    // debug = true;
+    this.prepareOBDTriplet(simulated, debug);
+    obdTriplet.initOBD();
+    String[] groups = { "triplet", "MitsubishiPHEV" };
+    for (String group : groups) {
+      Vehicle vehicle = new Vehicle();
+      vehicle.setGroup(group);
+      Map<String, CANData> vehicleInfo = obdTriplet.readVehicleInfo(vehicle);
+      for (Entry<String, CANData> vehicleData : vehicleInfo.entrySet()) {
+        CANData canData = vehicleData.getValue();
+        if (canData.isAvailable()) {
+          CANInfo canInfo = canData.getCANInfo();
+          Object value = canData.getValue();
+          System.out.println(String.format("%10s (%25s)=%s (%s)",
+              vehicleData.getKey(), canInfo.getDescription(), value,
+              value.getClass().getSimpleName()));
+          System.out.println(canData.asJson());
+        }
+      }
+    }
+
   }
 
   /**

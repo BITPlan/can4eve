@@ -173,7 +173,7 @@ public class OBDMain extends Main implements OBDApp {
   @Override
   public void readVehicleInfo(Config config,Vehicle vehicle) throws Exception {
     prepareOBD(config);
-    obdTriplet.monitorPid(pid, frameLimit);
+    obdTriplet.readVehicleInfo(vehicle);
   }
 
   /**

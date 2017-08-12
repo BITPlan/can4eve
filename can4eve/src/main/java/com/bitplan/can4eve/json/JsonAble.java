@@ -27,28 +27,17 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 
-import com.google.gson.Gson;
-
 /**
  * for jsonable POJOs
  * @author wf
  *
  */
-public interface JsonAble {
+public interface JsonAble extends AsJson {
   public static String appName="can4eve";
   /**
    * reinitialize me after being reloaded from json
    */
   public void reinit();
-  
-  /**
-   * convert me to a json string
-   * @return - my json String representation
-   */
-  default String asJson() {
-    String json=getGson().toJson(this);
-    return json;
-  }
   
   /**
    * save me to my Json File
@@ -91,11 +80,5 @@ public interface JsonAble {
    */
   public void fromMap(Map<String, Object> map);
   
-  /**
-   * get the Gson
-   * @return my Gson
-   */
-  default Gson getGson() {
-    return JsonManagerImpl.getGsonStatic();
-  }
+  
 }

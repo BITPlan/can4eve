@@ -27,6 +27,7 @@ import java.util.ResourceBundle;
 
 import org.controlsfx.dialog.Wizard;
 
+import com.bitplan.can4eve.Vehicle;
 import com.bitplan.can4eve.gui.javafx.ExceptionController;
 import com.bitplan.elm327.Config;
 import com.bitplan.elm327.OBDException;
@@ -64,7 +65,7 @@ public class WelcomeWizard extends JFXWizard {
       langs, langPictures);
 
   String carSelections[] = { "Citroën C-Zero", "Mitsubishi i-Miev",
-      "Misubishi Outlander PHEV", "Peugeot Ion" };
+      "Mitsubishi Outlander PHEV", "Peugeot Ion" };
   String carPictures[] = { "c-zero.jpg", "i-miev.jpg", "outlanderphev.jpg",
       "ion.jpg" };
   ImageSelector<String> carSelector = new ImageSelector<String>("vehicle",
@@ -85,6 +86,7 @@ public class WelcomeWizard extends JFXWizard {
   private Config config;
   private JFXWizardPane vehiclePane;
   SerialController serialController;
+  Vehicle vehicle=null;
 
   public static class NetworkController implements Initializable {
     @FXML
@@ -182,10 +184,27 @@ public class WelcomeWizard extends JFXWizard {
 
   public static class VehicleController implements Initializable {
     @FXML
+    ProgressBar progressBar;
+    @FXML
     TextField vin;
+    @FXML
+    TextField model;
+    @FXML
+    ImageView vehicleImage;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+    }
+
+    /**
+     * prepare this view with the given vehicle Data
+     * @param vehicle
+     * @param imageSelector
+     */
+    public void prepare(Vehicle vehicle, ImageSelector<String> imageSelector) {
+      model.setText(vehicle.getModel());
+      ImageView imageView = imageSelector.getImageView(vehicle.getModel());
+      vehicleImage.setImage(imageView.getImage());
     }
 
   }
@@ -235,7 +254,22 @@ public class WelcomeWizard extends JFXWizard {
     addPage(languagePane, "http://can4eve.bitplan.com/index.php/Help/Language");
 
     carPane = new JFXWizardPane(this, 2, steps, I18n.WELCOME_VEHICLE_TYPE,
-        carSelector);
+        carSelector) {
+      @Override
+      public void onExitingPage(Wizard wizard) {
+        super.onExitingPage(wizard);
+        if (vehicle==null) {
+          vehicle=Vehicle.getInstance();
+        }
+        vehicle.setModel(carSelector.getSelection());
+        if ("Mitsubishi Outlander PHEV".equals(vehicle.getModel())) {
+          vehicle.setGroup("MitsubishiPHEV");
+        } else {
+          vehicle.setGroup("triplet");
+        }
+      }
+      
+    };
     addPage(carPane, "http://can4eve.bitplan.com/index.php/Help/VehicleTypes");
 
     connectionPane = new JFXWizardPane(this, 3, steps, I18n.WELCOME_OBD,
@@ -406,18 +440,41 @@ public class WelcomeWizard extends JFXWizard {
       }
     };
 
-    addPage(conTestResultPane);
+    addPage(conTestResultPane,"http://can4eve.bitplan.com/index.php/Help/ConnectionTest");
 
     vehiclePane = new JFXWizardPane(this, 6, steps, I18n.WELCOME_VEHICLE) {
       private VehicleController vehicleController;
+      private Button finishButton;
 
       @Override
       public void onEnteringPage(Wizard wizard) {
+        super.onEnteringPage(wizard);
         if (vehicleController == null) {
           load("vehicle");
           vehicleController = (VehicleController) controller;
+          Platform.runLater(()->vehicleController.prepare(vehicle,carSelector));
+        }
+        finishButton = findButton(ButtonType.NEXT);
+        if (finishButton != null) {
+          Platform.runLater(() -> finishButton.setDisable(true));
         }
         // vehicleForm= app.getFormById("preferencesGroup", "vehicleForm");
+        Task<Void> task = new Task<Void>() {
+          @Override
+          public Void call() {
+            try {
+              WelcomeWizard.this.obdApp
+              .readVehicleInfo(config, vehicle);
+            } catch (Exception e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            }
+            return null;
+          }
+        };
+        vehicleController.progressBar.progressProperty()
+            .bind(task.progressProperty());
+        new Thread(task).start();
       }
     };
     addPage(vehiclePane);

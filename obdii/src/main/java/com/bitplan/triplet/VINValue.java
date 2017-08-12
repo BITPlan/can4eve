@@ -25,6 +25,7 @@ import java.util.logging.Level;
 
 import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue;
+import com.bitplan.can4eve.json.AsJson;
 
 /**
  * Vehicle identification number handling
@@ -32,18 +33,19 @@ import com.bitplan.can4eve.CANValue;
  * @author wf
  *
  */
-public class VINValue extends CANValue<String> {
+public class VINValue extends CANValue<String> implements AsJson {
 
   public VINValue(CANInfo canInfo) {
     super(canInfo, String.class);
   }
 
-  String[] vinPart = new String[3];
-  Integer year;
-  String factory = "";
-  private String wmi;
-  String manufacturer;
-  private int cellCount=80;
+  transient String[] vinPart = new String[3];
+  public int  year;
+  public String factory = "";
+  public String wmi;
+  public String manufacturer;
+  public int cellCount=80;
+  public String vin;
 
   /**
    * set part of the VIN
@@ -65,44 +67,54 @@ public class VINValue extends CANValue<String> {
       }
     }
     if (parts == 3) {
-      String vin = vinPart[0] + vinPart[1] + vinPart[2];
-      // zb. VF31 N ZKZ Z B U 8XXXXX
-      /*
-       * VF71 und VF31 PSA
-       * 
-       * N = Limousine 5 Türen
-       * 
-       * ZKZ=180Nm Motor 88 Zellen
-       * 
-       * ZKY=196 Nm Motor 80 Zellen
-       * 
-       * Z= Untersetzungsgetriebe
-       * 
-       * B 2011 C 2012 D 2013 E 2014 F 2015 G 2016 H 2017 Modelljahr ......
-       * 
-       * U= Produktionsort (Mizushima)
-       */
-
-      // https://en.wikibooks.org/wiki/Vehicle_Identification_Numbers_(VIN_codes)/World_Manufacturer_Identifier_(WMI)
-      wmi = vin.substring(0, 3);
-      if (wmi.equals("JA3")) {
-        manufacturer = "Mitsubishi";
-        setCellCount(88);
-      } else if (wmi.equals("VF3")) {
-        manufacturer = "Peugeot";
-      } else if (wmi.equals("VF7")) {
-        manufacturer = "Citroën";
-      }
-      char cellcode = vin.charAt(7);
-      if (wmi.startsWith("VF") && cellcode=='Z') {
-        setCellCount(88);
-      }
-      year = (int) vin.charAt(9) - 72 + 2017;
-      if (vin.charAt(10) == 'U') {
-        factory = "Mizushima";
-      }
+      vin = vinPart[0] + vinPart[1] + vinPart[2];
+      analyze(vin);
       setValue(vin, timeStamp);
     }
+  }
+
+  /**
+   * set my details with the given VIN
+   * @param vin
+   */
+  public void analyze(String vin) {
+    this.vin=vin;
+    // zb. VF31 N ZKZ Z B U 8XXXXX
+    /*
+     * VF71 und VF31 PSA
+     * 
+     * N = Limousine 5 Türen
+     * 
+     * ZKZ=180Nm Motor 88 Zellen
+     * 
+     * ZKY=196 Nm Motor 80 Zellen
+     * 
+     * Z= Untersetzungsgetriebe
+     * 
+     * B 2011 C 2012 D 2013 E 2014 F 2015 G 2016 H 2017 Modelljahr ......
+     * 
+     * U= Produktionsort (Mizushima)
+     */
+
+    // https://en.wikibooks.org/wiki/Vehicle_Identification_Numbers_(VIN_codes)/World_Manufacturer_Identifier_(WMI)
+    wmi = vin.substring(0, 3);
+    if (wmi.equals("JA3")) {
+      manufacturer = "Mitsubishi";
+      setCellCount(88);
+    } else if (wmi.equals("VF3")) {
+      manufacturer = "Peugeot";
+    } else if (wmi.equals("VF7")) {
+      manufacturer = "Citroën";
+    }
+    char cellcode = vin.charAt(7);
+    if (wmi.startsWith("VF") && cellcode=='Z') {
+      setCellCount(88);
+    }
+    year = (int) vin.charAt(9) - 72 + 2017;
+    if (vin.charAt(10) == 'U') {
+      factory = "Mizushima";
+    }
+    
   }
 
   public String asString() {
@@ -124,4 +136,5 @@ public class VINValue extends CANValue<String> {
   public void setCellCount(int cellCount) {
     this.cellCount = cellCount;
   }
+
 }

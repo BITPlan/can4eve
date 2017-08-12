@@ -80,25 +80,24 @@ public abstract class CANValue<ValueType> implements CANData<ValueType> {
     }
   }
 
-  public CANInfo canInfo;
+  public transient CANInfo canInfo;
 
   public CANInfo getCANInfo() {
     return canInfo;
   };
 
   ValueItem<ValueType> valueItem = new ValueItem<ValueType>();
-  private List<CANValueItem<ValueType>> valueItems = new ArrayList<CANValueItem<ValueType>>(); // for
-                                                                                               // indexed
-                                                                                               // CANValues
+  private transient List<CANValueItem<ValueType>> valueItems = new ArrayList<CANValueItem<ValueType>>(); // for
+                                                                                               // indexed                                                                                   // CANValues
 
-  private CircularFifoQueue<ValueItem<ValueType>> history;
-  private Date previousHistoryTimeStamp;
+  private transient CircularFifoQueue<ValueItem<ValueType>> history;
+  private transient Date previousHistoryTimeStamp;
   long historyMSecs;
   Date startTime;
-  private boolean display = false;
-  private boolean read = false;
+  transient private boolean display = false;
+  transient private boolean read = false;
   private int updateCount;
-  private Class<?> clazz;
+  private transient Class<?> clazz;
 
   public List<CANValueItem<ValueType>> getValueItems() {
     return valueItems;

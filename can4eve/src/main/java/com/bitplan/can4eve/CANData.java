@@ -22,6 +22,8 @@ package com.bitplan.can4eve;
 
 import java.util.Date;
 
+import com.bitplan.can4eve.json.AsJson;
+
 /**
  * generic CANData interface for "translated" values e.g.
  * a speed value. The CANData may be indexed - an list of values
@@ -31,7 +33,7 @@ import java.util.Date;
  *
  * @param <T>
  */
-public interface CANData<T> {
+public interface CANData<T> extends AsJson {
   /**
    * set a value at the given time e.g. the speed in km/h
    * 
@@ -82,4 +84,5 @@ public interface CANData<T> {
    * @return the updateCounter
    */
   public int getUpdateCount();
+
 }

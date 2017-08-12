@@ -95,7 +95,7 @@ import javafx.util.Duration;
 public class JavaFXDisplay extends WaitableApp
     implements MonitorControl, CANValueDisplay, ExceptionHandler,EventHandler<ActionEvent> {
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.javafx");
-
+  public static boolean testMode=false;
   private static com.bitplan.can4eve.gui.App app;
   OBDApp obdApp;
   private static SoftwareVersion softwareVersion;
@@ -315,7 +315,8 @@ public class JavaFXDisplay extends WaitableApp
     stage.show();
     available = true;
     // if this is the first Start then show the Welcome Wizard
-    // optionalShowWelcomeWizard();
+    if (!testMode)
+      optionalShowWelcomeWizard();
   }
 
   /**

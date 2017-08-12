@@ -25,7 +25,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 
 import com.bitplan.can4eve.CANData;
@@ -601,6 +606,38 @@ public class OBDTriplet extends OBDHandler {
       printWriter.write(canValue.asCSV());
     }
     printWriter.close();
+  }
+
+  /**
+   * read the vehicle Info
+   * @param vehicle
+   * @return 
+   * @throws Exception 
+   */
+  @SuppressWarnings("rawtypes")
+  public Map<String, CANData> readVehicleInfo(Vehicle vehicle) throws Exception {
+    VehicleGroup vehicleGroup=VehicleGroup.get(vehicle.getGroup());  
+    int frameLimit=1;
+    String[] pidNames={"Odometer_Speed","VIN"};
+    for (String pidName:pidNames) {
+      Pid pid=vehicleGroup.getPidByName(pidName);
+      monitorPid(pid.getPid(), frameLimit * 3);
+    }
+    Map<String, CANProperty> props = cpm.getCANProperties("VIN","Odometer");
+    /*
+    List<CANValue<?>> vehicleValues=new ArrayList<CANValue<?>>();
+    for (CANProperty prop:props.values()) {
+      vehicleValues.add(prop.getCanValue());
+    }
+    int frameLimit=props.size()*15;
+    this.pidMonitor(vehicleValues, frameLimit);
+    */
+    Map<String,CANData> result=new HashMap<String,CANData>();
+    for (Entry<String, CANProperty> propentry:props.entrySet()) {
+      CANProperty prop = propentry.getValue();
+      result.put(propentry.getKey(),prop);
+    }
+    return result;
   }
 
 } // OBDTriplet

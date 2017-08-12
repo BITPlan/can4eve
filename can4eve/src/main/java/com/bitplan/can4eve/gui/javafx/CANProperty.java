@@ -237,4 +237,9 @@ public class CANProperty<CT extends CANValue<T>,T> implements CANData<T>{
   public int getUpdateCount() {
     return this.getCanValue().getUpdateCount();
   }
+  
+  @Override
+  public String asJson() {
+    return canValue.asJson();
+  }
 }

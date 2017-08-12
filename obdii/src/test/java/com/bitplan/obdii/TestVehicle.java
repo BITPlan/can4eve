@@ -34,6 +34,8 @@ import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.VehicleModel;
+import com.bitplan.can4eve.json.JsonManagerImpl;
+import com.bitplan.triplet.VINValue;
 import com.google.gson.Gson;
 
 /**
@@ -234,5 +236,25 @@ public class TestVehicle extends TestOBDII {
     assertEquals(4, pids.size());
     assertEquals(-40.0,canInfo.getMinValue(),0.01);
     assertEquals(60,canInfo.getMaxValue(),0.01);
+  }
+  
+  @Test
+  public void testVINJson() throws Exception {
+    VehicleGroup vg = getVehicleGroup();
+    CANInfo canInfo = vg.getCANInfoByName("VIN");
+    VINValue vv=new VINValue(canInfo);
+    vv.analyze("VF31NZKYZHU900769");
+    String json=vv.asJson();
+    Gson gson = JsonManagerImpl.getGsonStatic();
+    VINValue vinValue = gson.fromJson(json, VINValue.class);
+    assertNotNull(vinValue);
+    assertEquals(2017,vinValue.year);
+    assertEquals("Mizushima",vinValue.factory);
+    assertEquals("VF3",vinValue.wmi);
+    assertEquals("Peugeot",vinValue.manufacturer);
+    assertEquals(80,vinValue.cellCount);
+    assertEquals("VF31NZKYZHU900769",vinValue.vin);
+    if (debug)
+      System.out.println(vv.asJson());
   }
 }

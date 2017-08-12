@@ -22,6 +22,7 @@ package com.bitplan.obdii.javafx;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.controlsfx.dialog.Wizard;
@@ -221,6 +222,7 @@ public class JFXWizardPane extends WizardPane {
         }
       }
     }
+    // LOGGER.log(Level.WARNING,"find Button failed in step "+step+" of "+steps);
     return null;
   }
 
