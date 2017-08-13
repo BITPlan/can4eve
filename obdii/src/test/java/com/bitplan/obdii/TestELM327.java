@@ -79,8 +79,9 @@ public class TestELM327 extends TestOBDII {
   public static boolean simulated = true;
   // the vehicle under test
 
-  public int SIMULATOR_TIMEOUT = 50; // Simulator should be quick 2 msecs is
-                                     // feasible
+  public int SIMULATOR_TIMEOUT = 200; // Simulator should be quick 2 msecs is
+                                      // feasible 50 is used here on desktop computers
+                                      // 200 is a value for travis
 
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii");
   private Socket elmSocket;
