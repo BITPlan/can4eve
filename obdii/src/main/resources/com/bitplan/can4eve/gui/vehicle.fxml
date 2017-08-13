@@ -27,7 +27,7 @@
 						<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
 						<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
 						<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
-							percentWidth="33" />
+							percentWidth="40" />
 					</columnConstraints>
 					<rowConstraints>
 						<RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
@@ -40,12 +40,12 @@
 						<ProgressBar fx:id="progressBar" prefHeight="20.0"
 							prefWidth="500.0" progress="0.0" GridPane.columnSpan="2147483647"
 							GridPane.rowIndex="0" />
-						<VBox minHeight="76" minWidth="173" prefHeight="76"
-							prefWidth="176" GridPane.columnIndex="4" GridPane.rowIndex="1"
+						<VBox minHeight="88" minWidth="208" prefHeight="88"
+							prefWidth="208" GridPane.columnIndex="4" GridPane.rowIndex="1"
 							GridPane.rowSpan="2147483647">
 							<children>
 								<ImageView id="vehicleImage" fx:id="vehicleImage"
-									fitHeight="76" fitWidth="176">
+									fitHeight="88" fitWidth="208">
 								</ImageView>
 							</children>
 						</VBox>

@@ -22,7 +22,6 @@ package com.bitplan.obdii.javafx;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.controlsfx.dialog.Wizard;
@@ -50,7 +49,6 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
-import javafx.scene.layout.GridPane;
 
 /**
  * a page in a wizard

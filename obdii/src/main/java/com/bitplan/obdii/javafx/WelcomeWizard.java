@@ -32,6 +32,7 @@ import org.controlsfx.dialog.Wizard;
 import com.bitplan.can4eve.CANData;
 import com.bitplan.can4eve.Vehicle;
 import com.bitplan.elm327.Config;
+import com.bitplan.elm327.Config.ConfigMode;
 import com.bitplan.elm327.OBDException;
 import com.bitplan.elm327.SerialImpl;
 import com.bitplan.i18n.Translator;
@@ -42,6 +43,8 @@ import com.bitplan.triplet.VINValue;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -492,6 +495,14 @@ public class WelcomeWizard extends JFXWizard {
                 Platform.runLater(() -> {
                   if (finishButton != null) {
                     finishButton.setDisable(false);
+                    // workaround for controlsfx bug not to activate onExit for FinishButton
+                    finishButton.setOnAction(
+                    new EventHandler<ActionEvent>() {
+                      @Override
+                      public void handle(final ActionEvent actionEvent) {
+                        onExitingPage(wizard);
+                      }
+                    });
                   }
                 });
 
@@ -507,7 +518,19 @@ public class WelcomeWizard extends JFXWizard {
         } else {
           LOGGER.log(Level.WARNING, "obdApp is null");
         }
+      } // onEnteringPage
+      
+      @Override
+      public void onExitingPage(Wizard wizard) {
+        super.onExitingPage(wizard);
+        try {
+          vehicle.save();
+          config.save(ConfigMode.Preferences);
+        } catch (Throwable th) {
+          handleException(th);
+        }
       }
+      
     };
     addPage(vehiclePane,"http://can4eve.bitplan.com/index.php/Help/VehicleTest");
     prepare();
