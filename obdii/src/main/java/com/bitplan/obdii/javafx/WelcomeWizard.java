@@ -195,9 +195,12 @@ public class WelcomeWizard extends JFXWizard {
     @FXML
     TextField vehicleYear;
     @FXML
+    TextField cellCount;
+    @FXML
     TextField vehicleManufacturer;
     @FXML
     ImageView vehicleImage;
+    
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -226,6 +229,7 @@ public class WelcomeWizard extends JFXWizard {
         vin.setText(VIN.vin);
         vehicleYear.setText("" + VIN.year);
         vehicleManufacturer.setText(VIN.manufacturer + "/" + VIN.factory);
+        cellCount.setText(""+VIN.cellCount);
       }
     }
 
@@ -505,7 +509,7 @@ public class WelcomeWizard extends JFXWizard {
         }
       }
     };
-    addPage(vehiclePane);
+    addPage(vehiclePane,"http://can4eve.bitplan.com/index.php/Help/VehicleTest");
     prepare();
   }
 

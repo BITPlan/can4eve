@@ -270,9 +270,10 @@ public class OBDTriplet extends OBDHandler {
         temp_index -= 3;
       }
       // debug the index handling
-      /*log(pr.pid.getName(), pidindex, cmu_id, voltage_index, temp_index,
-          voltage1, voltage2, temp1, temp2, temp3);
-      */
+      /*
+       * log(pr.pid.getName(), pidindex, cmu_id, voltage_index, temp_index,
+       * voltage1, voltage2, temp1, temp2, temp3);
+       */
       CANData<Double> cellVoltage = cpm.getValue("CellVoltage");
       int maxVoltageIndex = cellVoltage.getCANInfo().getMaxIndex();
       setValue(cellVoltage, voltage_index, maxVoltageIndex, voltage1,
@@ -423,7 +424,7 @@ public class OBDTriplet extends OBDHandler {
       break;
     case "ShifterPosition":
       ShifterPosition newShifterPosition = new ShifterPosition(pr.d[0]);
-      cvh.setValue("ShifterPosition",newShifterPosition, timeStamp);
+      cvh.setValue("ShifterPosition", newShifterPosition, timeStamp);
       if (newShifterPosition.shiftPosition == ShiftPosition.P) {
         this.vehicleStateProperty.set(Vehicle.State.Parking);
         // are we charging?
@@ -466,11 +467,13 @@ public class OBDTriplet extends OBDHandler {
       int v2indexVal = pr.d[0];
       String v2partVal = pr.getString();
       CANProperty<CANValue<VINValue>, VINValue> vinProperty2 = cpm.get("VIN2");
-      Object vinValue2 = vinProperty2.getCanValue().getValue();
-      VINValue VIN2 = (VINValue) vinValue2;
-      // TODO check why this can be null
-      if (VIN2 != null)
-        VIN2.set(v2indexVal, v2partVal, timeStamp);
+      if (vinProperty2 != null) {
+        Object vinValue2 = vinProperty2.getCanValue().getValue();
+        VINValue VIN2 = (VINValue) vinValue2;
+        // TODO check why this can be null
+        if (VIN2 != null)
+          VIN2.set(v2indexVal, v2partVal, timeStamp);
+      }
       break;
     default:
       // ignore - this case is handled by the raw values below

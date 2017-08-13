@@ -18,11 +18,13 @@
 	<children>
 		<AnchorPane prefHeight="220.0" prefWidth="520.0">
 			<children>
-				<GridPane layoutX="10.0" layoutY="10.0" prefWidth="505.0"
-					vgap="10" hgap="10">
+				<GridPane hgap="10" layoutX="10.0" layoutY="10.0"
+					prefWidth="505.0" vgap="10">
 					<columnConstraints>
 						<ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES"
-							minWidth="10.0" />
+							minWidth="50.0" />
+						<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+						<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
 						<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
 						<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
 							percentWidth="33" />
@@ -31,15 +33,15 @@
 						<RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
 						<RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
 						<RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-						<RowConstraints />
-						<RowConstraints />
+						<RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+						<RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
 					</rowConstraints>
 					<children>
 						<ProgressBar fx:id="progressBar" prefHeight="20.0"
 							prefWidth="500.0" progress="0.0" GridPane.columnSpan="2147483647"
 							GridPane.rowIndex="0" />
 						<VBox minHeight="76" minWidth="173" prefHeight="76"
-							prefWidth="176" GridPane.columnIndex="2" GridPane.rowIndex="1"
+							prefWidth="176" GridPane.columnIndex="4" GridPane.rowIndex="1"
 							GridPane.rowSpan="2147483647">
 							<children>
 								<ImageView id="vehicleImage" fx:id="vehicleImage"
@@ -48,30 +50,32 @@
 							</children>
 						</VBox>
 						<Label text="%vehicleModel" GridPane.columnIndex="0"
-							GridPane.rowIndex="2" />
-						<TextField id="model" fx:id="model" prefHeight="27.0"
-							prefWidth="150" maxWidth="150" promptText="Model" editable="false"
-							GridPane.columnIndex="1" GridPane.rowIndex="2" />
+							GridPane.rowIndex="1" />
+						<TextField id="model" fx:id="model" editable="false"
+							maxWidth="150" prefHeight="27.0" prefWidth="150" promptText="Model"
+							GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.columnSpan="3" />
 						<Label text="VIN" GridPane.columnIndex="0"
-							GridPane.rowIndex="3" />
-						<TextField id="vin" fx:id="vin" prefHeight="27.0"
-							prefWidth="150.0" maxWidth="150" promptText="VIN" editable="false"
-							GridPane.columnIndex="1" GridPane.rowIndex="3" />
+							GridPane.rowIndex="2" />
+						<TextField id="vin" fx:id="vin" editable="false"
+							maxWidth="150" prefHeight="27.0" prefWidth="150.0" promptText="VIN"
+							GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.columnSpan="3" />
 						<Label text="%vehicleManufacturer" GridPane.columnIndex="0"
-							GridPane.rowIndex="4" />
+							GridPane.rowIndex="3" />
 						<TextField id="vehicleManufacturer" fx:id="vehicleManufacturer"
-							prefHeight="27.0" prefWidth="150" maxWidth="150" promptText="%vehicleManufacturer"
-							editable="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+							editable="false" maxWidth="150" prefHeight="27.0" prefWidth="150"
+							promptText="%vehicleManufacturer" GridPane.columnIndex="1"
+							GridPane.rowIndex="3" GridPane.columnSpan="3"/>
 						<Label text="%vehicleYear" GridPane.columnIndex="0"
-							GridPane.rowIndex="5" />
+							GridPane.rowIndex="4" />
 						<TextField id="vehicleYear" fx:id="vehicleYear"
-							prefHeight="27.0" prefWidth="50" maxWidth="50" promptText="%vehicleYear"
-							editable="false" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-						<Label text="%CellCount" GridPane.columnIndex="3"
-							GridPane.rowIndex="5" />
-						<TextField id="cellCount" fx:id="cellCount"
-							prefHeight="27.0" prefWidth="50" maxWidth="50" promptText="%odoMeter"
-							editable="false" GridPane.columnIndex="4" GridPane.rowIndex="5" />
+							editable="false" maxWidth="50" prefHeight="27.0" prefWidth="50"
+							promptText="%vehicleYear" GridPane.columnIndex="1"
+							GridPane.rowIndex="4" />
+						<Label text="%CellCount" GridPane.columnIndex="2"
+							GridPane.rowIndex="4" />
+						<TextField id="cellCount" fx:id="cellCount" editable="false"
+							maxWidth="50" prefHeight="27.0" prefWidth="50" promptText="%odoMeter"
+							GridPane.columnIndex="3" GridPane.rowIndex="4" />
 					</children>
 				</GridPane>
 			</children>
