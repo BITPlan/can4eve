@@ -229,8 +229,7 @@ public class OBDTriplet extends OBDHandler {
       int bindex = pr.d[0];
       if (bindex == 0x24) {
         double ah = (pr.d[3] * 256 + pr.d[4]) / 10.0;
-        // LOGGER.log(Level.INFO,String.format("Battery capacity is: %4.1f Ah",
-        // ah));
+        LOGGER.log(Level.INFO,String.format("Battery capacity is: %4.1f Ah",ah));
         cvh.setValue("BatteryCapacity", ah, timeStamp);
       }
       break;
@@ -632,7 +631,7 @@ public class OBDTriplet extends OBDHandler {
   public Map<String, CANData> readVehicleInfo(Vehicle vehicle)
       throws Exception {
     VehicleGroup vehicleGroup = VehicleGroup.get(vehicle.getGroup());
-    int frameLimit = 1;
+    int frameLimit = 5;
     String[] pidNames = { "Odometer_Speed", "VIN" };
     int count = 0;
     int retryCount = 0;

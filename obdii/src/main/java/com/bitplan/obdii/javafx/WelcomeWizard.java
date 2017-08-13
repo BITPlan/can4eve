@@ -240,7 +240,6 @@ public class WelcomeWizard extends JFXWizard {
         cellCount.setText(""+VIN.cellCount);
       }
     }
-
   }
 
   /**

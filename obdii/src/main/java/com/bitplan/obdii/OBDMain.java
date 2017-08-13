@@ -187,6 +187,7 @@ public class OBDMain extends Main implements OBDApp {
    * @throws Exception
    */
   public void prepareOBD(Config config) throws Exception {
+    boolean doDebug=config.isDebug()||this.debug;
     vehicleGroup = VehicleGroup.get(this.vehicleGroupName);
     switch (config.getDeviceType()) {
     case USB:
@@ -199,13 +200,13 @@ public class OBDMain extends Main implements OBDApp {
         default:
           break;
         }
-        if (config.isDebug())
+        if (doDebug)
           LOGGER.log(Level.INFO,
               "using device (direct)" +deviceName);
         obdTriplet = new OBDTriplet(vehicleGroup,
             new File(deviceName));
       } else {
-        if (config.isDebug())
+        if (doDebug)
           LOGGER.log(Level.INFO, String.format("using device %s at %6d baud",
               config.getSerialDevice(), config.getBaudRate()));
         obdTriplet = new OBDTriplet(vehicleGroup, config.getSerialDevice(),
@@ -215,17 +216,17 @@ public class OBDMain extends Main implements OBDApp {
     case Bluetooth:
       break;
     case Network:
-      if (config.isDebug())
+      if (doDebug)
         LOGGER.log(Level.INFO, String.format("using host: %s port %5d",
             config.getHostname(), config.getPort()));
       elmSocket = new Socket(config.getHostname(), config.getPort());
       obdTriplet = new OBDTriplet(vehicleGroup, elmSocket);
       break;
     case Simulator:
-      if (config.isDebug())
+      if (doDebug)
         LOGGER.log(Level.INFO, String.format(
             "Using simulator on server port %5d", ElmSimulator.DEFAULT_PORT));
-      elm = ElmSimulator.getSimulation(vehicleGroup, config.isDebug(),
+      elm = ElmSimulator.getSimulation(vehicleGroup, doDebug,
           ElmSimulator.SIMULATOR_TIMEOUT);
       obdTriplet = new OBDTriplet(vehicleGroup, elm);
       break;
@@ -243,11 +244,11 @@ public class OBDMain extends Main implements OBDApp {
     // the simulator is pre started and timeout and debug set
     // all other devices are configured here
     if (config.getDeviceType() != DeviceType.Simulator) {
-      obdTriplet.setDebug(config.isDebug());
+      obdTriplet.setDebug(doDebug);
       elm = obdTriplet.getElm327();
       Connection con = elm.getCon();
       con.setTimeout(config.getTimeout());
-      if (config.isDebug()) {
+      if (doDebug) {
         con.setLog(new LogImpl());
         // TODO preferences debug is different then connection debug!
         elm.setLog(con.getLog());
