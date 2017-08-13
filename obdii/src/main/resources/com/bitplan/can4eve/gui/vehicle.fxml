@@ -67,6 +67,11 @@
 						<TextField id="vehicleYear" fx:id="vehicleYear"
 							prefHeight="27.0" prefWidth="50" maxWidth="50" promptText="%vehicleYear"
 							editable="false" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+						<Label text="%CellCount" GridPane.columnIndex="3"
+							GridPane.rowIndex="5" />
+						<TextField id="cellCount" fx:id="cellCount"
+							prefHeight="27.0" prefWidth="50" maxWidth="50" promptText="%odoMeter"
+							editable="false" GridPane.columnIndex="4" GridPane.rowIndex="5" />
 					</children>
 				</GridPane>
 			</children>

@@ -270,9 +270,9 @@ public class OBDTriplet extends OBDHandler {
         temp_index -= 3;
       }
       // debug the index handling
-      log(pr.pid.getName(), pidindex, cmu_id, voltage_index, temp_index,
+      /*log(pr.pid.getName(), pidindex, cmu_id, voltage_index, temp_index,
           voltage1, voltage2, temp1, temp2, temp3);
-
+      */
       CANData<Double> cellVoltage = cpm.getValue("CellVoltage");
       int maxVoltageIndex = cellVoltage.getCANInfo().getMaxIndex();
       setValue(cellVoltage, voltage_index, maxVoltageIndex, voltage1,
@@ -514,7 +514,7 @@ public class OBDTriplet extends OBDHandler {
       double temp2, double temp3) {
     if (cellPrintLog == null) {
       try {
-        cellPrintLog = new PrintWriter(new File("/tmp/cells.csv"));
+        cellPrintLog = new PrintWriter(new File("/tmp/.csv"));
         cellPrintLog.println(
             "name;pidindex;cmu;voltage;temperature;voltage1;voltage2;temp1;temp2;temp3");
       } catch (FileNotFoundException e) {

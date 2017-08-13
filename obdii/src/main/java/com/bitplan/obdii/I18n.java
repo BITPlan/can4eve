@@ -113,6 +113,7 @@ public class I18n {
   public static final String PERCENT = "percent";
   // CAN Infos
   public static final String ODO_METER = "odoMeter";
+  public static final String CELL_COUNT="CellCount"; //# of Cells
   public static final String TRIP_ODO_METER = "tripOdoMeter";
   public static final String ODO_INFO = "odoInfo";
   public static final String FROM = "from";

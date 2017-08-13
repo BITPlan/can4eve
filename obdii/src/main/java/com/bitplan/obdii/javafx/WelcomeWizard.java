@@ -466,17 +466,18 @@ public class WelcomeWizard extends JFXWizard {
           Platform
               .runLater(() -> vehicleController.prepare(vehicle, carSelector));
         }
-        finishButton = findButton(ButtonType.FINISH);
-        if (finishButton != null) {
-          Platform.runLater(() -> finishButton.setDisable(true));
-        }
-        // vehicleForm= app.getFormById("preferencesGroup", "vehicleForm");
-        Task<Void> task = new Task<Void>() {
-          @Override
-          public Void call() {
-            try {
-              int progressmax = 100;
-              if (obdApp != null) {
+        if (obdApp != null) {
+          finishButton = findButton(ButtonType.FINISH);
+          if (finishButton != null) {
+            Platform.runLater(() -> finishButton.setDisable(true));
+          }
+          // vehicleForm= app.getFormById("preferencesGroup", "vehicleForm");
+          Task<Void> task = new Task<Void>() {
+            @Override
+            public Void call() {
+              try {
+                int progressmax = 100;
+
                 @SuppressWarnings("rawtypes")
 
                 Map<String, CANData> vehicleInfo = obdApp
@@ -489,18 +490,19 @@ public class WelcomeWizard extends JFXWizard {
                     finishButton.setDisable(false);
                   }
                 });
-              } else {
-                LOGGER.log(Level.WARNING,"obdApp is null");
+
+              } catch (Throwable th) {
+                Platform.runLater(() -> handleException(th));
               }
-            } catch (Throwable th) {
-              Platform.runLater(() -> handleException(th));
+              return null;
             }
-            return null;
-          }
-        };
-        vehicleController.progressBar.progressProperty()
-            .bind(task.progressProperty());
-        new Thread(task).start();
+          };
+          vehicleController.progressBar.progressProperty()
+              .bind(task.progressProperty());
+          new Thread(task).start();
+        } else {
+          LOGGER.log(Level.WARNING, "obdApp is null");
+        }
       }
     };
     addPage(vehiclePane);

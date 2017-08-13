@@ -50,7 +50,6 @@ import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.SoftwareVersion;
 import com.bitplan.can4eve.Vehicle;
 import com.bitplan.can4eve.gui.App;
-import com.bitplan.can4eve.json.AsJson;
 import com.bitplan.can4eve.json.JsonManagerImpl;
 import com.bitplan.elm327.Config;
 import com.bitplan.elm327.Config.ConfigMode;
@@ -530,7 +529,7 @@ public class TestELM327 extends TestOBDII {
   public void testCanValues() throws Exception {
     OBDHandler lOBDTriplet = new OBDTriplet(getVehicleGroup());
     List<CANValue<?>> canValues = lOBDTriplet.getCANValues();
-    assertEquals(37, canValues.size());
+    assertEquals(36, canValues.size());
 
     String names = "";
     String delim = "";
@@ -578,7 +577,7 @@ public class TestELM327 extends TestOBDII {
     //debug=true;
     OBDHandler lOBDTriplet = new OBDTriplet(getVehicleGroup());
     List<CANValue<?>> canValues = lOBDTriplet.getCANValues();
-    assertEquals(37, canValues.size());
+    assertEquals(36, canValues.size());
     for (CANValue<?> canValue : canValues) {
       for (Pid pid : canValue.canInfo.getPids()) {
         if (debug) {
