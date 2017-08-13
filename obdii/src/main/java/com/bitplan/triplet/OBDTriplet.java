@@ -25,10 +25,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -66,14 +64,12 @@ import javafx.beans.property.SimpleStringProperty;
 public class OBDTriplet extends OBDHandler {
 
   private static final double AC_POWER_FACTOR = 0.9;
-  // car parameters
-  public VINValue VIN;
-  VINValue VIN2;
-  ClimateValue climateValue;
-  StringValue ventDirection;
 
-  ShifterPositionValue shifterPositionValue;
-
+  // non standard car parameters
+  /*
+   * ClimateValue climateValue; StringValue ventDirection; ShifterPositionValue
+   * shifterPositionValue;
+   */
   /**
    * construct me
    */
@@ -146,18 +142,16 @@ public class OBDTriplet extends OBDHandler {
    */
   public void initCanValues(String... canInfoNames) {
     super.initCanValues(canInfoNames);
-    VIN = new VINValue(getCanInfo("VIN"));
-    cpm.addCanProperty(VIN, new SimpleStringProperty());
-    VIN2 = new VINValue(getCanInfo("VIN"));
-    cpm.addCanProperty(VIN2, new SimpleStringProperty());
-    climateValue = new ClimateValue(getCanInfo("Climate"));
-    cpm.addCanProperty(climateValue, new SimpleObjectProperty<Climate>());
-    ventDirection = new StringValue(getCanInfo("VentDirection"));
-    cpm.addCanProperty(ventDirection, new SimpleStringProperty());
-    shifterPositionValue = new ShifterPositionValue(
-        getCanInfo("ShifterPosition"));
-    cpm.addCanProperty(shifterPositionValue,
-        new SimpleObjectProperty<ShifterPosition>());
+    // VIN = new VINValue(getCanInfo("VIN"));
+    // cpm.addCanProperty(VIN, new SimpleObjectProperty<VINValue>());
+    // climateValue = new ClimateValue(getCanInfo("Climate"));
+    // cpm.addCanProperty(climateValue, new SimpleObjectProperty<Climate>());
+    // ventDirection = new StringValue(getCanInfo("VentDirection"));
+    // cpm.addCanProperty(ventDirection, new SimpleStringProperty());
+    // shifterPositionValue = new
+    // ShifterPositionValue(getCanInfo("ShifterPosition"));
+    // cpm.addCanProperty(shifterPositionValue,new
+    // SimpleObjectProperty<ShifterPosition>());
   }
 
   /**
@@ -167,10 +161,11 @@ public class OBDTriplet extends OBDHandler {
     initCanValues("ACAmps", "ACVolts", "ACPower", "Accelerator",
         "BatteryCapacity", "BlinkerLeft", "BlinkerRight", "BreakPedal",
         "BreakPressed", "CellCount", "CellTemperature", "CellVoltage",
-        "ChargerTemp", "DCAmps", "DCVolts", "DCPower", "DoorOpen", "HeadLight",
-        "HighBeam", "Key", "MotorTemp", "Odometer", "ParkingLight", "Range",
-        "RPM", "RPMSpeed", "SOC", "Speed", "SteeringWheelPosition",
-        "SteeringWheelMovement", "TripRounds", "TripOdo");
+        "ChargerTemp", "Climate", "DCAmps", "DCVolts", "DCPower", "DoorOpen",
+        "HeadLight", "HighBeam", "Key", "MotorTemp", "Odometer", "ParkingLight",
+        "Range", "RPM", "RPMSpeed", "ShifterPosition", "SOC", "Speed",
+        "SteeringWheelPosition", "SteeringWheelMovement", "TripRounds",
+        "TripOdo", "VentDirection", "VIN", "VIN2");
     // add all available PIDs to the available raw values
     for (Pid pid : getVehicleGroup().getPids()) {
       // FIXME - do we keep the convention for raw values?
@@ -181,7 +176,8 @@ public class OBDTriplet extends OBDHandler {
       }
       getCanRawValues().put(pid.getPid(), new CANRawValue(pidInfo));
     }
-    VIN.activate();
+    cpm.get("VIN").getCanValue().activate();
+    // VIN.activate();
     // properties
     msecsRunningProperty = new SimpleLongProperty();
     vehicleStateProperty = new SimpleObjectProperty<Vehicle.State>();
@@ -277,11 +273,13 @@ public class OBDTriplet extends OBDHandler {
       // debug the index handling
       log(pr.pid.getName(), pidindex, cmu_id, voltage_index, temp_index,
           voltage1, voltage2, temp1, temp2, temp3);
-      
+
       CANData<Double> cellVoltage = cpm.getValue("CellVoltage");
-      int maxVoltageIndex=cellVoltage.getCANInfo().getMaxIndex();
-      setValue(cellVoltage,voltage_index,maxVoltageIndex, voltage1, timeStamp);
-      setValue(cellVoltage,voltage_index + 1,maxVoltageIndex, voltage2, timeStamp);
+      int maxVoltageIndex = cellVoltage.getCANInfo().getMaxIndex();
+      setValue(cellVoltage, voltage_index, maxVoltageIndex, voltage1,
+          timeStamp);
+      setValue(cellVoltage, voltage_index + 1, maxVoltageIndex, voltage2,
+          timeStamp);
 
       CANData<Double> cellTemperature = cpm.getValue("CellTemperature");
       int maxTempIndex = cellTemperature.getCANInfo().getMaxIndex();
@@ -292,14 +290,16 @@ public class OBDTriplet extends OBDHandler {
             timeStamp);
         break;
       case "CellInfo2":
-        setValue(cellTemperature,temp_index,maxTempIndex, temp1, timeStamp);
+        setValue(cellTemperature, temp_index, maxTempIndex, temp1, timeStamp);
         if (cmu_id != 6 && cmu_id != 12)
-          setValue(cellTemperature,temp_index + 1,maxTempIndex, temp2, timeStamp);
+          setValue(cellTemperature, temp_index + 1, maxTempIndex, temp2,
+              timeStamp);
         break;
       case "CellInfo3":
-        setValue(cellTemperature,temp_index, maxTempIndex,temp1, timeStamp);
+        setValue(cellTemperature, temp_index, maxTempIndex, temp1, timeStamp);
         if (cmu_id != 6 && cmu_id != 12) {
-          setValue(cellTemperature,temp_index + 1,maxTempIndex, temp2, timeStamp);
+          setValue(cellTemperature, temp_index + 1, maxTempIndex, temp2,
+              timeStamp);
         }
       default:
         // ignore
@@ -344,9 +344,10 @@ public class OBDTriplet extends OBDHandler {
         ventDir = "windshield";
         break;
       }
-      ventDirection.setValue(String.format("%s(%d)", ventDir, ventDirVal),
-          timeStamp);
-      climateValue.setValue(climate, timeStamp);
+      // TODO create type e.g. for internationalization
+      String ventDirection = String.format("%s(%d)", ventDir, ventDirVal);
+      cvh.setValue("VentDirection", ventDirection, timeStamp);
+      cvh.setValue("Climate", climate, timeStamp);
       break;
     case "Key":
       int keyVal = pr.d[0];
@@ -423,7 +424,7 @@ public class OBDTriplet extends OBDHandler {
       break;
     case "ShifterPosition":
       ShifterPosition newShifterPosition = new ShifterPosition(pr.d[0]);
-      shifterPositionValue.setValue(newShifterPosition, timeStamp);
+      cvh.setValue("ShifterPosition",newShifterPosition, timeStamp);
       if (newShifterPosition.shiftPosition == ShiftPosition.P) {
         this.vehicleStateProperty.set(Vehicle.State.Parking);
         // are we charging?
@@ -452,9 +453,12 @@ public class OBDTriplet extends OBDHandler {
     case "VIN":
       int indexVal = pr.d[0];
       String partVal = pr.getString(1);
+      CANProperty<CANValue<VINValue>, VINValue> vinProperty = cpm.get("VIN");
+      Object vinValue = vinProperty.getCanValue();
+      VINValue VIN = (VINValue) vinValue;
       VIN.set(indexVal, partVal, timeStamp);
       if (VIN.getValueItem().isAvailable()) {
-        cvh.setValue("VIN", VIN.asString(), timeStamp);
+        cvh.setValue("VIN", VIN, timeStamp);
         cvh.setValue("CellCount", VIN.getCellCount(), timeStamp);
       }
       break;
@@ -462,7 +466,12 @@ public class OBDTriplet extends OBDHandler {
     case "VIN2":
       int v2indexVal = pr.d[0];
       String v2partVal = pr.getString();
-      VIN2.set(v2indexVal, v2partVal, timeStamp);
+      CANProperty<CANValue<VINValue>, VINValue> vinProperty2 = cpm.get("VIN2");
+      Object vinValue2 = vinProperty2.getCanValue().getValue();
+      VINValue VIN2 = (VINValue) vinValue2;
+      // TODO check why this can be null
+      if (VIN2 != null)
+        VIN2.set(v2indexVal, v2partVal, timeStamp);
       break;
     default:
       // ignore - this case is handled by the raw values below
@@ -475,7 +484,9 @@ public class OBDTriplet extends OBDHandler {
   }
 
   /**
-   * set the value of the given data at the proposed index checking not to overrunt he maximum index
+   * set the value of the given data at the proposed index checking not to
+   * overrunt he maximum index
+   * 
    * @param data
    * @param index
    * @param maxIndex
@@ -485,15 +496,15 @@ public class OBDTriplet extends OBDHandler {
   private void setValue(CANData<Double> data, int index, int maxIndex,
       double value, Date timeStamp) {
     if (index < maxIndex) {
-      if (data.getCANInfo().getMaxValue()!=null) {
-        if (value>data.getCANInfo().getMaxValue())
+      if (data.getCANInfo().getMaxValue() != null) {
+        if (value > data.getCANInfo().getMaxValue())
           return;
       }
-      if (data.getCANInfo().getMinValue()!=null) {
-        if (value<data.getCANInfo().getMinValue())
+      if (data.getCANInfo().getMinValue() != null) {
+        if (value < data.getCANInfo().getMinValue())
           return;
       }
-      data.setValue(index,value, timeStamp);
+      data.setValue(index, value, timeStamp);
     }
   }
 
@@ -610,32 +621,32 @@ public class OBDTriplet extends OBDHandler {
 
   /**
    * read the vehicle Info
+   * 
    * @param vehicle
-   * @return 
-   * @throws Exception 
+   * @return
+   * @throws Exception
    */
   @SuppressWarnings("rawtypes")
-  public Map<String, CANData> readVehicleInfo(Vehicle vehicle) throws Exception {
-    VehicleGroup vehicleGroup=VehicleGroup.get(vehicle.getGroup());  
-    int frameLimit=1;
-    String[] pidNames={"Odometer_Speed","VIN"};
-    for (String pidName:pidNames) {
-      Pid pid=vehicleGroup.getPidByName(pidName);
+  public Map<String, CANData> readVehicleInfo(Vehicle vehicle)
+      throws Exception {
+    VehicleGroup vehicleGroup = VehicleGroup.get(vehicle.getGroup());
+    int frameLimit = 1;
+    String[] pidNames = { "Odometer_Speed", "VIN" };
+    for (String pidName : pidNames) {
+      Pid pid = vehicleGroup.getPidByName(pidName);
       monitorPid(pid.getPid(), frameLimit * 3);
     }
-    Map<String, CANProperty> props = cpm.getCANProperties("VIN","Odometer");
+    Map<String, CANProperty> props = cpm.getCANProperties("VIN", "Odometer");
     /*
-    List<CANValue<?>> vehicleValues=new ArrayList<CANValue<?>>();
-    for (CANProperty prop:props.values()) {
-      vehicleValues.add(prop.getCanValue());
-    }
-    int frameLimit=props.size()*15;
-    this.pidMonitor(vehicleValues, frameLimit);
-    */
-    Map<String,CANData> result=new HashMap<String,CANData>();
-    for (Entry<String, CANProperty> propentry:props.entrySet()) {
+     * List<CANValue<?>> vehicleValues=new ArrayList<CANValue<?>>(); for
+     * (CANProperty prop:props.values()) {
+     * vehicleValues.add(prop.getCanValue()); } int frameLimit=props.size()*15;
+     * this.pidMonitor(vehicleValues, frameLimit);
+     */
+    Map<String, CANData> result = new HashMap<String, CANData>();
+    for (Entry<String, CANProperty> propentry : props.entrySet()) {
       CANProperty prop = propentry.getValue();
-      result.put(propentry.getKey(),prop);
+      result.put(propentry.getKey(), prop);
     }
     return result;
   }

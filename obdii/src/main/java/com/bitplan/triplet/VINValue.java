@@ -35,6 +35,10 @@ import com.bitplan.can4eve.json.AsJson;
  */
 public class VINValue extends CANValue<String> implements AsJson {
 
+  /**
+   * construct me
+   * @param canInfo
+   */
   public VINValue(CANInfo canInfo) {
     super(canInfo, String.class);
   }
@@ -117,6 +121,9 @@ public class VINValue extends CANValue<String> implements AsJson {
     
   }
 
+  /**
+   * get my string representation
+   */
   public String asString() {
     String result = "?";
     if (getValueItem().isAvailable()) {

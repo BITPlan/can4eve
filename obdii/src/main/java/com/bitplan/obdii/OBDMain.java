@@ -22,10 +22,12 @@ package com.bitplan.obdii;
 
 import java.io.File;
 import java.net.Socket;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.kohsuke.args4j.Option;
 
+import com.bitplan.can4eve.CANData;
 import com.bitplan.can4eve.Vehicle;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.gui.App;
@@ -170,10 +172,12 @@ public class OBDMain extends Main implements OBDApp {
     return elm;
   }
   
+  @SuppressWarnings("rawtypes")
   @Override
-  public void readVehicleInfo(Config config,Vehicle vehicle) throws Exception {
+  public Map<String, CANData> readVehicleInfo(Config config,Vehicle vehicle) throws Exception {
     prepareOBD(config);
-    obdTriplet.readVehicleInfo(vehicle);
+    Map<String, CANData> vehicleInfo = obdTriplet.readVehicleInfo(vehicle);
+    return vehicleInfo;
   }
 
   /**

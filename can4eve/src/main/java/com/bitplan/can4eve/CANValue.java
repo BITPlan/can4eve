@@ -86,7 +86,7 @@ public abstract class CANValue<ValueType> implements CANData<ValueType> {
     return canInfo;
   };
 
-  ValueItem<ValueType> valueItem = new ValueItem<ValueType>();
+  transient ValueItem<ValueType> valueItem = new ValueItem<ValueType>();
   private transient List<CANValueItem<ValueType>> valueItems = new ArrayList<CANValueItem<ValueType>>(); // for
                                                                                                // indexed                                                                                   // CANValues
 

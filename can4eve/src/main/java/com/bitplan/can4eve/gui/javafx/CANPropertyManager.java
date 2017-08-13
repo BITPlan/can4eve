@@ -20,6 +20,7 @@
  */
 package com.bitplan.can4eve.gui.javafx;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -32,6 +33,7 @@ import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.BooleanValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.CANValue.IntegerValue;
+import com.bitplan.can4eve.CANValue.StringValue;
 import com.bitplan.can4eve.CANValueHandler;
 import com.bitplan.can4eve.VehicleGroup;
 
@@ -39,6 +41,8 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 
 /**
  * manager for the properties/CANInfos of a vehicleGroup
@@ -47,13 +51,16 @@ import javafx.beans.property.SimpleIntegerProperty;
  *
  */
 public class CANPropertyManager implements CANValueHandler {
+  @SuppressWarnings("rawtypes")
   private Map<String, CANProperty> canProperties = new HashMap<String, CANProperty>();
   VehicleGroup vehicleGroup;
 
+  @SuppressWarnings("rawtypes")
   public Map<String, CANProperty> getCanProperties() {
     return canProperties;
   }
 
+  @SuppressWarnings("rawtypes")
   public void setCanProperties(Map<String, CANProperty> canProperties) {
     this.canProperties = canProperties;
   }
@@ -74,6 +81,7 @@ public class CANPropertyManager implements CANValueHandler {
    * @return the list
    * @throws Exception
    */
+  @SuppressWarnings("rawtypes")
   public Map<String, CANProperty> getCANProperties(String... canInfoNames)
       throws Exception {
     Map<String, CANProperty> properties = new HashMap<String, CANProperty>();
@@ -92,16 +100,20 @@ public class CANPropertyManager implements CANValueHandler {
    * @param canInfoName
    * @return
    */
-  public CANProperty addValue(final String canInfoName) {
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  public <T> CANProperty addValue(final String canInfoName) {
     CANInfo canInfo = vehicleGroup.getCANInfoByName(canInfoName);
     String type = canInfo.getType();
     Class<CANValue<?>> clazz = null;
-    CANValue<?> canValue = null;
+    CANValue<T> canValue = null;
     if (type == null)
       throw new RuntimeException(
           String.format("invalid CANInfo configuration %s - type not specified",
               canInfoName));
-    if (type.equals("DoubleValue")) {
+    if (type.equals("StringValue")) {
+      StringValue stringValue = new StringValue(canInfo);
+      addValue(stringValue);
+    } else if (type.equals("DoubleValue")) {
       DoubleValue doubleValue = new DoubleValue(canInfo);
       addValue(doubleValue);
     } else if (type.equals("IntegerValue")) {
@@ -111,6 +123,8 @@ public class CANPropertyManager implements CANValueHandler {
       BooleanValue booleanValue = new BooleanValue(canInfo);
       addValue(booleanValue);
     } else {
+      // handle generic vehicle specific CANValue types
+      // the type is taken from the json specification
       try {
         clazz = (Class<CANValue<?>>) Class.forName(type);
       } catch (ClassNotFoundException e) {
@@ -119,7 +133,10 @@ public class CANPropertyManager implements CANValueHandler {
                 canInfoName, type));
       }
       try {
-        canValue = clazz.newInstance();
+        Constructor<CANValue<?>> constructor = clazz
+            .getDeclaredConstructor(CANInfo.class);
+        canValue = (CANValue<T>) constructor.newInstance(canInfo);
+        addValue(canValue);
       } catch (Throwable th) {
         throw new RuntimeException(String.format(
             "invalid CANInfo configuration %s - can not instantiate type %s - error %s",
@@ -134,6 +151,16 @@ public class CANPropertyManager implements CANValueHandler {
     return result;
   }
 
+  /**
+   * add the given string Value
+   * @param stringValue
+   * @return - the value
+   */
+  public StringValue addValue(StringValue stringValue) {
+    this.addCanProperty(stringValue, new SimpleStringProperty());
+    return stringValue;
+  }
+  
   /**
    * add the given Value
    * 
@@ -165,6 +192,17 @@ public class CANPropertyManager implements CANValueHandler {
   public BooleanValue addValue(BooleanValue booleanValue) {
     this.addCanProperty(booleanValue, new SimpleBooleanProperty());
     return booleanValue;
+  }
+
+  /**
+   * add the given canValue
+   * 
+   * @param canValue
+   * @return it
+   */
+  public <T> CANValue<T> addValue(CANValue<T> canValue) {
+    this.addCanProperty(canValue, new SimpleObjectProperty<T>());
+    return canValue;
   }
 
   /**
@@ -220,6 +258,19 @@ public class CANPropertyManager implements CANValueHandler {
     getCanProperties().put(canValue.canInfo.getName(), canProperty);
   }
 
+  /**
+   * add the given property
+   * 
+   * @param canValue
+   * @param property
+   */
+  public <T> void addCanProperty(CANValue<T> canValue,
+      SimpleObjectProperty<T> property) {
+    CANProperty<CANValue<T>, T> canProperty = new CANProperty<CANValue<T>, T>(
+        canValue, property);
+    getCanProperties().put(canValue.canInfo.getName(), canProperty);
+  }
+
   @SuppressWarnings("unchecked")
   @Override
   public <T> void setValue(String name, T value, Date timeStamp) {
@@ -232,6 +283,7 @@ public class CANPropertyManager implements CANValueHandler {
    * @param CANInfoName
    * @return
    */
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   public <CT extends CANValue<T>, T> CANProperty<CT, T> get(
       String CANInfoName) {
     CANProperty result = getCanProperties().get(CANInfoName);
@@ -243,6 +295,7 @@ public class CANPropertyManager implements CANValueHandler {
    * 
    * @return
    */
+  @SuppressWarnings("rawtypes")
   public List<CANValue<?>> getCANValues() {
     List<CANValue<?>> canValues = new ArrayList<CANValue<?>>();
     for (CANProperty canProperty : this.canProperties.values()) {

@@ -23,12 +23,13 @@ package com.bitplan.obdii.javafx;
 import java.net.URL;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.controlsfx.dialog.Wizard;
 
+import com.bitplan.can4eve.CANData;
 import com.bitplan.can4eve.Vehicle;
-import com.bitplan.can4eve.gui.javafx.ExceptionController;
 import com.bitplan.elm327.Config;
 import com.bitplan.elm327.OBDException;
 import com.bitplan.elm327.SerialImpl;
@@ -36,6 +37,7 @@ import com.bitplan.i18n.Translator;
 import com.bitplan.obdii.I18n;
 import com.bitplan.obdii.OBDApp;
 import com.bitplan.obdii.elm327.ELM327;
+import com.bitplan.triplet.VINValue;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -86,7 +88,7 @@ public class WelcomeWizard extends JFXWizard {
   private Config config;
   private JFXWizardPane vehiclePane;
   SerialController serialController;
-  Vehicle vehicle=null;
+  Vehicle vehicle = null;
 
   public static class NetworkController implements Initializable {
     @FXML
@@ -190,6 +192,10 @@ public class WelcomeWizard extends JFXWizard {
     @FXML
     TextField model;
     @FXML
+    TextField vehicleYear;
+    @FXML
+    TextField vehicleManufacturer;
+    @FXML
     ImageView vehicleImage;
 
     @Override
@@ -198,6 +204,7 @@ public class WelcomeWizard extends JFXWizard {
 
     /**
      * prepare this view with the given vehicle Data
+     * 
      * @param vehicle
      * @param imageSelector
      */
@@ -205,6 +212,19 @@ public class WelcomeWizard extends JFXWizard {
       model.setText(vehicle.getModel());
       ImageView imageView = imageSelector.getImageView(vehicle.getModel());
       vehicleImage.setImage(imageView.getImage());
+    }
+
+    @SuppressWarnings("rawtypes")
+    public void showVehicleInfo(Map<String, CANData> vehicleInfo, JFXWizardPane page) {
+      CANData<VINValue> vinInfo = vehicleInfo.get("VIN");
+      VINValue VIN = vinInfo.getValue();
+      if (VIN == null) {
+        page.handleException(new Exception(I18n.get(I18n.VEHICLE_VIN_PROBLEM)));
+      } else {
+        vin.setText(VIN.vin);
+        vehicleYear.setText("" + VIN.year);
+        vehicleManufacturer.setText(VIN.manufacturer + "/" + VIN.factory);
+      }
     }
 
   }
@@ -258,8 +278,8 @@ public class WelcomeWizard extends JFXWizard {
       @Override
       public void onExitingPage(Wizard wizard) {
         super.onExitingPage(wizard);
-        if (vehicle==null) {
-          vehicle=Vehicle.getInstance();
+        if (vehicle == null) {
+          vehicle = Vehicle.getInstance();
         }
         vehicle.setModel(carSelector.getSelection());
         if ("Mitsubishi Outlander PHEV".equals(vehicle.getModel())) {
@@ -268,7 +288,7 @@ public class WelcomeWizard extends JFXWizard {
           vehicle.setGroup("triplet");
         }
       }
-      
+
     };
     addPage(carPane, "http://can4eve.bitplan.com/index.php/Help/VehicleTypes");
 
@@ -343,18 +363,6 @@ public class WelcomeWizard extends JFXWizard {
         I18n.WELCOME_TEST_RESULT) {
       ConnectionTestController testController;
       private Button nextButton = null;
-
-      /**
-       * handle an exception in the test
-       * 
-       * @param th
-       */
-      public void handleException(Throwable th) {
-        load("exception");
-        setI18nTitle(I18n.PROBLEM_OCCURED);
-        ExceptionController exceptionController = (ExceptionController) conTestResultPane.controller;
-        exceptionController.handleException(th);
-      }
 
       @Override
       public void onEnteringPage(Wizard wizard) {
@@ -440,7 +448,8 @@ public class WelcomeWizard extends JFXWizard {
       }
     };
 
-    addPage(conTestResultPane,"http://can4eve.bitplan.com/index.php/Help/ConnectionTest");
+    addPage(conTestResultPane,
+        "http://can4eve.bitplan.com/index.php/Help/ConnectionTest");
 
     vehiclePane = new JFXWizardPane(this, 6, steps, I18n.WELCOME_VEHICLE) {
       private VehicleController vehicleController;
@@ -452,9 +461,10 @@ public class WelcomeWizard extends JFXWizard {
         if (vehicleController == null) {
           load("vehicle");
           vehicleController = (VehicleController) controller;
-          Platform.runLater(()->vehicleController.prepare(vehicle,carSelector));
+          Platform
+              .runLater(() -> vehicleController.prepare(vehicle, carSelector));
         }
-        finishButton = findButton(ButtonType.NEXT);
+        finishButton = findButton(ButtonType.FINISH);
         if (finishButton != null) {
           Platform.runLater(() -> finishButton.setDisable(true));
         }
@@ -463,11 +473,20 @@ public class WelcomeWizard extends JFXWizard {
           @Override
           public Void call() {
             try {
-              WelcomeWizard.this.obdApp
-              .readVehicleInfo(config, vehicle);
-            } catch (Exception e) {
-              // TODO Auto-generated catch block
-              e.printStackTrace();
+              int progressmax = 100;
+              @SuppressWarnings("rawtypes")
+              Map<String, CANData> vehicleInfo = WelcomeWizard.this.obdApp
+                  .readVehicleInfo(config, vehicle);
+              this.updateProgress(progressmax, progressmax);
+              Platform.runLater(
+                  () -> vehicleController.showVehicleInfo(vehicleInfo,vehiclePane));
+              Platform.runLater(() -> {
+                if (finishButton != null) {
+                  finishButton.setDisable(false);
+                }
+              });
+            } catch (Throwable th) {
+              Platform.runLater(() -> handleException(th));
             }
             return null;
           }

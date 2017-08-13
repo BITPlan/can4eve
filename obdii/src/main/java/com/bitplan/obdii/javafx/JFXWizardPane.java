@@ -34,6 +34,7 @@ import org.controlsfx.glyphfont.GlyphFontRegistry;
 
 import com.bitplan.can4eve.ErrorHandler;
 import com.bitplan.can4eve.gui.Linker;
+import com.bitplan.can4eve.gui.javafx.ExceptionController;
 import com.bitplan.i18n.Translator;
 import com.bitplan.obdii.I18n;
 
@@ -73,7 +74,7 @@ public class JFXWizardPane extends WizardPane {
   private GlyphFont fontAwesome;
   private JFXWizard wizard;
   private Button helpButton;
-  private GridPane gridPane;
+  private ConstrainedGridPane gridPane;
   private Node contentNode;
   private static ButtonType helpButtonType;
 
@@ -119,7 +120,9 @@ public class JFXWizardPane extends WizardPane {
           ButtonBar.ButtonData.HELP);
     this.setStep(step);
     this.setSteps(steps);
-    gridPane=new GridPane();
+    gridPane=new ConstrainedGridPane();
+    gridPane.fixColumnSizes(0, 100);
+    gridPane.fixRowSizes(0,100);
     setContent(gridPane);
     this.setI18nTitle(i18nTitle);
   }
@@ -262,11 +265,32 @@ public class JFXWizardPane extends WizardPane {
     }
   }
   
+  /**
+   * set the Content (since setContent of DialogPane is final this function has a different name)
+   * this is a work around to have room for a help button so a grid is interwoven between the dialogpane
+   * and the content we'd like to show
+   * @param parent
+   */
   public void setContentNode(Node parent) {
     if (contentNode!=null)
       gridPane.getChildren().remove(contentNode);
     gridPane.add(parent, 0, 0);
     contentNode=parent;
+    // resize the dialog
+    // https://stackoverflow.com/a/31208445/1497139
+    this.wizard.getPrivateDialog().getDialogPane().getScene().getWindow().sizeToScene();
+  }
+  
+  /**
+   * handle an Exception or a Throwable
+   * 
+   * @param th
+   */
+  public void handleException(Throwable th) {
+    load("exception");
+    setI18nTitle(I18n.PROBLEM_OCCURED);
+    ExceptionController exceptionController = (ExceptionController) controller;
+    exceptionController.handleException(th);
   }
   
   /**

@@ -10,7 +10,7 @@
 <?import javafx.scene.text.Font?>
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-	minWidth="-Infinity" prefHeight="300.0" prefWidth="520.0"
+	minWidth="-Infinity" prefHeight="280.0" prefWidth="520.0"
 	xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="com.bitplan.obdii.javafx.WelcomeWizard$ConnectionTestController">
 	<children>
@@ -29,12 +29,12 @@
 			<children>
 				<ProgressBar fx:id="progressBar" prefHeight="20.0"
 					prefWidth="500.0" progress="0.0" GridPane.columnSpan="2147483647" />
-				<TextArea fx:id="textArea" prefHeight="180.0" prefWidth="250.0"
+				<TextArea fx:id="textArea" prefHeight="160.0" prefWidth="250.0"
 					GridPane.columnIndex="0" GridPane.rowIndex="1" />
 				<ImageView id="obdImage" fx:id="obdImage" fitHeight="73.0"
 					fitWidth="173.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
 				</ImageView>
-				<TextArea fx:id="hint" prefHeight="70.0" prefWidth="500.0"
+				<TextArea fx:id="hint" prefHeight="50.0" prefWidth="500.0"
 					wrapText="true" GridPane.columnSpan="2147483647" GridPane.rowIndex="2">
 					<font>
 						<Font size="16.0" />

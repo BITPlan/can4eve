@@ -29,59 +29,24 @@ import com.bitplan.i18n.Translator;
  *
  */
 public class I18n {
-  public static final String ADDRESS_ALREADY_IN_USE = "addressAlreadyInUse"; // Could
-                                                                             // not
-                                                                             // start
-                                                                             // Simulator
-                                                                             // -
-                                                                             // did
-                                                                             // you
-                                                                             // start
-                                                                             // the
-                                                                             // software
-                                                                             // twice?
+  public static final String ADDRESS_ALREADY_IN_USE = "addressAlreadyInUse"; 
   public static final String HELP = "help"; // Help
   public static final String INVALID_CONFIGURATION = "invalid_configuration";
-  public static final String NEWLANGUAGE_RESTART = "newlanguage_restart"; // To
-                                                                          // get
-                                                                          // the
-                                                                          // full
-                                                                          // effect
-                                                                          // of
-                                                                          // the
-                                                                          // change
-                                                                          // a
-                                                                          // restart
-                                                                          // of
-                                                                          // the
-                                                                          // application
-                                                                          // is
-                                                                          // necessary!
+  public static final String NEWLANGUAGE_RESTART = "newlanguage_restart"; 
   public static final String APP_NAME = "appName"; // can4eve
   public static final String HELP_MENU = "helpMenu"; // Help
   public static final String HELP_ABOUT_MENU_ITEM = "helpAboutMenuItem"; // About
-  public static final String HELP_HELP_MENU_ITEM = "helpHelpMenuItem"; // can4eve
-                                                                       // Hilfe
-  public static final String HELP_FEEDBACK_MENU_ITEM = "helpFeedbackMenuItem"; // send
-                                                                               // Feedback
-                                                                               // ...
-  public static final String HELP_BUG_REPORT_MENU_ITEM = "helpBugReportMenuItem"; // create
-                                                                                  // Bugreport
-                                                                                  // ...
+  public static final String HELP_HELP_MENU_ITEM = "helpHelpMenuItem"; 
+  public static final String HELP_FEEDBACK_MENU_ITEM = "helpFeedbackMenuItem"; 
+  public static final String HELP_BUG_REPORT_MENU_ITEM = "helpBugReportMenuItem"; 
 
   public static final String SETTINGS_MENU = "settingsMenu"; // Settings
   public static final String SETTINGS_PREFERENCES_MENU_ITEM = "settingsPreferencesMenuItem"; // Preferences
   public static final String SETTINGS_SETTINGS_MENU_ITEM = "settingsSettingsMenuItem"; // OBDII
   public static final String SETTINGS_WELCOME_MENU_ITEM = "settingsWelcomeMenuItem"; // Wizard
   public static final String MENU = "Menu"; // Menu
-  public static final String LANGUAGE_CHANGED_TITLE = "language_changed_title"; // New
-                                                                                // language
-  public static final String LANGUAGE_CHANGED = "language_changed"; // You have
-                                                                    // selected
-                                                                    // english
-                                                                    // as your
-                                                                    // new
-                                                                    // language
+  public static final String LANGUAGE_CHANGED_TITLE = "language_changed_title"; 
+  public static final String LANGUAGE_CHANGED = "language_changed"; 
   public static final String FILE_MENU = "fileMenu"; // File
   public static final String FILE_SAVE_MENU_ITEM = "fileSaveMenuItem"; // Save
   public static final String FILE_CLOSE_MENU_ITEM = "fileCloseMenuItem"; // Close
@@ -100,9 +65,7 @@ public class I18n {
   public static final String HALTED = "halted";
   public static final String OBD_MENU = "obdMenu"; // OBD
   public static final String OBD_START_MENU_ITEM = "obdStartMenuItem"; // Start
-  public static final String OBD_START_WITH_LOG_MENU_ITEM = "obdStartWithLogMenuItem"; // Start
-                                                                                       // with
-                                                                                       // Log
+  public static final String OBD_START_WITH_LOG_MENU_ITEM = "obdStartWithLogMenuItem"; 
   public static final String OBD_HALT_MENU_ITEM = "obdHaltMenuItem"; // Halt
   public static final String OBD_TEST_MENU_ITEM = "obdTestMenuItem"; // Test
   public static final String SORRY = "sorry";
@@ -172,11 +135,16 @@ public class I18n {
   public static final String CONNECTION_REFUSED = "connectionRefused";
   public static final String NETWORK_IS_UNREACHABLE = "networkIsUnreachable";
   public static final String OBD_EXCEPTION = "obdException";
-  public static final String SERIAL_DEVICE_TOOLTIP = "serialDeviceTooltip"; 
-  public static final String BAUD_RATE_TOOLTIP = "baudRateTooltip"; 
+  public static final String SERIAL_DEVICE_TOOLTIP = "serialDeviceTooltip";
+  public static final String BAUD_RATE_TOOLTIP = "baudRateTooltip";
   public static final String DIRECT_SERIAL_TOOLTIP = "directSerialTooltip";
-  public static final String HOSTNAME_TOOLTIP = "hostnameTooltip"; 
-  public static final String PORT_TOOLTIP = "portTooltip"; 
+  public static final String HOSTNAME_TOOLTIP = "hostnameTooltip";
+  public static final String PORT_TOOLTIP = "portTooltip";
+  public static final String VEHICLE_MODEL="vehicleModel"; //model
+  public static final String MAX_SPEED="maxSpeed"; //maximum Speed (km/h)
+  public static final String VEHICLE_YEAR="vehicleYear"; //year
+  public static final String VEHICLE_MANUFACTURER="vehicleManufacturer"; //manufacturer
+  public static final String VEHICLE_VIN_PROBLEM="vehicleVinProblem";
   /**
    * Translate the given text
    * 

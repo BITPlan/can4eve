@@ -405,7 +405,7 @@
           "title": "Climate",
           "description": "Climate and Heating settings",
           "format": "%s",
-          "type": "ClimateValue",
+          "type": "com.bitplan.triplet.ClimateValue",
           "historyValuesPerMinute": 5,
           "maxIndex": 0
         },
@@ -709,7 +709,7 @@
           "title": "Shifter",
           "description": "Shifter position",
           "format": "%s",
-          "type": "ShifterPositionValue",
+          "type": "com.bitplan.triplet.ShifterPositionValue",
           "historyValuesPerMinute": 60,
           "maxIndex": 0
         }
@@ -772,7 +772,7 @@
           "title": "VIN",
           "description": "Vehicle Identification number",
           "format": "%20s",
-          "type": "VINValue",
+          "type": "com.bitplan.triplet.VINValue",
           "historyValuesPerMinute": 0,
           "maxIndex": 0
         },
@@ -808,7 +808,7 @@
           "title": "VIN2",
           "description": "Vehicle Identification number 2",
           "format": "%20s",
-          "type": "VINValue",
+          "type": "com.bitplan.triplet.VINValue",
           "historyValuesPerMinute": 0,
           "maxIndex": 0
         }

@@ -50,6 +50,8 @@ import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.SoftwareVersion;
 import com.bitplan.can4eve.Vehicle;
 import com.bitplan.can4eve.gui.App;
+import com.bitplan.can4eve.json.AsJson;
+import com.bitplan.can4eve.json.JsonManagerImpl;
 import com.bitplan.elm327.Config;
 import com.bitplan.elm327.Config.ConfigMode;
 import com.bitplan.elm327.Connection;
@@ -62,6 +64,7 @@ import com.bitplan.obdii.elm327.LogReader;
 import com.bitplan.obdii.javafx.JavaFXDisplay;
 import com.bitplan.triplet.OBDTriplet;
 import com.bitplan.triplet.VINValue;
+import com.google.gson.Gson;
 
 import javafx.application.Platform;
 
@@ -276,7 +279,8 @@ public class TestELM327 extends TestOBDII {
     CANData<Double> steeringWheelMovement = obdTriplet
         .getValue("SteeringWheelMovement");
     assertEquals(new Double(2.5), steeringWheelMovement.getValue(), 0.01);
-    assertEquals("VF31NZKYZHU900769", obdTriplet.VIN.getValue());
+    CANData<VINValue> VIN = obdTriplet.getValue("VIN");
+    assertEquals("VF31NZKYZHU900769", VIN.getValue().vin);
     obdTriplet.close();
     // display.waitClose();
     display.close();
@@ -526,7 +530,7 @@ public class TestELM327 extends TestOBDII {
   public void testCanValues() throws Exception {
     OBDHandler lOBDTriplet = new OBDTriplet(getVehicleGroup());
     List<CANValue<?>> canValues = lOBDTriplet.getCANValues();
-    assertEquals(36, canValues.size());
+    assertEquals(37, canValues.size());
 
     String names = "";
     String delim = "";
@@ -571,10 +575,10 @@ public class TestELM327 extends TestOBDII {
 
   @Test
   public void testGetPidList() throws Exception {
-    // debug=true;
+    //debug=true;
     OBDHandler lOBDTriplet = new OBDTriplet(getVehicleGroup());
     List<CANValue<?>> canValues = lOBDTriplet.getCANValues();
-    assertEquals(36, canValues.size());
+    assertEquals(37, canValues.size());
     for (CANValue<?> canValue : canValues) {
       for (Pid pid : canValue.canInfo.getPids()) {
         if (debug) {
@@ -653,7 +657,6 @@ public class TestELM327 extends TestOBDII {
     tripRounds.integrate(rpm1, date1, rpm2, date2, 1 / 60000.0);
     assertEquals(50.0, tripRounds.getValueItem().getValue(), 0.1);
   }
-  
 
   @SuppressWarnings("rawtypes")
   @Test
@@ -671,12 +674,28 @@ public class TestELM327 extends TestOBDII {
         if (canData.isAvailable()) {
           CANInfo canInfo = canData.getCANInfo();
           Object value = canData.getValue();
-          System.out.println(String.format("%10s (%25s)=%s (%s)",
-              vehicleData.getKey(), canInfo.getDescription(), value,
-              value.getClass().getSimpleName()));
-          System.out.println(canData.asJson());
+          if (debug)
+            System.out.println(String.format("%10s (%25s)=%s (%s)",
+                vehicleData.getKey(), canInfo.getDescription(), value,
+                value.getClass().getSimpleName()));
+          // System.out.println(value.asJson());
         }
       }
+      @SuppressWarnings("unchecked")
+      CANData<VINValue> vinData = vehicleInfo.get("VIN");
+      VINValue VIN = vinData.getValue();
+      String json = VIN.asJson();
+      if (debug)
+        System.out.println(json);
+      Gson gson = JsonManagerImpl.getGsonStatic();
+      VINValue vinValue = gson.fromJson(json, VINValue.class);
+      assertNotNull(vinValue);
+      assertEquals(2017, vinValue.year);
+      assertEquals("Mizushima", vinValue.factory);
+      assertEquals("VF3", vinValue.wmi);
+      assertEquals("Peugeot", vinValue.manufacturer);
+      assertEquals(80, vinValue.cellCount);
+      assertEquals("VF31NZKYZHU900769", vinValue.vin);
     }
 
   }

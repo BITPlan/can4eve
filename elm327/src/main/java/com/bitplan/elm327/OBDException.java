@@ -51,4 +51,12 @@ public class OBDException extends Exception {
     this.setResponse(response);
   }
 
+  /**
+   * an OBD Exception without a specific response package
+   * @param msg
+   */
+  public OBDException(String msg) {
+    this(msg,null);
+  }
+
 }
