@@ -36,7 +36,6 @@ import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.CANRawValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
-import com.bitplan.can4eve.CANValue.StringValue;
 import com.bitplan.can4eve.CANValueHandler;
 import com.bitplan.can4eve.ErrorHandler;
 import com.bitplan.can4eve.Pid;
@@ -52,7 +51,6 @@ import com.bitplan.triplet.ShifterPosition.ShiftPosition;
 
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 
 /**
  * Handles OBD II communication for the Triplet cars Mitsubishi i-Miev, Peugeot
@@ -165,7 +163,8 @@ public class OBDTriplet extends OBDHandler {
         "HeadLight", "HighBeam", "Key", "MotorTemp", "Odometer", "ParkingLight",
         "Range", "RPM", "RPMSpeed", "ShifterPosition", "SOC", "Speed",
         "SteeringWheelPosition", "SteeringWheelMovement", "TripRounds",
-        "TripOdo", "VentDirection", "VIN", "VIN2");
+        "TripOdo", "VentDirection", "VIN");
+    // VIN2 is not used...
     // add all available PIDs to the available raw values
     for (Pid pid : getVehicleGroup().getPids()) {
       // FIXME - do we keep the convention for raw values?

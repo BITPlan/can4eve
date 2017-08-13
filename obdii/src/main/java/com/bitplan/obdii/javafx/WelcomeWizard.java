@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 
 import org.controlsfx.dialog.Wizard;
 
@@ -215,7 +216,8 @@ public class WelcomeWizard extends JFXWizard {
     }
 
     @SuppressWarnings("rawtypes")
-    public void showVehicleInfo(Map<String, CANData> vehicleInfo, JFXWizardPane page) {
+    public void showVehicleInfo(Map<String, CANData> vehicleInfo,
+        JFXWizardPane page) {
       CANData<VINValue> vinInfo = vehicleInfo.get("VIN");
       VINValue VIN = vinInfo.getValue();
       if (VIN == null) {
@@ -474,17 +476,22 @@ public class WelcomeWizard extends JFXWizard {
           public Void call() {
             try {
               int progressmax = 100;
-              @SuppressWarnings("rawtypes")
-              Map<String, CANData> vehicleInfo = WelcomeWizard.this.obdApp
-                  .readVehicleInfo(config, vehicle);
-              this.updateProgress(progressmax, progressmax);
-              Platform.runLater(
-                  () -> vehicleController.showVehicleInfo(vehicleInfo,vehiclePane));
-              Platform.runLater(() -> {
-                if (finishButton != null) {
-                  finishButton.setDisable(false);
-                }
-              });
+              if (obdApp != null) {
+                @SuppressWarnings("rawtypes")
+
+                Map<String, CANData> vehicleInfo = obdApp
+                    .readVehicleInfo(config, vehicle);
+                this.updateProgress(progressmax, progressmax);
+                Platform.runLater(() -> vehicleController
+                    .showVehicleInfo(vehicleInfo, vehiclePane));
+                Platform.runLater(() -> {
+                  if (finishButton != null) {
+                    finishButton.setDisable(false);
+                  }
+                });
+              } else {
+                LOGGER.log(Level.WARNING,"obdApp is null");
+              }
             } catch (Throwable th) {
               Platform.runLater(() -> handleException(th));
             }
