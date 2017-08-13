@@ -142,6 +142,12 @@
 							"choices": "Mitsubishi i-Miev,Citroën C-Zero,Peugeot Ion"
 						},
 						{
+							"title": "year",
+							"format": "%4d",
+							"type": "Integer",
+							"fieldSize": 4
+						},	
+						{
 							"title": "VIN",
 							"format": "%s",
 							"labelSize": 10,

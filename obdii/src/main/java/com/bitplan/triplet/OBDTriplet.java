@@ -636,7 +636,7 @@ public class OBDTriplet extends OBDHandler {
     String[] pidNames = { "Odometer_Speed", "VIN" };
     int count = 0;
     int retryCount = 0;
-    int MAX_RETRIES = 5;
+    int MAX_RETRIES = 3;
     Map<String, CANData> result = new HashMap<String, CANData>();
     Map<String, CANProperty> props = cpm.getCANProperties("VIN", "Odometer");
     do {
@@ -653,8 +653,8 @@ public class OBDTriplet extends OBDHandler {
       count = 0;
       for (Entry<String, CANProperty> propentry : props.entrySet()) {
         CANProperty prop = propentry.getValue();
+        result.put(propentry.getKey(), prop);
         if (prop.isAvailable()) {
-          result.put(propentry.getKey(), prop);
           count++;
         } // if
       } // for

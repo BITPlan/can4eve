@@ -225,14 +225,16 @@ public class WelcomeWizard extends JFXWizard {
     }
 
     @SuppressWarnings("rawtypes")
-    public void showVehicleInfo(Map<String, CANData> vehicleInfo,
+    public void showVehicleInfo(Vehicle vehicle, Map<String, CANData> vehicleInfo,
         JFXWizardPane page) {
       CANData<VINValue> vinInfo = vehicleInfo.get("VIN");
       VINValue VIN = vinInfo.getValue();
       if (VIN == null) {
         page.handleException(new Exception(I18n.get(I18n.VEHICLE_VIN_PROBLEM)));
       } else {
+        vehicle.setVIN(VIN.vin);
         vin.setText(VIN.vin);
+        vehicle.setYear(VIN.year);
         vehicleYear.setText("" + VIN.year);
         vehicleManufacturer.setText(VIN.manufacturer + "/" + VIN.factory);
         cellCount.setText(""+VIN.cellCount);
@@ -496,7 +498,7 @@ public class WelcomeWizard extends JFXWizard {
                     .readVehicleInfo(config, vehicle);
                 this.updateProgress(progressmax, progressmax);
                 Platform.runLater(() -> vehicleController
-                    .showVehicleInfo(vehicleInfo, vehiclePane));
+                    .showVehicleInfo(vehicle,vehicleInfo, vehiclePane));
                 Platform.runLater(() -> {
                   if (finishButton != null) {
                     finishButton.setDisable(false);

@@ -146,6 +146,8 @@ public class I18n {
   public static final String VEHICLE_YEAR="vehicleYear"; //year
   public static final String VEHICLE_MANUFACTURER="vehicleManufacturer"; //manufacturer
   public static final String VEHICLE_VIN_PROBLEM="vehicleVinProblem";
+  public static final String BATTERY_CAPACITY = "batteryCapacity";
+  public static final String AH = "amperHours";
   /**
    * Translate the given text
    * 

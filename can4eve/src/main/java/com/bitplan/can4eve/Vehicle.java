@@ -42,6 +42,7 @@ public class Vehicle implements JsonAble{
   String model;
   String group;
   String picture;
+  Integer year;
   Integer mmPerRound;
   Integer maxSpeed=135; // km/h
   Integer maxRPM=9060; // rounds per minute
@@ -76,6 +77,12 @@ public class Vehicle implements JsonAble{
     this.picture = picture;
   }
  
+  public Integer getYear() {
+    return year;
+  }
+  public void setYear(Integer year) {
+    this.year = year;
+  }
   public Integer getMmPerRound() {
     return mmPerRound;
   }
@@ -121,6 +128,7 @@ public class Vehicle implements JsonAble{
     this.VIN=(String)map.get("VIN");
     this.mmPerRound=(Integer)map.get("mmPerRound");
     this.maxRPM=(Integer)map.get("maxRPM");
+    this.year=(Integer)map.get("year");
     this.setMaxSpeed((Integer)map.get("maxSpeed")); // forces calc of mmPerRound
   }
   
@@ -157,4 +165,5 @@ public class Vehicle implements JsonAble{
     }
     return instance;
   }
+  
 }

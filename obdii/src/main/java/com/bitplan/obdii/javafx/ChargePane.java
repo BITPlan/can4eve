@@ -54,7 +54,8 @@ public class ChargePane extends CANValuePane {
         .build();
     
     super.addGauge("SOC",socGauge,0,0);
-    super.addGauge("Range",I18n.RR,I18n.KM,1,0).setDecimals(1);;
+    super.addGauge("Range",I18n.RR,I18n.KM,1,0).setDecimals(1);
+    super.addGauge("BatteryCapacity", I18n.BATTERY_CAPACITY,I18n.AH, 2,0).setDecimals(1);
     super.addGauge("ACPower",I18n.AC_POWER,I18n.K_WATT,0,1).setDecimals(1);
     super.addGauge("ACVolts",I18n.AC_VOLTS,I18n.VOLTS,1,1);
     super.addGauge("ACAmps",I18n.AC_AMPS,I18n.AMPS,2,1).setDecimals(1);;
