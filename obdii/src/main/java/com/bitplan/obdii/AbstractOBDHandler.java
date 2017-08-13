@@ -255,7 +255,7 @@ public abstract class AbstractOBDHandler implements ResponseHandler {
     lelm.sendCommand("", ".*", true);
     lelm.sendCommand("AT L1", ".*");
     lelm.send("AT CRA " + pid);
-    lelm.send("AT CAF0");
+    // lelm.send("AT CAF0"); // do we need this for china adapters?
     lelm.send("AT MA");
     for (long i = 0; i < frameLimit; i++) {
       // FIXME - Pseudo request - timeout handling ...

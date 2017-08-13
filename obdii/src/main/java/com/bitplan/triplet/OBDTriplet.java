@@ -631,7 +631,7 @@ public class OBDTriplet extends OBDHandler {
   public Map<String, CANData> readVehicleInfo(Vehicle vehicle)
       throws Exception {
     VehicleGroup vehicleGroup = VehicleGroup.get(vehicle.getGroup());
-    int frameLimit = 5;
+    int frameLimit = 1;
     String[] pidNames = { "Odometer_Speed", "VIN" };
     int count = 0;
     int retryCount = 0;
