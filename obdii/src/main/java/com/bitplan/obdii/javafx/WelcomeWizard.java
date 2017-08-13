@@ -38,6 +38,8 @@ import com.bitplan.elm327.SerialImpl;
 import com.bitplan.i18n.Translator;
 import com.bitplan.obdii.I18n;
 import com.bitplan.obdii.OBDApp;
+import com.bitplan.obdii.Preferences;
+import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.triplet.VINValue;
 
@@ -93,7 +95,8 @@ public class WelcomeWizard extends JFXWizard {
   private JFXWizardPane vehiclePane;
   SerialController serialController;
   Vehicle vehicle = null;
-
+  private String lang;
+  
   public static class NetworkController implements Initializable {
     @FXML
     TextField hostName;
@@ -252,10 +255,12 @@ public class WelcomeWizard extends JFXWizard {
     languagePane = new JFXWizardPane(this, 1, steps, I18n.WELCOME_LANGUAGE,
         langSelector) {
 
+    
+
       @Override
       public void onExitingPage(Wizard wizard) {
         super.onExitingPage(wizard);
-        String lang = langSelector.getSelection();
+        lang = langSelector.getSelection();
         switch (lang) {
         case "English":
           lang = "en";
@@ -523,9 +528,12 @@ public class WelcomeWizard extends JFXWizard {
       @Override
       public void onExitingPage(Wizard wizard) {
         super.onExitingPage(wizard);
-        try {
+        try {          
           vehicle.save();
           config.save(ConfigMode.Preferences);
+          Preferences prefs=Preferences.getInstance();
+          prefs.setLanguage(LangChoice.valueOf(lang));
+          prefs.save();
         } catch (Throwable th) {
           handleException(th);
         }

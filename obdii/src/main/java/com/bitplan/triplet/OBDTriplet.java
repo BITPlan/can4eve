@@ -634,21 +634,34 @@ public class OBDTriplet extends OBDHandler {
     VehicleGroup vehicleGroup = VehicleGroup.get(vehicle.getGroup());
     int frameLimit = 1;
     String[] pidNames = { "Odometer_Speed", "VIN" };
-    for (String pidName : pidNames) {
-      Pid pid = vehicleGroup.getPidByName(pidName);
-      monitorPid(pid.getPid(), frameLimit * 3);
-    }
-    Map<String, CANProperty> props = cpm.getCANProperties("VIN", "Odometer");
-    /*
-     * List<CANValue<?>> vehicleValues=new ArrayList<CANValue<?>>(); for
-     * (CANProperty prop:props.values()) {
-     * vehicleValues.add(prop.getCanValue()); } int frameLimit=props.size()*15;
-     * this.pidMonitor(vehicleValues, frameLimit);
-     */
+    int count = 0;
+    int retryCount = 0;
+    int MAX_RETRIES = 5;
     Map<String, CANData> result = new HashMap<String, CANData>();
-    for (Entry<String, CANProperty> propentry : props.entrySet()) {
-      CANProperty prop = propentry.getValue();
-      result.put(propentry.getKey(), prop);
+    Map<String, CANProperty> props = cpm.getCANProperties("VIN", "Odometer");
+    do {
+      for (String pidName : pidNames) {
+        Pid pid = vehicleGroup.getPidByName(pidName);
+        monitorPid(pid.getPid(), frameLimit * 3);
+      }
+      /*
+       * List<CANValue<?>> vehicleValues=new ArrayList<CANValue<?>>(); for
+       * (CANProperty prop:props.values()) {
+       * vehicleValues.add(prop.getCanValue()); } int
+       * frameLimit=props.size()*15; this.pidMonitor(vehicleValues, frameLimit);
+       */
+      count = 0;
+      for (Entry<String, CANProperty> propentry : props.entrySet()) {
+        CANProperty prop = propentry.getValue();
+        if (prop.isAvailable()) {
+          result.put(propentry.getKey(), prop);
+          count++;
+        } // if
+      } // for
+    } while (count < props.size() && ++retryCount < MAX_RETRIES);
+    if (retryCount >= MAX_RETRIES) {
+      LOGGER.log(Level.SEVERE,
+          "readVehicleInfo failed after " + retryCount + " retries");
     }
     return result;
   }
