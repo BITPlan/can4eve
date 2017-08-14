@@ -149,10 +149,15 @@ public class TestAppGUI {
     String json = pref.asJson();
     // System.out.println(json);
     assertEquals(
-        "{\n" + "  \"language\": \"de\",\n" + "  \"debug\": true,\n"
-            + "  \"screenPercent\": 100,\n"
-            + "  \"logDirectory\": \"can4eveLogs\",\n"
-            + "  \"screenShotDirectory\": \"can4eveScreenShots\"\n" + "}",
+        "{\n" + 
+        "  \"language\": \"de\",\n" + 
+        "  \"debug\": true,\n" + 
+        "  \"autoStart\": false,\n" + 
+        "  \"screenPercent\": 100,\n" + 
+        "  \"logDirectory\": \"can4eveLogs\",\n" + 
+        "  \"screenShotDirectory\": \"can4eveScreenShots\",\n" + 
+        "  \"logPrefix\": \"can4eve\"\n" + 
+        "}" ,
         json);
     JsonManager<Preferences> jmPreferences = new JsonManagerImpl<Preferences>(
         Preferences.class);
