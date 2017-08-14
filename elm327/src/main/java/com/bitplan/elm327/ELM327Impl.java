@@ -211,6 +211,24 @@ public class ELM327Impl extends ELM327DeviceImpl implements ELM327 {
       String expectedResponse) throws Exception {
     checkResponse(command, response, expectedResponse, false);
   }
+  
+  /**
+   * flush response queue
+   * @throws Exception
+   */
+  public void flushResponseQueue() throws Exception {
+    // send a CR to stop current monitoring command like STM
+    Packet r;
+    // sendCommand("", ".*", true);
+    int retries=0;
+    int MAX_RETRIES=5;
+    String data=null;
+    // "eat" data that is still in the buffer
+    do {
+      r = send("");
+      data = r.getData();
+    } while (data!=null  && (++retries<MAX_RETRIES));
+  }
 
   @Override
   public void reinitCommunication(long timeOutMsecs) throws Exception {
@@ -222,16 +240,7 @@ public class ELM327Impl extends ELM327DeviceImpl implements ELM327 {
     // assume the device has not been configured to return linefeeds (yet)
     con.setReceiveLineFeed(false);
     con.setSendLineFeed(true);
-    // send a CR to stop current monitoring command like STM
-    Packet r;
-    int retries=0;
-    int MAX_RETRIES=5;
-    String data=null;
-    // "eat" data that is still in the buffer
-    do {
-      r = send("");
-      data = r.getData();
-    } while (data!=null  && (++retries<MAX_RETRIES));
+ 
     // reset
     send("AT Z");
     con.setTimeout(timeOutMsecs);

@@ -643,6 +643,7 @@ public class OBDTriplet extends OBDHandler {
         Pid pid = vehicleGroup.getPidByName(pidName);
         monitorPid(pid.getPid(), frameLimit * 3);
       }
+      endMonitorPid();
       /*
        * List<CANValue<?>> vehicleValues=new ArrayList<CANValue<?>>(); for
        * (CANProperty prop:props.values()) {

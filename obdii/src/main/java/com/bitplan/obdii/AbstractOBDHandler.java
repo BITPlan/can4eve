@@ -239,6 +239,18 @@ public abstract class AbstractOBDHandler implements ResponseHandler {
     else
       this.monitorPid(pidId, frameLimit);
   }
+  
+  /**
+   * interrupt the PID-Monitoring
+   * @return
+   * @throws Exception
+   */
+  public ELM327 endMonitorPid() throws Exception {
+    ELM327 lelm = getElm327();
+    lelm.sendCommand("", ".*", true);
+    lelm.sendCommand("AT L1", ".*");
+    return lelm;
+  }
 
   /**
    * monitor the given pid
@@ -251,9 +263,7 @@ public abstract class AbstractOBDHandler implements ResponseHandler {
    */
   public void monitorPid(String pid, long frameLimit)
       throws Exception {
-    ELM327 lelm = getElm327();
-    lelm.sendCommand("", ".*", true);
-    lelm.sendCommand("AT L1", ".*");
+    ELM327 lelm =endMonitorPid();
     lelm.send("AT CRA " + pid);
     // lelm.send("AT CAF0"); // do we need this for china adapters?
     lelm.send("AT MA");
