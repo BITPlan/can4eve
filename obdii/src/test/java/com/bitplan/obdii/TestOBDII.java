@@ -38,7 +38,7 @@ public abstract class TestOBDII {
    * @throws Exception
    */
   public static VehicleGroup getVehicleGroup() throws Exception {
-    return VehicleGroup.get("triplet");
+    return VehicleGroup.get("Triplet");
   }
   
   /**

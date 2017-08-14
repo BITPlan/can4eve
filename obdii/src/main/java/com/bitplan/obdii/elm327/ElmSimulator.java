@@ -55,7 +55,7 @@ public class ElmSimulator extends Main {
 
   @Option(name = "--vg", aliases = {
       "--vehicle-group" }, usage = "vehicleGroup\nthe vehicleGroup to connect to")
-  String vehicleGroupName = "triplet";
+  String vehicleGroupName = "Triplet";
   
   @Option(name = "-f", aliases = {
   "--file" }, usage = "file\nthe log file to use for simulation")

@@ -298,9 +298,9 @@ public class WelcomeWizard extends JFXWizard {
         }
         vehicle.setModel(carSelector.getSelection());
         if ("Mitsubishi Outlander PHEV".equals(vehicle.getModel())) {
-          vehicle.setGroup("MitsubishiPHEV");
+          vehicle.setGroup("OutlanderPHEV");
         } else {
-          vehicle.setGroup("triplet");
+          vehicle.setGroup("Triplet");
         }
       }
 

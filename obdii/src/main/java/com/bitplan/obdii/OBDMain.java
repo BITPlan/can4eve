@@ -69,7 +69,7 @@ public class OBDMain extends Main implements OBDApp {
 
   @Option(name = "--vg", aliases = {
       "--vehicle-group" }, usage = "vehicleGroup\nthe vehicleGroup to connect to")
-  String vehicleGroupName = "triplet";
+  String vehicleGroupName = "Triplet";
 
   @Option(name = "--port", aliases = {
       "--portnumber" }, usage = "port\nthe port to use")

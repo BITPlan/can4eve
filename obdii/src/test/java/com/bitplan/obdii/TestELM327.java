@@ -664,7 +664,7 @@ public class TestELM327 extends TestOBDII {
     // debug = true;
     this.prepareOBDTriplet(simulated, debug);
     obdTriplet.initOBD();
-    String[] groups = { "triplet", "MitsubishiPHEV" };
+    String[] groups = { "Triplet", "OutlanderPHEV" };
     for (String group : groups) {
       Vehicle vehicle = new Vehicle();
       vehicle.setGroup(group);

@@ -247,7 +247,7 @@ public abstract class AbstractOBDHandler implements ResponseHandler {
    */
   public ELM327 endMonitorPid() throws Exception {
     ELM327 lelm = getElm327();
-    lelm.sendCommand("", ".*", true);
+    lelm.flushResponseQueue();
     lelm.sendCommand("AT L1", ".*");
     return lelm;
   }

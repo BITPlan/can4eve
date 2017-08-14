@@ -112,24 +112,20 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
   private Label watchDogLabel;
   private Task<Void> monitortask;
 
-  private Tab clockTab;
-
   protected ClockPane clockPane;
 
   protected DashBoardPane dashBoardPane;
-
-  private Tab dashBoardTab;
 
   protected Map<String, ObservableValue<?>> canProperties;
 
   protected ChargePane chargePane;
   protected OdoPane odoPane;
 
-  private Tab chargeTab;
   private Scene scene;
-
-  private Tab odoTab;
-
+  Tab chargeTab;
+  Tab odoTab;
+  Tab clockTab;
+  Tab dashBoardTab;
   private Map<String, GenericPanel> panels = new HashMap<String, GenericPanel>();
 
   private TabPane activeTabPane;
@@ -138,8 +134,10 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
 
   private Form vehicleForm;
   private Preferences prefs;
+  private Button fullScreenButton;
+  private Button hideMenuButton;
 
-  public static final boolean debug = false;
+  public static boolean debug = false;
 
   public static final String DASH_BOARD_GROUP = "dashBoardGroup";
 
@@ -255,17 +253,21 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
   }
 
   /**
-   * remove or add the menuBar
+   * show or hide the menuBar
    * 
    * @param scene
    * @param pMenuBar
    */
-  public void toggleMenuBar(Scene scene, MenuBar pMenuBar) {
+  public void showMenuBar(Scene scene, MenuBar pMenuBar, boolean show) {
     ObservableList<Node> rootChilds = ((VBox) scene.getRoot()).getChildren();
-    if (rootChilds.contains(pMenuBar))
+    if (!show && rootChilds.contains(pMenuBar)) {
       rootChilds.remove(pMenuBar);
-    else
+    } else if (show) {
       rootChilds.add(0, pMenuBar);
+    }
+    pMenuBar.setVisible(show);
+    hideMenuButton
+        .setText(show ? I18n.get(I18n.HIDE_MENU) : I18n.get(I18n.SHOW_MENU));
   }
 
   /**
@@ -285,7 +287,15 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
         menu.getItems().add(menuItem);
       }
     }
-    toggleMenuBar(scene, getMenuBar());
+
+    hideMenuButton = new Button(I18n.get(I18n.HIDE_MENU));
+    hideMenuButton.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent e) {
+        showMenuBar(scene, getMenuBar(), !getMenuBar().isVisible());
+      }
+    });
+    showMenuBar(scene, getMenuBar(), true);
   }
 
   @Override
@@ -319,6 +329,10 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
     if (!testMode) {
       // if this is the first Start then show the Welcome Wizard
       if (prefs != null && prefs.getAutoStart()) {
+        // switch to fullscreen
+        Platform.runLater(() -> switchFullScreen(true));
+        // hide menu bar
+        Platform.runLater(() -> showMenuBar(scene, getMenuBar(), false));
         this.startMonitoring(prefs.getDebug());
       } else {
         optionalShowWelcomeWizard();
@@ -413,9 +427,10 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
    * @param value
    * @param valueTo
    */
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   protected void bind(Property value, ObservableValue valueTo) {
     if (valueTo != null) {
-      if (value.isBound())
+      if (debug && value.isBound())
         LOGGER.log(Level.WARNING, "value is already bound");
       value.bind(valueTo);
     }
@@ -448,6 +463,18 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
   }
 
   /**
+   * switch the fullScreen Mode
+   * 
+   * @param fullScreen
+   */
+  public void switchFullScreen(boolean fullScreen) {
+    stage.setFullScreen(fullScreen);
+    fullScreenButton.setText(
+        fullScreen ? I18n.get(I18n.PART_SCREEN) : I18n.get(I18n.FULL_SCREEN));
+
+  }
+
+  /**
    * special setup non in generic description
    */
   public void setupSpecial(TabPane tabPane) {
@@ -471,26 +498,14 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
       }
     });
 
-    Button fullScreenButton = new Button(I18n.get(I18n.FULL_SCREEN));
+    fullScreenButton = new Button(I18n.get(I18n.FULL_SCREEN));
     fullScreenButton.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
-        stage.setFullScreen(!stage.isFullScreen());
-        fullScreenButton.setText(stage.isFullScreen()
-            ? I18n.get(I18n.PART_SCREEN) : I18n.get(I18n.FULL_SCREEN));
+        switchFullScreen(!stage.isFullScreen());
       }
     });
 
-    Button hideMenuButton = new Button(I18n.get(I18n.HIDE_MENU));
-    hideMenuButton.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent e) {
-        toggleMenuBar(scene, getMenuBar());
-        getMenuBar().setVisible(!getMenuBar().isVisible());
-        hideMenuButton.setText(getMenuBar().isVisible()
-            ? I18n.get(I18n.HIDE_MENU) : I18n.get(I18n.SHOW_MENU));
-      }
-    });
     statusBar.getRightItems().add(screenShotButton);
     statusBar.getRightItems().add(hideMenuButton);
     statusBar.getRightItems().add(fullScreenButton);
@@ -665,8 +680,11 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
     FileChooser fileChooser = new FileChooser();
     if (Config.getInstance() != null)
       try {
-        fileChooser.setInitialDirectory(
-            new File(Preferences.getInstance().getLogDirectory()));
+        File logDirectory = new File(
+            Preferences.getInstance().getLogDirectory());
+        if (!logDirectory.exists())
+          logDirectory.mkdirs();
+        fileChooser.setInitialDirectory(logDirectory);
       } catch (Exception e1) {
         // Ignore
       }

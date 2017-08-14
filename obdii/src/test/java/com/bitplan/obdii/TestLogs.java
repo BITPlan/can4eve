@@ -136,7 +136,7 @@ public class TestLogs {
         File logDirectory = new File(logDirectoryName);
         if (logDirectory.isDirectory()) {
           File[] logFiles = logDirectory.listFiles();
-          OBDTriplet obdTriplet = new OBDTriplet(VehicleGroup.get("triplet"));
+          OBDTriplet obdTriplet = new OBDTriplet(VehicleGroup.get("Triplet"));
           obdTriplet.getElm327().setHeader(true);
           obdTriplet.getElm327().setLength(true);
           // CANValueAnalyzer analyzer = new

@@ -253,7 +253,7 @@ public class TestAppGUI {
 
   @Test
   public void testBarChartJavaFx() throws Exception {
-    VehicleGroup vg = VehicleGroup.get("triplet");
+    VehicleGroup vg = VehicleGroup.get("Triplet");
     CANInfo cellInfo = vg.getCANInfoByName("CellTemperature");
     assertNotNull(cellInfo);
     DoubleValue cellTempValue = new DoubleValue(cellInfo);
@@ -431,7 +431,7 @@ public class TestAppGUI {
     String xTitle = "time";
     String yTitle = "%/km";
     SampleApp.toolkitInit();
-    VehicleGroup vg = VehicleGroup.get("triplet");
+    VehicleGroup vg = VehicleGroup.get("Triplet");
     CANPropertyManager cpm = new CANPropertyManager(vg);
     Map<String, CANProperty> properties = cpm.getCANProperties("SOC", "Range");
     setPlotValues(properties, 1);

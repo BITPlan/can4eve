@@ -137,7 +137,7 @@
 							"labelSize": 10,
 							"fieldSize": 40,
 							"type": "Choice",
-							"choices": "Triplet, Outlander PHEV"
+							"choices": "Triplet,OutlanderPHEV"
 						},
 						{
 							"title": "model",

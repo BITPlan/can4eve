@@ -191,7 +191,7 @@ public class OBDTriplet extends OBDHandler {
    */
   public void handleResponse(PIDResponse pr) {
     if (debug)
-      LOGGER.log(Level.INFO, "triplet handling PID Response " + pr.pidId + " ("
+      LOGGER.log(Level.INFO, "Triplet handling PID Response " + pr.pidId + " ("
           + pr.pid.getName() + ")");
     Pid pid = pr.pid;
     CANValueHandler cvh = super.getCanValueHandler();
