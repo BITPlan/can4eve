@@ -57,4 +57,6 @@ public interface ELM327 extends ELM327Device,Restartable,Debugable {
     public boolean isUsable();
     public String getInfo();
     public boolean isSTN();
+    public void halt();
+    public boolean isStarted();
 }

@@ -92,10 +92,10 @@ import javafx.util.Duration;
  * @author wf
  *
  */
-public class JavaFXDisplay extends WaitableApp
-    implements MonitorControl, CANValueDisplay, ExceptionHandler,EventHandler<ActionEvent> {
+public class JavaFXDisplay extends WaitableApp implements MonitorControl,
+    CANValueDisplay, ExceptionHandler, EventHandler<ActionEvent> {
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.javafx");
-  public static boolean testMode=false;
+  public static boolean testMode = false;
   private static com.bitplan.can4eve.gui.App app;
   OBDApp obdApp;
   private static SoftwareVersion softwareVersion;
@@ -137,6 +137,7 @@ public class JavaFXDisplay extends WaitableApp
   private SimulatorPane simulatorPane;
 
   private Form vehicleForm;
+  private Preferences prefs;
 
   public static final boolean debug = false;
 
@@ -296,7 +297,8 @@ public class JavaFXDisplay extends WaitableApp
     root = new VBox();
     int screenPercent;
     try {
-      screenPercent = Preferences.getInstance().getScreenPercent();
+      prefs = Preferences.getInstance();
+      screenPercent = prefs.getScreenPercent();
     } catch (Exception e) {
       screenPercent = 100;
     }
@@ -314,22 +316,30 @@ public class JavaFXDisplay extends WaitableApp
     stage.setY(sceneBounds.getMinY());
     stage.show();
     available = true;
-    // if this is the first Start then show the Welcome Wizard
-    if (!testMode)
-      optionalShowWelcomeWizard();
+    if (!testMode) {
+      // if this is the first Start then show the Welcome Wizard
+      if (prefs != null && prefs.getAutoStart()) {
+        this.startMonitoring(prefs.getDebug());
+      } else {
+        optionalShowWelcomeWizard();
+      }
+    }
   }
 
   /**
-   * check whether this is the first start of the application
-   * (that is there are not stored preferences yet)
-   * and then show the welcome wizard for the initial configuration
+   * check whether this is the first start of the application (that is there are
+   * not stored preferences yet) and then show the welcome wizard for the
+   * initial configuration
    */
-  private void optionalShowWelcomeWizard()  {
+  private void optionalShowWelcomeWizard() {
     try {
-      Preferences preferences=Preferences.getInstance();
-      if (preferences.getLanguage()==LangChoice.notSet) {
-        WelcomeWizard wizard = new WelcomeWizard(I18n.WELCOME,this.obdApp);
+      Preferences preferences = Preferences.getInstance();
+      if (preferences.getLanguage() == LangChoice.notSet) {
+        WelcomeWizard wizard = new WelcomeWizard(I18n.WELCOME, this.obdApp);
         wizard.display();
+        if (wizard.isFinished()) {
+          this.startMonitoring(false);
+        }
       }
     } catch (Throwable th) {
       this.handleException(th);
@@ -484,7 +494,7 @@ public class JavaFXDisplay extends WaitableApp
     statusBar.getRightItems().add(screenShotButton);
     statusBar.getRightItems().add(hideMenuButton);
     statusBar.getRightItems().add(fullScreenButton);
-    vehicleForm= app.getFormById("preferencesGroup", "vehicleForm");
+    vehicleForm = app.getFormById("preferencesGroup", "vehicleForm");
   }
 
   /**
@@ -591,8 +601,10 @@ public class JavaFXDisplay extends WaitableApp
           showSettings(false);
           break;
         case I18n.SETTINGS_WELCOME_MENU_ITEM:
-          WelcomeWizard wizard = new WelcomeWizard(I18n.WELCOME,this.obdApp);
+          WelcomeWizard wizard = new WelcomeWizard(I18n.WELCOME, this.obdApp);
           wizard.display();
+          if (wizard.isFinished())
+            startMonitoring(false);
           break;
         case I18n.OBD_START_MENU_ITEM:
           startMonitoring(false);
@@ -735,10 +747,9 @@ public class JavaFXDisplay extends WaitableApp
    * 
    * @param th
    */
-  public void handleException(Throwable th) { 
-      Platform
-          .runLater(() -> GenericDialog.showException((I18n.get(I18n.ERROR)),
-              I18n.get(I18n.PROBLEM_OCCURED), th,this));
+  public void handleException(Throwable th) {
+    Platform.runLater(() -> GenericDialog.showException((I18n.get(I18n.ERROR)),
+        I18n.get(I18n.PROBLEM_OCCURED), th, this));
   }
 
   /**
@@ -748,8 +759,7 @@ public class JavaFXDisplay extends WaitableApp
    */
   private void showVehicle() throws Exception {
     Vehicle vehicle = Vehicle.getInstance();
-    GenericDialog vehicleDialog = new GenericDialog(stage,
-       vehicleForm);
+    GenericDialog vehicleDialog = new GenericDialog(stage, vehicleForm);
     Optional<Map<String, Object>> result = vehicleDialog.show(vehicle.asMap());
     if (result.isPresent()) {
       vehicle.fromMap(result.get());
@@ -824,7 +834,7 @@ public class JavaFXDisplay extends WaitableApp
     if (config == null)
       config = new Config();
     if (test)
-      SettingsDialog.testConnection(this.obdApp,config);
+      SettingsDialog.testConnection(this.obdApp, config);
     else {
       Optional<Map<String, Object>> result = settingsDialog
           .show(config.asMap());
@@ -894,27 +904,29 @@ public class JavaFXDisplay extends WaitableApp
     TabPane activeTabPane = getTabPane(this.activeView);
     return activeTabPane;
   }
-  
+
   /**
    * get the tabPane with the given view name
+   * 
    * @param view
    * @return the tabPane
    */
   public TabPane getTabPane(String view) {
-    TabPane tabPane=this.tabPaneByView.get(view);
+    TabPane tabPane = this.tabPaneByView.get(view);
     return tabPane;
   }
-  
+
   /**
    * get the tab of the given view with the given id
+   * 
    * @param view
    * @param tabId
    * @return - the tab
    */
-  public Tab getTab(String view,String tabId) {
-    TabPane tabPane=getTabPane(view);
+  public Tab getTab(String view, String tabId) {
+    TabPane tabPane = getTabPane(view);
     if (tabPane != null) {
-      for (Tab tab:tabPane.getTabs()) {
+      for (Tab tab : tabPane.getTabs()) {
         if (tabId.equals(tab.getText())) {
           return tab;
         }

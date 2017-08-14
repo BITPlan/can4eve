@@ -534,6 +534,7 @@ public class WelcomeWizard extends JFXWizard {
           config.save(ConfigMode.Preferences);
           Preferences prefs=Preferences.getInstance();
           prefs.setLanguage(LangChoice.valueOf(lang));
+          prefs.setAutoStart(true);
           prefs.save();
         } catch (Throwable th) {
           handleException(th);

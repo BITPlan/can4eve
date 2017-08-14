@@ -28,20 +28,20 @@ import com.bitplan.csv.CSVUtil;
  *
  */
 public class ELM327DeviceImpl implements ELM327Device {
-  boolean useable;
-  boolean STN=false;
+  protected boolean useable;
+  protected boolean STN=false;
 
   // id as returned by AT I
-  String id;
+  protected String id;
 
   // description as returned by AT @1
-  String description;
+  protected String description;
 
   // device id as returned by AT @2
-  String deviceId;
+  protected String deviceId;
 
-  String hardwareId;
-  String firmwareId;
+  protected String hardwareId;
+  protected String firmwareId;
 
   public String getId() {
     return id;
@@ -94,9 +94,9 @@ public class ELM327DeviceImpl implements ELM327Device {
    * get the info for the device
    */
   public String getInfo() {
-    String info="No useable ELM327 device could be detected";
+    String info="ELM327 device detected which might not be compatible";
     if (useable) {
-      info="useable ELM327 compatible device detected";
+      info="can4eve compatible ELM327 device detected";
     }
       
     if (id!=null) {

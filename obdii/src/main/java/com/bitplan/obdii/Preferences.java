@@ -38,12 +38,13 @@ public class Preferences implements JsonAble {
     en, de, notSet
   }
 
-  private LangChoice language = LangChoice.notSet;
-  Boolean debug;
+  LangChoice language = LangChoice.notSet;
+  Boolean debug=false;
+  Boolean autoStart=false;
   int screenPercent = 100;
   String logDirectory="can4eveLogs";
   String screenShotDirectory="can4eveScreenShots";
-  String logPrefix; // e.g. my Ion
+  String logPrefix="can4eve"; // e.g. my Ion
 
   public LangChoice getLanguage() {
     return language;
@@ -51,6 +52,22 @@ public class Preferences implements JsonAble {
 
   public void setLanguage(LangChoice language) {
     this.language = language;
+  }
+
+  public Boolean getAutoStart() {
+    return autoStart;
+  }
+
+  public void setAutoStart(Boolean autoStart) {
+    this.autoStart = autoStart;
+  }
+
+  public Boolean getDebug() {
+    return debug;
+  }
+
+  public void setDebug(Boolean debug) {
+    this.debug = debug;
   }
 
   public int getScreenPercent() {
@@ -90,7 +107,8 @@ public class Preferences implements JsonAble {
     String langChoiceStr = (String) map.get("language");
     if (langChoiceStr != null)
       this.setLanguage(LangChoice.valueOf(langChoiceStr));
-    this.debug = (Boolean) map.get("debug");
+    this.setDebug((Boolean) map.get("debug"));
+    this.autoStart=(Boolean) map.get("autoStart");
     Object value = map.get("screenPercent");
     if (value != null) {
       if (value instanceof Double)

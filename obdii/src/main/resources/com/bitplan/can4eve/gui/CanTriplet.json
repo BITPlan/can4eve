@@ -94,6 +94,12 @@
 							"type": "Boolean"
 						},
 						{
+							"title": "autoStart",
+							"hint": "automatically start OBD reading on start of application",
+							"format": "%s",
+							"type": "Boolean"
+						},
+						{
 							"title": "logPrefix",
 							"hint": "the prefix to use for logfiles",
 							"format": "%s"

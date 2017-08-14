@@ -44,6 +44,7 @@ public class ELM327SimulatorConnection extends ELM327
   private String canprotcode;
   private String canprot;
   private String ecu;
+  private Monitor monitor;
 
   /**
    * constructor
@@ -149,7 +150,7 @@ public class ELM327SimulatorConnection extends ELM327
           filter = command.substring(3).trim();
           outputWithPrompt("OK");
         } else if (command.startsWith("MA")) {
-          Monitor monitor = new Monitor();
+          monitor = new Monitor();
           monitor.init(this, filter, isHeader(), isLength());
           monitor.startUp();
           monitors.add(monitor);
@@ -196,6 +197,7 @@ public class ELM327SimulatorConnection extends ELM327
       } else {
         if (command.equals("")) {
           // FIXME - this e.g. restarts MA command
+          // this.stopMonitors();
           outputWithPrompt("OK");
         } else if (command.equals("STFAC")) {
           outputWithPrompt("OK");
@@ -206,7 +208,7 @@ public class ELM327SimulatorConnection extends ELM327
         } else if (command.startsWith("STFAP")) {
           outputWithPrompt("OK");
         } else if (command.equals("STM")) {
-          Monitor monitor = new Monitor();
+          monitor = new Monitor();
           monitor.init(this, isHeader(), isLength());
           monitor.startUp();
           monitors.add(monitor);

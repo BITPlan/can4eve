@@ -26,6 +26,7 @@ import java.util.concurrent.Executors;
 
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.CANRawValue;
+import com.bitplan.obdii.I18n;
 import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.VehicleGroup;
 
@@ -83,6 +84,29 @@ public class ELM327 extends com.bitplan.elm327.ELM327Impl  {
         }
       }
     });
+  }
+  
+  /**
+   * get the info for the device
+   */
+  public String getInfo() {
+    String info=I18n.get(I18n.ELM327_CAN4EVE_INCOMPATIBLE);
+    if (useable) {
+      info=I18n.get(I18n.ELM327_CAN4EVE_COMPATIBLE);
+    }
+      
+    if (id!=null) {
+      info+="\n"+id;
+    }
+    if (description!=null) {
+      info+="\n"+this.getDescription();
+    }
+    if (STN) {
+      info+="\n\n"+I18n.get(I18n.ELM327_RECOMMENDED);
+      info+="\nfirmware: "+this.firmwareId;
+      info+="\nhardware: "+this.hardwareId;
+    }
+    return info;
   }
   
 }

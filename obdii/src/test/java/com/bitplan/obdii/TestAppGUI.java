@@ -144,7 +144,7 @@ public class TestAppGUI {
   @Test
   public void testPreferences() {
     Preferences pref = new Preferences();
-    pref.debug = true;
+    pref.setDebug(true);
     pref.setLanguage(LangChoice.de);
     String json = pref.asJson();
     // System.out.println(json);
@@ -158,11 +158,11 @@ public class TestAppGUI {
         Preferences.class);
     Preferences pref2 = jmPreferences.fromJson(json);
     assertNotNull(pref2);
-    assertEquals(pref2.debug, pref.debug);
+    assertEquals(pref2.getDebug(), pref.getDebug());
     assertEquals(pref2.getLanguage(), pref.getLanguage());
     Preferences pref3 = new Preferences();
     pref3.fromMap(pref2.asMap());
-    assertEquals(pref3.debug, pref.debug);
+    assertEquals(pref3.getDebug(), pref.getDebug());
     assertEquals(pref3.getLanguage(), pref.getLanguage());
   }
 

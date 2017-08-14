@@ -48,6 +48,7 @@ import javafx.scene.control.DialogPane;
 public class JFXWizard extends Wizard {
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.javafx");
   List<WizardPane> pages = new ArrayList<WizardPane>();
+  private BooleanProperty finishedProperty=new SimpleBooleanProperty();;
 
   /**
    * construct me
@@ -55,6 +56,14 @@ public class JFXWizard extends Wizard {
   @SuppressWarnings({ "rawtypes", "unchecked" })
   public JFXWizard() {
 
+  }
+  
+  public boolean isFinished() {
+    return finishedProperty.get();
+  }
+  
+  public void setFinished(boolean finished) {
+    finishedProperty.set(finished);
   }
 
   /**
@@ -103,14 +112,11 @@ public class JFXWizard extends Wizard {
    * @return the map of settings
    */
   public ObservableMap<String, Object> display() {
-    BooleanProperty finished = new SimpleBooleanProperty();
     showAndWait().ifPresent(result -> {
       if (result == ButtonType.FINISH) {
-        finished.set(true);
+        setFinished(true);
       }
-    });
-    if (!finished.get())
-      this.getSettings().clear();
+    });  
     return this.getSettings();
   }
 

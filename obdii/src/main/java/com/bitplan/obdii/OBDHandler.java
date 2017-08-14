@@ -256,6 +256,7 @@ public abstract class OBDHandler extends AbstractOBDHandler {
       throws Exception {
     ELM327 lelm = this.getElm327();
     Connection lcon = lelm.getCon();
+    this.initOBD();
     // VehicleGroup vg = this.getElm327().getVehicleGroup();
     // FIXME - china clone battery handling?
     // make available on button/menu?
@@ -270,7 +271,6 @@ public abstract class OBDHandler extends AbstractOBDHandler {
         }
       }
     }
-    this.initOBD();
     if (lelm.isSTN()) {
       this.setSTMFilter(canValues);
       lcon.output("STM");

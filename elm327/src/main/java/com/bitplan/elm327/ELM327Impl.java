@@ -20,13 +20,13 @@
  */
 package com.bitplan.elm327;
 
+
 /**
- * Created by wf on 03.06.17.
+ * ELM 327 handling
  *
  */
-
 public class ELM327Impl extends ELM327DeviceImpl implements ELM327 {
-  public static long INIT_TIMEOUT = 150; // intialization operates with a faster
+  public static long INIT_TIMEOUT = 150; // initialization operates with a faster
                                          // timeout
   Connection con;
 
@@ -35,9 +35,9 @@ public class ELM327Impl extends ELM327DeviceImpl implements ELM327 {
   boolean echo;
   boolean sendLineFeed;
   boolean debug;
-
+  boolean started = false;
   String carVoltage;
-  
+
   public boolean isEcho() {
     return echo;
   }
@@ -57,7 +57,6 @@ public class ELM327Impl extends ELM327DeviceImpl implements ELM327 {
   public String getCarVoltage() {
     return carVoltage;
   }
-
 
   public boolean isHeader() {
     return header;
@@ -94,7 +93,7 @@ public class ELM327Impl extends ELM327DeviceImpl implements ELM327 {
    *          - the packet
    */
   protected void showDebug(Packet p) {
-    if (this.isDebug() && p!=null) {
+    if (this.isDebug() && p != null) {
       String data = p.getRawData();
       int len = 0;
       if (data != null)
@@ -191,11 +190,12 @@ public class ELM327Impl extends ELM327DeviceImpl implements ELM327 {
             response.getResponseTime());
       else {
         msg += String.format(" got '%s' ", response.getData());
-        if (response.getRequest()!=null) {
-          msg+=String.format(" for request '%s'", response.getRequest().getData());
+        if (response.getRequest() != null) {
+          msg += String.format(" for request '%s'",
+              response.getRequest().getData());
         }
       }
-      throw new OBDException(msg,response);
+      throw new OBDException(msg, response);
     }
   }
 
@@ -207,13 +207,14 @@ public class ELM327Impl extends ELM327DeviceImpl implements ELM327 {
    * @param expectedResponse
    * @throws Exception
    */
-  private void checkResponse(String command, Packet response,
+  public void checkResponse(String command, Packet response,
       String expectedResponse) throws Exception {
     checkResponse(command, response, expectedResponse, false);
   }
 
   @Override
   public void reinitCommunication(long timeOutMsecs) throws Exception {
+    started = true;
     // keep the old timeout
     long timeout = con.getTimeout();
     // operate with a much lower timeout to quickly reinitialize
@@ -222,9 +223,17 @@ public class ELM327Impl extends ELM327DeviceImpl implements ELM327 {
     con.setReceiveLineFeed(false);
     con.setSendLineFeed(true);
     // send a CR to stop current monitoring command like STM
-    send("");
+    Packet r;
+    int retries=0;
+    int MAX_RETRIES=5;
+    String data=null;
+    // "eat" data that is still in the buffer
+    do {
+      r = send("");
+      data = r.getData();
+    } while (data!=null  && (++retries<MAX_RETRIES));
     // reset
-    send("AT Z"); 
+    send("AT Z");
     con.setTimeout(timeOutMsecs);
     // turn the ECHO off
     send("AT E0");
@@ -248,14 +257,15 @@ public class ELM327Impl extends ELM327DeviceImpl implements ELM327 {
     r = send("AT @2");
     deviceId = r.getData();
     carVoltage = sendCommand("AT RV", ".*").getData(); // Car VoltageAT R
-    if (id!=null && description!=null && description.startsWith("SCANTOOL")) {
-      useable=true;
-      STN=true; // this device has STM command
+    if (id != null && description != null
+        && description.startsWith("SCANTOOL")) {
+      useable = true;
+      STN = true; // this device has STM command
       hardwareId = sendCommand("STDI", ".*").getData(); // Hardware ID string
       firmwareId = sendCommand("STI", ".*").getData(); // Firmware ID
     }
   }
-  
+
   /**
    * initialize the OBD
    */
@@ -303,6 +313,17 @@ public class ELM327Impl extends ELM327DeviceImpl implements ELM327 {
   @Override
   public void restart() throws Exception {
     this.reinitCommunication(this.getCon().getTimeout());
+  }
+
+  @Override
+  public void halt() {
+    this.getCon().halt();
+    started = false;
+  }
+
+  @Override
+  public boolean isStarted() {
+    return started;
   }
 
 }

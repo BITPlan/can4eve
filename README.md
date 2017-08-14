@@ -13,7 +13,7 @@ can4eve
 as of 2017-06 only Triplet cars: Mitsubishi i-Miev, Citroe C-Zero, Peugeot-Ion are supported
 ## State of the project 
 * the software is in alpha - experimental state - it has only been tested with a handful of vehicles so far
-* as of 2017-06-07 the software is not available for download yet
+* alpha and beta testers are welcome
 ### Supported Platforms 
 can4eve is written in Java
 It has been tested on
@@ -23,7 +23,7 @@ It has been tested on
 * an Android version is in preparation.
 
 Since Apple does not support Java on the iPhone and since Microsoft does not support Java on some of its environments can4eve 
-would have to be ported to run in these environments. Currently there are no plans to work around this.
+would have to be ported to run in these environments. We have obtained a free gluon license to try this out.
 
 ## Where to find more info
 ### Wiki
@@ -40,4 +40,5 @@ https://www.apache.org/licenses/LICENSE-2.0
 [![BITPlan](http://wiki.bitplan.com/images/wiki/thumb/8/87/BITPlanLogo2012.svg/200px-BITPlanLogo2012.svg.png)](http://web.bitplan.com)
 
 ### Version History
-2017-06 0.0.1 - non released developer version
+2017-06 0.0.1 - non released developer version (alpha test)
+2017-08 0.0.1 - beta test with OBDLink SX

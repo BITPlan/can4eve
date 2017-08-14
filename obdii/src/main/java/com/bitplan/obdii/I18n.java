@@ -149,6 +149,9 @@ public class I18n {
   public static final String VEHICLE_VIN_PROBLEM="vehicleVinProblem";
   public static final String BATTERY_CAPACITY = "batteryCapacity";
   public static final String AH = "amperHours";
+  public static final String ELM327_CAN4EVE_COMPATIBLE = "elm327Can4eveCompatible";
+  public static final String ELM327_CAN4EVE_INCOMPATIBLE = "elm327Can4eveIncompatible";
+  public static final String ELM327_RECOMMENDED = "elm327Recommended";
   /**
    * Translate the given text
    * 

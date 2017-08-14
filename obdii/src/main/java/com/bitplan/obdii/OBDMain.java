@@ -168,7 +168,7 @@ public class OBDMain extends Main implements OBDApp {
   public ELM327 testConnection(Config config) throws Exception {
     prepareOBD(config);
     elm.identify();
-    elm.getCon().halt();
+    elm.halt();
     return elm;
   }
   
@@ -265,7 +265,7 @@ public class OBDMain extends Main implements OBDApp {
 
   @Override
   public ELM327 start(boolean withLog) throws Exception {
-    if (elm == null)
+    if (elm == null || !elm.isStarted())
       prepareOBD(getConfig());
     // make can Values available
     obdTriplet.setUpCanValues();
