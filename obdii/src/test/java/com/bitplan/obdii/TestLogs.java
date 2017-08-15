@@ -25,11 +25,12 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
-import com.bitplan.can4eve.CANData;
 import com.bitplan.can4eve.CANValueHandler;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.gui.javafx.WaitableApp;
@@ -48,6 +49,8 @@ public class TestLogs {
     private File csvFile;
     private PrintWriter printWriter;
     private List<String> names;
+    private Map<String, Integer> limitMap = new HashMap<String, Integer>();
+    private Map<String, Integer> countMap = new HashMap<String, Integer>();
     final String DELIM = ";";
 
     /**
@@ -66,24 +69,52 @@ public class TestLogs {
 
     SimpleDateFormat isoDateFormatter = new SimpleDateFormat(
         "yyyy-MM-dd HH:mm:ss");
+    private Integer[] limits;
+
+    public void setLimits(Integer... limits) {
+      if (limits.length != names.size())
+        throw new IllegalArgumentException("limits.length!=names.size");
+      
+      this.limits=limits;
+      this.resetCounters();
+     
+    }
 
     @Override
     public <T> void setValue(String name, T value, Date timeStamp) {
       if (value == null)
         return;
       if (this.names.contains(name)) {
-        String format="s";
+        String format = "s";
         if (value instanceof Integer)
-          format="d";
+          format = "d";
         if (value instanceof Double)
-          format="f";
-        printWriter.println(String.format("%s%s%s%s%"+format,
-            isoDateFormatter.format(timeStamp), DELIM, name, DELIM, value));
+          format = "f";
+        boolean doPrint = true;
+        Integer limit = limitMap.get(name);
+        if (limit != null) {
+          int count = countMap.get(name);
+          countMap.put(name, count + 1);
+          doPrint = count <= limit;
+        }
+        if (doPrint) {
+          printWriter.println(String.format("%s%s%s%s%" + format,
+              isoDateFormatter.format(timeStamp), DELIM, name, DELIM, value));
+          printWriter.flush();
+        }
       }
     }
 
     public void close() {
       printWriter.close();
+    }
+
+    public void resetCounters() {
+      int i=0;
+      for (String name : names) {
+        limitMap.put(name, limits[i++]);
+        countMap.put(name, 0);
+      }
     }
 
   }
@@ -100,7 +131,7 @@ public class TestLogs {
       csvFile = new File(csvFileName);
       printWriter = new PrintWriter(csvFile);
     }
-    
+
     @Override
     public <T> void setValue(String name, T value, Date timeStamp) {
       if (value == null)
@@ -114,6 +145,7 @@ public class TestLogs {
           double kw = dcamps * dcvolts / -1000.0;
           printWriter.println(String.format("%s;%3d;%5.1f\n",
               isoDateFormatter.format(timeStamp), value, kw));
+          printWriter.flush();
         }
       }
     }
@@ -124,8 +156,8 @@ public class TestLogs {
 
   }
 
-  public static int limit=5;
-  
+  public static int limit = 5;
+
   @Test
   public void testLogs() throws Exception {
     WaitableApp.toolkitInit();
@@ -139,9 +171,10 @@ public class TestLogs {
           OBDTriplet obdTriplet = new OBDTriplet(VehicleGroup.get("Triplet"));
           obdTriplet.getElm327().setHeader(true);
           obdTriplet.getElm327().setLength(true);
-          // CANValueAnalyzer analyzer = new
-          // CANValueAnalyzer("/tmp/canlog.csv","Speed", "DCAmps","DCVolts");
-          KWAnalyzer analyzer = new KWAnalyzer("/tmp/kwlog.csv");
+          CANValueAnalyzer analyzer = new CANValueAnalyzer("/tmp/canlog.csv",
+              "Odometer", "BatteryCapacity");
+          analyzer.setLimits(1,1);
+          // KWAnalyzer analyzer = new KWAnalyzer("/tmp/kwlog.csv");
           obdTriplet.setCanValueHandler(analyzer);
           int count = 0;
           long sum = 0;
@@ -150,11 +183,12 @@ public class TestLogs {
               sum += logFile.length() / 1024 / 1024;
               System.out.println(String.format("%3d: %5d m %7d k %s \n",
                   ++count, sum, logFile.length() / 1024, logFile.getName()));
-              if (count>=limit)
+              if (count >= limit)
                 break;
               LogReader logReader = new LogReader(logFile);
               logReader.addReponseHandler(obdTriplet);
               logReader.read();
+              analyzer.resetCounters();
             }
           } // for
           analyzer.close();

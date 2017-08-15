@@ -47,15 +47,12 @@ import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.Pid;
-import com.bitplan.can4eve.SoftwareVersion;
 import com.bitplan.can4eve.Vehicle;
-import com.bitplan.can4eve.gui.App;
 import com.bitplan.can4eve.json.JsonManagerImpl;
 import com.bitplan.elm327.Config;
 import com.bitplan.elm327.Config.ConfigMode;
 import com.bitplan.elm327.Connection;
 import com.bitplan.elm327.Packet;
-import com.bitplan.i18n.Translator;
 import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.obdii.elm327.ElmSimulator;
 import com.bitplan.obdii.elm327.LogPlayerImpl;
@@ -75,7 +72,6 @@ import javafx.application.Platform;
  */
 public class TestELM327 extends TestOBDII {
 
-  public static boolean debug = false;
   public static boolean simulated = true;
   // the vehicle under test
 
@@ -118,33 +114,7 @@ public class TestELM327 extends TestOBDII {
     return elm327;
   }
 
-  public class DummySoftwareVersion implements SoftwareVersion {
 
-    @Override
-    public String getName() {
-      return "CanTriplet";
-    }
-
-    @Override
-    public String getVersion() {
-      return OBDMain.VERSION;
-    }
-
-    @Override
-    public String getUrl() {
-      return "http://can4eve.bitplan.com";
-    }
-
-    @Override
-    public String getSupportEMail() {
-      return "support@bitplan.com";
-    }
-
-    @Override
-    public String getSupportEMailPreamble() {
-      return "Dear can4eve support\n";
-    }
-  }
 
   /**
    * prepare OBD Triplet
@@ -171,19 +141,6 @@ public class TestELM327 extends TestOBDII {
     // obdTriplet.getElm327().debug = debug;
     if (!simulated)
       obdTriplet.getElm327().getCon().start();
-  }
-
-  /**
-   * get the Display
-   * 
-   * @return
-   * @throws Exception
-   */
-  private JavaFXDisplay getDisplay() throws Exception {
-    Translator.initialize("en");
-    JavaFXDisplay jfxDisplay = new JFXTripletDisplay(App.getInstance(),
-        new DummySoftwareVersion(), new OBDMain());
-    return jfxDisplay;
   }
 
   @Test
@@ -411,6 +368,7 @@ public class TestELM327 extends TestOBDII {
     File logRoot = new File("src/test/data");
     File logFile = null;
     if (!simulated) {
+      // FIXME - allow testing with test-Configuration
       Config config = Config.getInstance(ConfigMode.Test);
       logFile = obdTriplet.logResponses(logRoot, "testLogs");
     }

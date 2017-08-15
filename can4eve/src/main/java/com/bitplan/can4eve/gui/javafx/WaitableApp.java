@@ -145,6 +145,7 @@ public abstract class WaitableApp extends Application implements Display {
    * show me
    */
   public void show() {
+    // ignore multiple calls
     if (stage != null)
       return;
     Platform.runLater(() -> {
@@ -163,6 +164,8 @@ public abstract class WaitableApp extends Application implements Display {
     if (stage != null)
       Platform.runLater(() -> stage.close());
     this.waitClose();
+    // allow reopening
+    stage=null;
   }
   
   /**

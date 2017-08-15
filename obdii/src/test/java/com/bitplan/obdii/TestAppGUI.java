@@ -68,6 +68,7 @@ import com.bitplan.obdii.javafx.ClockPane.Watch;
 import com.bitplan.obdii.javafx.JFXCanCellStatePlot;
 import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
 import com.bitplan.obdii.javafx.JFXStopWatch;
+import com.bitplan.obdii.javafx.JavaFXDisplay;
 import com.bitplan.obdii.javafx.LCDPane;
 import com.bitplan.obdii.javafx.SimulatorPane;
 import com.bitplan.obdii.javafx.WelcomeWizard;
@@ -96,6 +97,7 @@ import javafx.beans.property.SimpleLongProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -112,7 +114,7 @@ import javafx.util.Duration;
  * @author wf
  *
  */
-public class TestAppGUI {
+public class TestAppGUI extends TestOBDII {
   public static boolean debug=false;
   public static final int SHOW_TIME = 4000;
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii");
@@ -268,7 +270,6 @@ public class TestAppGUI {
     String title = "Cell Temperature";
     String xTitle = "cell";
     String yTitle = "° Celsius";
-    SampleApp.toolkitInit();
     final JFXCanCellStatePlot valuePlot = new JFXCanCellStatePlot(title, xTitle,
         yTitle, cellTemp, 2.0, 0.5);
     valuePlot.updateOn(cellTemp.getUpdateCountProperty());
@@ -286,7 +287,6 @@ public class TestAppGUI {
 
   @Test
   public void testMedusa() throws Exception {
-    WaitableApp.toolkitInit();
     OverviewDemo demo = new OverviewDemo();
     demo.init();
     GridPane demoPane = demo.getDemoPane();
@@ -295,7 +295,6 @@ public class TestAppGUI {
 
   @Test
   public void testGauge() throws InterruptedException {
-    WaitableApp.toolkitInit();
     GridPane pane = new GridPane();
     Gauge gauge = GaugeBuilder.create().minValue(0).maxValue(100)
         .tickLabelDecimals(0).decimals(1).autoScale(true).animated(true)
@@ -356,7 +355,6 @@ public class TestAppGUI {
 
   @Test
   public void testClockPanel() throws Exception {
-    WaitableApp.toolkitInit();
     Translator.initialize();
     ClockPane clockPane = new ClockPane();
     clockPane.setWatch(Watch.Charging, 1320 * 1000);
@@ -373,7 +371,6 @@ public class TestAppGUI {
 
   @Test
   public void testChargePanel() throws Exception {
-    WaitableApp.toolkitInit();
     Translator.initialize();
     ChargePane chargePane = new ChargePane();
     Map<String, SimpleDoubleProperty> props = new HashMap<String, SimpleDoubleProperty>();
@@ -406,7 +403,6 @@ public class TestAppGUI {
 
   @Test
   public void testSimulatorPane() throws Exception {
-    WaitableApp.toolkitInit();
     Translator.initialize();
     LogPlayer logPlayer = new LogPlayerImpl();
     logPlayer.setLogFile(TestSimulatorLogReader.getTestFile());
@@ -435,7 +431,6 @@ public class TestAppGUI {
     String title = "SOC/RR";
     String xTitle = "time";
     String yTitle = "%/km";
-    SampleApp.toolkitInit();
     VehicleGroup vg = VehicleGroup.get("Triplet");
     CANPropertyManager cpm = new CANPropertyManager(vg);
     Map<String, CANProperty> properties = cpm.getCANProperties("SOC", "Range");
@@ -452,6 +447,18 @@ public class TestAppGUI {
       valuePlot.update();
       Thread.sleep(SHOW_TIME * 2 / minutes);
     }
+    sampleApp.close();
+  }
+  
+  @Ignore
+  public void testTabIcons() throws Exception {
+    JavaFXDisplay display = super.getDisplay();
+    App app=App.getInstance();
+    Scene scene = display.createScene();
+    display.createMenuBar(scene, app);
+    SampleApp sampleApp=new SampleApp("menus",display.getMenuBar());
+    sampleApp.show();
+    sampleApp.waitOpen();
     sampleApp.close();
   }
 
@@ -471,7 +478,6 @@ public class TestAppGUI {
 
   @Ignore
   public void testFXML() throws Exception {
-    WaitableApp.toolkitInit();
     Parent root = FXMLLoader.load(
         getClass().getResource("/com/bitplan/can4eve/gui/connection.fxml"));
     assertNotNull(root);
@@ -482,7 +488,6 @@ public class TestAppGUI {
 
   @Test
   public void testStopWatch() {
-    WaitableApp.toolkitInit();
     StopWatch stopWatch = new JFXStopWatch(I18n.WATCH_TOTAL);
     stopWatch.halt();
     stopWatch.reset();
@@ -529,7 +534,6 @@ public class TestAppGUI {
   @SuppressWarnings("unchecked")
   @Test
   public void testTaskLaunch() throws Exception {
-    WaitableApp.toolkitInit();
     // https://stackoverflow.com/questions/30089593/java-fx-lambda-for-task-interface
     TaskLaunch<Integer> launch = TaskLaunch.start(() -> increment(),
         Integer.class);
@@ -553,7 +557,6 @@ public class TestAppGUI {
 
   @Test
   public void testBinding() {
-    // WaitableApp.toolkitInit();
     SimpleLongProperty lp = new SimpleLongProperty();
     lp.setValue(4711);
     keepBinding = Bindings.createLongBinding(() -> callMe(lp.get()), lp);
@@ -566,7 +569,6 @@ public class TestAppGUI {
   @Test
   public void testWelcomeWizard() throws Exception {
     Translator.initialize();
-    WaitableApp.toolkitInit();
     WelcomeWizard[] wizards = new WelcomeWizard[1];
 
     Platform.runLater(() -> {

@@ -136,6 +136,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
   private Preferences prefs;
   private Button fullScreenButton;
   private Button hideMenuButton;
+  private Rectangle2D sceneBounds;
 
   public static boolean debug = false;
 
@@ -275,11 +276,11 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
    * 
    * @param scene
    */
-  public void createMenuBar(Scene scene) {
-    setMenuBar(new MenuBar());
+  public MenuBar createMenuBar(Scene scene, com.bitplan.can4eve.gui.App app) {
+    MenuBar lMenuBar = new MenuBar();
     for (com.bitplan.can4eve.gui.Menu amenu : app.getMainMenu().getSubMenus()) {
       Menu menu = new Menu(i18n(amenu.getId()));
-      getMenuBar().getMenus().add(menu);
+      lMenuBar.getMenus().add(menu);
       for (com.bitplan.can4eve.gui.MenuItem amenuitem : amenu.getMenuItems()) {
         MenuItem menuItem = new MenuItem(i18n(amenuitem.getId()));
         menuItem.setOnAction(this);
@@ -292,18 +293,19 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
     hideMenuButton.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
-        showMenuBar(scene, getMenuBar(), !getMenuBar().isVisible());
+        showMenuBar(scene, lMenuBar, !lMenuBar.isVisible());
       }
     });
-    showMenuBar(scene, getMenuBar(), true);
+    return lMenuBar;
   }
+  
 
-  @Override
-  public void start(Stage stage) {
-    super.start(stage);
-    stage.setTitle(
-        softwareVersion.getName() + " " + softwareVersion.getVersion());
-    this.stage = stage;
+  /**
+   * create the Scene
+   * set sceneBounds as a side effect.
+   * @return the scene
+   */
+  public Scene createScene() {
     root = new VBox();
     int screenPercent;
     try {
@@ -312,10 +314,22 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
     } catch (Exception e) {
       screenPercent = 100;
     }
-    Rectangle2D sceneBounds = super.getSceneBounds(screenPercent, 2, 3);
-    scene = new Scene(root, sceneBounds.getWidth(), sceneBounds.getHeight());
-    scene.setFill(Color.OLDLACE);
-    createMenuBar(scene);
+    sceneBounds = super.getSceneBounds(screenPercent, 2, 3);
+    Scene newScene = new Scene(root, sceneBounds.getWidth(),
+        sceneBounds.getHeight());
+    newScene.setFill(Color.OLDLACE);
+    return newScene;
+  }
+
+  @Override
+  public void start(Stage stage) {
+    super.start(stage);
+    stage.setTitle(
+        softwareVersion.getName() + " " + softwareVersion.getVersion());
+    this.stage = stage;
+    scene = createScene();
+    setMenuBar(createMenuBar(scene, app));
+    showMenuBar(scene, getMenuBar(), true);
     stage.setScene(scene);
     setUpStatusBar();
     setup(app);
@@ -832,11 +846,12 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
   /**
    * internationalization function
    * 
+   * @param params
    * @param text
    * @return translated text
    */
-  public String i18n(String text) {
-    String i18n = Translator.translate(text);
+  public String i18n(String text, Object... params) {
+    String i18n = I18n.get(text, params);
     return i18n;
   }
 
