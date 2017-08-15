@@ -38,6 +38,8 @@ import org.controlsfx.control.Notifications;
 import org.controlsfx.dialog.Wizard;
 import org.controlsfx.dialog.Wizard.LinearFlow;
 import org.controlsfx.dialog.WizardPane;
+import org.controlsfx.glyphfont.FontAwesome;
+import org.controlsfx.glyphfont.Glyph;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -97,13 +99,15 @@ import javafx.beans.property.SimpleLongProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuBar;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -450,15 +454,27 @@ public class TestAppGUI extends TestOBDII {
     sampleApp.close();
   }
   
-  @Ignore
+  @Test
   public void testTabIcons() throws Exception {
     JavaFXDisplay display = super.getDisplay();
-    App app=App.getInstance();
-    Scene scene = display.createScene();
-    display.createMenuBar(scene, app);
-    SampleApp sampleApp=new SampleApp("menus",display.getMenuBar());
+    VBox vbox=new VBox();    
+    display.setRoot(vbox);
+    SampleApp sampleApp=new SampleApp("menus",vbox);
     sampleApp.show();
     sampleApp.waitOpen();
+    Platform.runLater(()-> {
+      MenuBar menuBar = display.createMenuBar(sampleApp.getScene(), display.getApp());
+      display.setMenuBar(menuBar);
+      display.showMenuBar(sampleApp.getScene(), menuBar, true);
+      display.setUpStatusBar();
+    });
+    Platform.runLater(()-> {
+      display.setupDashBoard();
+      int ICON_SIZE=64;
+      Glyph icon = display.getIcon(FontAwesome.Glyph.TACHOMETER,ICON_SIZE);
+      display.setTabGlyph(display.getActiveTab(),icon);
+    });
+    Thread.sleep(SHOW_TIME);
     sampleApp.close();
   }
 

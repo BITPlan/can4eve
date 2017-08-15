@@ -33,6 +33,10 @@ import java.util.logging.Logger;
 
 import org.controlsfx.control.Notifications;
 import org.controlsfx.control.StatusBar;
+import org.controlsfx.glyphfont.FontAwesome;
+import org.controlsfx.glyphfont.Glyph;
+import org.controlsfx.glyphfont.GlyphFont;
+import org.controlsfx.glyphfont.GlyphFontRegistry;
 
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.ExceptionHandler;
@@ -69,6 +73,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -79,6 +84,7 @@ import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -137,12 +143,14 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
   private Button fullScreenButton;
   private Button hideMenuButton;
   private Rectangle2D sceneBounds;
+  private GlyphFont fontAwesome;
 
   public static boolean debug = false;
 
   public static final String DASH_BOARD_GROUP = "dashBoardGroup";
 
   protected static final String HISTORY_GROUP = "historyGroup";
+  private static final int ICON_SIZE = 48;
 
   /**
    * construct me from an abstract application description and a software
@@ -164,6 +172,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
     ExceptionController.setSoftwareVersion(softwareVersion);
     ExceptionController.setLinker(this);
     JFXWizardPane.setLinker(this);
+    fontAwesome = GlyphFontRegistry.font("FontAwesome");
   }
 
   public SoftwareVersion getSoftwareVersion() {
@@ -195,6 +204,42 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
    */
   public void setMenuBar(MenuBar menuBar) {
     this.menuBar = menuBar;
+  }
+
+  public VBox getRoot() {
+    return root;
+  }
+
+  public void setRoot(VBox root) {
+    this.root = root;
+  }
+
+  /**
+   * get the icon for the given glyph
+   * 
+   * @param glyph
+   * @param fontSize
+   *          - the fontSize of the glyph
+   * @return the Glyph
+   */
+  public Glyph getIcon(FontAwesome.Glyph glyph, int fontSize) {
+    Glyph icon = fontAwesome.create(glyph);
+    icon.setFontSize(fontSize);
+    return icon;
+  }
+
+  public void setTabGlyph(Tab tab,FontAwesome.Glyph glyph) {
+    Glyph icon=getIcon(glyph,ICON_SIZE);
+    setTabGlyph(tab,icon);
+  }
+  
+  /**
+   * set the glyph for the tab
+   * @param tab
+   * @param glyph
+   */
+  public void setTabGlyph(Tab tab, Glyph glyph) {
+    tab.setGraphic(glyph);
   }
 
   @Override
@@ -260,7 +305,14 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
    * @param pMenuBar
    */
   public void showMenuBar(Scene scene, MenuBar pMenuBar, boolean show) {
-    ObservableList<Node> rootChilds = ((VBox) scene.getRoot()).getChildren();
+    Parent sroot = scene.getRoot();
+    ObservableList<Node> rootChilds = null;
+    if (sroot instanceof VBox)
+      rootChilds = ((VBox) sroot).getChildren();
+    if (rootChilds == null)
+      throw new RuntimeException(
+          "showMenuBar can not handle scene root of type "
+              + sroot.getClass().getName());
     if (!show && rootChilds.contains(pMenuBar)) {
       rootChilds.remove(pMenuBar);
     } else if (show) {
@@ -298,15 +350,14 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
     });
     return lMenuBar;
   }
-  
 
   /**
-   * create the Scene
-   * set sceneBounds as a side effect.
+   * create the Scene set sceneBounds as a side effect.
+   * 
    * @return the scene
    */
   public Scene createScene() {
-    root = new VBox();
+    setRoot(new VBox());
     int screenPercent;
     try {
       prefs = Preferences.getInstance();
@@ -315,10 +366,16 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
       screenPercent = 100;
     }
     sceneBounds = super.getSceneBounds(screenPercent, 2, 3);
-    Scene newScene = new Scene(root, sceneBounds.getWidth(),
+    Scene newScene = new Scene(getRoot(), sceneBounds.getWidth(),
         sceneBounds.getHeight());
     newScene.setFill(Color.OLDLACE);
     return newScene;
+  }
+
+  public void setupDashBoard() {
+    TabPane dashboardPane = this.addTabPane(DASH_BOARD_GROUP);
+    this.setActiveTabPane(DASH_BOARD_GROUP);
+    setupSpecial(dashboardPane);
   }
 
   @Override
@@ -333,9 +390,8 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
     stage.setScene(scene);
     setUpStatusBar();
     setup(app);
-    TabPane dashboardPane = this.addTabPane(DASH_BOARD_GROUP);
-    this.setActiveTabPane(DASH_BOARD_GROUP);
-    setupSpecial(dashboardPane);
+    setupDashBoard();
+
     stage.setX(sceneBounds.getMinX());
     stage.setY(sceneBounds.getMinY());
     stage.show();
@@ -374,14 +430,14 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
     }
   }
 
-  private void setUpStatusBar() {
+  public void setUpStatusBar() {
     statusBar = new StatusBar();
     watchDogLabel = new Label();
     watchDogLabel.setTextFill(Color.web("808080"));
     watchDogLabel.setFont(new Font("Arial", 24));
     this.setWatchDogState("?", "-");
     statusBar.getLeftItems().add(watchDogLabel);
-    root.getChildren().add(statusBar);
+    getRoot().getChildren().add(statusBar);
   }
 
   /**
@@ -392,6 +448,11 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
    */
   public TabPane addTabPane(String groupId) {
     TabPane tabPane = new TabPane();
+    tabPane.setTabMinHeight(ICON_SIZE+4);
+    tabPane.setTabMaxHeight(ICON_SIZE+4);
+    // make sure it grows e.g. when Icons are set
+    // https://stackoverflow.com/a/25164425/1497139
+    VBox.setVgrow(tabPane, Priority.ALWAYS);
     tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
     this.tabPaneByView.put(groupId, tabPane);
     return tabPane;
@@ -402,7 +463,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
    * 
    * @param app
    */
-  private void setup(App app) {
+  public void setup(App app) {
     controls = new HashMap<String, GenericControl>();
     for (Group group : app.getGroups()) {
       TabPane tabPane = this.addTabPane(group.getId());
@@ -428,10 +489,12 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
    * @param content
    * @return
    */
-  public Tab addTab(TabPane tabPane, int index, String title, Node content) {
+  public Tab addTab(TabPane tabPane, int index, String title,FontAwesome.Glyph glyph, Node content) {
     Tab tab = new Tab(title);
     tab.setContent(content);
     tabPane.getTabs().add(index, tab);
+    if (glyph!=null)
+      this.setTabGlyph(tab, glyph);
     return tab;
   }
 
@@ -494,12 +557,12 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
   public void setupSpecial(TabPane tabPane) {
     clockPane = new ClockPane();
     odoPane = new OdoPane();
-    odoTab = addTab(tabPane, 0, I18n.get(I18n.ODO_INFO), odoPane);
+    odoTab = addTab(tabPane, 0, I18n.get(I18n.ODO_INFO),FontAwesome.Glyph.AUTOMOBILE,odoPane);
     dashBoardPane = new DashBoardPane(obdApp.getVehicle());
     chargePane = new ChargePane();
-    chargeTab = addTab(tabPane, 0, I18n.get(I18n.SOC), chargePane);
-    dashBoardTab = addTab(tabPane, 0, I18n.get(I18n.DASH_BOARD), dashBoardPane);
-    clockTab = addTab(tabPane, 0, I18n.get(I18n.CLOCKS), clockPane);
+    chargeTab = addTab(tabPane, 0, I18n.get(I18n.SOC), FontAwesome.Glyph.LEVEL_UP,chargePane);
+    dashBoardTab = addTab(tabPane, 0, I18n.get(I18n.DASH_BOARD), FontAwesome.Glyph.TACHOMETER,dashBoardPane);
+    clockTab = addTab(tabPane, 0, I18n.get(I18n.CLOCKS), FontAwesome.Glyph.CLOCK_ALT, clockPane);
     // disable menu items
     this.setMenuItemDisable(I18n.OBD_HALT_MENU_ITEM, true);
     this.setMenuItemDisable(I18n.FILE_CLOSE_MENU_ITEM, true);
@@ -520,9 +583,11 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
       }
     });
 
-    statusBar.getRightItems().add(screenShotButton);
-    statusBar.getRightItems().add(hideMenuButton);
-    statusBar.getRightItems().add(fullScreenButton);
+    if (statusBar != null) {
+      statusBar.getRightItems().add(screenShotButton);
+      statusBar.getRightItems().add(hideMenuButton);
+      statusBar.getRightItems().add(fullScreenButton);
+    }
     vehicleForm = app.getFormById("preferencesGroup", "vehicleForm");
   }
 
@@ -535,7 +600,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
     LogPlayer logPlayer = obdApp.getLogPlayer();
     if (simulatorPane == null) {
       simulatorPane = new SimulatorPane(logPlayer, this);
-      root.getChildren().add(1, simulatorPane);
+      getRoot().getChildren().add(1, simulatorPane);
       setMenuItemDisable(I18n.OBD_START_WITH_LOG_MENU_ITEM, true);
       setMenuItemDisable(I18n.FILE_CLOSE_MENU_ITEM, false);
     }
@@ -547,7 +612,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
   @Override
   public void closeSimulation() {
     if (simulatorPane != null) {
-      root.getChildren().remove(simulatorPane);
+      getRoot().getChildren().remove(simulatorPane);
       simulatorPane = null;
     }
 
@@ -572,13 +637,14 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
    * @return the menu item
    */
   public MenuItem getMenuItem(String id) {
-    for (Menu menu : this.getMenuBar().getMenus()) {
-      for (MenuItem menuItem : menu.getItems()) {
-        if (id.equals(menuItem.getId())) {
-          return menuItem;
+    if (this.getMenuBar() != null)
+      for (Menu menu : this.getMenuBar().getMenus()) {
+        for (MenuItem menuItem : menu.getItems()) {
+          if (id.equals(menuItem.getId())) {
+            return menuItem;
+          }
         }
       }
-    }
     return null;
   }
 
@@ -917,14 +983,15 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
   public TabPane setActiveTabPane(String groupId) {
     TabPane oldtabPane = this.getActiveTabPane();
     if (oldtabPane != null) {
-      root.getChildren().remove(oldtabPane);
+      getRoot().getChildren().remove(oldtabPane);
     }
     this.activeView = groupId;
     activeTabPane = getActiveTabPane();
     if (activeTabPane == null)
       throw new IllegalStateException(
           "tab Pane with groupId " + groupId + " missing");
-    root.getChildren().add(activeTabPane);
+    getRoot().getChildren().add(activeTabPane);
+   
     return activeTabPane;
   }
 

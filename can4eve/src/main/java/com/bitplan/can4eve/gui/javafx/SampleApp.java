@@ -40,6 +40,15 @@ public class SampleApp extends WaitableApp {
   private int screenPercent;
   private int divX;
   private int divY;
+  private Scene scene;
+
+  public Scene getScene() {
+    return scene;
+  }
+
+  public void setScene(Scene scene) {
+    this.scene = scene;
+  }
 
   /**
    * construct the given Sample App
@@ -106,8 +115,8 @@ public class SampleApp extends WaitableApp {
     super.start(stage);
     stage.setTitle(title);
     Rectangle2D sceneBounds=super.getSceneBounds(screenPercent,divX,divY);
-    Scene scene = new Scene(region, sceneBounds.getWidth(), sceneBounds.getHeight());
-    stage.setScene(scene);
+    setScene(new Scene(region, sceneBounds.getWidth(), sceneBounds.getHeight()));
+    stage.setScene(getScene());
     stage.setX(sceneBounds.getMinX());
     stage.setY(sceneBounds.getMinY());
     stage.show();
