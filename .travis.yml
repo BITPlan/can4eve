@@ -12,13 +12,14 @@ jdk: oraclejdk8
 # support for headless Swing tests and other gui stuff
 # https://docs.travis-ci.com/user/gui-and-headless-browsers/ 
 # workaround 2017-08-06
-#dist: precise
+dist: precise
 before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3 # give xvfb some time to start
+# proposed xvfb fix
+#before_install: sudo apt-get install xvfb firefox
 # switch off gpg handling
-before_install: sudo apt-get install xvfb firefox
 install: mvn install -DskipTests=true -Dgpg.skip=true
 script: mvn test
 # Android 
