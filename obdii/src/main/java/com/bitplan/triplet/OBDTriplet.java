@@ -361,6 +361,7 @@ public class OBDTriplet extends OBDHandler {
       cvh.setValue("HighBeam", (lightNum & 0x04) != 0, timeStamp);
       cvh.setValue("HeadLight", (lightNum & 0x20) != 0, timeStamp);
       cvh.setValue("ParkingLight", (lightNum & 0x40) != 0, timeStamp);
+      // 0x80 ! important charging?
       break;
     case "MotorTemp_RPM":
       cvh.setValue("MotorTemp", pr.d[3] - 40, timeStamp);
