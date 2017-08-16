@@ -530,6 +530,17 @@
           "falseSymbol": "",
           "historyValuesPerMinute": 4,
           "maxIndex": 0
+        },
+        {
+          "name": "ACPlug",
+          "title": "AC Plug",
+          "description": "AC Plug",
+          "format": "%s",
+          "type": "BooleanValue",
+          "trueSymbol": "●",
+          "falseSymbol": "",
+          "historyValuesPerMinute": 4,
+          "maxIndex": 0
         }
       ]
     },

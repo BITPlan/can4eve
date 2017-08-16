@@ -156,7 +156,7 @@ public class OBDTriplet extends OBDHandler {
    * things to do / initialize after I a was constructed
    */
   public void postConstruct() {
-    initCanValues("ACAmps", "ACVolts", "ACPower", "Accelerator",
+    initCanValues("ACAmps", "ACVolts", "ACPlug","ACPower", "Accelerator",
         "BatteryCapacity", "BlinkerLeft", "BlinkerRight", "BreakPedal",
         "BreakPressed", "CellCount", "CellTemperature", "CellVoltage",
         "ChargerTemp", "Climate", "DCAmps", "DCVolts", "DCPower", "DoorOpen",
@@ -361,7 +361,8 @@ public class OBDTriplet extends OBDHandler {
       cvh.setValue("HighBeam", (lightNum & 0x04) != 0, timeStamp);
       cvh.setValue("HeadLight", (lightNum & 0x20) != 0, timeStamp);
       cvh.setValue("ParkingLight", (lightNum & 0x40) != 0, timeStamp);
-      // 0x80 ! important charging?
+      // ilightNum 0x40?
+      cvh.setValue("ACPlug", (ilightNum & 0x80) !=0,timeStamp);
       break;
     case "MotorTemp_RPM":
       cvh.setValue("MotorTemp", pr.d[3] - 40, timeStamp);

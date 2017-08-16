@@ -304,6 +304,12 @@
 							"fieldSize": 40
 						},
 						{
+							"title": "AC Plug",
+							"format": "%s",
+							"labelSize": 13,
+							"fieldSize": 40
+						},
+						{
 							"title": "DC Amps",
 							"format": "%s",
 							"labelSize": 13,

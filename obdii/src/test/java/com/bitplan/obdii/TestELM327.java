@@ -76,7 +76,8 @@ public class TestELM327 extends TestOBDII {
   // the vehicle under test
 
   public int SIMULATOR_TIMEOUT = 200; // Simulator should be quick 2 msecs is
-                                      // feasible 50 is used here on desktop computers
+                                      // feasible 50 is used here on desktop
+                                      // computers
                                       // 200 is a value for travis
 
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii");
@@ -113,8 +114,6 @@ public class TestELM327 extends TestOBDII {
         SIMULATOR_TIMEOUT);
     return elm327;
   }
-
-
 
   /**
    * prepare OBD Triplet
@@ -488,7 +487,7 @@ public class TestELM327 extends TestOBDII {
   public void testCanValues() throws Exception {
     OBDHandler lOBDTriplet = new OBDTriplet(getVehicleGroup());
     List<CANValue<?>> canValues = lOBDTriplet.getCANValues();
-    assertEquals(36, canValues.size());
+    assertEquals(37, canValues.size());
 
     String names = "";
     String delim = "";
@@ -497,13 +496,15 @@ public class TestELM327 extends TestOBDII {
       delim = ",";
       assertTrue(canValue.isRead());
     }
-    // debug = true;
+    //debug = true;
     if (debug) {
       LOGGER.log(Level.INFO, names);
     }
     assertTrue(names.startsWith(
-        "Door Open,Climate,RPM Speed,Battery Capacity,AC Amps,Blinker Right,High Beam,RPM,Vent Dir,Blinker Left,DC Amps,Shifter,Charger temp,DC Power,Cell Voltage,Head Light,Speed,Trip Rounds,AC Power,SOC,AC Volts,Break Pressed,total km,Motor temp,Range,Cell Temperature,Steering Position,Break Pedal,Parking Light,Steering Movement,Trip Odo,VIN,# of Cells,Key,Accelerator,DC Volts"));
-  }
+        "Door Open,Climate,RPM Speed,Battery Capacity,AC Amps,Blinker Right,High Beam,RPM,AC Plug,Vent Dir,Blinker Left,DC Amps,Shifter,Charger temp,DC Power,Cell Voltage,Head Light,Speed,Trip Rounds,AC Power,SOC,AC Volts,Break Pressed,total km,Motor temp,Range,Cell Temperature,Steering Position,Break Pedal,Parking Light,Steering Movement,Trip Odo,VIN,# of Cells,Key,Accelerator,DC Volts"
+     ));
+    
+    }
 
   @Test
   public void testPidFromPid() throws Exception {
@@ -533,10 +534,10 @@ public class TestELM327 extends TestOBDII {
 
   @Test
   public void testGetPidList() throws Exception {
-    //debug=true;
+    // debug=true;
     OBDHandler lOBDTriplet = new OBDTriplet(getVehicleGroup());
     List<CANValue<?>> canValues = lOBDTriplet.getCANValues();
-    assertEquals(36, canValues.size());
+    assertEquals(37, canValues.size());
     for (CANValue<?> canValue : canValues) {
       for (Pid pid : canValue.canInfo.getPids()) {
         if (debug) {
