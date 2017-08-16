@@ -353,16 +353,18 @@ public class OBDTriplet extends OBDHandler {
       cvh.setValue(pidName, keyVal == 4, timeStamp);
       break;
     case "Lights":
-      int lightNum = pr.d[0] * 256 + pr.d[1];
-      int ilightNum = pr.d[2];
-      cvh.setValue("DoorOpen", (ilightNum & 0x01) != 0, timeStamp);
-      cvh.setValue("BlinkerRight", (lightNum & 0x01) != 0, timeStamp);
-      cvh.setValue("BlinkerLeft", (lightNum & 0x02) != 0, timeStamp);
-      cvh.setValue("HighBeam", (lightNum & 0x04) != 0, timeStamp);
-      cvh.setValue("HeadLight", (lightNum & 0x20) != 0, timeStamp);
-      cvh.setValue("ParkingLight", (lightNum & 0x40) != 0, timeStamp);
+      int light0=  pr.d[0];    // e.g. 03 / 43
+      int light1 = pr.d[1]; 
+      int light2 = pr.d[2];  // e.g. 0C / 0F
+      cvh.setValue("BlinkerRight", (light1 & 0x01) != 0, timeStamp);
+      cvh.setValue("BlinkerLeft", (light1 & 0x02) != 0, timeStamp);
+      cvh.setValue("HighBeam", (light1 & 0x04) != 0, timeStamp);
+      cvh.setValue("HeadLight", (light1 & 0x20) != 0, timeStamp);
+      cvh.setValue("ParkingLight", (light1 & 0x40) != 0, timeStamp);
       // ilightNum 0x40?
-      cvh.setValue("ACPlug", (ilightNum & 0x80) !=0,timeStamp);
+      cvh.setValue("DoorOpen", (light2 & 0x01) != 0, timeStamp);
+      // FIXME - this is not the ACPlug switch - what is it?
+      cvh.setValue("ACPlug", (light2 & 0x80) !=0,timeStamp);
       break;
     case "MotorTemp_RPM":
       cvh.setValue("MotorTemp", pr.d[3] - 40, timeStamp);
