@@ -41,4 +41,4 @@ https://www.apache.org/licenses/LICENSE-2.0
 
 ### Version History
 2017-06 0.0.1 - non released developer version (alpha test)
-2017-08 0.0.1 - beta test with OBDLink SX
+2017-08 0.0.1 - beta test with OBDLink SX open
