@@ -64,6 +64,7 @@ import com.bitplan.i18n.Translator;
 import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.elm327.LogPlayer;
 import com.bitplan.obdii.elm327.LogPlayerImpl;
+import com.bitplan.obdii.javafx.CANValuePane;
 import com.bitplan.obdii.javafx.ChargePane;
 import com.bitplan.obdii.javafx.ClockPane;
 import com.bitplan.obdii.javafx.ClockPane.Watch;
@@ -105,7 +106,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -428,6 +428,23 @@ public class TestAppGUI extends TestOBDII {
     }
     sampleApp.close();
   }
+  
+  @Test
+  public void testResetableGauge() throws Exception {
+    CANValuePane cvpane=new CANValuePane();
+    Gauge gauge=cvpane.addGauge("TripOdo",I18n.TRIP_ODO_METER,I18n.KM,0,0);
+    gauge.setDecimals(3);
+    cvpane.fixColumnSizes(4, 100);
+    cvpane.fixRowSizes(4, 100);
+    SampleApp sampleApp=new SampleApp("Trip odometer", cvpane);
+    sampleApp.show();
+    sampleApp.waitOpen();
+    Platform.runLater(()->gauge.setValue(102.723));
+    Thread.sleep(SHOW_TIME);
+    sampleApp.close();
+    
+  }
+
 
   @SuppressWarnings("rawtypes")
   @Test
@@ -581,7 +598,8 @@ public class TestAppGUI extends TestOBDII {
     assertEquals(2, calledEffect);
     assertEquals(2, keepBinding.get());
   }
-
+  
+ 
   @Test
   public void testWelcomeWizard() throws Exception {
     Translator.initialize();

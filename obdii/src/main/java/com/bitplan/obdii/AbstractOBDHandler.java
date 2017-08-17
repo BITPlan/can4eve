@@ -291,15 +291,17 @@ public abstract class AbstractOBDHandler implements ResponseHandler {
     lelm.sendCommand("AT H1", "OK");
     lelm.sendCommand("AT SP6", "OK");
     // TODO - do we want to filter?
+    // response id
     lelm.sendCommand("AT CRA " + pid.getPid(),"OK");
     lelm.sendCommand("AT FCSH"+isoPid,"OK");
     // FIXME - this is not true for all Pids
     lelm.sendCommand("AT FCSD300000","OK");
     lelm.sendCommand("AT FCSM1","OK");
     lelm.sendCommand("AT FCSH"+isoPid,"OK");
+    // request ID
     lelm.sendCommand("AT SH"+isoPid,"OK");
     // FIXME - this is not true for all Pids - make configurable
-    // special mode 21
+    // special mode 21 - request
     lelm.sendCommand("2101",".*");
     while (lelm.getCon().getResponse(null).isValid()) {
       lelm.getCon().pause(0, 200);

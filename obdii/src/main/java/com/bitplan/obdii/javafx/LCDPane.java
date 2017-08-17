@@ -26,7 +26,6 @@ import java.util.List;
 import eu.hansolo.LcdGauge;
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.LcdDesign;
-import eu.hansolo.medusa.LcdFont;
 
 /**
  * a Grid of LCD Fields
