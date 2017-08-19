@@ -1,4 +1,4 @@
 #!/bin/bash
 # WF 2017-06-28
 git pull
-mvn -D skipTests install
+mvn -D skipTests clean install

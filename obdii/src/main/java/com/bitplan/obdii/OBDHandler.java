@@ -47,9 +47,9 @@ import com.bitplan.can4eve.gui.javafx.CANPropertyManager;
 import com.bitplan.elm327.Connection;
 import com.bitplan.obdii.elm327.ELM327;
 
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
 
 /**
  * OBD Handler
@@ -323,7 +323,7 @@ public abstract class OBDHandler extends AbstractOBDHandler {
     // TODO make this more systematic
     if (display instanceof JFXTripletDisplay) {
       JFXTripletDisplay tripletDisplay = (JFXTripletDisplay) display;
-      Map<String, ObservableValue<?>> canBindings = new HashMap<String, ObservableValue<?>>();
+      Map<String, Property<?>> canBindings = new HashMap<String, Property<?>>();
       // fixed bindings
       canBindings.put("msecs", this.msecsRunningProperty);
       canBindings.put("vehicleState", this.vehicleStateProperty);
