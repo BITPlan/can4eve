@@ -219,6 +219,11 @@
 							"type": "Integer"
 						},
 						{
+							"title": "memory",
+							"format": "%5.0f",
+							"type": "Integer"
+						},
+						{
 							"title": "# of bufferOverruns",
 							"format": "%5d",
 							"type": "Integer",

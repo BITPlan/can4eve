@@ -196,8 +196,7 @@ public class OBDTriplet extends OBDHandler {
     Pid pid = pr.pid;
     CANValueHandler cvh = super.getCanValueHandler();
     if (pid.getLength() != null && pr.d.length != pid.getLength()) {
-      LOGGER.log(Level.SEVERE,
-          String.format("invalid response length %2d!=%2d for %s (%s)",
+      logError(String.format("invalid response length %2d!=%2d for %s (%s)",
               pr.d.length, pid.getLength(), pid.getName(), pid.getPid()));
       // do not try to handle corrupted data ... to avoid exceptions in
       // accessing
@@ -404,9 +403,9 @@ public class OBDTriplet extends OBDHandler {
       // too high and user
       // should get feedback (together with BUFFER OVERRUNS CAN ERRORS and the
       // like
-      if (km > 500000 || km < 0)
-        LOGGER.log(Level.SEVERE, "invalid odometer value " + km);
-      else {
+      if (km > 500000 || km < 0) {
+        logError("invalid odometer value " + km);
+      } else {
         cvh.setValue("Odometer", km, timeStamp);
         Integer speedNum = pr.d[1];
         if (speedNum == 255)
@@ -573,6 +572,9 @@ public class OBDTriplet extends OBDHandler {
         double fps = 1000.0 * updates / msecs;
         display.updateField("#", totalUpdates, (int) totalUpdates);
         display.updateField("fps", fps, ++fpsUpdateCount);
+        long allocatedMemory      = (Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory());
+        long presumableFreeMemory = Runtime.getRuntime().maxMemory() - allocatedMemory;
+        display.updateField("memory", presumableFreeMemory/1024.0/1024.0, fpsUpdateCount);
         display.updateField("# of bufferOverruns", super.bufferOverruns,
             fpsUpdateCount);
         display.updateField("OBDII id", this.getElm327().getId(), 1);
@@ -665,8 +667,7 @@ public class OBDTriplet extends OBDHandler {
       } // for
     } while (count < props.size() && ++retryCount < MAX_RETRIES);
     if (retryCount >= MAX_RETRIES) {
-      LOGGER.log(Level.SEVERE,
-          "readVehicleInfo failed after " + retryCount + " retries");
+      logError("readVehicleInfo failed after " + retryCount + " retries");
     }
     return result;
   }

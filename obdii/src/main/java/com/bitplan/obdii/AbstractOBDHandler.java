@@ -71,6 +71,7 @@ public abstract class AbstractOBDHandler implements ResponseHandler {
   private Map<String, CANRawValue> canRawValues = new HashMap<String, CANRawValue>();
 
   protected int bufferOverruns = 0;
+  protected int errCounter=0;
   private VehicleGroup vehicleGroup;
 
   public ELM327 getElm327() {
@@ -398,6 +399,15 @@ public abstract class AbstractOBDHandler implements ResponseHandler {
       if (pidResponse.pid != null)
         handleResponse(pidResponse);
     }
+  }
+  
+  /**
+   * log the given error
+   * @param msg
+   */
+  protected void logError(String msg) {
+    errCounter++;
+    LOGGER.log(Level.SEVERE, msg);
   }
 
   public abstract void handleResponse(PIDResponse pidResponse);
