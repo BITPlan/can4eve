@@ -20,10 +20,12 @@
  */
 package eu.hansolo;
 
+import java.net.URL;
 import java.util.Locale;
 
 import com.bitplan.i18n.Translator;
 import com.bitplan.obdii.I18n;
+import com.bitplan.obdii.javafx.ImageButton;
 
 import eu.hansolo.medusa.Clock;
 import eu.hansolo.medusa.ClockBuilder;
@@ -33,6 +35,15 @@ import eu.hansolo.medusa.LcdDesign;
 import eu.hansolo.medusa.LcdFont;
 import eu.hansolo.medusa.Clock.ClockSkinType;
 import eu.hansolo.medusa.Gauge.SkinType;
+import eu.hansolo.medusa.skins.LcdSkin;
+import javafx.beans.binding.NumberBinding;
+import javafx.beans.property.DoubleProperty;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 
 /**
  * Helper class for LCD Gauges
@@ -52,9 +63,21 @@ public class LcdGauge {
    * @param i18nUnit
    * @return the gauge
    */
-  public static Gauge createGauge(String i18nTitle, String i18nUnit) {
-    return createGaugeLocalized(I18n.get(i18nTitle), I18n.get(i18nUnit));
+  public static Gauge createGauge(String i18nTitle, String i18nUnit,
+      boolean resetable) {
+    return createGaugeLocalized(I18n.get(i18nTitle), I18n.get(i18nUnit),
+        resetable);
+  }
 
+  /**
+   * create a gauge with the given title and unit
+   * 
+   * @param i18nTitle
+   * @param i18nUnit
+   * @return the Gauge
+   */
+  public static Gauge createGauge(String i18nTitle, String i18nUnit) {
+    return createGauge(i18nTitle, i18nUnit, false);
   }
 
   /**
@@ -63,12 +86,125 @@ public class LcdGauge {
    * @param unit
    * @return
    */
-  public static Gauge createGaugeLocalized(String title, String unit) {
-    Gauge gauge = GaugeBuilder.create().skinType(SkinType.LCD).animated(true)
-        .oldValueVisible(false).maxMeasuredValueVisible(false)
-        .minMeasuredValueVisible(false).decimals(0).tickLabelDecimals(0)
-        .title(title).unit(unit).lcdDesign(lcdDesign).lcdFont(lcdFont).build();
+  public static Gauge createGaugeLocalized(String title, String unit,
+      boolean resetAble) {
+    Gauge gauge = null;
+    if (resetAble)
+      gauge = new ResetableGauge(title, unit);
+    else
+      gauge = GaugeBuilder.create().skinType(SkinType.LCD)
+          .oldValueVisible(false).maxMeasuredValueVisible(false)
+          .minMeasuredValueVisible(false).decimals(0).tickLabelDecimals(0)
+          .title(title).unit(unit).lcdDesign(lcdDesign).lcdFont(lcdFont)
+          .build();
     return gauge;
+  }
+
+  /**
+   * a resetable Gauge Skin
+   * 
+   * @author wf
+   *
+   */
+  public static class ResetableGaugeSkin extends LcdSkin {
+
+    private Pane pane;
+    // private StackPane stackpane;
+
+    /**
+     * construct me for the given gauge
+     * 
+     * @param rgauge
+     */
+    public ResetableGaugeSkin(ResetableGauge rgauge) {
+      super(rgauge);
+      pane = (Pane) this.getChildren().get(0);
+      // stackpane = new StackPane();
+      // stackpane.getChildren().add(pane);
+      // stackpane.getChildren().add(rgauge.getResetButton());
+      // StackPane.setAlignment(rgauge.getResetButton(), Pos.TOP_RIGHT);
+      // this.getChildren().remove(pane);
+      // this.getChildren().add(stackpane);
+      ImageButton rb = rgauge.getResetButton();
+      pane.getChildren().add(rb);
+      rb.translateXProperty().set(10);
+      rb.translateYProperty().set(5);
+      rb.imageHeightProperty().bind(pane.heightProperty().multiply(0.225));
+      rb.imageWidthProperty().bind(pane.widthProperty().multiply(0.15));
+    }
+
+  }
+
+  /**
+   * a Gauge with a ResetButton
+   * 
+   * @author wf
+   *
+   */
+  public static class ResetableGauge extends Gauge {
+
+    private ImageButton resetButton;
+    private ResetableGaugeSkin skin;
+
+    public ImageButton getResetButton() {
+      return resetButton;
+    }
+
+    public void setResetButton(ImageButton resetButton) {
+      this.resetButton = resetButton;
+    }
+
+    /**
+     * construct me
+     * 
+     * @param title
+     * @param unit
+     */
+    public ResetableGauge(String title, String unit) {
+      super(SkinType.LCD);
+      super.oldValueVisibleProperty().set(false);
+      super.maxMeasuredValueVisibleProperty().set(false);
+      super.minMeasuredValueVisibleProperty().set(false);
+      super.tickLabelDecimalsProperty().set(0);
+
+      super.decimalsProperty().set(0);
+      super.titleProperty().set(title);
+      super.unitProperty().set(unit);
+      super.lcdDesignProperty().set(LcdGauge.lcdDesign);
+      super.lcdFontProperty().set(LcdGauge.lcdFont);
+      initResetButton();
+      skin = new ResetableGaugeSkin(this);
+      this.setSkin(skin);
+    }
+
+    /**
+     * initialize my reset button
+     */
+    private void initResetButton() {
+      setResetButton(new ImageButton("resetdown.png", "resetup.png"));
+      getResetButton().setOnAction(new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent e) {
+          DoubleProperty vp = ResetableGauge.this.valueProperty();
+          if (vp.isBound()) {
+            // a bound value can not be set
+            
+          } else {
+            setValue(0);
+          }
+        }
+      });
+    }
+
+    @Override
+    public String getUserAgentStylesheet() {
+      URL u = getClass().getResource("gauge.css");
+      if (u != null)
+        return u.toExternalForm();
+      else
+        return null;
+    }
+
   }
 
   /**

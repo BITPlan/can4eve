@@ -51,7 +51,7 @@ public class LCDPane extends ConstrainedGridPane {
     int index = 0;
     for (int row = 0; row < this.rows; row++) {
       for (int col = 0; col < this.cols; col++) {
-        Gauge newField = LcdGauge.createGaugeLocalized(texts[index],"");
+        Gauge newField = LcdGauge.createGaugeLocalized(texts[index],"",false);
         newField.setLcdDesign(LcdDesign.SECTIONS);
         index++;
         this.add(newField, col, row);

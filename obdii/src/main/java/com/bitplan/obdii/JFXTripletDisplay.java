@@ -38,6 +38,7 @@ import com.bitplan.obdii.javafx.JavaFXDisplay;
 
 import eu.hansolo.medusa.Gauge;
 import javafx.application.Platform;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Tab;
@@ -93,7 +94,7 @@ public class JFXTripletDisplay extends JavaFXDisplay {
    * 
    * @param canProperties
    */
-  public void bind(Map<String, ObservableValue<?>> canProperties) {
+  public void bind(Map<String, Property<?>> canProperties) {
     this.canProperties = canProperties;
     // bind values by name
     CANValuePane[] canValuePanes = { chargePane, odoPane };
@@ -110,16 +111,16 @@ public class JFXTripletDisplay extends JavaFXDisplay {
       bind(dashBoardPane.getRpmGauge().valueProperty(),
           this.canProperties.get("RPM"));
       bind(dashBoardPane.rpmMax.valueProperty(),
-          this.canProperties.get("RPM-max"));
+          this.canProperties.get("RPM-max"),true);
       bind(dashBoardPane.rpmAvg.valueProperty(),
-          this.canProperties.get("RPM-avg"));
+          this.canProperties.get("RPM-avg"),true);
 
       bind(dashBoardPane.getRpmSpeedGauge().valueProperty(),
           this.canProperties.get("RPMSpeed"));
       bind(dashBoardPane.rpmSpeedMax.valueProperty(),
-          this.canProperties.get("RPMSpeed-max"));
+          this.canProperties.get("RPMSpeed-max"),true);
       bind(dashBoardPane.rpmSpeedAvg.valueProperty(),
-          this.canProperties.get("RPMSpeed-avg"));
+          this.canProperties.get("RPMSpeed-avg"),true);
     }
     if (clockPane != null) {
       ObservableValue<?> vehicleState = this.canProperties.get("vehicleState");

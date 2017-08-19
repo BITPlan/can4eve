@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -68,6 +69,8 @@ import com.bitplan.obdii.javafx.CANValuePane;
 import com.bitplan.obdii.javafx.ChargePane;
 import com.bitplan.obdii.javafx.ClockPane;
 import com.bitplan.obdii.javafx.ClockPane.Watch;
+import com.bitplan.obdii.javafx.ConstrainedGridPane;
+import com.bitplan.obdii.javafx.ImageButton;
 import com.bitplan.obdii.javafx.JFXCanCellStatePlot;
 import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
 import com.bitplan.obdii.javafx.JFXStopWatch;
@@ -76,10 +79,13 @@ import com.bitplan.obdii.javafx.LCDPane;
 import com.bitplan.obdii.javafx.SimulatorPane;
 import com.bitplan.obdii.javafx.WelcomeWizard;
 
+import eu.hansolo.LcdGauge;
+import eu.hansolo.LcdGauge.ResetableGauge;
 import eu.hansolo.OverviewDemo;
 import eu.hansolo.medusa.FGauge;
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.Gauge.NeedleSize;
+import eu.hansolo.medusa.Gauge.SkinType;
 import eu.hansolo.medusa.GaugeBuilder;
 import eu.hansolo.medusa.GaugeDesign;
 import eu.hansolo.medusa.GaugeDesign.GaugeBackground;
@@ -91,13 +97,18 @@ import eu.hansolo.medusa.Section;
 import eu.hansolo.medusa.TickLabelLocation;
 import eu.hansolo.medusa.TickLabelOrientation;
 import eu.hansolo.medusa.TickMarkType;
+import eu.hansolo.medusa.skins.LcdSkin;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.LongBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleLongProperty;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ButtonType;
@@ -107,6 +118,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -119,7 +131,7 @@ import javafx.util.Duration;
  *
  */
 public class TestAppGUI extends TestOBDII {
-  public static boolean debug=false;
+  public static boolean debug = false;
   public static final int SHOW_TIME = 4000;
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii");
 
@@ -154,17 +166,11 @@ public class TestAppGUI extends TestOBDII {
     pref.setLanguage(LangChoice.de);
     String json = pref.asJson();
     // System.out.println(json);
-    assertEquals(
-        "{\n" + 
-        "  \"language\": \"de\",\n" + 
-        "  \"debug\": true,\n" + 
-        "  \"autoStart\": false,\n" + 
-        "  \"screenPercent\": 100,\n" + 
-        "  \"logDirectory\": \"can4eveLogs\",\n" + 
-        "  \"screenShotDirectory\": \"can4eveScreenShots\",\n" + 
-        "  \"logPrefix\": \"can4eve\"\n" + 
-        "}" ,
-        json);
+    assertEquals("{\n" + "  \"language\": \"de\",\n" + "  \"debug\": true,\n"
+        + "  \"autoStart\": false,\n" + "  \"screenPercent\": 100,\n"
+        + "  \"logDirectory\": \"can4eveLogs\",\n"
+        + "  \"screenShotDirectory\": \"can4eveScreenShots\",\n"
+        + "  \"logPrefix\": \"can4eve\"\n" + "}", json);
     JsonManager<Preferences> jmPreferences = new JsonManagerImpl<Preferences>(
         Preferences.class);
     Preferences pref2 = jmPreferences.fromJson(json);
@@ -428,23 +434,55 @@ public class TestAppGUI extends TestOBDII {
     }
     sampleApp.close();
   }
-  
+
   @Test
   public void testResetableGauge() throws Exception {
-    CANValuePane cvpane=new CANValuePane();
-    Gauge gauge=cvpane.addGauge("TripOdo",I18n.TRIP_ODO_METER,I18n.KM,0,0);
+    CANValuePane cvpane = new CANValuePane();
+    // final Gauge gauge = cvpane.addGauge("TripOdo",
+    // I18n.TRIP_ODO_METER,I18n.KM,0, 0);
+    // Gauge gauge=LcdGauge.createGauge(I18n.TRIP_ODO_METER, I18n.KM);
+    ResetableGauge gauge = new ResetableGauge(I18n.TRIP_ODO_METER, I18n.KM);
+    DoubleProperty odo = new SimpleDoubleProperty();
+    // Gauge gauge=new Gauge(SkinType.LCD);
+    // Gauge gauge=new ResetableGauge(SkinType.LCD);
     gauge.setDecimals(3);
+    cvpane.addGauge("TripOdo", gauge, 0, 0);
     cvpane.fixColumnSizes(4, 100);
     cvpane.fixRowSizes(4, 100);
-    SampleApp sampleApp=new SampleApp("Trip odometer", cvpane);
+    /*
+     * ConstrainedGridPane buttonPane = new ConstrainedGridPane();
+     * buttonPane.setGridLinesVisible(true); buttonPane.fixColumnSizes(0, 25,
+     * 25, 25, 25); buttonPane.fixRowSizes(0, 25, 25, 25, 25); StackPane odopane
+     * = new StackPane(); ImageButton resetButton = new
+     * ImageButton("resetdown.png", "resetup.png"); resetButton.setOnAction(new
+     * EventHandler<ActionEvent>() {
+     * 
+     * @Override public void handle(ActionEvent e) { gauge.setValue(0); } });
+     * buttonPane.add(resetButton, 3, 1); odopane.getChildren().add(gauge);
+     * odopane.getChildren().add(buttonPane); //
+     * StackPane.setAlignment(buttonPane, Pos.TOP_RIGHT); //
+     * resetButton.prefWidthProperty().bind(gauge.prefWidthProperty()); //
+     * resetButton.prefHeightProperty().bind(gauge.prefHeightProperty());
+     * 
+     */
+    SampleApp sampleApp = new SampleApp("Trip odometer", cvpane);
     sampleApp.show();
     sampleApp.waitOpen();
-    Platform.runLater(()->gauge.setValue(102.723));
-    Thread.sleep(SHOW_TIME);
+    Platform.runLater(() -> gauge.setValue(102.723));
+    int LOOPS = 100;
+    for (int i = 0; i < LOOPS; i++) {
+      Thread.sleep(SHOW_TIME / 2 / LOOPS);
+      Platform.runLater(() -> gauge.setValue(gauge.getValue() + 0.005));
+    }
+    Thread.sleep(SHOW_TIME / 2);
+    Platform.runLater(() -> gauge.getResetButton().fire());
+    for (int i = 0; i < LOOPS; i++) {
+      Thread.sleep(SHOW_TIME / 2 / LOOPS);
+      Platform.runLater(() -> gauge.setValue(gauge.getValue() + 0.005));
+    }
     sampleApp.close();
-    
-  }
 
+  }
 
   @SuppressWarnings("rawtypes")
   @Test
@@ -470,26 +508,27 @@ public class TestAppGUI extends TestOBDII {
     }
     sampleApp.close();
   }
-  
+
   @Test
   public void testTabIcons() throws Exception {
     JavaFXDisplay display = super.getDisplay();
-    VBox vbox=new VBox();    
+    VBox vbox = new VBox();
     display.setRoot(vbox);
-    SampleApp sampleApp=new SampleApp("menus",vbox);
+    SampleApp sampleApp = new SampleApp("menus", vbox);
     sampleApp.show();
     sampleApp.waitOpen();
-    Platform.runLater(()-> {
-      MenuBar menuBar = display.createMenuBar(sampleApp.getScene(), display.getApp());
+    Platform.runLater(() -> {
+      MenuBar menuBar = display.createMenuBar(sampleApp.getScene(),
+          display.getApp());
       display.setMenuBar(menuBar);
       display.showMenuBar(sampleApp.getScene(), menuBar, true);
       display.setUpStatusBar();
     });
-    Platform.runLater(()-> {
+    Platform.runLater(() -> {
       display.setupDashBoard();
-      int ICON_SIZE=64;
-      Glyph icon = display.getIcon(FontAwesome.Glyph.TACHOMETER,ICON_SIZE);
-      display.setTabGlyph(display.getActiveTab(),icon);
+      int ICON_SIZE = 64;
+      Glyph icon = display.getIcon(FontAwesome.Glyph.TACHOMETER, ICON_SIZE);
+      display.setTabGlyph(display.getActiveTab(), icon);
     });
     Thread.sleep(SHOW_TIME);
     sampleApp.close();
@@ -598,8 +637,7 @@ public class TestAppGUI extends TestOBDII {
     assertEquals(2, calledEffect);
     assertEquals(2, keepBinding.get());
   }
-  
- 
+
   @Test
   public void testWelcomeWizard() throws Exception {
     Translator.initialize();
@@ -607,7 +645,7 @@ public class TestAppGUI extends TestOBDII {
 
     Platform.runLater(() -> {
       try {
-        WelcomeWizard wizard = new WelcomeWizard(I18n.WELCOME,null);
+        WelcomeWizard wizard = new WelcomeWizard(I18n.WELCOME, null);
         wizards[0] = wizard;
         wizard.display();
       } catch (Exception e) {
@@ -615,21 +653,21 @@ public class TestAppGUI extends TestOBDII {
         e.printStackTrace();
       }
     });
-    while (wizards[0]==null)
+    while (wizards[0] == null)
       Thread.sleep(10);
-    WelcomeWizard wizard=wizards[0];
+    WelcomeWizard wizard = wizards[0];
     boolean animated = true;
     if (animated) {
-      wizard.animate(SHOW_TIME*2);
+      wizard.animate(SHOW_TIME * 2);
     } else {
       wizard.waitShow(1000);
       while (wizard.getPrivateDialog().isShowing()) {
         Thread.sleep(10);
       }
     }
-    for (Entry<String, Object> setting:wizard.getSettings().entrySet()) {
+    for (Entry<String, Object> setting : wizard.getSettings().entrySet()) {
       if (debug)
-        System.out.println(setting.getKey()+"="+setting.getValue());
+        System.out.println(setting.getKey() + "=" + setting.getValue());
     }
   }
 

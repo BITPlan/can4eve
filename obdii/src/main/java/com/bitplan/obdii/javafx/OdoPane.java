@@ -22,6 +22,8 @@ package com.bitplan.obdii.javafx;
 
 import com.bitplan.obdii.I18n;
 
+import eu.hansolo.LcdGauge.ResetableGauge;
+
 /**
  * Odometer values
  * @author wf
@@ -33,7 +35,8 @@ public class OdoPane extends CANValuePane {
    */
   public OdoPane() {
     super.addGauge("Odometer",I18n.ODO_METER,I18n.KM,0,0);
-    super.addGauge("TripOdo",I18n.TRIP_ODO_METER,I18n.KM,0,1).setDecimals(3);;
+    ResetableGauge odogauge = new ResetableGauge(I18n.TRIP_ODO_METER, I18n.KM);
+    super.addGauge("TripOdo",odogauge,0,1).setDecimals(3);;
     this.fixColumnSizes(4, 100);
     this.fixRowSizes(4, 50,50);
   }

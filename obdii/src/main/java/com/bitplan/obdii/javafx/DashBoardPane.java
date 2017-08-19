@@ -24,6 +24,7 @@ import com.bitplan.can4eve.Vehicle;
 import com.bitplan.obdii.I18n;
 
 import eu.hansolo.LcdGauge;
+import eu.hansolo.LcdGauge.ResetableGauge;
 import eu.hansolo.medusa.FGauge;
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.Gauge.NeedleSize;
@@ -58,10 +59,10 @@ public class DashBoardPane extends ConstrainedGridPane  {
   }
 
   private FGauge framedRPMSpeedGauge;
-  public Gauge rpmSpeedMax;
-  public Gauge rpmMax;
-  public Gauge rpmAvg;
-  public Gauge rpmSpeedAvg;
+  public ResetableGauge rpmSpeedMax;
+  public ResetableGauge rpmMax;
+  public ResetableGauge rpmAvg;
+  public ResetableGauge rpmSpeedAvg;
 
   public Gauge getRpmGauge() {
     return rpmGauge;
@@ -109,11 +110,11 @@ public class DashBoardPane extends ConstrainedGridPane  {
         .lcdDesign(LcdGauge.lcdDesign).lcdVisible(true)
         .lcdFont(LcdGauge.lcdFont).needleSize(NeedleSize.THICK).build();
 
-    rpmMax = LcdGauge.createGauge(I18n.RPM_MAX,I18n.RPM);
-    rpmAvg = LcdGauge.createGauge(I18n.RPM_AVG,I18n.RPM);
-    // TODO translate km/h? or allow miles/hour?
-    rpmSpeedMax = LcdGauge.createGauge(I18n.RPM_SPEED_MAX,I18n.KMH);   
-    rpmSpeedAvg = LcdGauge.createGauge(I18n.RPM_SPEED_AVG,I18n.KMH);
+    rpmMax = new ResetableGauge(I18n.RPM_MAX,I18n.RPM);
+    rpmAvg = new ResetableGauge(I18n.RPM_AVG,I18n.RPM);
+    // FIXME translate km/h? or allow miles/hour?
+    rpmSpeedMax = new ResetableGauge(I18n.RPM_SPEED_MAX,I18n.KMH);   
+    rpmSpeedAvg = new ResetableGauge(I18n.RPM_SPEED_AVG,I18n.KMH);
 
     framedRPMGauge = new FGauge(rpmGauge, GaugeDesign.ENZO,
         GaugeBackground.DARK_GRAY);

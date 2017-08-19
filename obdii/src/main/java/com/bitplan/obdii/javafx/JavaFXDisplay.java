@@ -122,7 +122,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
 
   protected DashBoardPane dashBoardPane;
 
-  protected Map<String, ObservableValue<?>> canProperties;
+  protected Map<String, Property<?>> canProperties;
 
   protected ChargePane chargePane;
   protected OdoPane odoPane;
@@ -499,18 +499,32 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
   }
 
   /**
-   * bind the to values
+   * bind the value to the valueTo
    * 
    * @param value
    * @param valueTo
+   * @param biDirectional 
    */
   @SuppressWarnings({ "rawtypes", "unchecked" })
-  protected void bind(Property value, ObservableValue valueTo) {
+  protected void bind(Property value, Property valueTo, boolean biDirectional) {
     if (valueTo != null) {
       if (debug && value.isBound())
         LOGGER.log(Level.WARNING, "value is already bound");
-      value.bind(valueTo);
+      if (biDirectional)
+        value.bindBidirectional(valueTo);
+      else
+        value.bind(valueTo);
     }
+  }
+  
+  /**
+   * bind the value to the valueTo
+   * @param value
+   * @param valueTo
+   */
+  @SuppressWarnings({ "rawtypes"})
+  protected void bind(Property value, Property valueTo) {
+    this.bind(value, valueTo, false);
   }
 
   public Void saveScreenShot() {
