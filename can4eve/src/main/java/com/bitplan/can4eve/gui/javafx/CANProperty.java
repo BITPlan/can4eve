@@ -36,27 +36,31 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /**
  * generic JavaFX CANProperty
+ * 
  * @author wf
  *
  * @param <CT>
  * @param <T>
  */
-public class CANProperty<CT extends CANValue<T>,T> implements CANData<T>{
-  protected static Logger LOGGER = Logger.getLogger("com.bitplan.can4eve.gui.javafx");
-  public static boolean debug=false;
-  
+public class CANProperty<CT extends CANValue<T>, T> implements CANData<T> {
+  protected static Logger LOGGER = Logger
+      .getLogger("com.bitplan.can4eve.gui.javafx");
+  public static boolean debug = false;
+
   CT canValue;
-  private Property<T>property;
-  private IntegerProperty updateCountProperty=new SimpleIntegerProperty();
+  private Property<T> property;
+  private IntegerProperty updateCountProperty = new SimpleIntegerProperty();
   private ObservableList<CANValueItem<T>> propertyList;
-  private Property<T>max;
-  private Property<T>avg;
-  
+  private Property<T> max;
+  private Property<T> avg;
+
   public CT getCanValue() {
     return canValue;
   }
@@ -84,31 +88,34 @@ public class CANProperty<CT extends CANValue<T>,T> implements CANData<T>{
   public void setAvg(Property<T> avg) {
     this.avg = avg;
   }
-  
+
   public IntegerProperty getUpdateCountProperty() {
     return updateCountProperty;
   }
 
   /**
    * initialize me with the given CANValue and property
+   * 
    * @param canValue
    * @param property
    */
-  public void init(CT canValue, Property<T> property){
-    this.canValue=canValue;
+  public void init(CT canValue, Property<T> property) {
+    this.canValue = canValue;
     this.setProperty(property);
-    this.propertyList=FXCollections.observableList(canValue.getValueItems());
+    this.propertyList = FXCollections.observableList(canValue.getValueItems());
   }
 
   /**
    * construct me
+   * 
    * @param canValue
    * @param property
    */
   public CANProperty(CT canValue, Property<T> property) {
-    init(canValue,property);
+    init(canValue, property);
   }
-  
+ 
+
   /**
    * construct a CANProperty
    * @param canValue
@@ -117,97 +124,149 @@ public class CANProperty<CT extends CANValue<T>,T> implements CANData<T>{
   @SuppressWarnings({ "unchecked"})
   public CANProperty(DoubleValue canValue, SimpleDoubleProperty property) {
     init((CT)canValue,(Property<T>)property);
-    this.setAvg((Property<T>) new SimpleDoubleProperty());
-    this.setMax((Property<T>) new SimpleDoubleProperty());
+    SimpleDoubleProperty avgProperty = new SimpleDoubleProperty();
+    this.setAvg((Property<T>) avgProperty);
+    avgProperty.addListener(new ChangeListener<Number>() {
+
+      @Override
+      public void changed(ObservableValue<? extends Number> observable,
+          Number oldValue, Number newValue) {
+        if (newValue.equals(0.0))
+          canValue.resetAvg();
+      }
+      
+    });
+    SimpleDoubleProperty maxProperty=new SimpleDoubleProperty();
+    this.setMax((Property<T>) maxProperty);
+    maxProperty.addListener(new ChangeListener<Number>() {
+
+      @Override
+      public void changed(ObservableValue<? extends Number> observable,
+          Number oldValue, Number newValue) {
+        canValue.setMax(newValue.doubleValue());
+      }
+      
+    });
   }
-  
+
   /**
    * construct me for an IntegerValue
+   * 
    * @param canValue
    * @param property
    */
-  @SuppressWarnings({ "unchecked"})
-  public CANProperty(IntegerValue canValue,
-      SimpleIntegerProperty property) {
-    init((CT)canValue,(Property<T>)property);
-    this.setAvg((Property<T>) new SimpleIntegerProperty());
-    this.setMax((Property<T>) new SimpleIntegerProperty());
+  @SuppressWarnings({ "unchecked" })
+  public CANProperty(IntegerValue canValue, SimpleIntegerProperty property) {
+    init((CT) canValue, (Property<T>) property);
+    SimpleIntegerProperty avgProperty = new SimpleIntegerProperty();
+    this.setAvg((Property<T>)avgProperty );
+    avgProperty.addListener(new ChangeListener<Number>() {
+
+      @Override
+      public void changed(ObservableValue<? extends Number> observable,
+          Number oldValue, Number newValue) {
+        if (newValue.equals(0))
+          canValue.resetAvg();
+      }
+      
+    });
+    SimpleIntegerProperty maxProperty = new SimpleIntegerProperty();
+    this.setMax((Property<T>) maxProperty);
+    maxProperty.addListener(new ChangeListener<Number>() {
+
+      @Override
+      public void changed(ObservableValue<? extends Number> observable,
+          Number oldValue, Number newValue) {
+        canValue.setMax(newValue.intValue());
+      }
+      
+    });
   }
-  
+
   /**
    * set the value for CANValue and property
-   * @param value - the value to set
+   * 
+   * @param value
+   *          - the value to set
    * @param timeStamp
    */
   public void setValue(T value, Date timeStamp) {
     canValue.setValue(value, timeStamp);
-    Platform.runLater(()->setValue(value));
+    Platform.runLater(() -> setValue(value));
   }
-  
+
   /**
    * set the value for CANValue and property
-   * @param index - the index of the value
-   * @param value - the value to set
+   * 
+   * @param index
+   *          - the index of the value
+   * @param value
+   *          - the value to set
    * @param timeStamp
    */
-  public void setValue(int index,T value, Date timeStamp) {
-    Platform.runLater(()->doSetValue(index,value,timeStamp));
+  public void setValue(int index, T value, Date timeStamp) {
+    Platform.runLater(() -> doSetValue(index, value, timeStamp));
   }
-  
+
   /**
    * set the value at the given index (needs to be run on JavaFX thread!)
+   * 
    * @param index
    * @param value
    */
   private void doSetValue(int index, T value, Date timeStamp) {
-    canValue.setValue(index,value, timeStamp);
+    canValue.setValue(index, value, timeStamp);
     setMinMax(value);
-    int triggerIndex=canValue.getCANInfo().getMaxIndex()-1;
-    if (index==triggerIndex) {
-      int newUpdateCount=this.updateCountProperty.getValue()+1;
+    int triggerIndex = canValue.getCANInfo().getMaxIndex() - 1;
+    if (index == triggerIndex) {
+      int newUpdateCount = this.updateCountProperty.getValue() + 1;
       this.updateCountProperty.setValue(newUpdateCount);
       if (debug)
-        LOGGER.log(Level.INFO,this.getCANInfo().getName()+" "+newUpdateCount+" updates");
+        LOGGER.log(Level.INFO,
+            this.getCANInfo().getName() + " " + newUpdateCount + " updates");
     }
   }
 
   /**
    * set the value (needs to be run on JavaFX thread!)
+   * 
    * @param value
    */
-  private void setValue(T value) {  
+  private void setValue(T value) {
     property.setValue(value);
     this.updateCountProperty.setValue(canValue.getUpdateCount());
     setMinMax(value);
   }
-  
+
   /**
    * sets the minimum and maximum Value as well as the update count
+   * 
    * @param value
    */
   private void setMinMax(T value) {
     if (canValue instanceof DoubleValue) {
-      DoubleValue dv=(DoubleValue) canValue;
-      if (dv.getMax()!=null)
+      DoubleValue dv = (DoubleValue) canValue;
+      if (dv.getMax() != null)
         getMax().setValue((T) dv.getMax());
-      if (dv.getAvg()!=null)
+      if (dv.getAvg() != null)
         getAvg().setValue((T) dv.getAvg());
     }
     if (canValue instanceof IntegerValue) {
-      IntegerValue iv=(IntegerValue) canValue;
-      if (iv.getMax()!=null)
+      IntegerValue iv = (IntegerValue) canValue;
+      if (iv.getMax() != null)
         getMax().setValue((T) iv.getMax());
-      if (iv.getAvg()!=null)
+      if (iv.getAvg() != null)
         getAvg().setValue((T) iv.getAvg());
     }
   }
 
   /**
    * get the name of this property
+   * 
    * @return
    */
   public String getName() {
-    String name=canValue.canInfo.getName();
+    String name = canValue.canInfo.getName();
     return name;
   }
 
@@ -218,7 +277,7 @@ public class CANProperty<CT extends CANValue<T>,T> implements CANData<T>{
 
   @Override
   public boolean isAvailable() {
-    if (this.canValue==null)
+    if (this.canValue == null)
       return false;
     return this.getCanValue().isAvailable();
   }
@@ -237,7 +296,7 @@ public class CANProperty<CT extends CANValue<T>,T> implements CANData<T>{
   public int getUpdateCount() {
     return this.getCanValue().getUpdateCount();
   }
-  
+
   @Override
   public String asJson() {
     return canValue.asJson();

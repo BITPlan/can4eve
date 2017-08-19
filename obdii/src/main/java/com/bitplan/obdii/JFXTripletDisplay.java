@@ -20,11 +20,11 @@
  */
 package com.bitplan.obdii;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 
-import com.bitplan.can4eve.CANData;
 import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.SoftwareVersion;
 import com.bitplan.can4eve.Vehicle.State;
@@ -40,6 +40,7 @@ import eu.hansolo.medusa.Gauge;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.Region;
@@ -72,23 +73,24 @@ public class JFXTripletDisplay extends JavaFXDisplay {
    * @param region
    */
   private void updateTab(String view, String tabId, Region region) {
-    Tab tab=super.getTab(view, tabId);
-    if (tab!=null && region != null) {
+    Tab tab = super.getTab(view, tabId);
+    if (tab != null && region != null) {
       tab.setContent(region);
     } else {
-      String problem="";
-      String delim="";
-      if (tab==null) {
-        problem+="tab is null";
-        delim=", ";
+      String problem = "";
+      String delim = "";
+      if (tab == null) {
+        problem += "tab is null";
+        delim = ", ";
       }
-      if (region==null) {
-        problem+=delim+"region is null";
+      if (region == null) {
+        problem += delim + "region is null";
       }
-      LOGGER.log(Level.SEVERE,String.format("updateTab %s %s: %s",view,tabId,problem));
+      LOGGER.log(Level.SEVERE,
+          String.format("updateTab %s %s: %s", view, tabId, problem));
     }
   }
-  
+
   /**
    * set bindings
    * 
@@ -102,8 +104,9 @@ public class JFXTripletDisplay extends JavaFXDisplay {
       if (canValuePane != null) {
         for (Entry<String, Gauge> gaugeEntry : canValuePane.getGaugeMap()
             .entrySet()) {
-          bind(gaugeEntry.getValue().valueProperty(),
-              this.canProperties.get(gaugeEntry.getKey()));
+          Gauge gauge = gaugeEntry.getValue();
+          bind(gauge.valueProperty(),
+              this.canProperties.get(gaugeEntry.getKey()), true);
         }
       }
     }
@@ -111,16 +114,15 @@ public class JFXTripletDisplay extends JavaFXDisplay {
       bind(dashBoardPane.getRpmGauge().valueProperty(),
           this.canProperties.get("RPM"));
       bind(dashBoardPane.rpmMax.valueProperty(),
-          this.canProperties.get("RPM-max"),true);
+          this.canProperties.get("RPM-max"), true);
       bind(dashBoardPane.rpmAvg.valueProperty(),
-          this.canProperties.get("RPM-avg"),true);
-
+          this.canProperties.get("RPM-avg"), true);
       bind(dashBoardPane.getRpmSpeedGauge().valueProperty(),
           this.canProperties.get("RPMSpeed"));
       bind(dashBoardPane.rpmSpeedMax.valueProperty(),
-          this.canProperties.get("RPMSpeed-max"),true);
+          this.canProperties.get("RPMSpeed-max"), true);
       bind(dashBoardPane.rpmSpeedAvg.valueProperty(),
-          this.canProperties.get("RPMSpeed-avg"),true);
+          this.canProperties.get("RPMSpeed-avg"), true);
     }
     if (clockPane != null) {
       ObservableValue<?> vehicleState = this.canProperties.get("vehicleState");
@@ -139,25 +141,38 @@ public class JFXTripletDisplay extends JavaFXDisplay {
    * @param cpm
    * @throws Exception
    */
-  @SuppressWarnings({ "unchecked", "rawtypes" })
+  @SuppressWarnings({  "rawtypes" })
   public void setupSpecial(CANPropertyManager cpm) throws Exception {
-    CANData<Double> temperatureData = cpm.getValue("CellTemperature");
-    CANProperty<DoubleValue,Double> cellTemperature = (CANProperty<DoubleValue, Double>) temperatureData;
+    // resetButton handling for trip Odometer
+    CANProperty<DoubleValue, Double> tripOdoValue = cpm.get("TripOdo");
+    tripOdoValue.getProperty().addListener(new ChangeListener<Number>() {
+
+      @Override
+      public void changed(ObservableValue<? extends Number> observable,
+          Number oldValue, Number newValue) {
+        if (newValue.equals(0.0)) {
+          CANProperty<DoubleValue, Double> tripRounds = cpm.get("TripRounds");
+          Date timeStamp=new Date();
+          tripRounds.getCanValue().setValue(0.0, timeStamp);
+        }
+      }
+
+    });
+    CANProperty<DoubleValue, Double> cellTemperature = cpm
+        .get("CellTemperature");
     final JFXCanCellStatePlot cellStatePlot = new JFXCanCellStatePlot(
-        "cellTemperature", "cell", "Temperature", cellTemperature, 1.0,
-        0.5);
+        "cellTemperature", "cell", "Temperature", cellTemperature, 1.0, 0.5);
     Platform.runLater(
         () -> updateTab("mainGroup", "Cell Temp", cellStatePlot.getBarChart()));
     cellStatePlot.updateOn(cellTemperature.getUpdateCountProperty());
-    
-    CANData<Double> voltageData = cpm.getValue("CellVoltage");
-    CANProperty<DoubleValue,Double> cellVoltage = (CANProperty<DoubleValue, Double>) voltageData;
+
+    CANProperty<DoubleValue, Double> cellVoltage = cpm.get("CellVoltage");
     final JFXCanCellStatePlot cellVoltagePlot = new JFXCanCellStatePlot(
         "cellVoltage", "cell", "Voltage", cellVoltage, 0.01, 0.1);
-    Platform.runLater(
-        () -> updateTab("mainGroup", "Cell Voltage", cellVoltagePlot.getBarChart()));
+    Platform.runLater(() -> updateTab("mainGroup", "Cell Voltage",
+        cellVoltagePlot.getBarChart()));
     cellVoltagePlot.updateOn(cellVoltage.getUpdateCountProperty());
-    
+
     // setup history
     String title = "SOC/RR";
     String xTitle = "time";
@@ -165,7 +180,8 @@ public class JFXTripletDisplay extends JavaFXDisplay {
     Map<String, CANProperty> properties = cpm.getCANProperties("SOC", "Range");
     final JFXCanValueHistoryPlot valuePlot = new JFXCanValueHistoryPlot(title,
         xTitle, yTitle, properties);
-    Platform.runLater(() -> updateTab(HISTORY_GROUP,"SOC/RR", valuePlot.createLineChart()));
+    Platform.runLater(
+        () -> updateTab(HISTORY_GROUP, "SOC/RR", valuePlot.createLineChart()));
     valuePlot.updateOn(cpm.get("SOC").getUpdateCountProperty());
   }
 }

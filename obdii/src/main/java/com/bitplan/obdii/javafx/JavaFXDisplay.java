@@ -65,7 +65,6 @@ import com.bitplan.obdii.elm327.LogPlayer;
 
 import javafx.application.Platform;
 import javafx.beans.property.Property;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 //import javafx.embed.swing.JFXPanel;
@@ -524,7 +523,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
    */
   @SuppressWarnings({ "rawtypes"})
   protected void bind(Property value, Property valueTo) {
-    this.bind(value, valueTo, false);
+    this.bind(value, valueTo,false);
   }
 
   public Void saveScreenShot() {

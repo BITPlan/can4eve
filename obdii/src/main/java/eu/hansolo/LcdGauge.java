@@ -28,22 +28,18 @@ import com.bitplan.obdii.I18n;
 import com.bitplan.obdii.javafx.ImageButton;
 
 import eu.hansolo.medusa.Clock;
+import eu.hansolo.medusa.Clock.ClockSkinType;
 import eu.hansolo.medusa.ClockBuilder;
 import eu.hansolo.medusa.Gauge;
+import eu.hansolo.medusa.Gauge.SkinType;
 import eu.hansolo.medusa.GaugeBuilder;
 import eu.hansolo.medusa.LcdDesign;
 import eu.hansolo.medusa.LcdFont;
-import eu.hansolo.medusa.Clock.ClockSkinType;
-import eu.hansolo.medusa.Gauge.SkinType;
 import eu.hansolo.medusa.skins.LcdSkin;
-import javafx.beans.binding.NumberBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 
 /**
  * Helper class for LCD Gauges
@@ -119,16 +115,10 @@ public class LcdGauge {
     public ResetableGaugeSkin(ResetableGauge rgauge) {
       super(rgauge);
       pane = (Pane) this.getChildren().get(0);
-      // stackpane = new StackPane();
-      // stackpane.getChildren().add(pane);
-      // stackpane.getChildren().add(rgauge.getResetButton());
-      // StackPane.setAlignment(rgauge.getResetButton(), Pos.TOP_RIGHT);
-      // this.getChildren().remove(pane);
-      // this.getChildren().add(stackpane);
       ImageButton rb = rgauge.getResetButton();
       pane.getChildren().add(rb);
-      rb.translateXProperty().set(10);
-      rb.translateYProperty().set(5);
+      rb.translateXProperty().set(5);
+      rb.translateYProperty().set(0);
       rb.imageHeightProperty().bind(pane.heightProperty().multiply(0.225));
       rb.imageWidthProperty().bind(pane.widthProperty().multiply(0.15));
     }

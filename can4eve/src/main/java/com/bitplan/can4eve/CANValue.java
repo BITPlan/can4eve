@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 
+import com.bitplan.can4eve.gui.javafx.MinMaxAvgHolder;
 import com.bitplan.csv.CSVUtil;
 
 /**
@@ -343,7 +344,7 @@ public abstract class CANValue<ValueType> implements CANData<ValueType> {
    * @author wf
    *
    */
-  public static class IntegerValue extends CANValue<Integer> {
+  public static class IntegerValue extends CANValue<Integer> implements MinMaxAvgHolder<Integer> {
     Integer min;
     Integer max;
     Integer avg;
@@ -375,6 +376,14 @@ public abstract class CANValue<ValueType> implements CANData<ValueType> {
         return null;
       return (int) (sum / count);
     }
+    
+    /**
+     * reset the average
+     */
+    public void resetAvg() {
+      count=0;
+      sum=0;
+    }
 
     /**
      * set the Value and calc min and max while at it
@@ -404,7 +413,7 @@ public abstract class CANValue<ValueType> implements CANData<ValueType> {
    * @author wf
    *
    */
-  public static class DoubleValue extends CANValue<Double> {
+  public static class DoubleValue extends CANValue<Double> implements MinMaxAvgHolder<Double> {
     Double min;
     Double max;
     Double avg;
@@ -429,6 +438,14 @@ public abstract class CANValue<ValueType> implements CANData<ValueType> {
 
     public void setMax(Double max) {
       this.max = max;
+    }
+    
+    /**
+     * reset the average
+     */
+    public void resetAvg() {
+      count=0;
+      sum=0;
     }
 
     public Double getAvg() {
