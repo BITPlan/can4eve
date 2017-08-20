@@ -30,10 +30,10 @@ import java.util.ResourceBundle;
 
 import org.junit.Test;
 
-import com.bitplan.can4eve.gui.App;
-import com.bitplan.can4eve.gui.ExceptionHelp;
-import com.bitplan.can4eve.gui.Menu;
-import com.bitplan.can4eve.gui.MenuItem;
+import com.bitplan.gui.App;
+import com.bitplan.gui.ExceptionHelp;
+import com.bitplan.gui.Menu;
+import com.bitplan.gui.MenuItem;
 import com.bitplan.i18n.Translator;
 
 /**
@@ -104,7 +104,7 @@ public class TestI18n {
     App app = App.getInstance();
     int errors = 0;
     for (String locale : locales) {
-      Translator.initialize(locale);
+      Translator.initialize("can4eve",locale);
       if (show)
         System.out.println("# locale " + locale);
       errors += checkMenu(app.getMainMenu());
@@ -122,7 +122,7 @@ public class TestI18n {
   public void testi18nFieldsTranslated() throws Exception {
     int errors = 0;
     for (String locale : locales) {
-      Translator.initialize(locale);
+      Translator.initialize("can4eve",locale);
       if (show)
         System.out.println("# locale " + locale);
       for (Field field : I18n.class.getFields()) {
@@ -138,7 +138,7 @@ public class TestI18n {
     App app = App.getInstance();
     int errors = 0;
     for (String locale : locales) {
-      Translator.initialize(locale);
+      Translator.initialize("can4eve",locale);
       for (ExceptionHelp ehelp : app.getExceptionHelps()) {
         String hint = ehelp.getI18nHint();
         if (hint.isEmpty()) {
@@ -164,7 +164,7 @@ public class TestI18n {
     }
     int errors = 0;
     for (String locale : locales) {
-      ResourceBundle bundle = Translator.initialize(locale);
+      ResourceBundle bundle = Translator.initialize("can4eve",locale);
       Enumeration<String> keys = bundle.getKeys();
       while (keys.hasMoreElements()) {
         String key = keys.nextElement();

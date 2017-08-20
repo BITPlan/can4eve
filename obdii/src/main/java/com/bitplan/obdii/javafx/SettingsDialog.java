@@ -24,11 +24,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.bitplan.can4eve.gui.Form;
-import com.bitplan.can4eve.gui.javafx.GenericControl;
-import com.bitplan.can4eve.gui.javafx.GenericDialog;
 import com.bitplan.elm327.Config;
 import com.bitplan.elm327.SerialImpl;
+import com.bitplan.gui.Form;
+import com.bitplan.javafx.GenericControl;
+import com.bitplan.javafx.GenericDialog;
 import com.bitplan.obdii.ErrorHandler;
 import com.bitplan.obdii.I18n;
 import com.bitplan.obdii.OBDApp;

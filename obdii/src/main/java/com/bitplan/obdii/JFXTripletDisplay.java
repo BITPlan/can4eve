@@ -26,11 +26,11 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 
 import com.bitplan.can4eve.CANValue.DoubleValue;
-import com.bitplan.can4eve.SoftwareVersion;
 import com.bitplan.can4eve.Vehicle.State;
-import com.bitplan.can4eve.gui.App;
 import com.bitplan.can4eve.gui.javafx.CANProperty;
 import com.bitplan.can4eve.gui.javafx.CANPropertyManager;
+import com.bitplan.error.SoftwareVersion;
+import com.bitplan.gui.App;
 import com.bitplan.obdii.javafx.CANValuePane;
 import com.bitplan.obdii.javafx.JFXCanCellStatePlot;
 import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;

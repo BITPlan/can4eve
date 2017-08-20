@@ -34,7 +34,7 @@ import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.VehicleModel;
-import com.bitplan.can4eve.json.JsonManagerImpl;
+import com.bitplan.json.JsonManagerImpl;
 import com.bitplan.triplet.VINValue;
 import com.google.gson.Gson;
 

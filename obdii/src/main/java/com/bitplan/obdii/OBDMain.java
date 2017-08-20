@@ -30,8 +30,6 @@ import org.kohsuke.args4j.Option;
 import com.bitplan.can4eve.CANData;
 import com.bitplan.can4eve.Vehicle;
 import com.bitplan.can4eve.VehicleGroup;
-import com.bitplan.can4eve.gui.App;
-import com.bitplan.can4eve.gui.Display;
 import com.bitplan.can4eve.util.TaskLaunch;
 import com.bitplan.elm327.Config;
 import com.bitplan.elm327.Config.ConfigMode;
@@ -39,6 +37,8 @@ import com.bitplan.elm327.Config.DeviceType;
 import com.bitplan.elm327.Connection;
 import com.bitplan.elm327.LogImpl;
 import com.bitplan.elm327.util.OSCheck;
+import com.bitplan.gui.App;
+import com.bitplan.gui.Display;
 import com.bitplan.i18n.Translator;
 import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.elm327.ELM327;
@@ -349,13 +349,13 @@ public class OBDMain extends Main implements OBDApp {
     Preferences preferences = Preferences.getInstance();
     // a command line language setting overrides the preferences setting
     if (this.language != LangChoice.notSet) {
-      Translator.initialize(this.language.name());
+      Translator.initialize("can4eve",this.language.name());
     } else {
       LangChoice langChoice = preferences.getLanguage();
       String lang = null;
       if (langChoice != LangChoice.notSet)
         lang = preferences.getLanguage().name();
-      Translator.initialize(lang);
+      Translator.initialize("can4eve",lang);
     }
 
     if (this.showVersion || this.debug)

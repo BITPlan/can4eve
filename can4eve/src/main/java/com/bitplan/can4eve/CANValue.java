@@ -30,6 +30,7 @@ import org.apache.commons.collections4.queue.CircularFifoQueue;
 
 import com.bitplan.can4eve.gui.javafx.MinMaxAvgHolder;
 import com.bitplan.csv.CSVUtil;
+import com.bitplan.error.ErrorHandler;
 
 /**
  * base class for all PidValues

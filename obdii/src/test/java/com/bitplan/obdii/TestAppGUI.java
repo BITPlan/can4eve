@@ -25,11 +25,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
@@ -41,6 +42,8 @@ import org.controlsfx.dialog.Wizard.LinearFlow;
 import org.controlsfx.dialog.WizardPane;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.Glyph;
+import org.controlsfx.glyphfont.GlyphFont;
+import org.controlsfx.glyphfont.GlyphFontRegistry;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -48,20 +51,21 @@ import org.junit.Test;
 import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.VehicleGroup;
-import com.bitplan.can4eve.gui.App;
-import com.bitplan.can4eve.gui.ExceptionHelp;
-import com.bitplan.can4eve.gui.Group;
-import com.bitplan.can4eve.gui.Linker;
 import com.bitplan.can4eve.gui.javafx.CANProperty;
 import com.bitplan.can4eve.gui.javafx.CANPropertyManager;
-import com.bitplan.can4eve.gui.javafx.GenericDialog;
-import com.bitplan.can4eve.gui.javafx.SampleApp;
-import com.bitplan.can4eve.gui.javafx.WaitableApp;
-import com.bitplan.can4eve.json.JsonManager;
-import com.bitplan.can4eve.json.JsonManagerImpl;
 import com.bitplan.can4eve.states.StopWatch;
 import com.bitplan.can4eve.util.TaskLaunch;
+import com.bitplan.gui.App;
+import com.bitplan.gui.ExceptionHelp;
+import com.bitplan.gui.Group;
+import com.bitplan.gui.Linker;
 import com.bitplan.i18n.Translator;
+import com.bitplan.javafx.ConstrainedGridPane;
+import com.bitplan.javafx.GenericDialog;
+import com.bitplan.javafx.SampleApp;
+import com.bitplan.javafx.WaitableApp;
+import com.bitplan.json.JsonManager;
+import com.bitplan.json.JsonManagerImpl;
 import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.elm327.LogPlayer;
 import com.bitplan.obdii.elm327.LogPlayerImpl;
@@ -69,8 +73,6 @@ import com.bitplan.obdii.javafx.CANValuePane;
 import com.bitplan.obdii.javafx.ChargePane;
 import com.bitplan.obdii.javafx.ClockPane;
 import com.bitplan.obdii.javafx.ClockPane.Watch;
-import com.bitplan.obdii.javafx.ConstrainedGridPane;
-import com.bitplan.obdii.javafx.ImageButton;
 import com.bitplan.obdii.javafx.JFXCanCellStatePlot;
 import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
 import com.bitplan.obdii.javafx.JFXStopWatch;
@@ -79,13 +81,11 @@ import com.bitplan.obdii.javafx.LCDPane;
 import com.bitplan.obdii.javafx.SimulatorPane;
 import com.bitplan.obdii.javafx.WelcomeWizard;
 
-import eu.hansolo.LcdGauge;
 import eu.hansolo.LcdGauge.ResetableGauge;
 import eu.hansolo.OverviewDemo;
 import eu.hansolo.medusa.FGauge;
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.Gauge.NeedleSize;
-import eu.hansolo.medusa.Gauge.SkinType;
 import eu.hansolo.medusa.GaugeBuilder;
 import eu.hansolo.medusa.GaugeDesign;
 import eu.hansolo.medusa.GaugeDesign.GaugeBackground;
@@ -97,28 +97,28 @@ import eu.hansolo.medusa.Section;
 import eu.hansolo.medusa.TickLabelLocation;
 import eu.hansolo.medusa.TickLabelOrientation;
 import eu.hansolo.medusa.TickMarkType;
-import eu.hansolo.medusa.skins.LcdSkin;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.LongBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleLongProperty;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
+import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -138,6 +138,7 @@ public class TestAppGUI extends TestOBDII {
   @Before
   public void initGUI() {
     WaitableApp.toolkitInit();
+    Translator.initialize("can4eve", "en");
   }
 
   @Test
@@ -234,6 +235,37 @@ public class TestAppGUI extends TestOBDII {
     SampleApp.createAndShow("LCDPane", lcdPane, SHOW_TIME);
   }
 
+  /**
+   * get a 6 columns by 4 rows grid pane
+   * @return
+   */
+  public ConstrainedGridPane getGridPane6x4() {
+    ConstrainedGridPane gridPane = new ConstrainedGridPane();
+    gridPane.fixColumnSizes(4, 16,16,16,16,16,16);
+    gridPane.fixRowSizes(4, 25,25,25,25);
+    return gridPane;
+  }
+  
+  @Test
+  public void testVerticalTabs() throws Exception {
+    // https://stackoverflow.com/questions/16708578/javafx-2-0-tabpane-tabs-at-left-and-keep-tab-header-horizontal
+    JavaFXDisplay display = super.getDisplay();
+    int col=0;
+    int row=0;
+    TabPane vTabPane=display.addTabPane("vtabPane");
+    vTabPane.setSide(Side.LEFT);
+    String[] rowNames={FontAwesome.Glyph.HOME.name(),FontAwesome.Glyph.PLUG.name(),"battery75","battery50",FontAwesome.Glyph.GEAR.name()};
+    String[] colNames={};
+    for (String rowName:rowNames) {
+      TabPane hTabPane=display.addTabPane("h"+col+""+row);  
+      display.addTab(vTabPane, 0, "", rowName, hTabPane);
+      for (int i=0;i<=5;i++) {
+        display.addTab(hTabPane, 0, "", FontAwesome.Glyph.ANCHOR.name(), new  Pane());
+      }
+    }
+    SampleApp.createAndShow("vertical tabs", vTabPane, SHOW_TIME*5);
+  }
+  
   @Test
   public void testExceptionHelp() throws Exception {
     App app = App.getInstance();
@@ -365,7 +397,6 @@ public class TestAppGUI extends TestOBDII {
 
   @Test
   public void testClockPanel() throws Exception {
-    Translator.initialize();
     ClockPane clockPane = new ClockPane();
     clockPane.setWatch(Watch.Charging, 1320 * 1000);
     clockPane.setWatch(Watch.Parking, 390 * 1000);
@@ -381,7 +412,6 @@ public class TestAppGUI extends TestOBDII {
 
   @Test
   public void testChargePanel() throws Exception {
-    Translator.initialize();
     ChargePane chargePane = new ChargePane();
     Map<String, SimpleDoubleProperty> props = new HashMap<String, SimpleDoubleProperty>();
     String propnames[] = { "SOC", "Range", "ACVolts", "ACAmps", "DCVolts",
@@ -413,7 +443,6 @@ public class TestAppGUI extends TestOBDII {
 
   @Test
   public void testSimulatorPane() throws Exception {
-    Translator.initialize();
     LogPlayer logPlayer = new LogPlayerImpl();
     logPlayer.setLogFile(TestSimulatorLogReader.getTestFile());
     SimulatorPane simulatorPane = new SimulatorPane(logPlayer, null);
@@ -527,7 +556,7 @@ public class TestAppGUI extends TestOBDII {
     Platform.runLater(() -> {
       display.setupDashBoard();
       int ICON_SIZE = 64;
-      Glyph icon = display.getIcon(FontAwesome.Glyph.TACHOMETER, ICON_SIZE);
+      Glyph icon = display.getIcon(FontAwesome.Glyph.TACHOMETER.name(), ICON_SIZE);
       display.setTabGlyph(display.getActiveTab(), icon);
     });
     Thread.sleep(SHOW_TIME);
@@ -640,7 +669,6 @@ public class TestAppGUI extends TestOBDII {
 
   @Test
   public void testWelcomeWizard() throws Exception {
-    Translator.initialize();
     WelcomeWizard[] wizards = new WelcomeWizard[1];
 
     Platform.runLater(() -> {

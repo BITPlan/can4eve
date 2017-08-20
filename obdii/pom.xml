@@ -27,21 +27,6 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-	<repositories>
-		<repository>
-			<id>jcenter</id>
-			<url>http://jcenter.bintray.com </url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-				<checksumPolicy>warn</checksumPolicy>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-				<checksumPolicy>warn</checksumPolicy>
-			</releases>
-		</repository>
-	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>com.bitplan.can4eve</groupId>
@@ -68,18 +53,7 @@
 		<!-- can not use this easily in JavaFX https://mvnrepository.com/artifact/org.jfree/jfreechart 
 			<dependency> <groupId>org.jfree</groupId> <artifactId>jfreechart</artifactId> 
 			<version>1.0.19</version> </dependency> -->
-		<!-- https://mvnrepository.com/artifact/org.controlsfx/controlsfx -->
-		<dependency>
-			<groupId>org.controlsfx</groupId>
-			<artifactId>controlsfx</artifactId>
-			<version>8.40.13</version>
-		</dependency>
-		<dependency>
-			<groupId>de.jensd</groupId>
-			<artifactId>fontawesomefx-commons</artifactId>
-			<version>8.15</version>
-			<type>pom</type>
-		</dependency>
+		
 		<!-- https://mvnrepository.com/artifact/eu.hansolo/Medusa -->
 		<dependency>
 			<groupId>eu.hansolo</groupId>

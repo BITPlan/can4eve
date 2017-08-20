@@ -24,8 +24,8 @@ import java.io.File;
 
 import org.junit.Test;
 
-import com.bitplan.can4eve.gui.javafx.WaitableApp;
 import com.bitplan.can4eve.util.TaskLaunch;
+import com.bitplan.javafx.WaitableApp;
 
 import javafx.application.Platform;
 import javafx.scene.control.Tab;

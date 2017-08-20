@@ -33,7 +33,7 @@ import org.junit.Test;
 
 import com.bitplan.can4eve.CANValueHandler;
 import com.bitplan.can4eve.VehicleGroup;
-import com.bitplan.can4eve.gui.javafx.WaitableApp;
+import com.bitplan.javafx.WaitableApp;
 import com.bitplan.obdii.elm327.LogReader;
 import com.bitplan.triplet.OBDTriplet;
 

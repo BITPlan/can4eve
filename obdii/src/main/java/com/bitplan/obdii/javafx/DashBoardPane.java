@@ -21,6 +21,7 @@
 package com.bitplan.obdii.javafx;
 
 import com.bitplan.can4eve.Vehicle;
+import com.bitplan.javafx.ConstrainedGridPane;
 import com.bitplan.obdii.I18n;
 
 import eu.hansolo.LcdGauge;

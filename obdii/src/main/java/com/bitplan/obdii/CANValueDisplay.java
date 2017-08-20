@@ -21,7 +21,7 @@
 package com.bitplan.obdii;
 
 import com.bitplan.can4eve.CANValue;
-import com.bitplan.can4eve.gui.Display;
+import com.bitplan.gui.Display;
 
 /**
  * Display for CAN Values

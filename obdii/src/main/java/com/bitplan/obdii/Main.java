@@ -26,8 +26,8 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
-import com.bitplan.can4eve.ErrorHandler;
-import com.bitplan.can4eve.SoftwareVersion;
+import com.bitplan.error.ErrorHandler;
+import com.bitplan.error.SoftwareVersion;
 
 /**
  * generic Main class

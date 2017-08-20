@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.bitplan.can4eve.ErrorHandler;
 import com.bitplan.elm327.Packet;
+import com.bitplan.error.ErrorHandler;
 
 /**
  * implements a LogPlayer

@@ -23,6 +23,8 @@ package com.bitplan.obdii.javafx;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.bitplan.javafx.ConstrainedGridPane;
+
 import eu.hansolo.LcdGauge;
 import eu.hansolo.medusa.Gauge;
 

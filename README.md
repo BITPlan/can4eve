@@ -40,5 +40,5 @@ https://www.apache.org/licenses/LICENSE-2.0
 [![BITPlan](http://wiki.bitplan.com/images/wiki/thumb/8/87/BITPlanLogo2012.svg/200px-BITPlanLogo2012.svg.png)](http://web.bitplan.com)
 
 ### Version History
-2017-06 0.0.1 - non released developer version (alpha test)
-2017-08 0.0.1 - beta test with OBDLink SX open
+* 2017-06 0.0.1 - non released developer version (alpha test)
+* 2017-08 0.0.1 - beta test with OBDLink SX open

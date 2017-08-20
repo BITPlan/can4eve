@@ -23,7 +23,7 @@ package com.bitplan.can4eve;
 import java.util.Date;
 import java.util.Map;
 
-import com.bitplan.can4eve.json.JsonAble;
+import com.bitplan.json.JsonAble;
 
 /**
  * trip description

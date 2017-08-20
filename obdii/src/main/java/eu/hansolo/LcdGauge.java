@@ -24,8 +24,8 @@ import java.net.URL;
 import java.util.Locale;
 
 import com.bitplan.i18n.Translator;
+import com.bitplan.javafx.ImageButton;
 import com.bitplan.obdii.I18n;
-import com.bitplan.obdii.javafx.ImageButton;
 
 import eu.hansolo.medusa.Clock;
 import eu.hansolo.medusa.Clock.ClockSkinType;

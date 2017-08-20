@@ -22,7 +22,7 @@ package com.bitplan.can4eve;
 
 import java.util.Date;
 
-import com.bitplan.can4eve.json.AsJson;
+import com.bitplan.json.AsJson;
 
 /**
  * generic CANData interface for "translated" values e.g.

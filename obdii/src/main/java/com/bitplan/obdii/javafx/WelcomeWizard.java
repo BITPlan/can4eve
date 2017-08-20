@@ -36,6 +36,9 @@ import com.bitplan.elm327.Config.ConfigMode;
 import com.bitplan.elm327.OBDException;
 import com.bitplan.elm327.SerialImpl;
 import com.bitplan.i18n.Translator;
+import com.bitplan.javafx.ImageSelector;
+import com.bitplan.javafx.JFXWizard;
+import com.bitplan.javafx.JFXWizardPane;
 import com.bitplan.obdii.I18n;
 import com.bitplan.obdii.OBDApp;
 import com.bitplan.obdii.Preferences;
@@ -249,7 +252,7 @@ public class WelcomeWizard extends JFXWizard {
    * @param obdApp
    */
   public WelcomeWizard(String i18nTitle, OBDApp obdApp) {
-    super();
+    super( "/com/bitplan/can4eve/gui/");
     this.obdApp = obdApp;
     setTitle(I18n.get(i18nTitle));
     int steps = 6;
@@ -270,13 +273,13 @@ public class WelcomeWizard extends JFXWizard {
           lang = "de";
           break;
         }
-        Translator.initialize(lang);
+        Translator.initialize("can4eve",lang);
         WelcomeWizard.this.refreshI18n();
       }
     };
     Locale locale = Locale.getDefault();
     String currentLang = locale.getLanguage();
-    SingleSelectionModel<String> langSelect = langSelector.choice
+    SingleSelectionModel<String> langSelect = langSelector.getChoice()
         .getSelectionModel();
     switch (currentLang) {
     case "de":

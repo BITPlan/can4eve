@@ -29,6 +29,7 @@ import org.controlsfx.glyphfont.Glyph;
 import org.controlsfx.glyphfont.GlyphFont;
 import org.controlsfx.glyphfont.GlyphFontRegistry;
 
+import com.bitplan.javafx.ConstrainedGridPane;
 import com.bitplan.obdii.ErrorHandler;
 import com.bitplan.obdii.elm327.LogPlayer;
 import com.bitplan.obdii.elm327.LogPlayerListener;

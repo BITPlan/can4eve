@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.bitplan.can4eve.json.JsonAble;
+import com.bitplan.json.JsonAble;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.graph.GraphAdapterBuilder;

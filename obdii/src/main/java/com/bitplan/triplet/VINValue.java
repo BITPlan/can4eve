@@ -25,7 +25,7 @@ import java.util.logging.Level;
 
 import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue;
-import com.bitplan.can4eve.json.AsJson;
+import com.bitplan.json.AsJson;
 
 /**
  * Vehicle identification number handling

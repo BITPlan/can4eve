@@ -23,9 +23,10 @@ package com.bitplan.can4eve;
 import java.io.File;
 import java.util.Map;
 
-import com.bitplan.can4eve.json.JsonAble;
-import com.bitplan.can4eve.json.JsonManager;
-import com.bitplan.can4eve.json.JsonManagerImpl;
+import com.bitplan.error.ErrorHandler;
+import com.bitplan.json.JsonAble;
+import com.bitplan.json.JsonManager;
+import com.bitplan.json.JsonManagerImpl;
 
 /**
  * POJO for Vehicle description

@@ -27,8 +27,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.bitplan.can4eve.ErrorHandler;
 import com.bitplan.can4eve.states.StopWatch;
+import com.bitplan.error.ErrorHandler;
 
 import eu.hansolo.LcdGauge;
 import eu.hansolo.medusa.Clock;

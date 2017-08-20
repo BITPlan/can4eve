@@ -39,23 +39,22 @@ import org.controlsfx.glyphfont.GlyphFont;
 import org.controlsfx.glyphfont.GlyphFontRegistry;
 
 import com.bitplan.can4eve.CANValue;
-import com.bitplan.can4eve.ExceptionHandler;
-import com.bitplan.can4eve.SoftwareVersion;
 import com.bitplan.can4eve.Vehicle;
-import com.bitplan.can4eve.gui.App;
-import com.bitplan.can4eve.gui.Form;
-import com.bitplan.can4eve.gui.Group;
-import com.bitplan.can4eve.gui.javafx.ExceptionController;
-import com.bitplan.can4eve.gui.javafx.GenericControl;
-import com.bitplan.can4eve.gui.javafx.GenericDialog;
-import com.bitplan.can4eve.gui.javafx.GenericPanel;
-import com.bitplan.can4eve.gui.javafx.WaitableApp;
-//import com.bitplan.can4eve.gui.javafx.LoginDialog;
-import com.bitplan.can4eve.gui.swing.JLink;
 import com.bitplan.can4eve.util.TaskLaunch;
 import com.bitplan.elm327.Config;
 import com.bitplan.elm327.Config.ConfigMode;
+import com.bitplan.error.ExceptionHandler;
+import com.bitplan.error.SoftwareVersion;
+import com.bitplan.gui.App;
+import com.bitplan.gui.Form;
+import com.bitplan.gui.Group;
 import com.bitplan.i18n.Translator;
+import com.bitplan.javafx.ExceptionController;
+import com.bitplan.javafx.GenericControl;
+import com.bitplan.javafx.GenericDialog;
+import com.bitplan.javafx.GenericPanel;
+import com.bitplan.javafx.JFXWizardPane;
+import com.bitplan.javafx.WaitableApp;
 import com.bitplan.obdii.CANValueDisplay;
 import com.bitplan.obdii.I18n;
 import com.bitplan.obdii.OBDApp;
@@ -82,6 +81,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -101,7 +101,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
     CANValueDisplay, ExceptionHandler, EventHandler<ActionEvent> {
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.javafx");
   public static boolean testMode = false;
-  private static com.bitplan.can4eve.gui.App app;
+  private static com.bitplan.gui.App app;
   OBDApp obdApp;
   private static SoftwareVersion softwareVersion;
   private MenuBar menuBar;
@@ -149,7 +149,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
   public static final String DASH_BOARD_GROUP = "dashBoardGroup";
 
   protected static final String HISTORY_GROUP = "historyGroup";
-  private static final int ICON_SIZE = 48;
+  public static int ICON_SIZE = 48;
 
   /**
    * construct me from an abstract application description and a software
@@ -182,11 +182,11 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
     JavaFXDisplay.softwareVersion = softwareVersion;
   }
 
-  public com.bitplan.can4eve.gui.App getApp() {
+  public com.bitplan.gui.App getApp() {
     return app;
   }
 
-  public void setApp(com.bitplan.can4eve.gui.App app) {
+  public void setApp(com.bitplan.gui.App app) {
     JavaFXDisplay.app = app;
   }
 
@@ -213,6 +213,28 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
     this.root = root;
   }
 
+  Map<String, Glyph> iconMap = null;
+
+  /**
+   * get an initial Map of Icons
+   * @return
+   */
+  public Map<String, Glyph> getIconMap() {
+    if (iconMap == null) {
+      iconMap=new HashMap<String,Glyph>();
+      char[] codes = { '\uf240', '\uf241', '\uf242', '\uf243', '\uf244' };
+      String[] names = { "battery-full", "battery75", "battery50", "battery25",
+          "battery0" };
+      int i = 0;
+      for (char code : codes) {
+        Glyph icon = fontAwesome.create(code);
+        iconMap.put(names[i], icon);
+        icon.setTooltip(new Tooltip(names[i++]));
+      }
+    }
+    return iconMap;
+  }
+
   /**
    * get the icon for the given glyph
    * 
@@ -221,19 +243,32 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
    *          - the fontSize of the glyph
    * @return the Glyph
    */
-  public Glyph getIcon(FontAwesome.Glyph glyph, int fontSize) {
-    Glyph icon = fontAwesome.create(glyph);
-    icon.setFontSize(fontSize);
+  public Glyph getIcon(String name, int fontSize) {
+    Glyph icon = this.getIconMap().get(name);
+    if (icon==null) {
+      org.controlsfx.glyphfont.FontAwesome.Glyph fglyph = FontAwesome.Glyph.valueOf(name);
+      icon=fontAwesome.create(fglyph);
+      iconMap.put(name, icon);
+    }
+    if (icon != null)
+      icon.setFontSize(fontSize);
     return icon;
   }
 
-  public void setTabGlyph(Tab tab,FontAwesome.Glyph glyph) {
-    Glyph icon=getIcon(glyph,ICON_SIZE);
-    setTabGlyph(tab,icon);
+  /**
+   * set the tab Glyph for the given Tabinfo
+   * 
+   * @param tab
+   * @param glyphInfo
+   */
+  public void setTabGlyph(Tab tab, String glyphInfo) {
+    Glyph icon = getIcon(glyphInfo, ICON_SIZE);
+    setTabGlyph(tab, icon);
   }
-  
+
   /**
    * set the glyph for the tab
+   * 
    * @param tab
    * @param glyph
    */
@@ -327,12 +362,12 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
    * 
    * @param scene
    */
-  public MenuBar createMenuBar(Scene scene, com.bitplan.can4eve.gui.App app) {
+  public MenuBar createMenuBar(Scene scene, com.bitplan.gui.App app) {
     MenuBar lMenuBar = new MenuBar();
-    for (com.bitplan.can4eve.gui.Menu amenu : app.getMainMenu().getSubMenus()) {
+    for (com.bitplan.gui.Menu amenu : app.getMainMenu().getSubMenus()) {
       Menu menu = new Menu(i18n(amenu.getId()));
       lMenuBar.getMenus().add(menu);
-      for (com.bitplan.can4eve.gui.MenuItem amenuitem : amenu.getMenuItems()) {
+      for (com.bitplan.gui.MenuItem amenuitem : amenu.getMenuItems()) {
         MenuItem menuItem = new MenuItem(i18n(amenuitem.getId()));
         menuItem.setOnAction(this);
         menuItem.setId(amenuitem.getId());
@@ -447,8 +482,8 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
    */
   public TabPane addTabPane(String groupId) {
     TabPane tabPane = new TabPane();
-    tabPane.setTabMinHeight(ICON_SIZE+4);
-    tabPane.setTabMaxHeight(ICON_SIZE+4);
+    tabPane.setTabMinHeight(ICON_SIZE + 4);
+    tabPane.setTabMaxHeight(ICON_SIZE + 4);
     // make sure it grows e.g. when Icons are set
     // https://stackoverflow.com/a/25164425/1497139
     VBox.setVgrow(tabPane, Priority.ALWAYS);
@@ -488,12 +523,13 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
    * @param content
    * @return
    */
-  public Tab addTab(TabPane tabPane, int index, String title,FontAwesome.Glyph glyph, Node content) {
+  public Tab addTab(TabPane tabPane, int index, String title,
+      String glyphName, Node content) {
     Tab tab = new Tab(title);
     tab.setContent(content);
     tabPane.getTabs().add(index, tab);
-    if (glyph!=null)
-      this.setTabGlyph(tab, glyph);
+    if (glyphName != null)
+      this.setTabGlyph(tab, glyphName);
     return tab;
   }
 
@@ -502,7 +538,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
    * 
    * @param value
    * @param valueTo
-   * @param biDirectional 
+   * @param biDirectional
    */
   @SuppressWarnings({ "rawtypes", "unchecked" })
   protected void bind(Property value, Property valueTo, boolean biDirectional) {
@@ -515,15 +551,16 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
         value.bind(valueTo);
     }
   }
-  
+
   /**
    * bind the value to the valueTo
+   * 
    * @param value
    * @param valueTo
    */
-  @SuppressWarnings({ "rawtypes"})
+  @SuppressWarnings({ "rawtypes" })
   protected void bind(Property value, Property valueTo) {
-    this.bind(value, valueTo,false);
+    this.bind(value, valueTo, false);
   }
 
   public Void saveScreenShot() {
@@ -570,12 +607,16 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
   public void setupSpecial(TabPane tabPane) {
     clockPane = new ClockPane();
     odoPane = new OdoPane();
-    odoTab = addTab(tabPane, 0, I18n.get(I18n.ODO_INFO),FontAwesome.Glyph.AUTOMOBILE,odoPane);
+    odoTab = addTab(tabPane, 0, I18n.get(I18n.ODO_INFO),
+        FontAwesome.Glyph.AUTOMOBILE.name(), odoPane);
     dashBoardPane = new DashBoardPane(obdApp.getVehicle());
     chargePane = new ChargePane();
-    chargeTab = addTab(tabPane, 0, I18n.get(I18n.SOC), FontAwesome.Glyph.LEVEL_UP,chargePane);
-    dashBoardTab = addTab(tabPane, 0, I18n.get(I18n.DASH_BOARD), FontAwesome.Glyph.TACHOMETER,dashBoardPane);
-    clockTab = addTab(tabPane, 0, I18n.get(I18n.CLOCKS), FontAwesome.Glyph.CLOCK_ALT, clockPane);
+    chargeTab = addTab(tabPane, 0, I18n.get(I18n.SOC),
+        FontAwesome.Glyph.PLUG.name(), chargePane);
+    dashBoardTab = addTab(tabPane, 0, I18n.get(I18n.DASH_BOARD),
+        FontAwesome.Glyph.TACHOMETER.name(), dashBoardPane);
+    clockTab = addTab(tabPane, 0, I18n.get(I18n.CLOCKS),
+        FontAwesome.Glyph.CLOCK_ALT.name(), clockPane);
     // disable menu items
     this.setMenuItemDisable(I18n.OBD_HALT_MENU_ITEM, true);
     this.setMenuItemDisable(I18n.FILE_CLOSE_MENU_ITEM, true);
@@ -892,7 +933,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
    */
   public Void showLink(String link) {
     try {
-      JLink.open(link);
+      this.browse(link);
     } catch (Exception e) {
       handleException(e);
     }
@@ -915,7 +956,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
       preferences.fromMap(result.get());
       preferences.save();
       if (!lang.equals(preferences.getLanguage())) {
-        Translator.initialize(preferences.getLanguage().name());
+        Translator.initialize("can4eve", preferences.getLanguage().name());
         GenericDialog.showAlert(i18n("language_changed_title"),
             i18n("language_changed"), i18n("newlanguage_restart"));
       }
@@ -1004,7 +1045,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
       throw new IllegalStateException(
           "tab Pane with groupId " + groupId + " missing");
     getRoot().getChildren().add(activeTabPane);
-   
+
     return activeTabPane;
   }
 

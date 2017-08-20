@@ -35,7 +35,7 @@ public class TestTranslator {
 
   @Test
   public void testTranslator() {
-    Translator.initialize("de");
+    Translator.initialize("can4eve","de");
     assertEquals("Hilfe",Translator.translate("helpMenu"));
   }
 }

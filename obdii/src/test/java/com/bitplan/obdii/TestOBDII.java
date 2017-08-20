@@ -21,9 +21,9 @@
 package com.bitplan.obdii;
 
 import com.bitplan.can4eve.Pid;
-import com.bitplan.can4eve.SoftwareVersion;
 import com.bitplan.can4eve.VehicleGroup;
-import com.bitplan.can4eve.gui.App;
+import com.bitplan.error.SoftwareVersion;
+import com.bitplan.gui.App;
 import com.bitplan.i18n.Translator;
 import com.bitplan.obdii.javafx.JavaFXDisplay;
 
@@ -63,7 +63,7 @@ public abstract class TestOBDII {
    * @throws Exception
    */
   protected JavaFXDisplay getDisplay() throws Exception {
-    Translator.initialize("en");
+    Translator.initialize("can4eve","en");
     JavaFXDisplay jfxDisplay = new JFXTripletDisplay(App.getInstance(),
         new DummySoftwareVersion(), new OBDMain());
     return jfxDisplay;

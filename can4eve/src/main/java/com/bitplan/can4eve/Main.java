@@ -23,6 +23,8 @@ package com.bitplan.can4eve;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
+import com.bitplan.error.ErrorHandler;
+
 import java.util.logging.Logger;
 import org.kohsuke.args4j.CmdLineException;
 ;

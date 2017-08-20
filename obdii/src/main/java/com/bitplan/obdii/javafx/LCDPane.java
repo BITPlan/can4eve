@@ -23,6 +23,8 @@ package com.bitplan.obdii.javafx;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bitplan.javafx.ConstrainedGridPane;
+
 import eu.hansolo.LcdGauge;
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.LcdDesign;
