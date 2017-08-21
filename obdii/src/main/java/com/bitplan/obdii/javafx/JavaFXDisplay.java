@@ -154,6 +154,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
       OBDApp obdApp) {
     toolkitInit();
     this.obdApp = obdApp;
+    xyTabPane=new XYTabPane(ICON_SIZE);
     // new JFXPanel();
     this.setApp(app);
     this.setSoftwareVersion(softwareVersion);
@@ -357,7 +358,6 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
     showMenuBar(scene, getMenuBar(), true);
     stage.setScene(scene);
     setUpStatusBar();
-    xyTabPane=new XYTabPane(ICON_SIZE);
     getRoot().getChildren().add(xyTabPane);
     setupDashBoard();
     setup(app);
@@ -918,13 +918,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
    * select a random tab
    */
   public void selectRandomTab() {
-    TabPane tabPane = getActiveTabPane();
-    if (tabPane != null) {
-      SingleSelectionModel<Tab> smodel = tabPane.getSelectionModel();
-      Random random = new Random();
-      int tabIndex = random.nextInt(tabPane.getTabs().size());
-      smodel.select(tabIndex);
-    }
+    this.xyTabPane.selectRandomTab();
   }
 
   /**

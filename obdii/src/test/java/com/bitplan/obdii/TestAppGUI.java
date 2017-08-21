@@ -134,7 +134,7 @@ public class TestAppGUI extends TestOBDII {
     assertNotNull(app);
     assertEquals(6, app.getMainMenu().getSubMenus().size());
     assertEquals(3, app.getGroups().size());
-    int[] expected = { 3, 8, 1 };
+    int[] expected = { 8, 1,3 };
     int i = 0;
     for (Group group : app.getGroups()) {
       assertEquals(expected[i++], group.getForms().size());
