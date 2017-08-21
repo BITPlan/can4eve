@@ -72,8 +72,8 @@ public class JFXTripletDisplay extends JavaFXDisplay {
    * @param tabId
    * @param region
    */
-  private void updateTab(String view, String tabId, Region region) {
-    Tab tab = super.getTab(view, tabId);
+  private void updateTab(String tabId, Region region) {
+    Tab tab = super.getTab(tabId);
     if (tab != null && region != null) {
       tab.setContent(region);
     } else {
@@ -87,7 +87,7 @@ public class JFXTripletDisplay extends JavaFXDisplay {
         problem += delim + "region is null";
       }
       LOGGER.log(Level.SEVERE,
-          String.format("updateTab %s %s: %s", view, tabId, problem));
+          String.format("updateTab %s: %s", tabId, problem));
     }
   }
 
@@ -163,13 +163,13 @@ public class JFXTripletDisplay extends JavaFXDisplay {
     final JFXCanCellStatePlot cellStatePlot = new JFXCanCellStatePlot(
         "cellTemperature", "cell", "Temperature", cellTemperature, 1.0, 0.5);
     Platform.runLater(
-        () -> updateTab("mainGroup", "Cell Temp", cellStatePlot.getBarChart()));
+        () -> updateTab("cellTemp", cellStatePlot.getBarChart()));
     cellStatePlot.updateOn(cellTemperature.getUpdateCountProperty());
 
     CANProperty<DoubleValue, Double> cellVoltage = cpm.get("CellVoltage");
     final JFXCanCellStatePlot cellVoltagePlot = new JFXCanCellStatePlot(
         "cellVoltage", "cell", "Voltage", cellVoltage, 0.01, 0.1);
-    Platform.runLater(() -> updateTab("mainGroup", "Cell Voltage",
+    Platform.runLater(() -> updateTab("cellVoltage",
         cellVoltagePlot.getBarChart()));
     cellVoltagePlot.updateOn(cellVoltage.getUpdateCountProperty());
 
@@ -181,7 +181,7 @@ public class JFXTripletDisplay extends JavaFXDisplay {
     final JFXCanValueHistoryPlot valuePlot = new JFXCanValueHistoryPlot(title,
         xTitle, yTitle, properties);
     Platform.runLater(
-        () -> updateTab(HISTORY_GROUP, "SOC/RR", valuePlot.createLineChart()));
+        () -> updateTab("soc_rr", valuePlot.createLineChart()));
     valuePlot.updateOn(cpm.get("SOC").getUpdateCountProperty());
   }
 }

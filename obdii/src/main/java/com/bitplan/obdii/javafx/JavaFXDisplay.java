@@ -426,7 +426,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
         GenericPanel panel = new GenericPanel(stage, form);
         panels.put(form.getId(), panel);
         controls.putAll(panel.controls);
-        xyTabPane.addTab(tabPane, I18n.get(form.getTitle()), form.getIcon(),panel);
+        xyTabPane.addTab(tabPane, form.getId(),I18n.get(form.getTitle()), form.getIcon(),panel);
       }
     }
   }
@@ -505,15 +505,15 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
   public void setupSpecial(TabPane tabPane) {
     clockPane = new ClockPane();
     odoPane = new OdoPane();
-    odoTab = xyTabPane.addTab(tabPane, 0, I18n.get(I18n.ODO_INFO),
+    odoTab = xyTabPane.addTab(tabPane, "odoPane",0, I18n.get(I18n.ODO_INFO),
         FontAwesome.Glyph.AUTOMOBILE.name(), odoPane);
     dashBoardPane = new DashBoardPane(obdApp.getVehicle());
     chargePane = new ChargePane();
-    chargeTab = xyTabPane.addTab(tabPane, 0, I18n.get(I18n.SOC),
+    chargeTab = xyTabPane.addTab(tabPane, "chargePane",0, I18n.get(I18n.SOC),
         FontAwesome.Glyph.PLUG.name(), chargePane);
-    dashBoardTab = xyTabPane.addTab(tabPane, 0, I18n.get(I18n.DASH_BOARD),
+    dashBoardTab = xyTabPane.addTab(tabPane,"dashBoardPane", 0, I18n.get(I18n.DASH_BOARD),
         FontAwesome.Glyph.TACHOMETER.name(), dashBoardPane);
-    clockTab = xyTabPane.addTab(tabPane, 0, I18n.get(I18n.CLOCKS),
+    clockTab = xyTabPane.addTab(tabPane,"clockPane", 0, I18n.get(I18n.CLOCKS),
         FontAwesome.Glyph.CLOCK_ALT.name(), clockPane);
     // disable menu items
     this.setMenuItemDisable(I18n.OBD_HALT_MENU_ITEM, true);
@@ -944,16 +944,9 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
    * @param tabId
    * @return - the tab
    */
-  public Tab getTab(String view, String tabId) {
-    TabPane tabPane = xyTabPane.getTabPane(view);
-    if (tabPane != null) {
-      for (Tab tab : tabPane.getTabs()) {
-        if (tabId.equals(tab.getText())) {
-          return tab;
-        }
-      }
-    }
-    return null;
+  public Tab getTab(String tabId) {
+    Tab tab = xyTabPane.getTab(tabId);
+    return tab;
   }
 
 }

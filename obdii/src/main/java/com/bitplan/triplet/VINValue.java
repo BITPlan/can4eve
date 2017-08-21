@@ -127,7 +127,7 @@ public class VINValue extends CANValue<String> implements AsJson {
   public String asString() {
     String result = "?";
     if (getValueItem().isAvailable()) {
-      result = String.format("%s - year: %4d", getValueItem().getValue(), year);
+      result = String.format("%s - year: %4d", vin, year);
       if (manufacturer != null)
         result += "/" + manufacturer;
       if (factory != null)

@@ -4,180 +4,6 @@
 	"feedback": "https://github.com/BITPlan/can4eve/issues",
 	"help": "http://can4eve.bitplan.com/index.php/Help",
 	"groups": [{
-			"id": "preferencesGroup",
-			"icon": "GEAR",
-			"name": "preferences",
-			"forms": [{
-					"title": "obdii",
-					"id": "settingsForm",
-					"icon": "obdii",
-					"headerText": "choose your OBDII connection",
-					"fields": [{
-							"title": "deviceType",
-							"hint": "type of OBDII connector",
-							"format": "%s",
-							"type": "Choice",
-							"choices": "USB,Bluetooth,Network,Simulator"
-						}, {
-							"title": "hostname",
-							"hint": "hostname or IP address",
-							"format": "%s",
-							"labelSize": 10,
-							"fieldSize": 40
-						},
-						{
-							"title": "port",
-							"format": "%4d",
-							"type": "Integer",
-							"fieldSize": 5,
-							"gridX": 3,
-							"gridY": 1
-						},
-						{
-							"title": "serialDevice",
-							"format": "%s",
-							"labelSize": 10,
-							"fieldSize": 40
-						},
-						{
-							"title": "baudRate",
-							"format": "%5d",
-							"type": "Integer",
-							"gridX": 3,
-							"gridY": 2
-						},
-						{
-							"title": "direct",
-							"hint": "the device needs no serial configuration",
-							"format": "%s",
-							"type": "Boolean",
-							"gridX": 5,
-							"gridY": 2
-						},
-						{
-							"title": "timeout",
-							"hint": "timeout in milli seconds",
-							"format": "%5d",
-							"type": "Integer"
-						},
-						{
-							"title": "debug",
-							"hint": "display debugging information for the device",
-							"format": "%s",
-							"type": "Boolean",
-							"gridX": 3,
-							"gridY": 3
-						}
-					]
-				},
-				{
-					"title": "preferences",
-					"id": "preferencesForm",
-					"icon": "preferences",
-					"headerText": "choose your Preferences",
-					"fields": [{
-							"title": "language",
-							"hint": "the language of your choice",
-							"format": "%s",
-							"type": "Choice",
-							"choices": "en,de"
-						},
-						{
-							"title": "screenPercent",
-							"label": "% of Screen",
-							"hint": "percentage of display to be used 100=Fullscreen",
-							"format": "%s",
-							"type": "Integer"
-						},
-						{
-							"title": "debug",
-							"hint": "output debugging information for the application",
-							"format": "%s",
-							"type": "Boolean"
-						},
-						{
-							"title": "autoStart",
-							"hint": "automatically start OBD reading on start of application",
-							"format": "%s",
-							"type": "Boolean"
-						},
-						{
-							"title": "logPrefix",
-							"hint": "the prefix to use for logfiles",
-							"format": "%s"
-						},
-						{
-							"title": "logDirectory",
-							"hint": "the directory in which to store logfiles",
-							"format": "%s",
-							"type": "Directory",
-							"fieldSize": 60
-						},
-						{
-							"title": "screenShotDirectory",
-							"hint": "the directory in which to store screenShots",
-							"format": "%s",
-							"type": "Directory",
-							"fieldSize": 60
-						}
-					]
-				},
-				{
-					"title": "vehicle",
-					"id": "vehicleForm",
-					"icon": "CAR",
-					"headerText": "vehicle Details",
-					"fields": [{
-							"title": "nickName",
-							"format": "%s",
-							"labelSize": 10,
-							"fieldSize": 40
-						},
-						{
-							"title": "group",
-							"format": "%s",
-							"labelSize": 10,
-							"fieldSize": 40,
-							"type": "Choice",
-							"choices": "Triplet,OutlanderPHEV"
-						},
-						{
-							"title": "model",
-							"format": "%s",
-							"labelSize": 10,
-							"fieldSize": 40,
-							"type": "Choice",
-							"choices": "Mitsubishi i-Miev,Citroën C-Zero,Peugeot Ion"
-						},
-						{
-							"title": "year",
-							"format": "%4d",
-							"type": "Integer",
-							"fieldSize": 4
-						},	
-						{
-							"title": "VIN",
-							"format": "%s",
-							"labelSize": 10,
-							"fieldSize": 40
-						},
-						{
-							"title": "maxSpeed",
-							"format": "%5d km/h",
-							"type": "Integer",
-							"fieldSize": 3
-						},	
-						{
-							"title": "maxRPM",
-							"format": "%5d",
-							"type": "Integer",
-							"fieldSize": 5
-						}
-					]
-				}
-			]
-		},
-		{
 			"id": "mainGroup",
 			"name": "info",
 			"icon": "INFO",
@@ -481,7 +307,7 @@
 				{
 				    "id": "cellTemp",
 					"title": "cellTemp",
-					"icon": "cellTemp",
+					"icon": "temp50",
 					"fields": [{
 						"title": "Cell Temperature",
 						"fieldKind": "Plot"
@@ -490,7 +316,7 @@
 				{
 				    "id": "cellVoltage",
 					"title": "cellVoltage",
-					"icon": "cellVoltage",
+					"icon": "FLASH",
 					"fields": [{
 							"title": "Cell Voltage",
 							"fieldKind": "Plot"
@@ -516,6 +342,179 @@
 					}]
 				}]
 			}]
+		},{
+			"id": "preferencesGroup",
+			"icon": "GEAR",
+			"name": "preferences",
+			"forms": [{
+					"title": "obdii",
+					"id": "settingsForm",
+					"icon": "obdii",
+					"headerText": "choose your OBDII connection",
+					"fields": [{
+							"title": "deviceType",
+							"hint": "type of OBDII connector",
+							"format": "%s",
+							"type": "Choice",
+							"choices": "USB,Bluetooth,Network,Simulator"
+						}, {
+							"title": "hostname",
+							"hint": "hostname or IP address",
+							"format": "%s",
+							"labelSize": 10,
+							"fieldSize": 40
+						},
+						{
+							"title": "port",
+							"format": "%4d",
+							"type": "Integer",
+							"fieldSize": 5,
+							"gridX": 3,
+							"gridY": 1
+						},
+						{
+							"title": "serialDevice",
+							"format": "%s",
+							"labelSize": 10,
+							"fieldSize": 40
+						},
+						{
+							"title": "baudRate",
+							"format": "%5d",
+							"type": "Integer",
+							"gridX": 3,
+							"gridY": 2
+						},
+						{
+							"title": "direct",
+							"hint": "the device needs no serial configuration",
+							"format": "%s",
+							"type": "Boolean",
+							"gridX": 5,
+							"gridY": 2
+						},
+						{
+							"title": "timeout",
+							"hint": "timeout in milli seconds",
+							"format": "%5d",
+							"type": "Integer"
+						},
+						{
+							"title": "debug",
+							"hint": "display debugging information for the device",
+							"format": "%s",
+							"type": "Boolean",
+							"gridX": 3,
+							"gridY": 3
+						}
+					]
+				},
+				{
+					"title": "preferences",
+					"id": "preferencesForm",
+					"icon": "preferences",
+					"headerText": "choose your Preferences",
+					"fields": [{
+							"title": "language",
+							"hint": "the language of your choice",
+							"format": "%s",
+							"type": "Choice",
+							"choices": "en,de"
+						},
+						{
+							"title": "screenPercent",
+							"label": "% of Screen",
+							"hint": "percentage of display to be used 100=Fullscreen",
+							"format": "%s",
+							"type": "Integer"
+						},
+						{
+							"title": "debug",
+							"hint": "output debugging information for the application",
+							"format": "%s",
+							"type": "Boolean"
+						},
+						{
+							"title": "autoStart",
+							"hint": "automatically start OBD reading on start of application",
+							"format": "%s",
+							"type": "Boolean"
+						},
+						{
+							"title": "logPrefix",
+							"hint": "the prefix to use for logfiles",
+							"format": "%s"
+						},
+						{
+							"title": "logDirectory",
+							"hint": "the directory in which to store logfiles",
+							"format": "%s",
+							"type": "Directory",
+							"fieldSize": 60
+						},
+						{
+							"title": "screenShotDirectory",
+							"hint": "the directory in which to store screenShots",
+							"format": "%s",
+							"type": "Directory",
+							"fieldSize": 60
+						}
+					]
+				},
+				{
+					"title": "vehicle",
+					"id": "vehicleForm",
+					"icon": "CAR",
+					"headerText": "vehicle Details",
+					"fields": [{
+							"title": "nickName",
+							"format": "%s",
+							"labelSize": 10,
+							"fieldSize": 40
+						},
+						{
+							"title": "group",
+							"format": "%s",
+							"labelSize": 10,
+							"fieldSize": 40,
+							"type": "Choice",
+							"choices": "Triplet,OutlanderPHEV"
+						},
+						{
+							"title": "model",
+							"format": "%s",
+							"labelSize": 10,
+							"fieldSize": 40,
+							"type": "Choice",
+							"choices": "Mitsubishi i-Miev,Citroën C-Zero,Peugeot Ion"
+						},
+						{
+							"title": "year",
+							"format": "%4d",
+							"type": "Integer",
+							"fieldSize": 4
+						},	
+						{
+							"title": "VIN",
+							"format": "%s",
+							"labelSize": 10,
+							"fieldSize": 40
+						},
+						{
+							"title": "maxSpeed",
+							"format": "%5d km/h",
+							"type": "Integer",
+							"fieldSize": 3
+						},	
+						{
+							"title": "maxRPM",
+							"format": "%5d",
+							"type": "Integer",
+							"fieldSize": 5
+						}
+					]
+				}
+			]
 		}
 	],
 	"mainMenu": {
