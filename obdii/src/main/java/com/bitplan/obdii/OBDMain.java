@@ -56,6 +56,7 @@ import com.bitplan.triplet.OBDTriplet;
  *
  */
 public class OBDMain extends Main implements OBDApp {
+  static final String APP_PATH = "com/bitplan/can4eve/gui/CanTriplet.json";
   protected static OBDMain obd;
   protected CANValueDisplay canValueDisplay;
 
@@ -374,7 +375,8 @@ public class OBDMain extends Main implements OBDApp {
       JavaFXDisplay jfxDisplay;
       switch (displayChoice) {
       case JavaFX:
-        jfxDisplay = new JFXTripletDisplay(App.getInstance(), this, this);
+        App app=App.getInstance(APP_PATH);
+        jfxDisplay = new JFXTripletDisplay(app, this, this);
         canValueDisplay = jfxDisplay;
         break;
       default:

@@ -64,7 +64,7 @@ public abstract class TestOBDII {
    */
   protected JavaFXDisplay getDisplay() throws Exception {
     Translator.initialize("can4eve","en");
-    JavaFXDisplay jfxDisplay = new JFXTripletDisplay(App.getInstance(),
+    JavaFXDisplay jfxDisplay = new JFXTripletDisplay(App.getInstance(OBDMain.APP_PATH),
         new DummySoftwareVersion(), new OBDMain());
     return jfxDisplay;
   }

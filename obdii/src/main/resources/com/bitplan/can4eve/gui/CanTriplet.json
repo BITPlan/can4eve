@@ -5,8 +5,10 @@
 	"help": "http://can4eve.bitplan.com/index.php/Help",
 	"groups": [{
 			"id": "preferencesGroup",
+			"icon": "GEAR",
+			"name": "preferences",
 			"forms": [{
-					"title": "Settings",
+					"title": "obdii",
 					"id": "settingsForm",
 					"icon": "obdii",
 					"headerText": "choose your OBDII connection",
@@ -69,7 +71,7 @@
 					]
 				},
 				{
-					"title": "Preferences",
+					"title": "preferences",
 					"id": "preferencesForm",
 					"icon": "preferences",
 					"headerText": "choose your Preferences",
@@ -121,9 +123,9 @@
 					]
 				},
 				{
-					"title": "Vehicle",
+					"title": "vehicle",
 					"id": "vehicleForm",
-					"icon": "vehicle",
+					"icon": "CAR",
 					"headerText": "vehicle Details",
 					"fields": [{
 							"title": "nickName",
@@ -177,8 +179,12 @@
 		},
 		{
 			"id": "mainGroup",
+			"name": "info",
+			"icon": "INFO",
 			"forms": [{
-					"title": "Connection",
+			        "id": "connection",
+					"title": "connection",
+					"icon": "exchange",
 					"fields": [{
 							"title": "date",
 							"format": "%s",
@@ -233,7 +239,9 @@
 					]
 				},
 				{
-					"title": "Vehicle",
+				    "id": "vehicle",
+					"title": "vehicle",
+					"icon": "CAR",
 					"fields": [{
 							"title": "VIN",
 							"format": "%s",
@@ -255,7 +263,9 @@
 					]
 				},
 				{
-					"title": "Parking",
+				    "id": "parking",
+					"title": "parking",
+					"icon": "parking",
 					"fields": [{
 							"title": "Key",
 							"format": "%s",
@@ -289,7 +299,9 @@
 					]
 				},
 				{
-					"title": "Charging",
+				    "id": "charging",
+					"title": "charging",
+					"icon": "PLUG",
 					"fields": [{
 							"title": "AC Amps",
 							"format": "%s",
@@ -341,7 +353,9 @@
 					]
 				},
 				{
-					"title": "Trip",
+				    "id": "trip",
+					"title": "trip",
+					"icon": "ROAD",
 					"fields": [{
 							"title": "total km",
 							"format": "%s",
@@ -399,7 +413,9 @@
 					]
 				},
 				{
-					"title": "Moving",
+				    "id": "moving",
+					"title": "moving",
+					"icon": "Car",
 					"fields": [{
 							"title": "Steering Position",
 							"format": "%s",
@@ -463,14 +479,18 @@
 					]
 				},
 				{
-					"title": "Cell Temp",
+				    "id": "cellTemp",
+					"title": "cellTemp",
+					"icon": "cellTemp",
 					"fields": [{
 						"title": "Cell Temperature",
 						"fieldKind": "Plot"
 					}]
 				},
 				{
-					"title": "Cell Voltage",
+				    "id": "cellVoltage",
+					"title": "cellVoltage",
+					"icon": "cellVoltage",
 					"fields": [{
 							"title": "Cell Voltage",
 							"fieldKind": "Plot"
@@ -482,8 +502,12 @@
 		},
 		{
 			"id": "historyGroup",
+			"name": "history",
+			"icon": "LINE_CHART",
 			"forms": [{
-				"title": "SOC/RR",
+			    "id": "soc_rr",
+				"title": "soc_rr",
+				"icon": "LINE_CHART",
 				"fields": [{
 					"title": "history",
 					"fields": [{

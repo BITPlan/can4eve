@@ -32,6 +32,8 @@ import org.junit.Test;
 
 import com.bitplan.gui.App;
 import com.bitplan.gui.ExceptionHelp;
+import com.bitplan.gui.Form;
+import com.bitplan.gui.Group;
 import com.bitplan.gui.Menu;
 import com.bitplan.gui.MenuItem;
 import com.bitplan.i18n.Translator;
@@ -59,20 +61,30 @@ public class TestI18n {
   }
 
   /**
+   * check the given text
+   * @param text
+   * @return the number of errors
+   */
+  public int checkText(String text) {
+    return checkText(text,"");
+  }
+  
+  /**
    * check the given text whether it is available as a translate
    * 
    * @param text
    * @return 0 if translated 1 if not
    */
-  public int checkText(String text) {
+  public int checkText(String text, String hint) {
     String translated;
     int errors = 0;
     try {
       translated = I18n.get(text);
     } catch (Throwable th) {
       translated = "";
-      if (show || showError)
-        System.out.println(text + "=" + translated);
+      if (show || showError) {
+        System.out.println(text + "("+hint+")=" + translated);
+      }
       errors++;
     }
     return errors;
@@ -99,12 +111,17 @@ public class TestI18n {
     return errors;
   }
 
+  public App getApp() throws Exception {
+    App app = App.getInstance(OBDMain.APP_PATH);
+    return app;
+  }
+
   @Test
   public void testMenuTranslated() throws Exception {
-    App app = App.getInstance();
+    App app =getApp();
     int errors = 0;
     for (String locale : locales) {
-      Translator.initialize("can4eve",locale);
+      Translator.initialize("can4eve", locale);
       if (show)
         System.out.println("# locale " + locale);
       errors += checkMenu(app.getMainMenu());
@@ -122,7 +139,7 @@ public class TestI18n {
   public void testi18nFieldsTranslated() throws Exception {
     int errors = 0;
     for (String locale : locales) {
-      Translator.initialize("can4eve",locale);
+      Translator.initialize("can4eve", locale);
       if (show)
         System.out.println("# locale " + locale);
       for (Field field : I18n.class.getFields()) {
@@ -134,11 +151,30 @@ public class TestI18n {
   }
 
   @Test
-  public void textExceptionHelp() throws Exception {
-    App app = App.getInstance();
+  public void testForms() throws Exception {
+    App app = getApp();
     int errors = 0;
     for (String locale : locales) {
-      Translator.initialize("can4eve",locale);
+      Translator.initialize("can4eve", locale);
+      for (Group group:app.getGroups()) {
+         errors+=checkText(group.getName(),group.getId()+"/"+group.getIcon());
+         for (Form form:group.getForms()) {
+           errors+=checkText(form.getTitle(),form.getId()+"/"+form.getIcon());
+           for (com.bitplan.gui.Field field:form.getFields()) {
+             // errors+=checkText(field.getTitle());
+           }
+         }
+      }
+    }
+    assertEquals(0, errors);
+  }
+
+  @Test
+  public void textExceptionHelp() throws Exception {
+    App app = getApp();
+    int errors = 0;
+    for (String locale : locales) {
+      Translator.initialize("can4eve", locale);
       for (ExceptionHelp ehelp : app.getExceptionHelps()) {
         String hint = ehelp.getI18nHint();
         if (hint.isEmpty()) {
@@ -164,7 +200,7 @@ public class TestI18n {
     }
     int errors = 0;
     for (String locale : locales) {
-      ResourceBundle bundle = Translator.initialize("can4eve",locale);
+      ResourceBundle bundle = Translator.initialize("can4eve", locale);
       Enumeration<String> keys = bundle.getKeys();
       while (keys.hasMoreElements()) {
         String key = keys.nextElement();
@@ -179,4 +215,5 @@ public class TestI18n {
     }
     assertEquals(0, errors);
   }
+
 }

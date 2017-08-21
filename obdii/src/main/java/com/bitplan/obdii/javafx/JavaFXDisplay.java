@@ -1,6 +1,5 @@
 /**
  *
- * This file is part of the https://github.com/BITPlan/can4eve open source project
  *
  * Copyright 2017 BITPlan GmbH https://github.com/BITPlan
  *
@@ -34,9 +33,6 @@ import java.util.logging.Logger;
 import org.controlsfx.control.Notifications;
 import org.controlsfx.control.StatusBar;
 import org.controlsfx.glyphfont.FontAwesome;
-import org.controlsfx.glyphfont.Glyph;
-import org.controlsfx.glyphfont.GlyphFont;
-import org.controlsfx.glyphfont.GlyphFontRegistry;
 
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.Vehicle;
@@ -55,6 +51,7 @@ import com.bitplan.javafx.GenericDialog;
 import com.bitplan.javafx.GenericPanel;
 import com.bitplan.javafx.JFXWizardPane;
 import com.bitplan.javafx.WaitableApp;
+import com.bitplan.javafx.XYTabPane;
 import com.bitplan.obdii.CANValueDisplay;
 import com.bitplan.obdii.I18n;
 import com.bitplan.obdii.OBDApp;
@@ -81,9 +78,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.Tooltip;
-import javafx.scene.control.TabPane.TabClosingPolicy;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -108,7 +102,6 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
 
   private VBox root;
   String activeView = null;
-  private Map<String, TabPane> tabPaneByView = new HashMap<String, TabPane>();
   private Map<String, GenericControl> controls;
   protected boolean available;
 
@@ -132,9 +125,6 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
   Tab clockTab;
   Tab dashBoardTab;
   private Map<String, GenericPanel> panels = new HashMap<String, GenericPanel>();
-
-  private TabPane activeTabPane;
-
   private SimulatorPane simulatorPane;
 
   private Form vehicleForm;
@@ -142,14 +132,14 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
   private Button fullScreenButton;
   private Button hideMenuButton;
   private Rectangle2D sceneBounds;
-  private GlyphFont fontAwesome;
+  private XYTabPane xyTabPane;
 
   public static boolean debug = false;
 
   public static final String DASH_BOARD_GROUP = "dashBoardGroup";
 
   protected static final String HISTORY_GROUP = "historyGroup";
-  public static int ICON_SIZE = 48;
+  public static int ICON_SIZE = 64;
 
   /**
    * construct me from an abstract application description and a software
@@ -171,7 +161,6 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
     ExceptionController.setSoftwareVersion(softwareVersion);
     ExceptionController.setLinker(this);
     JFXWizardPane.setLinker(this);
-    fontAwesome = GlyphFontRegistry.font("FontAwesome");
   }
 
   public SoftwareVersion getSoftwareVersion() {
@@ -213,69 +202,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
     this.root = root;
   }
 
-  Map<String, Glyph> iconMap = null;
-
-  /**
-   * get an initial Map of Icons
-   * @return
-   */
-  public Map<String, Glyph> getIconMap() {
-    if (iconMap == null) {
-      iconMap=new HashMap<String,Glyph>();
-      char[] codes = { '\uf240', '\uf241', '\uf242', '\uf243', '\uf244' };
-      String[] names = { "battery-full", "battery75", "battery50", "battery25",
-          "battery0" };
-      int i = 0;
-      for (char code : codes) {
-        Glyph icon = fontAwesome.create(code);
-        iconMap.put(names[i], icon);
-        icon.setTooltip(new Tooltip(names[i++]));
-      }
-    }
-    return iconMap;
-  }
-
-  /**
-   * get the icon for the given glyph
-   * 
-   * @param glyph
-   * @param fontSize
-   *          - the fontSize of the glyph
-   * @return the Glyph
-   */
-  public Glyph getIcon(String name, int fontSize) {
-    Glyph icon = this.getIconMap().get(name);
-    if (icon==null) {
-      org.controlsfx.glyphfont.FontAwesome.Glyph fglyph = FontAwesome.Glyph.valueOf(name);
-      icon=fontAwesome.create(fglyph);
-      iconMap.put(name, icon);
-    }
-    if (icon != null)
-      icon.setFontSize(fontSize);
-    return icon;
-  }
-
-  /**
-   * set the tab Glyph for the given Tabinfo
-   * 
-   * @param tab
-   * @param glyphInfo
-   */
-  public void setTabGlyph(Tab tab, String glyphInfo) {
-    Glyph icon = getIcon(glyphInfo, ICON_SIZE);
-    setTabGlyph(tab, icon);
-  }
-
-  /**
-   * set the glyph for the tab
-   * 
-   * @param tab
-   * @param glyph
-   */
-  public void setTabGlyph(Tab tab, Glyph glyph) {
-    tab.setGraphic(glyph);
-  }
-
+  
   @Override
   public void updateField(String title, Object value, int updateCount) {
     if (controls == null)
@@ -406,10 +333,17 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
     return newScene;
   }
 
+  /**
+   * set up the DashBaord
+   * @param xyTabPane
+   */
   public void setupDashBoard() {
-    TabPane dashboardPane = this.addTabPane(DASH_BOARD_GROUP);
-    this.setActiveTabPane(DASH_BOARD_GROUP);
+    TabPane dashboardPane = xyTabPane.addTabPane(DASH_BOARD_GROUP,I18n.get(I18n.DASH_BOARD),FontAwesome.Glyph.DASHBOARD.name());
     setupSpecial(dashboardPane);
+  }
+
+  private void setActiveTabPane(String groupId) {
+    xyTabPane.selectVTab(groupId);  
   }
 
   @Override
@@ -423,9 +357,11 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
     showMenuBar(scene, getMenuBar(), true);
     stage.setScene(scene);
     setUpStatusBar();
-    setup(app);
+    xyTabPane=new XYTabPane(ICON_SIZE);
+    getRoot().getChildren().add(xyTabPane);
     setupDashBoard();
-
+    setup(app);
+    this.setActiveTabPane(DASH_BOARD_GROUP);
     stage.setX(sceneBounds.getMinX());
     stage.setY(sceneBounds.getMinY());
     stage.show();
@@ -464,6 +400,9 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
     }
   }
 
+  /**
+   * setup the status bar
+   */
   public void setUpStatusBar() {
     statusBar = new StatusBar();
     watchDogLabel = new Label();
@@ -475,24 +414,6 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
   }
 
   /**
-   * add a tabPane with the given group Id
-   * 
-   * @param groupId
-   * @return - the tabPane
-   */
-  public TabPane addTabPane(String groupId) {
-    TabPane tabPane = new TabPane();
-    tabPane.setTabMinHeight(ICON_SIZE + 4);
-    tabPane.setTabMaxHeight(ICON_SIZE + 4);
-    // make sure it grows e.g. when Icons are set
-    // https://stackoverflow.com/a/25164425/1497139
-    VBox.setVgrow(tabPane, Priority.ALWAYS);
-    tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
-    this.tabPaneByView.put(groupId, tabPane);
-    return tabPane;
-  }
-
-  /**
    * setup the given Application adds tabPanes to the tabPaneByView map
    * 
    * @param app
@@ -500,37 +421,14 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
   public void setup(App app) {
     controls = new HashMap<String, GenericControl>();
     for (Group group : app.getGroups()) {
-      TabPane tabPane = this.addTabPane(group.getId());
+      TabPane tabPane = xyTabPane.addTabPane(group.getId(),I18n.get(group.getName()),group.getIcon());
       for (Form form : group.getForms()) {
-        Tab tab = new Tab();
-        tab.setText(form.getTitle());
         GenericPanel panel = new GenericPanel(stage, form);
         panels.put(form.getId(), panel);
         controls.putAll(panel.controls);
-        tab.setContent(panel);
-        tabPane.getTabs().add(tab);
+        xyTabPane.addTab(tabPane, I18n.get(form.getTitle()), form.getIcon(),panel);
       }
     }
-  }
-
-  /**
-   * add a tab
-   * 
-   * @param the
-   *          TabPane to add a Tab to
-   * @param index
-   * @param title
-   * @param content
-   * @return
-   */
-  public Tab addTab(TabPane tabPane, int index, String title,
-      String glyphName, Node content) {
-    Tab tab = new Tab(title);
-    tab.setContent(content);
-    tabPane.getTabs().add(index, tab);
-    if (glyphName != null)
-      this.setTabGlyph(tab, glyphName);
-    return tab;
   }
 
   /**
@@ -607,15 +505,15 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
   public void setupSpecial(TabPane tabPane) {
     clockPane = new ClockPane();
     odoPane = new OdoPane();
-    odoTab = addTab(tabPane, 0, I18n.get(I18n.ODO_INFO),
+    odoTab = xyTabPane.addTab(tabPane, 0, I18n.get(I18n.ODO_INFO),
         FontAwesome.Glyph.AUTOMOBILE.name(), odoPane);
     dashBoardPane = new DashBoardPane(obdApp.getVehicle());
     chargePane = new ChargePane();
-    chargeTab = addTab(tabPane, 0, I18n.get(I18n.SOC),
+    chargeTab = xyTabPane.addTab(tabPane, 0, I18n.get(I18n.SOC),
         FontAwesome.Glyph.PLUG.name(), chargePane);
-    dashBoardTab = addTab(tabPane, 0, I18n.get(I18n.DASH_BOARD),
+    dashBoardTab = xyTabPane.addTab(tabPane, 0, I18n.get(I18n.DASH_BOARD),
         FontAwesome.Glyph.TACHOMETER.name(), dashBoardPane);
-    clockTab = addTab(tabPane, 0, I18n.get(I18n.CLOCKS),
+    clockTab = xyTabPane.addTab(tabPane, 0, I18n.get(I18n.CLOCKS),
         FontAwesome.Glyph.CLOCK_ALT.name(), clockPane);
     // disable menu items
     this.setMenuItemDisable(I18n.OBD_HALT_MENU_ITEM, true);
@@ -733,18 +631,18 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
           close();
           break;
         case I18n.HELP_ABOUT_MENU_ITEM:
-          TaskLaunch.start(() -> showLink(App.getInstance().getHome()));
+          TaskLaunch.start(() -> showLink(app.getHome()));
           showAbout();
           break;
         case I18n.HELP_HELP_MENU_ITEM:
-          TaskLaunch.start(() -> showLink(App.getInstance().getHelp()));
+          TaskLaunch.start(() -> showLink(app.getHelp()));
           break;
         case I18n.HELP_FEEDBACK_MENU_ITEM:
           GenericDialog.sendReport(softwareVersion,
               softwareVersion.getName() + " feedback", "...");
           break;
         case I18n.HELP_BUG_REPORT_MENU_ITEM:
-          TaskLaunch.start(() -> showLink(App.getInstance().getFeedback()));
+          TaskLaunch.start(() -> showLink(app.getFeedback()));
           break;
         case I18n.SETTINGS_SETTINGS_MENU_ITEM:
           showSettings(false);
@@ -1030,44 +928,13 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
   }
 
   /**
-   * (re) set the active tab Pane
-   * 
-   * @param groupId
-   */
-  public TabPane setActiveTabPane(String groupId) {
-    TabPane oldtabPane = this.getActiveTabPane();
-    if (oldtabPane != null) {
-      getRoot().getChildren().remove(oldtabPane);
-    }
-    this.activeView = groupId;
-    activeTabPane = getActiveTabPane();
-    if (activeTabPane == null)
-      throw new IllegalStateException(
-          "tab Pane with groupId " + groupId + " missing");
-    getRoot().getChildren().add(activeTabPane);
-
-    return activeTabPane;
-  }
-
-  /**
    * get the active Tab Pane
    * 
    * @return - the active Tab Pane
    */
   public TabPane getActiveTabPane() {
-    TabPane activeTabPane = getTabPane(this.activeView);
+    TabPane activeTabPane = xyTabPane.getTabPane(this.activeView);
     return activeTabPane;
-  }
-
-  /**
-   * get the tabPane with the given view name
-   * 
-   * @param view
-   * @return the tabPane
-   */
-  public TabPane getTabPane(String view) {
-    TabPane tabPane = this.tabPaneByView.get(view);
-    return tabPane;
   }
 
   /**
@@ -1078,7 +945,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
    * @return - the tab
    */
   public Tab getTab(String view, String tabId) {
-    TabPane tabPane = getTabPane(view);
+    TabPane tabPane = xyTabPane.getTabPane(view);
     if (tabPane != null) {
       for (Tab tab : tabPane.getTabs()) {
         if (tabId.equals(tab.getText())) {

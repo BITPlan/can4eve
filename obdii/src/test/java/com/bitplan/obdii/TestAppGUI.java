@@ -26,11 +26,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
@@ -40,10 +38,6 @@ import org.controlsfx.control.Notifications;
 import org.controlsfx.dialog.Wizard;
 import org.controlsfx.dialog.Wizard.LinearFlow;
 import org.controlsfx.dialog.WizardPane;
-import org.controlsfx.glyphfont.FontAwesome;
-import org.controlsfx.glyphfont.Glyph;
-import org.controlsfx.glyphfont.GlyphFont;
-import org.controlsfx.glyphfont.GlyphFontRegistry;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -104,20 +98,14 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -131,7 +119,6 @@ import javafx.util.Duration;
  *
  */
 public class TestAppGUI extends TestOBDII {
-  public static boolean debug = false;
   public static final int SHOW_TIME = 4000;
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii");
 
@@ -143,7 +130,7 @@ public class TestAppGUI extends TestOBDII {
 
   @Test
   public void testAppGUI() throws Exception {
-    App app = App.getInstance();
+    App app = App.getInstance(OBDMain.APP_PATH);
     assertNotNull(app);
     assertEquals(6, app.getMainMenu().getSubMenus().size());
     assertEquals(3, app.getGroups().size());
@@ -246,29 +233,10 @@ public class TestAppGUI extends TestOBDII {
     return gridPane;
   }
   
-  @Test
-  public void testVerticalTabs() throws Exception {
-    // https://stackoverflow.com/questions/16708578/javafx-2-0-tabpane-tabs-at-left-and-keep-tab-header-horizontal
-    JavaFXDisplay display = super.getDisplay();
-    int col=0;
-    int row=0;
-    TabPane vTabPane=display.addTabPane("vtabPane");
-    vTabPane.setSide(Side.LEFT);
-    String[] rowNames={FontAwesome.Glyph.HOME.name(),FontAwesome.Glyph.PLUG.name(),"battery75","battery50",FontAwesome.Glyph.GEAR.name()};
-    String[] colNames={};
-    for (String rowName:rowNames) {
-      TabPane hTabPane=display.addTabPane("h"+col+""+row);  
-      display.addTab(vTabPane, 0, "", rowName, hTabPane);
-      for (int i=0;i<=5;i++) {
-        display.addTab(hTabPane, 0, "", FontAwesome.Glyph.ANCHOR.name(), new  Pane());
-      }
-    }
-    SampleApp.createAndShow("vertical tabs", vTabPane, SHOW_TIME*5);
-  }
   
   @Test
   public void testExceptionHelp() throws Exception {
-    App app = App.getInstance();
+    App app = App.getInstance(OBDMain.APP_PATH);
     String exception = "java.net.BindException:Address already in use (Bind failed)";
     ExceptionHelp ehelp = app.getExceptionHelpByName(exception);
     assertNotNull(ehelp);
@@ -555,9 +523,6 @@ public class TestAppGUI extends TestOBDII {
     });
     Platform.runLater(() -> {
       display.setupDashBoard();
-      int ICON_SIZE = 64;
-      Glyph icon = display.getIcon(FontAwesome.Glyph.TACHOMETER.name(), ICON_SIZE);
-      display.setTabGlyph(display.getActiveTab(), icon);
     });
     Thread.sleep(SHOW_TIME);
     sampleApp.close();

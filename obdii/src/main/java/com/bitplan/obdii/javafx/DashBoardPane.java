@@ -111,11 +111,11 @@ public class DashBoardPane extends ConstrainedGridPane  {
         .lcdDesign(LcdGauge.lcdDesign).lcdVisible(true)
         .lcdFont(LcdGauge.lcdFont).needleSize(NeedleSize.THICK).build();
 
-    rpmMax = new ResetableGauge(I18n.RPM_MAX,I18n.RPM);
-    rpmAvg = new ResetableGauge(I18n.RPM_AVG,I18n.RPM);
+    rpmMax = new ResetableGauge(I18n.get(I18n.RPM_MAX),I18n.get(I18n.RPM));
+    rpmAvg = new ResetableGauge(I18n.get(I18n.RPM_AVG),I18n.get(I18n.RPM));
     // FIXME translate km/h? or allow miles/hour?
-    rpmSpeedMax = new ResetableGauge(I18n.RPM_SPEED_MAX,I18n.KMH);   
-    rpmSpeedAvg = new ResetableGauge(I18n.RPM_SPEED_AVG,I18n.KMH);
+    rpmSpeedMax = new ResetableGauge(I18n.get(I18n.RPM_SPEED_MAX),I18n.get(I18n.KMH));   
+    rpmSpeedAvg = new ResetableGauge(I18n.get(I18n.RPM_SPEED_AVG),I18n.get(I18n.KMH));
 
     framedRPMGauge = new FGauge(rpmGauge, GaugeDesign.ENZO,
         GaugeBackground.DARK_GRAY);
