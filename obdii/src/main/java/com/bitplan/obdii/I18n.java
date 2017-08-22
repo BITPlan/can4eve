@@ -152,6 +152,7 @@ public class I18n {
   public static final String ELM327_CAN4EVE_COMPATIBLE = "elm327Can4eveCompatible";
   public static final String ELM327_CAN4EVE_INCOMPATIBLE = "elm327Can4eveIncompatible";
   public static final String ELM327_RECOMMENDED = "elm327Recommended";
+  public static final String POWER_OFF = "powerOff";
   public static String DASH_BOARD_TAB="dashBoardTab";
   /**
    * Translate the given text

@@ -76,6 +76,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -553,6 +554,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
     vehicleForm = app.getFormById("preferencesGroup", "vehicleForm");
     Button powerButton = xyTabPane.getTopLeftButton();
     Node icon = xyTabPane.getIcon(FontAwesome.Glyph.POWER_OFF.name(),xyTabPane.getIconSize());
+    powerButton.setTooltip(new Tooltip(I18n.get(I18n.POWER_OFF)));
     powerButton.setGraphic(icon);
     powerButton.setDisable(false);
     powerButton.setOnAction(new EventHandler<ActionEvent>() {
