@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -75,7 +74,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.VBox;
@@ -204,6 +202,14 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
   }
 
   
+  public XYTabPane getXyTabPane() {
+    return xyTabPane;
+  }
+
+  public void setXyTabPane(XYTabPane xyTabPane) {
+    this.xyTabPane = xyTabPane;
+  }
+
   @Override
   public void updateField(String title, Object value, int updateCount) {
     if (controls == null)
@@ -242,12 +248,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
    * @return - the activeTab
    */
   public Tab getActiveTab() {
-    TabPane tabPane = getActiveTabPane();
-    if (tabPane == null)
-      return null;
-    SingleSelectionModel<Tab> smodel = tabPane.getSelectionModel();
-    Tab selectedTab = smodel.getSelectedItem();
-    return selectedTab;
+    return xyTabPane.getSelectedTab();
   }
 
   @Override
@@ -339,7 +340,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
    * @param xyTabPane
    */
   public void setupDashBoard() {
-    TabPane dashboardPane = xyTabPane.addTabPane(DASH_BOARD_GROUP,I18n.get(I18n.DASH_BOARD),FontAwesome.Glyph.DASHBOARD.name());
+    TabPane dashboardPane = xyTabPane.addTabPane(DASH_BOARD_GROUP,I18n.get(I18n.DASH_BOARD_TAB),FontAwesome.Glyph.SQUARE_ALT.name());
     setupSpecial(dashboardPane);
   }
 
@@ -471,7 +472,16 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
             && !screenShotDirectory.isDirectory()) {
           screenShotDirectory.mkdirs();
         }
-        String tabName = this.getActiveTab().getText();
+        Tab tab = this.getActiveTab();
+        String tabName =tab.getText();
+        if (null==tabName) {
+          if (tab.getTooltip()!=null) {
+            tabName=tab.getTooltip().getText();
+          } else {
+            tabName="";
+          }
+          
+        }
         SimpleDateFormat lIsoDateFormatter = new SimpleDateFormat(
             "yyyy-MM-dd_HHmmss");
         String screenShotName = String.format("screenShot_%s_%s.png", tabName,
@@ -541,6 +551,16 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
       statusBar.getRightItems().add(fullScreenButton);
     }
     vehicleForm = app.getFormById("preferencesGroup", "vehicleForm");
+    Button powerButton = xyTabPane.getTopLeftButton();
+    Node icon = xyTabPane.getIcon(FontAwesome.Glyph.POWER_OFF.name(),xyTabPane.getIconSize());
+    powerButton.setGraphic(icon);
+    powerButton.setDisable(false);
+    powerButton.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent e) {
+        close();
+      }
+    });
   }
 
   /**
@@ -919,16 +939,6 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
    */
   public void selectRandomTab() {
     this.xyTabPane.selectRandomTab();
-  }
-
-  /**
-   * get the active Tab Pane
-   * 
-   * @return - the active Tab Pane
-   */
-  public TabPane getActiveTabPane() {
-    TabPane activeTabPane = xyTabPane.getTabPane(this.activeView);
-    return activeTabPane;
   }
 
   /**

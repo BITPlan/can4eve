@@ -21,16 +21,21 @@
 package com.bitplan.obdii;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.junit.Test;
 
 import com.bitplan.can4eve.util.TaskLaunch;
 import com.bitplan.javafx.WaitableApp;
+import com.bitplan.javafx.XYTabPane;
 
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  * tests which create screenshots for http://can4eve.bitplan.com/index.php/Help
@@ -40,6 +45,7 @@ import javafx.stage.Stage;
  *
  */
 public class TestHelpPages {
+  boolean debug = true;
 
   private OBDMain obdMain;
 
@@ -55,36 +61,61 @@ public class TestHelpPages {
     obdMain.maininstance(args);
     return null;
   }
-  
+
   /**
-   * 
+   * create a snapShot
    * @param stage
    * @param title
-   * @throws Exception
    */
-  public void snapShot(Stage stage,String title) throws Exception {
-    File snapShotDir=File.createTempFile("can4eve", "snapShots").getParentFile();
-    File snapShot=new File(snapShotDir,title+".png");
-    System.out.println(snapShot.getAbsolutePath());
-    Platform.runLater(()->WaitableApp.saveAsPng(stage, snapShot));
+  public void snapShot(Stage stage, String title)  {
+    //PauseTransition pause = new PauseTransition(Duration.millis(500));
+    //pause.setOnFinished(event -> {
+      try {
+        File snapShotDir = File.createTempFile("can4eve", "snapShots")
+            .getParentFile();
+        File snapShot = new File(snapShotDir, title + ".png");
+        if (debug)
+          System.out.println(snapShot.getAbsolutePath());
+        WaitableApp.saveAsPng(stage, snapShot);
+      } catch (IOException e) {
+        ErrorHandler.handle(e);
+      }
+     
+    //});
+    //pause.play();
+  }
+  
+  public void loopTabs(JFXTripletDisplay jfxDisplay) {
+    XYTabPane xyTabPane = jfxDisplay.getXyTabPane();
+    ObservableList<Tab> vtabs = xyTabPane.getvTabPane().getTabs();
+    for (Tab vtab : vtabs) {
+      xyTabPane.getvTabPane().getSelectionModel().select(vtab);
+      TabPane hTabPane = xyTabPane.getSelectedTabPane();
+      ObservableList<Tab> htabs = hTabPane.getTabs();
+
+      if (vtab.getTooltip() != null) {
+        String vTitle = vtab.getTooltip().getText();
+        for (Tab htab : htabs) {
+          hTabPane.getSelectionModel().select(htab);
+          String title = htab.getTooltip().getText();
+          System.out.println(vTitle + "_" + title);
+          snapShot(jfxDisplay.getStage(),vTitle+"_"+title);
+        }
+      }
+    }
+
   }
 
   @Test
-  public void testMenu() throws Exception {
+  public void testTabs() throws Exception {
     WaitableApp.toolkitInit();
     TaskLaunch.start(() -> startOBDMain());
     while (obdMain == null || obdMain.canValueDisplay == null)
       Thread.sleep(10);
     JFXTripletDisplay jfxDisplay = (JFXTripletDisplay) obdMain.canValueDisplay;
-    while (jfxDisplay.getMenuBar() == null || jfxDisplay.getActiveTabPane()==null)
-      Thread.sleep(20);
-    Thread.sleep(1000);
-    TabPane tabPane = jfxDisplay.getActiveTabPane();
-    for (int tabIndex = 0; tabIndex < tabPane.getTabs()
-        .size(); tabIndex++) {
-      tabPane.getSelectionModel().select(tabIndex);
-      Tab tab = tabPane.getSelectionModel().getSelectedItem();
-      snapShot(jfxDisplay.getStage(),tab.getText());
-    }
+    jfxDisplay.waitOpen();
+    Thread.sleep(2000);
+    Platform.runLater(()->loopTabs(jfxDisplay));
+    Thread.sleep(5000);
   }
 }
