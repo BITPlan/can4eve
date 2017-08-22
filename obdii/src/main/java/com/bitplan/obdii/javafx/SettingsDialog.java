@@ -69,7 +69,7 @@ public class SettingsDialog extends GenericDialog {
         SerialImpl serial = SerialImpl.getInstance();
         List<String> serialPorts = serial.getSerialPorts(true);
         if (serialPorts.size()==0) {
-          GenericDialog.showAlert(I18n.get(I18n.SERIAL_PORT_SELECT), I18n.get(I18n.SERIAL_PORT_NONE_FOUND), I18n.get(I18n.SERIAL_PORT_PLEASE_CONNECT));
+          GenericDialog.showAlert(getStage(),I18n.get(I18n.SERIAL_PORT_SELECT), I18n.get(I18n.SERIAL_PORT_NONE_FOUND), I18n.get(I18n.SERIAL_PORT_PLEASE_CONNECT));
         } else {
           ChoiceDialog<String> serialChoices=new ChoiceDialog<String>(serialPorts.get(0),serialPorts);
           serialChoices.setTitle(I18n.get(I18n.SERIAL_PORT_SELECT));
@@ -88,7 +88,7 @@ public class SettingsDialog extends GenericDialog {
       public void handle(ActionEvent e) {
         Config config=new Config();
         config.fromMap(SettingsDialog.this.getResult());
-        testConnection(obdApp,config);
+        testConnection(getStage(),obdApp,config);
       }
     });
     grid.add(button, 2,0);
@@ -98,15 +98,15 @@ public class SettingsDialog extends GenericDialog {
    * test the connection for the given configuration
    * @param config
    */
-  public static void testConnection(OBDApp obdApp,Config config) {
+  public static void testConnection(Stage stage,OBDApp obdApp,Config config) {
     // FIXME - use Task/Lamba instead
     Platform.runLater(() ->{
     try {
       ELM327 elm = obdApp.testConnection(config);
       String info=elm.getInfo();
-      GenericDialog.showAlert(I18n.get(I18n.SUCCESS),I18n.get(I18n.CONNECTION_OK), info);
+      GenericDialog.showAlert(stage,I18n.get(I18n.SUCCESS),I18n.get(I18n.CONNECTION_OK), info);
     } catch (Exception e) {
-      GenericDialog.showError(I18n.get(I18n.ERROR), I18n.get(I18n.CONNECTION_FAILED),e.getClass().getSimpleName()+":"+e.getMessage());
+      GenericDialog.showError(stage,I18n.get(I18n.ERROR), I18n.get(I18n.CONNECTION_FAILED),e.getClass().getSimpleName()+":"+e.getMessage());
       ErrorHandler.handle(e);
     }
     });

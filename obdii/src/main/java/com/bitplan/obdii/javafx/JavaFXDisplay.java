@@ -391,7 +391,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
     try {
       Preferences preferences = Preferences.getInstance();
       if (preferences.getLanguage() == LangChoice.notSet) {
-        WelcomeWizard wizard = new WelcomeWizard(I18n.WELCOME, this.obdApp);
+        WelcomeWizard wizard = new WelcomeWizard(stage,I18n.WELCOME, this.obdApp);
         wizard.display();
         if (wizard.isFinished()) {
           this.startMonitoring(false);
@@ -629,7 +629,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
    *          - i18n string code of feature e.g. menuItem
    */
   public void notImplemented(String feature) {
-    GenericDialog.showAlert(I18n.get(I18n.SORRY), I18n.get(I18n.WE_ARE_SORRY),
+    GenericDialog.showAlert(stage,I18n.get(I18n.SORRY), I18n.get(I18n.WE_ARE_SORRY),
         I18n.get(feature) + " " + I18n.get(I18n.NOT_IMPLEMENTED_YET));
   }
 
@@ -670,7 +670,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
           showSettings(false);
           break;
         case I18n.SETTINGS_WELCOME_MENU_ITEM:
-          WelcomeWizard wizard = new WelcomeWizard(I18n.WELCOME, this.obdApp);
+          WelcomeWizard wizard = new WelcomeWizard(stage,I18n.WELCOME, this.obdApp);
           wizard.display();
           if (wizard.isFinished())
             startMonitoring(false);
@@ -820,7 +820,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
    * @param th
    */
   public void handleException(Throwable th) {
-    Platform.runLater(() -> GenericDialog.showException((I18n.get(I18n.ERROR)),
+    Platform.runLater(() -> GenericDialog.showException(stage,(I18n.get(I18n.ERROR)),
         I18n.get(I18n.PROBLEM_OCCURED), th, this));
   }
 
@@ -845,7 +845,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
   private void showAbout() {
     String headerText = softwareVersion.getName() + " "
         + softwareVersion.getVersion();
-    GenericDialog.showAlert("About", headerText, softwareVersion.getUrl());
+    GenericDialog.showAlert(stage,"About", headerText, softwareVersion.getUrl());
   }
 
   /**
@@ -877,7 +877,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
       preferences.save();
       if (!lang.equals(preferences.getLanguage())) {
         Translator.initialize("can4eve", preferences.getLanguage().name());
-        GenericDialog.showAlert(i18n("language_changed_title"),
+        GenericDialog.showAlert(stage,i18n("language_changed_title"),
             i18n("language_changed"), i18n("newlanguage_restart"));
       }
     }
@@ -907,7 +907,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
     if (config == null)
       config = new Config();
     if (test)
-      SettingsDialog.testConnection(this.obdApp, config);
+      SettingsDialog.testConnection(stage,this.obdApp, config);
     else {
       Optional<Map<String, Object>> result = settingsDialog
           .show(config.asMap());

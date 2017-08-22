@@ -32,7 +32,7 @@ import org.kohsuke.args4j.Option;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.elm327.Connection;
 import com.bitplan.elm327.LogImpl;
-import com.bitplan.obdii.Main;
+import com.bitplan.javafx.Main;
 
 /**
  * ELMSimulator

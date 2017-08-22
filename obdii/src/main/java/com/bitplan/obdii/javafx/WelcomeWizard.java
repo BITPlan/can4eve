@@ -62,6 +62,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 
 /**
  * the Welcome wizard
@@ -251,15 +252,13 @@ public class WelcomeWizard extends JFXWizard {
    * @param i18nTitle
    * @param obdApp
    */
-  public WelcomeWizard(String i18nTitle, OBDApp obdApp) {
-    super( "/com/bitplan/can4eve/gui/");
+  public WelcomeWizard(Stage stage,String i18nTitle, OBDApp obdApp) {
+    super(stage, "/com/bitplan/can4eve/gui/");
     this.obdApp = obdApp;
     setTitle(I18n.get(i18nTitle));
     int steps = 6;
     languagePane = new JFXWizardPane(this, 1, steps, I18n.WELCOME_LANGUAGE,
         langSelector) {
-
-    
 
       @Override
       public void onExitingPage(Wizard wizard) {

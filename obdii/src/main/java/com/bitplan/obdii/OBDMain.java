@@ -40,6 +40,7 @@ import com.bitplan.elm327.util.OSCheck;
 import com.bitplan.gui.App;
 import com.bitplan.gui.Display;
 import com.bitplan.i18n.Translator;
+import com.bitplan.javafx.Main;
 import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.obdii.elm327.ElmSimulator;
@@ -162,7 +163,7 @@ public class OBDMain extends Main implements OBDApp {
    * construct me
    */
   public OBDMain() {
-    super.name = "CANTriplet";
+    super.setName("can4eve");
   }
 
   @Override

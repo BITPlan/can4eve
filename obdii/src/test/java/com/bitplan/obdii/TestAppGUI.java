@@ -106,6 +106,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -634,11 +635,16 @@ public class TestAppGUI extends TestOBDII {
 
   @Test
   public void testWelcomeWizard() throws Exception {
+    Pane pane=new Pane();
+    SampleApp sampleApp = new SampleApp("wizards", pane);
+    sampleApp.show();
+    sampleApp.waitOpen();
+
     WelcomeWizard[] wizards = new WelcomeWizard[1];
 
     Platform.runLater(() -> {
       try {
-        WelcomeWizard wizard = new WelcomeWizard(I18n.WELCOME, null);
+        WelcomeWizard wizard = new WelcomeWizard(sampleApp.getStage(),I18n.WELCOME, null);
         wizards[0] = wizard;
         wizard.display();
       } catch (Exception e) {
@@ -662,6 +668,7 @@ public class TestAppGUI extends TestOBDII {
       if (debug)
         System.out.println(setting.getKey() + "=" + setting.getValue());
     }
+    sampleApp.close();
   }
 
   /**
