@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.controlsfx.control.Notifications;
 import org.controlsfx.control.StatusBar;
@@ -45,6 +44,7 @@ import com.bitplan.gui.Form;
 import com.bitplan.gui.Group;
 import com.bitplan.i18n.Translator;
 import com.bitplan.javafx.ExceptionController;
+import com.bitplan.javafx.GenericApp;
 import com.bitplan.javafx.GenericControl;
 import com.bitplan.javafx.GenericDialog;
 import com.bitplan.javafx.GenericPanel;
@@ -90,18 +90,15 @@ import javafx.util.Duration;
  * @author wf
  *
  */
-public class JavaFXDisplay extends WaitableApp implements MonitorControl,
+public class JavaFXDisplay extends GenericApp implements MonitorControl,
     CANValueDisplay, ExceptionHandler, EventHandler<ActionEvent> {
-  protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.javafx");
-  public static boolean testMode = false;
-  private static com.bitplan.gui.App app;
+
   OBDApp obdApp;
-  private static SoftwareVersion softwareVersion;
+
   private MenuBar menuBar;
 
   private VBox root;
   String activeView = null;
-  private Map<String, GenericControl> controls;
   protected boolean available;
 
   private StatusBar statusBar;
@@ -123,7 +120,6 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
   Tab odoTab;
   Tab clockTab;
   Tab dashBoardTab;
-  private Map<String, GenericPanel> panels = new HashMap<String, GenericPanel>();
   private SimulatorPane simulatorPane;
 
   private Form vehicleForm;
@@ -131,14 +127,11 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
   private Button fullScreenButton;
   private Button hideMenuButton;
   private Rectangle2D sceneBounds;
-  private XYTabPane xyTabPane;
-
-  public static boolean debug = false;
-
+ 
   public static final String DASH_BOARD_GROUP = "dashBoardGroup";
 
   protected static final String HISTORY_GROUP = "historyGroup";
-  public static int ICON_SIZE = 64;
+
 
   /**
    * construct me from an abstract application description and a software
@@ -151,33 +144,12 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
    */
   public JavaFXDisplay(App app, SoftwareVersion softwareVersion,
       OBDApp obdApp) {
-    toolkitInit();
+    super(app,softwareVersion);
+    
     this.obdApp = obdApp;
-    xyTabPane=new XYTabPane(ICON_SIZE);
-    // new JFXPanel();
-    this.setApp(app);
-    this.setSoftwareVersion(softwareVersion);
-    ExceptionController.setExceptionHelper(app);
-    ExceptionController.setSoftwareVersion(softwareVersion);
-    ExceptionController.setLinker(this);
-    JFXWizardPane.setLinker(this);
   }
 
-  public SoftwareVersion getSoftwareVersion() {
-    return softwareVersion;
-  }
-
-  public void setSoftwareVersion(SoftwareVersion softwareVersion) {
-    JavaFXDisplay.softwareVersion = softwareVersion;
-  }
-
-  public com.bitplan.gui.App getApp() {
-    return app;
-  }
-
-  public void setApp(com.bitplan.gui.App app) {
-    JavaFXDisplay.app = app;
-  }
+  
 
   /**
    * @return the menuBar
@@ -202,15 +174,6 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
     this.root = root;
   }
 
-  
-  public XYTabPane getXyTabPane() {
-    return xyTabPane;
-  }
-
-  public void setXyTabPane(XYTabPane xyTabPane) {
-    this.xyTabPane = xyTabPane;
-  }
-
   @Override
   public void updateField(String title, Object value, int updateCount) {
     if (controls == null)
@@ -227,30 +190,6 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
     }
   }
 
-  /**
-   * show the given notification
-   * 
-   * @param title
-   * @param text
-   * @param milliSecs
-   */
-  public static void showNotification(String title, String text,
-      int milliSecs) {
-    Notifications notification = Notifications.create();
-    notification.hideAfter(new Duration(milliSecs));
-    notification.title(title);
-    notification.text(text);
-    Platform.runLater(() -> notification.showInformation());
-  }
-
-  /**
-   * get the title of the active Panel
-   * 
-   * @return - the activeTab
-   */
-  public Tab getActiveTab() {
-    return xyTabPane.getSelectedTab();
-  }
 
   @Override
   public void updateCanValueField(CANValue<?> canValue) {
@@ -345,16 +284,9 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
     setupSpecial(dashboardPane);
   }
 
-  private void setActiveTabPane(String groupId) {
-    xyTabPane.selectVTab(groupId);  
-  }
-
   @Override
   public void start(Stage stage) {
     super.start(stage);
-    stage.setTitle(
-        softwareVersion.getName() + " " + softwareVersion.getVersion());
-    this.stage = stage;
     scene = createScene();
     setMenuBar(createMenuBar(scene, app));
     showMenuBar(scene, getMenuBar(), true);
@@ -415,23 +347,7 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
     getRoot().getChildren().add(statusBar);
   }
 
-  /**
-   * setup the given Application adds tabPanes to the tabPaneByView map
-   * 
-   * @param app
-   */
-  public void setup(App app) {
-    controls = new HashMap<String, GenericControl>();
-    for (Group group : app.getGroups()) {
-      TabPane tabPane = xyTabPane.addTabPane(group.getId(),I18n.get(group.getName()),group.getIcon());
-      for (Form form : group.getForms()) {
-        GenericPanel panel = new GenericPanel(stage, form);
-        panels.put(form.getId(), panel);
-        controls.putAll(panel.controls);
-        xyTabPane.addTab(tabPane, form.getId(),I18n.get(form.getTitle()), form.getIcon(),panel);
-      }
-    }
-  }
+  
 
   /**
    * bind the value to the valueTo
@@ -927,32 +843,5 @@ public class JavaFXDisplay extends WaitableApp implements MonitorControl,
       }
     }
   }
-
-  /**
-   * close this display
-   */
-  public void close() {
-    if (stage != null)
-      Platform.runLater(() -> stage.close());
-  }
-
-  /**
-   * select a random tab
-   */
-  public void selectRandomTab() {
-    this.xyTabPane.selectRandomTab();
-  }
-
-  /**
-   * get the tab of the given view with the given id
-   * 
-   * @param view
-   * @param tabId
-   * @return - the tab
-   */
-  public Tab getTab(String tabId) {
-    Tab tab = xyTabPane.getTab(tabId);
-    return tab;
-  }
-
+ 
 }
