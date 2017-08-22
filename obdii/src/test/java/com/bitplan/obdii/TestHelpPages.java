@@ -29,13 +29,11 @@ import com.bitplan.can4eve.util.TaskLaunch;
 import com.bitplan.javafx.WaitableApp;
 import com.bitplan.javafx.XYTabPane;
 
-import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 /**
  * tests which create screenshots for http://can4eve.bitplan.com/index.php/Help
@@ -73,6 +71,7 @@ public class TestHelpPages {
       try {
         File snapShotDir = File.createTempFile("can4eve", "snapShots")
             .getParentFile();
+        title=title.replace("/", "");
         File snapShot = new File(snapShotDir, title + ".png");
         if (debug)
           System.out.println(snapShot.getAbsolutePath());
@@ -84,6 +83,8 @@ public class TestHelpPages {
     //});
     //pause.play();
   }
+  
+  boolean done=false;
   
   public void loopTabs(JFXTripletDisplay jfxDisplay) {
     XYTabPane xyTabPane = jfxDisplay.getXyTabPane();
@@ -103,6 +104,7 @@ public class TestHelpPages {
         }
       }
     }
+    done=true;
 
   }
 
@@ -114,8 +116,9 @@ public class TestHelpPages {
       Thread.sleep(10);
     JFXTripletDisplay jfxDisplay = (JFXTripletDisplay) obdMain.canValueDisplay;
     jfxDisplay.waitOpen();
-    Thread.sleep(2000);
+    Thread.sleep(250);
     Platform.runLater(()->loopTabs(jfxDisplay));
-    Thread.sleep(5000);
+    while(!done)
+      Thread.sleep(50);
   }
 }

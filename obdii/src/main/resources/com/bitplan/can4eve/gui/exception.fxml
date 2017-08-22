@@ -13,7 +13,7 @@
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
 	minWidth="-Infinity" prefHeight="320.0" prefWidth="520.0"
 	xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1"
-	fx:controller="com.bitplan.can4eve.gui.javafx.ExceptionController">
+	fx:controller="com.bitplan.javafx.ExceptionController">
 	<children>
 		<DialogPane fx:id="dialogPane" layoutX="0.0" layoutY="0.0">
 			<content>

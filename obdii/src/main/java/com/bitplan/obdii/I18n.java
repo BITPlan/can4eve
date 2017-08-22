@@ -153,7 +153,20 @@ public class I18n {
   public static final String ELM327_CAN4EVE_INCOMPATIBLE = "elm327Can4eveIncompatible";
   public static final String ELM327_RECOMMENDED = "elm327Recommended";
   public static final String POWER_OFF = "powerOff";
-  public static String DASH_BOARD_TAB="dashBoardTab";
+  public static final String DASH_BOARD_TAB="dashBoardTab";
+  public static final String PARKING="parking"; //Parking
+  public static final String TRIP="trip"; //Trip
+  public static final String CELL_TEMP="cellTemp"; //Cell Temperatures
+  public static final String CONNECTION="connection"; //Connection
+  public static final String MOVING="moving"; //Moving
+  public static final String VEHICLE="vehicle"; //Vehicle
+  public static final String PREFERENCES="preferences"; //Preferences
+  public static final String SOC_RR="soc_rr"; //SOC/RR
+  public static final String OBDII="obdii"; //OBDII
+  public static final String INFO="info"; //Info
+  public static final String HISTORY="history"; //History
+  public static final String CELL_VOLTAGE="cellVoltage"; //Cell Voltages
+  public static final String CHARGING="charging"; //Charging
   /**
    * Translate the given text
    * 
