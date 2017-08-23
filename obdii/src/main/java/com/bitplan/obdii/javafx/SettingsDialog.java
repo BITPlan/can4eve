@@ -60,9 +60,9 @@ public class SettingsDialog extends GenericDialog {
   @Override
   public void setup(Map<String, Object> valueMap) {
     super.setup(valueMap);
-    GenericControl serialDeviceControl = super.controls.get("serialDevice");
+    GenericControl serialDeviceControl = super.getControl("serialDevice");
     Button serialButton = new Button("...");
-    grid.add(serialButton, 2, 2);
+    genericPanel.add(serialButton, 2, 2);
     EventHandler<ActionEvent> eventHandler = new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
@@ -91,7 +91,7 @@ public class SettingsDialog extends GenericDialog {
         testConnection(getStage(),obdApp,config);
       }
     });
-    grid.add(button, 2,0);
+    genericPanel.add(button, 2,0);
   }
 
   /**

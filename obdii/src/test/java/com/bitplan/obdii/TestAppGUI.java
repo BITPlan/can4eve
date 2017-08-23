@@ -43,19 +43,24 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.bitplan.can4eve.CANInfo;
+import com.bitplan.can4eve.Owner;
 import com.bitplan.can4eve.CANValue.DoubleValue;
+import com.bitplan.can4eve.Vehicle;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.gui.javafx.CANProperty;
 import com.bitplan.can4eve.gui.javafx.CANPropertyManager;
 import com.bitplan.can4eve.states.StopWatch;
 import com.bitplan.can4eve.util.TaskLaunch;
+import com.bitplan.error.ExceptionHandler;
 import com.bitplan.gui.App;
 import com.bitplan.gui.ExceptionHelp;
 import com.bitplan.gui.Group;
 import com.bitplan.gui.Linker;
 import com.bitplan.i18n.Translator;
+import com.bitplan.javafx.BasePresenter;
 import com.bitplan.javafx.ConstrainedGridPane;
 import com.bitplan.javafx.GenericDialog;
+import com.bitplan.javafx.JFXML;
 import com.bitplan.javafx.SampleApp;
 import com.bitplan.javafx.WaitableApp;
 import com.bitplan.json.JsonManager;
@@ -74,7 +79,8 @@ import com.bitplan.obdii.javafx.JavaFXDisplay;
 import com.bitplan.obdii.javafx.LCDPane;
 import com.bitplan.obdii.javafx.SimulatorPane;
 import com.bitplan.obdii.javafx.WelcomeWizard;
-
+import com.bitplan.obdii.javafx.presenter.VehiclePresenter;
+import com.bitplan.obdii.javafx.presenter.OwnerPresenter;
 import eu.hansolo.LcdGauge.ResetableGauge;
 import eu.hansolo.OverviewDemo;
 import eu.hansolo.medusa.FGauge;
@@ -112,6 +118,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.util.Pair;
 
 /**
  * test the descriptive application gui
@@ -123,10 +130,112 @@ public class TestAppGUI extends TestOBDII {
   public static final int SHOW_TIME = 4000;
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii");
 
+  public class FXMLSampleApp {
+    Pane pane;
+    SampleApp sampleApp;
+    App app;
+    JFXML fxml;
+
+    public FXMLSampleApp(String title) {
+      pane = new Pane();
+      sampleApp = new SampleApp(title, pane);
+    }
+
+    public void showAndOpen() throws Exception {
+      sampleApp.show();
+      sampleApp.waitOpen();
+      app = App.getInstance(OBDMain.APP_PATH);
+      fxml = new JFXML(JavaFXDisplay.RESOURCE_PATH, sampleApp.getStage(), app);
+    }
+
+    public void close() {
+      sampleApp.close();
+    }
+  }
+
+  private ExceptionHandler exceptionHandler;
+
   @Before
   public void initGUI() {
     WaitableApp.toolkitInit();
     Translator.initialize("can4eve", "en");
+    exceptionHandler=new ExceptionHandler() {
+
+      @Override
+      public void handleException(Throwable th) {
+        ErrorHandler.handle(th);
+        
+      }
+      
+    };
+  }
+
+  class Entity {
+    String name;
+    Class clazz;
+    String group;
+    String form;
+
+    public Entity(String name, Class clazz, String group, String form) {
+      super();
+      this.name = name;
+      this.clazz = clazz;
+      this.group = group;
+      this.form = form;
+    }
+  }
+
+  @Test
+  public void testFXMLIntegrity() throws Exception {
+    FXMLSampleApp sampleApp = new FXMLSampleApp("FXMLIntegrity");
+    sampleApp.showAndOpen();
+    Entity[] entities = {
+        new Entity("vehicle", Vehicle.class, "preferencesGroup", "vehicleForm"),
+        new Entity("owner", Owner.class, "preferencesGroup", "ownerForm"),
+        new Entity("preferences",Preferences.class,"preferencesGroup", "preferencesForm")};
+    for (Entity entity : entities) {
+      BasePresenter<?> presenter = sampleApp.fxml.loadPresenter(entity.name,
+          entity.clazz,exceptionHandler);
+      assertNotNull(presenter);
+    }
+  }
+
+  @Test
+  public void testVehiclePresenter() throws Exception {
+    FXMLSampleApp sampleApp = new FXMLSampleApp("vehiclePresenter");
+    sampleApp.showAndOpen();
+    VehiclePresenter vehiclePresenter = sampleApp.fxml.loadPresenter("vehicle",
+        Vehicle.class,exceptionHandler);
+    assertNotNull(vehiclePresenter);
+    Platform.runLater(() -> {
+      try {
+        vehiclePresenter.show(Vehicle.getInstance());
+      } catch (Exception e) {
+        ErrorHandler.handle(e);
+        fail("there should be no exception");
+      }
+    });
+    Thread.sleep(SHOW_TIME);
+    sampleApp.close();
+  }
+
+  @Test
+  public void testOwnerPresenter() throws Exception {
+    FXMLSampleApp sampleApp = new FXMLSampleApp("ownerPresenter");
+    sampleApp.showAndOpen();
+    OwnerPresenter ownerPresenter = sampleApp.fxml.loadPresenter("owner",
+        Owner.class,exceptionHandler);
+    assertNotNull(ownerPresenter);
+    Platform.runLater(() -> {
+      try {
+        ownerPresenter.show(Owner.getInstance());
+      } catch (Exception e) {
+        ErrorHandler.handle(e);
+        fail("there should be no exception");
+      }
+    });
+    Thread.sleep(SHOW_TIME);
+    sampleApp.close();
   }
 
   @Test
@@ -135,7 +244,7 @@ public class TestAppGUI extends TestOBDII {
     assertNotNull(app);
     assertEquals(6, app.getMainMenu().getSubMenus().size());
     assertEquals(3, app.getGroups().size());
-    int[] expected = { 8, 1,3 };
+    int[] expected = { 8, 1, 3 };
     int i = 0;
     for (Group group : app.getGroups()) {
       assertEquals(expected[i++], group.getForms().size());
@@ -225,16 +334,16 @@ public class TestAppGUI extends TestOBDII {
 
   /**
    * get a 6 columns by 4 rows grid pane
+   * 
    * @return
    */
   public ConstrainedGridPane getGridPane6x4() {
     ConstrainedGridPane gridPane = new ConstrainedGridPane();
-    gridPane.fixColumnSizes(4, 16,16,16,16,16,16);
-    gridPane.fixRowSizes(4, 25,25,25,25);
+    gridPane.fixColumnSizes(4, 16, 16, 16, 16, 16, 16);
+    gridPane.fixRowSizes(4, 25, 25, 25, 25);
     return gridPane;
   }
-  
-  
+
   @Test
   public void testExceptionHelp() throws Exception {
     App app = App.getInstance(OBDMain.APP_PATH);
@@ -635,16 +744,15 @@ public class TestAppGUI extends TestOBDII {
 
   @Test
   public void testWelcomeWizard() throws Exception {
-    Pane pane=new Pane();
-    SampleApp sampleApp = new SampleApp("wizards", pane);
-    sampleApp.show();
-    sampleApp.waitOpen();
+    FXMLSampleApp sampleApp = new FXMLSampleApp("wizards");
+    sampleApp.showAndOpen();
 
     WelcomeWizard[] wizards = new WelcomeWizard[1];
 
     Platform.runLater(() -> {
       try {
-        WelcomeWizard wizard = new WelcomeWizard(sampleApp.getStage(),I18n.WELCOME, null);
+        WelcomeWizard wizard = new WelcomeWizard(I18n.WELCOME, null,
+            sampleApp.fxml);
         wizards[0] = wizard;
         wizard.display();
       } catch (Exception e) {

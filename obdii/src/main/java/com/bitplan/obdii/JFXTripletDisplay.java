@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 
+import org.controlsfx.glyphfont.FontAwesome;
+
 import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.Vehicle.State;
 import com.bitplan.can4eve.gui.javafx.CANProperty;
@@ -43,6 +45,7 @@ import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.Region;
 
 /**
@@ -141,7 +144,7 @@ public class JFXTripletDisplay extends JavaFXDisplay {
    * @param cpm
    * @throws Exception
    */
-  @SuppressWarnings({  "rawtypes" })
+  @SuppressWarnings({ "rawtypes" })
   public void setupSpecial(CANPropertyManager cpm) throws Exception {
     // resetButton handling for trip Odometer
     CANProperty<DoubleValue, Double> tripOdoValue = cpm.get("TripOdo");
@@ -152,36 +155,42 @@ public class JFXTripletDisplay extends JavaFXDisplay {
           Number oldValue, Number newValue) {
         if (newValue.equals(0.0)) {
           CANProperty<DoubleValue, Double> tripRounds = cpm.get("TripRounds");
-          Date timeStamp=new Date();
+          Date timeStamp = new Date();
           tripRounds.getCanValue().setValue(0.0, timeStamp);
         }
       }
 
     });
-    CANProperty<DoubleValue, Double> cellTemperature = cpm
-        .get("CellTemperature");
-    final JFXCanCellStatePlot cellStatePlot = new JFXCanCellStatePlot(
-        "cellTemperature", "cell", "Temperature", cellTemperature, 1.0, 0.5);
-    Platform.runLater(
-        () -> updateTab("cellTemp", cellStatePlot.getBarChart()));
-    cellStatePlot.updateOn(cellTemperature.getUpdateCountProperty());
+    TabPane tabPane = super.getXyTabPane().getTabPane(BATTERY_GROUP);
+    if (tabPane != null) {
+      CANProperty<DoubleValue, Double> cellTemperature = cpm
+          .get("CellTemperature");
+      final JFXCanCellStatePlot cellStatePlot = new JFXCanCellStatePlot(
+          "cellTemperature", "cell", "Temperature", cellTemperature, 1.0, 0.5);
 
-    CANProperty<DoubleValue, Double> cellVoltage = cpm.get("CellVoltage");
-    final JFXCanCellStatePlot cellVoltagePlot = new JFXCanCellStatePlot(
-        "cellVoltage", "cell", "Voltage", cellVoltage, 0.01, 0.1);
-    Platform.runLater(() -> updateTab("cellVoltage",
-        cellVoltagePlot.getBarChart()));
-    cellVoltagePlot.updateOn(cellVoltage.getUpdateCountProperty());
+      Platform.runLater(() -> super.getXyTabPane().addTab(tabPane, "cellTemp",
+          I18n.get(I18n.CELL_TEMP), "temp50", cellStatePlot.getBarChart()));
+      cellStatePlot.updateOn(cellTemperature.getUpdateCountProperty());
 
-    // setup history
-    String title = "SOC/RR";
-    String xTitle = "time";
-    String yTitle = "%/km";
-    Map<String, CANProperty> properties = cpm.getCANProperties("SOC", "Range");
-    final JFXCanValueHistoryPlot valuePlot = new JFXCanValueHistoryPlot(title,
-        xTitle, yTitle, properties);
-    Platform.runLater(
-        () -> updateTab("soc_rr", valuePlot.createLineChart()));
-    valuePlot.updateOn(cpm.get("SOC").getUpdateCountProperty());
+      CANProperty<DoubleValue, Double> cellVoltage = cpm.get("CellVoltage");
+      final JFXCanCellStatePlot cellVoltagePlot = new JFXCanCellStatePlot(
+          "cellVoltage", "cell", "Voltage", cellVoltage, 0.01, 0.1);
+      Platform.runLater(() -> super.getXyTabPane().addTab(tabPane,
+          "cellVoltage", I18n.get(I18n.CELL_VOLTAGE),
+          FontAwesome.Glyph.FLASH.name(), cellVoltagePlot.getBarChart()));
+      cellVoltagePlot.updateOn(cellVoltage.getUpdateCountProperty());
+
+      // setup history
+      String title = "SOC/RR";
+      String xTitle = "time";
+      String yTitle = "%/km";
+      Map<String, CANProperty> properties = cpm.getCANProperties("SOC",
+          "Range");
+      final JFXCanValueHistoryPlot valuePlot = new JFXCanValueHistoryPlot(title,
+          xTitle, yTitle, properties);
+      // TODO - use addTab and remove from the json app declaration file
+      Platform.runLater(() -> updateTab("soc_rr", valuePlot.createLineChart()));
+      valuePlot.updateOn(cpm.get("SOC").getUpdateCountProperty());
+    }
   }
 }

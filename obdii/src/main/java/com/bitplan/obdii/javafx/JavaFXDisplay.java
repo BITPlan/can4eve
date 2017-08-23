@@ -1,5 +1,6 @@
 /**
  *
+ * This file is part of the https://github.com/BITPlan/can4eve open source project
  *
  * Copyright 2017 BITPlan GmbH https://github.com/BITPlan
  *
@@ -22,17 +23,16 @@ package com.bitplan.obdii.javafx;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.logging.Level;
 
-import org.controlsfx.control.Notifications;
 import org.controlsfx.control.StatusBar;
 import org.controlsfx.glyphfont.FontAwesome;
 
 import com.bitplan.can4eve.CANValue;
+import com.bitplan.can4eve.Owner;
 import com.bitplan.can4eve.Vehicle;
 import com.bitplan.can4eve.util.TaskLaunch;
 import com.bitplan.elm327.Config;
@@ -40,23 +40,19 @@ import com.bitplan.elm327.Config.ConfigMode;
 import com.bitplan.error.ExceptionHandler;
 import com.bitplan.error.SoftwareVersion;
 import com.bitplan.gui.App;
-import com.bitplan.gui.Form;
-import com.bitplan.gui.Group;
-import com.bitplan.i18n.Translator;
-import com.bitplan.javafx.ExceptionController;
 import com.bitplan.javafx.GenericApp;
 import com.bitplan.javafx.GenericControl;
 import com.bitplan.javafx.GenericDialog;
 import com.bitplan.javafx.GenericPanel;
-import com.bitplan.javafx.JFXWizardPane;
 import com.bitplan.javafx.WaitableApp;
-import com.bitplan.javafx.XYTabPane;
 import com.bitplan.obdii.CANValueDisplay;
 import com.bitplan.obdii.I18n;
 import com.bitplan.obdii.OBDApp;
 import com.bitplan.obdii.Preferences;
 import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.elm327.LogPlayer;
+import com.bitplan.obdii.javafx.presenter.PreferencesPresenter;
+import com.bitplan.obdii.javafx.presenter.VehiclePresenter;
 
 import javafx.application.Platform;
 import javafx.beans.property.Property;
@@ -82,7 +78,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 /**
  * Java FX Display
@@ -122,16 +117,17 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
   Tab dashBoardTab;
   private SimulatorPane simulatorPane;
 
-  private Form vehicleForm;
   private Preferences prefs;
   private Button fullScreenButton;
   private Button hideMenuButton;
   private Rectangle2D sceneBounds;
- 
+
+  // group / tabPane ids
   public static final String DASH_BOARD_GROUP = "dashBoardGroup";
-
   protected static final String HISTORY_GROUP = "historyGroup";
+  protected static final String BATTERY_GROUP = "batteryGroup";
 
+  public static final String RESOURCE_PATH = "/com/bitplan/can4eve/gui/";
 
   /**
    * construct me from an abstract application description and a software
@@ -144,12 +140,9 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
    */
   public JavaFXDisplay(App app, SoftwareVersion softwareVersion,
       OBDApp obdApp) {
-    super(app,softwareVersion);
-    
+    super(app, softwareVersion,RESOURCE_PATH);
     this.obdApp = obdApp;
   }
-
-  
 
   /**
    * @return the menuBar
@@ -189,7 +182,6 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
       });
     }
   }
-
 
   @Override
   public void updateCanValueField(CANValue<?> canValue) {
@@ -282,6 +274,8 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
   public void setupDashBoard() {
     TabPane dashboardPane = xyTabPane.addTabPane(DASH_BOARD_GROUP,I18n.get(I18n.DASH_BOARD_TAB),FontAwesome.Glyph.SQUARE_ALT.name());
     setupSpecial(dashboardPane);
+    @SuppressWarnings("unused")
+    TabPane batteryPane=xyTabPane.addTabPane(BATTERY_GROUP,I18n.get(I18n.BATTERY_TAB),"battery-three-quarters");
   }
 
   @Override
@@ -295,6 +289,7 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
     getRoot().getChildren().add(xyTabPane);
     setupDashBoard();
     setup(app);
+    setupSettings();
     this.setActiveTabPane(DASH_BOARD_GROUP);
     stage.setX(sceneBounds.getMinX());
     stage.setY(sceneBounds.getMinY());
@@ -315,6 +310,27 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
   }
 
   /**
+   * setup the settings
+   */
+  private void setupSettings() {
+    // generic Panels
+    // TODO the ones that have FXML should be modified to use their
+    // specific Presenters instead
+    GenericPanel vehiclePanel = this.getPanels().get("vehicleForm");
+    Vehicle vehicle=Vehicle.getInstance();
+    vehiclePanel.setValues(vehicle.asMap());
+    GenericPanel ownerPanel=this.getPanels().get("ownerForm");
+    Owner owner=Owner.getInstance();
+    ownerPanel.setValues(owner.asMap());
+    GenericPanel preferencesPanel=this.getPanels().get("preferencesForm");
+    Preferences preferences=Preferences.getInstance();
+    preferencesPanel.setValues(preferences.asMap());
+    GenericPanel configPanel=this.getPanels().get("settingsForm");
+    Config config=Config.getInstance();
+    configPanel.setValues(config.asMap());
+  }
+
+  /**
    * check whether this is the first start of the application (that is there are
    * not stored preferences yet) and then show the welcome wizard for the
    * initial configuration
@@ -323,7 +339,8 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
     try {
       Preferences preferences = Preferences.getInstance();
       if (preferences.getLanguage() == LangChoice.notSet) {
-        WelcomeWizard wizard = new WelcomeWizard(stage,I18n.WELCOME, this.obdApp);
+        WelcomeWizard wizard = new WelcomeWizard(I18n.WELCOME,
+            this.obdApp,this.getFxml());
         wizard.display();
         if (wizard.isFinished()) {
           this.startMonitoring(false);
@@ -346,8 +363,6 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
     statusBar.getLeftItems().add(watchDogLabel);
     getRoot().getChildren().add(statusBar);
   }
-
-  
 
   /**
    * bind the value to the valueTo
@@ -390,14 +405,14 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
           screenShotDirectory.mkdirs();
         }
         Tab tab = this.getActiveTab();
-        String tabName =tab.getText();
-        if (null==tabName) {
-          if (tab.getTooltip()!=null) {
-            tabName=tab.getTooltip().getText();
+        String tabName = tab.getText();
+        if (null == tabName) {
+          if (tab.getTooltip() != null) {
+            tabName = tab.getTooltip().getText();
           } else {
-            tabName="";
+            tabName = "";
           }
-          
+
         }
         SimpleDateFormat lIsoDateFormatter = new SimpleDateFormat(
             "yyyy-MM-dd_HHmmss");
@@ -432,15 +447,16 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
   public void setupSpecial(TabPane tabPane) {
     clockPane = new ClockPane();
     odoPane = new OdoPane();
-    odoTab = xyTabPane.addTab(tabPane, "odoPane",0, I18n.get(I18n.ODO_INFO),
+    odoTab = xyTabPane.addTab(tabPane, "odoPane", 0, I18n.get(I18n.ODO_INFO),
         FontAwesome.Glyph.AUTOMOBILE.name(), odoPane);
     dashBoardPane = new DashBoardPane(obdApp.getVehicle());
     chargePane = new ChargePane();
-    chargeTab = xyTabPane.addTab(tabPane, "chargePane",0, I18n.get(I18n.SOC),
+    chargeTab = xyTabPane.addTab(tabPane, "chargePane", 0, I18n.get(I18n.SOC),
         FontAwesome.Glyph.PLUG.name(), chargePane);
-    dashBoardTab = xyTabPane.addTab(tabPane,"dashBoardPane", 0, I18n.get(I18n.DASH_BOARD),
-        FontAwesome.Glyph.TACHOMETER.name(), dashBoardPane);
-    clockTab = xyTabPane.addTab(tabPane,"clockPane", 0, I18n.get(I18n.CLOCKS),
+    dashBoardTab = xyTabPane.addTab(tabPane, "dashBoardPane", 0,
+        I18n.get(I18n.DASH_BOARD), FontAwesome.Glyph.TACHOMETER.name(),
+        dashBoardPane);
+    clockTab = xyTabPane.addTab(tabPane, "clockPane", 0, I18n.get(I18n.CLOCKS),
         FontAwesome.Glyph.CLOCK_ALT.name(), clockPane);
     // disable menu items
     this.setMenuItemDisable(I18n.OBD_HALT_MENU_ITEM, true);
@@ -467,9 +483,10 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
       statusBar.getRightItems().add(hideMenuButton);
       statusBar.getRightItems().add(fullScreenButton);
     }
-    vehicleForm = app.getFormById("preferencesGroup", "vehicleForm");
+   
     Button powerButton = xyTabPane.getTopLeftButton();
-    Node icon = xyTabPane.getIcon(FontAwesome.Glyph.POWER_OFF.name(),xyTabPane.getIconSize());
+    Node icon = xyTabPane.getIcon(FontAwesome.Glyph.POWER_OFF.name(),
+        xyTabPane.getIconSize());
     powerButton.setTooltip(new Tooltip(I18n.get(I18n.POWER_OFF)));
     powerButton.setGraphic(icon);
     powerButton.setDisable(false);
@@ -545,7 +562,8 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
    *          - i18n string code of feature e.g. menuItem
    */
   public void notImplemented(String feature) {
-    GenericDialog.showAlert(stage,I18n.get(I18n.SORRY), I18n.get(I18n.WE_ARE_SORRY),
+    GenericDialog.showAlert(stage, I18n.get(I18n.SORRY),
+        I18n.get(I18n.WE_ARE_SORRY),
         I18n.get(feature) + " " + I18n.get(I18n.NOT_IMPLEMENTED_YET));
   }
 
@@ -586,7 +604,8 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
           showSettings(false);
           break;
         case I18n.SETTINGS_WELCOME_MENU_ITEM:
-          WelcomeWizard wizard = new WelcomeWizard(stage,I18n.WELCOME, this.obdApp);
+          WelcomeWizard wizard = new WelcomeWizard(I18n.WELCOME,
+              this.obdApp,this.getFxml());
           wizard.display();
           if (wizard.isFinished())
             startMonitoring(false);
@@ -604,10 +623,13 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
           showSettings(true);
           break;
         case I18n.SETTINGS_PREFERENCES_MENU_ITEM:
-          showPreferences();
+          PreferencesPresenter preferencesPresenter=getFxml().loadPresenter("preferences", Preferences.class,this);
+          preferencesPresenter.show(Preferences.getInstance());
           break;
         case I18n.VEHICLE_MENU_ITEM:
-          showVehicle();
+          VehiclePresenter vehiclePresenter =getFxml().loadPresenter("vehicle",
+              Vehicle.class,this);
+          vehiclePresenter.show(Vehicle.getInstance());
           break;
         case I18n.VIEW_DASHBOARD_VIEW_MENU_ITEM:
           this.setActiveTabPane(DASH_BOARD_GROUP);
@@ -731,75 +753,6 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
   }
 
   /**
-   * handle the given exception
-   * 
-   * @param th
-   */
-  public void handleException(Throwable th) {
-    Platform.runLater(() -> GenericDialog.showException(stage,(I18n.get(I18n.ERROR)),
-        I18n.get(I18n.PROBLEM_OCCURED), th, this));
-  }
-
-  /**
-   * show the vehicle Dialog
-   * 
-   * @throws Exception
-   */
-  private void showVehicle() throws Exception {
-    Vehicle vehicle = Vehicle.getInstance();
-    GenericDialog vehicleDialog = new GenericDialog(stage, vehicleForm);
-    Optional<Map<String, Object>> result = vehicleDialog.show(vehicle.asMap());
-    if (result.isPresent()) {
-      vehicle.fromMap(result.get());
-      vehicle.save();
-    }
-  }
-
-  /**
-   * show an About dialog
-   */
-  private void showAbout() {
-    String headerText = softwareVersion.getName() + " "
-        + softwareVersion.getVersion();
-    GenericDialog.showAlert(stage,"About", headerText, softwareVersion.getUrl());
-  }
-
-  /**
-   * browse to the link page
-   */
-  public Void showLink(String link) {
-    try {
-      this.browse(link);
-    } catch (Exception e) {
-      handleException(e);
-    }
-    return null;
-  }
-
-  /**
-   * show the Preferences
-   * 
-   * @throws Exception
-   */
-  public void showPreferences() throws Exception {
-    Preferences preferences = Preferences.getInstance();
-    GenericDialog preferencesDialog = new GenericDialog(stage,
-        app.getFormById("preferencesGroup", "preferencesForm"));
-    Optional<Map<String, Object>> result = preferencesDialog
-        .show(preferences.asMap());
-    if (result.isPresent()) {
-      LangChoice lang = preferences.getLanguage();
-      preferences.fromMap(result.get());
-      preferences.save();
-      if (!lang.equals(preferences.getLanguage())) {
-        Translator.initialize("can4eve", preferences.getLanguage().name());
-        GenericDialog.showAlert(stage,i18n("language_changed_title"),
-            i18n("language_changed"), i18n("newlanguage_restart"));
-      }
-    }
-  }
-
-  /**
    * internationalization function
    * 
    * @param params
@@ -823,7 +776,7 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
     if (config == null)
       config = new Config();
     if (test)
-      SettingsDialog.testConnection(stage,this.obdApp, config);
+      SettingsDialog.testConnection(stage, this.obdApp, config);
     else {
       Optional<Map<String, Object>> result = settingsDialog
           .show(config.asMap());
@@ -843,5 +796,5 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
       }
     }
   }
- 
+
 }

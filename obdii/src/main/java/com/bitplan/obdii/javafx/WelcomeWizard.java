@@ -30,13 +30,17 @@ import java.util.logging.Level;
 import org.controlsfx.dialog.Wizard;
 
 import com.bitplan.can4eve.CANData;
+import com.bitplan.can4eve.Owner;
 import com.bitplan.can4eve.Vehicle;
 import com.bitplan.elm327.Config;
 import com.bitplan.elm327.Config.ConfigMode;
 import com.bitplan.elm327.OBDException;
 import com.bitplan.elm327.SerialImpl;
+import com.bitplan.gui.Form;
 import com.bitplan.i18n.Translator;
+import com.bitplan.javafx.GenericPanel;
 import com.bitplan.javafx.ImageSelector;
+import com.bitplan.javafx.JFXML;
 import com.bitplan.javafx.JFXWizard;
 import com.bitplan.javafx.JFXWizardPane;
 import com.bitplan.obdii.I18n;
@@ -44,7 +48,7 @@ import com.bitplan.obdii.OBDApp;
 import com.bitplan.obdii.Preferences;
 import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.elm327.ELM327;
-import com.bitplan.triplet.VINValue;
+import com.bitplan.obdii.javafx.presenter.VehiclePresenter;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -62,7 +66,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
 
 /**
  * the Welcome wizard
@@ -75,13 +78,6 @@ public class WelcomeWizard extends JFXWizard {
   String langPictures[] = { "en-flag.jpg", "de-flag.jpg" };
   ImageSelector<String> langSelector = new ImageSelector<String>("language",
       langs, langPictures);
-
-  String carSelections[] = { "Citroën C-Zero", "Mitsubishi i-Miev",
-      "Mitsubishi Outlander PHEV", "Peugeot Ion" };
-  String carPictures[] = { "c-zero.jpg", "i-miev.jpg", "outlanderphev.jpg",
-      "ion.jpg" };
-  ImageSelector<String> carSelector = new ImageSelector<String>("vehicle",
-      carSelections, carPictures);
 
   String conSelections[] = { "USB", "Wifi", "Bluetooth" };
   String conPictures[] = { "obd-usb.jpg", "obd-wifi.jpg", "obd-bluetooth.jpg" };
@@ -100,6 +96,7 @@ public class WelcomeWizard extends JFXWizard {
   SerialController serialController;
   Vehicle vehicle = null;
   private String lang;
+  private JFXWizardPane ownerPane;
   
   public static class NetworkController implements Initializable {
     @FXML
@@ -195,68 +192,19 @@ public class WelcomeWizard extends JFXWizard {
 
   }
 
-  public static class VehicleController implements Initializable {
-    @FXML
-    ProgressBar progressBar;
-    @FXML
-    TextField vin;
-    @FXML
-    TextField model;
-    @FXML
-    TextField vehicleYear;
-    @FXML
-    TextField cellCount;
-    @FXML
-    TextField vehicleManufacturer;
-    @FXML
-    ImageView vehicleImage;
-    
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-    }
-
-    /**
-     * prepare this view with the given vehicle Data
-     * 
-     * @param vehicle
-     * @param imageSelector
-     */
-    public void prepare(Vehicle vehicle, ImageSelector<String> imageSelector) {
-      model.setText(vehicle.getModel());
-      ImageView imageView = imageSelector.getImageView(vehicle.getModel());
-      vehicleImage.setImage(imageView.getImage());
-    }
-
-    @SuppressWarnings("rawtypes")
-    public void showVehicleInfo(Vehicle vehicle, Map<String, CANData> vehicleInfo,
-        JFXWizardPane page) {
-      CANData<VINValue> vinInfo = vehicleInfo.get("VIN");
-      VINValue VIN = vinInfo.getValue();
-      if (VIN == null) {
-        page.handleException(new Exception(I18n.get(I18n.VEHICLE_VIN_PROBLEM)));
-      } else {
-        vehicle.setVIN(VIN.vin);
-        vin.setText(VIN.vin);
-        vehicle.setYear(VIN.year);
-        vehicleYear.setText("" + VIN.year);
-        vehicleManufacturer.setText(VIN.manufacturer + "/" + VIN.factory);
-        cellCount.setText(""+VIN.cellCount);
-      }
-    }
-  }
-
   /**
    * construct the wizard
    * 
    * @param i18nTitle
    * @param obdApp
    */
-  public WelcomeWizard(Stage stage,String i18nTitle, OBDApp obdApp) {
-    super(stage, "/com/bitplan/can4eve/gui/");
+  public WelcomeWizard(String i18nTitle, OBDApp obdApp, JFXML fxml) {
+    super(fxml);
     this.obdApp = obdApp;
     setTitle(I18n.get(i18nTitle));
-    int steps = 6;
+    int steps = 7;
+    VehiclePresenter vehiclePresenter=getFxml().loadPresenter("vehicle", Vehicle.class, null);
+   
     languagePane = new JFXWizardPane(this, 1, steps, I18n.WELCOME_LANGUAGE,
         langSelector) {
 
@@ -291,19 +239,11 @@ public class WelcomeWizard extends JFXWizard {
     addPage(languagePane, "http://can4eve.bitplan.com/index.php/Help/Language");
 
     carPane = new JFXWizardPane(this, 2, steps, I18n.WELCOME_VEHICLE_TYPE,
-        carSelector) {
+        vehiclePresenter.getCarSelector()) {
       @Override
       public void onExitingPage(Wizard wizard) {
         super.onExitingPage(wizard);
-        if (vehicle == null) {
-          vehicle = Vehicle.getInstance();
-        }
-        vehicle.setModel(carSelector.getSelection());
-        if ("Mitsubishi Outlander PHEV".equals(vehicle.getModel())) {
-          vehicle.setGroup("OutlanderPHEV");
-        } else {
-          vehicle.setGroup("Triplet");
-        }
+        vehiclePresenter.updateModel();
       }
 
     };
@@ -469,22 +409,23 @@ public class WelcomeWizard extends JFXWizard {
         "http://can4eve.bitplan.com/index.php/Help/ConnectionTest");
 
     vehiclePane = new JFXWizardPane(this, 6, steps, I18n.WELCOME_VEHICLE) {
-      private VehicleController vehicleController;
-      private Button finishButton;
+      private Button nextButton;
 
       @Override
       public void onEnteringPage(Wizard wizard) {
         super.onEnteringPage(wizard);
-        if (vehicleController == null) {
-          load("vehicle");
-          vehicleController = (VehicleController) controller;
-          Platform
-              .runLater(() -> vehicleController.prepare(vehicle, carSelector));
+        if (getContentNode()==null)
+          vehiclePresenter.setExceptionHandler(this);
+          super.setContentNode(vehiclePresenter.getParent());
+        if (vehicle == null) {
+          vehicle=vehiclePresenter.updateModel();
         }
+        Platform
+              .runLater(() -> vehiclePresenter.updateView(vehicle));
         if (obdApp != null) {
-          finishButton = findButton(ButtonType.FINISH);
-          if (finishButton != null) {
-            Platform.runLater(() -> finishButton.setDisable(true));
+          nextButton = findButton(ButtonType.NEXT);
+          if (nextButton != null) {
+            Platform.runLater(() -> nextButton.setDisable(true));
           }
           // vehicleForm= app.getFormById("preferencesGroup", "vehicleForm");
           Task<Void> task = new Task<Void>() {
@@ -498,19 +439,11 @@ public class WelcomeWizard extends JFXWizard {
                 Map<String, CANData> vehicleInfo = obdApp
                     .readVehicleInfo(config, vehicle);
                 this.updateProgress(progressmax, progressmax);
-                Platform.runLater(() -> vehicleController
+                Platform.runLater(() -> vehiclePresenter
                     .showVehicleInfo(vehicle,vehicleInfo, vehiclePane));
                 Platform.runLater(() -> {
-                  if (finishButton != null) {
-                    finishButton.setDisable(false);
-                    // workaround for controlsfx bug not to activate onExit for FinishButton
-                    finishButton.setOnAction(
-                    new EventHandler<ActionEvent>() {
-                      @Override
-                      public void handle(final ActionEvent actionEvent) {
-                        onExitingPage(wizard);
-                      }
-                    });
+                  if (nextButton != null) {
+                    nextButton.setDisable(false);
                   }
                 });
 
@@ -520,7 +453,7 @@ public class WelcomeWizard extends JFXWizard {
               return null;
             }
           };
-          vehicleController.progressBar.progressProperty()
+          vehiclePresenter.getProgressBar().progressProperty()
               .bind(task.progressProperty());
           new Thread(task).start();
         } else {
@@ -528,11 +461,48 @@ public class WelcomeWizard extends JFXWizard {
         }
       } // onEnteringPage
       
+    };
+    addPage(vehiclePane,"http://can4eve.bitplan.com/index.php/Help/VehicleTest");
+    ownerPane = new JFXWizardPane(this, 7, steps, I18n.WELCOME_OWNER) {
+      private Button finishButton;
+      private Owner owner;
+      private GenericPanel ownerPanel;
+
+      @Override
+      public void onEnteringPage(Wizard wizard) {
+        super.onEnteringPage(wizard);
+        finishButton = findButton(ButtonType.FINISH);
+        if (owner==null){
+          owner=Owner.getInstance();
+          Form ownerForm = fxml.getApp().getFormById("preferencesGroup", "ownerForm");
+          ownerPanel = new GenericPanel(fxml.getStage(), ownerForm);
+          this.setContent(ownerPanel);
+        }
+        if (finishButton != null) {
+          Platform.runLater(() -> {
+            if (finishButton != null) {
+              // TODO - validate Owner info
+              // finishButton.setDisable(true);
+              // workaround for controlsfx bug not to activate onExit for FinishButton
+              finishButton.setOnAction(
+              new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(final ActionEvent actionEvent) {
+                  onExitingPage(wizard);
+                }
+              });
+            }
+          });
+        }
+      }
+      
       @Override
       public void onExitingPage(Wizard wizard) {
         super.onExitingPage(wizard);
         try {          
+          vehicle.fromMap(ownerPanel.getValueMap());
           vehicle.save();
+          owner.save();
           config.save(ConfigMode.Preferences);
           Preferences prefs=Preferences.getInstance();
           prefs.setLanguage(LangChoice.valueOf(lang));
@@ -542,9 +512,8 @@ public class WelcomeWizard extends JFXWizard {
           handleException(th);
         }
       }
-      
     };
-    addPage(vehiclePane,"http://can4eve.bitplan.com/index.php/Help/VehicleTest");
+    addPage(ownerPane,"http://can4eve.bitplan.com/index.php/Help/Owner");
     prepare();
   }
 

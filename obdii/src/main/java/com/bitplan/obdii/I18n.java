@@ -127,6 +127,7 @@ public class I18n {
   public static final String WELCOME_VEHICLE = "welcomeVehicle";
   public static final String WELCOME_VEHICLE_TYPE = "welcomeVehicleType";
   public static final String WELCOME_OBD = "welcomeObd";
+  public static final String WELCOME_OWNER = "welcomeOwner";
   public static final String WELCOME_CON = "welcomeCon";
   public static final String WELCOME_LANGUAGE = "welcomeLanguage";
   public static final String WELCOME_TEST_RESULT = "welcomeTestResult";
@@ -144,29 +145,31 @@ public class I18n {
   public static final String PORT_TOOLTIP = "portTooltip";
   public static final String VEHICLE_MODEL="vehicleModel"; //model
   public static final String MAX_SPEED="maxSpeed"; //maximum Speed (km/h)
-  public static final String VEHICLE_YEAR="vehicleYear"; //year
-  public static final String VEHICLE_MANUFACTURER="vehicleManufacturer"; //manufacturer
-  public static final String VEHICLE_VIN_PROBLEM="vehicleVinProblem";
   public static final String BATTERY_CAPACITY = "batteryCapacity";
   public static final String AH = "amperHours";
+  public static final String BATTERY_TAB = "batteryTab";
+  public static final String CELL_VOLTAGE="cellVoltage"; //Cell Voltages
+  public static final String CELL_TEMP="cellTemp"; //Cell Temperatures
+  public static final String CHARGING="charging"; //Charging
+  public static final String CONNECTION="connection"; //Connection
+  public static final String DASH_BOARD_TAB="dashBoardTab";
   public static final String ELM327_CAN4EVE_COMPATIBLE = "elm327Can4eveCompatible";
   public static final String ELM327_CAN4EVE_INCOMPATIBLE = "elm327Can4eveIncompatible";
   public static final String ELM327_RECOMMENDED = "elm327Recommended";
-  public static final String POWER_OFF = "powerOff";
-  public static final String DASH_BOARD_TAB="dashBoardTab";
-  public static final String PARKING="parking"; //Parking
-  public static final String TRIP="trip"; //Trip
-  public static final String CELL_TEMP="cellTemp"; //Cell Temperatures
-  public static final String CONNECTION="connection"; //Connection
+  public static final String HISTORY="history"; //History
+  public static final String INFO="info"; //Info
   public static final String MOVING="moving"; //Moving
-  public static final String VEHICLE="vehicle"; //Vehicle
+  public static final String PARKING="parking"; //Parking
+  public static final String POWER_OFF = "powerOff";
   public static final String PREFERENCES="preferences"; //Preferences
   public static final String SOC_RR="soc_rr"; //SOC/RR
+  public static final String TRIP="trip"; //Trip
   public static final String OBDII="obdii"; //OBDII
-  public static final String INFO="info"; //Info
-  public static final String HISTORY="history"; //History
-  public static final String CELL_VOLTAGE="cellVoltage"; //Cell Voltages
-  public static final String CHARGING="charging"; //Charging
+  public static final String OWNER="owner"; //Owner
+  public static final String VEHICLE="vehicle"; //Vehicle
+  public static final String VEHICLE_YEAR="vehicleYear"; //year
+  public static final String VEHICLE_MANUFACTURER="vehicleManufacturer"; //manufacturer
+  public static final String VEHICLE_VIN_PROBLEM="vehicleVinProblem";
   /**
    * Translate the given text
    * 

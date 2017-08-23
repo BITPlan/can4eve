@@ -11,10 +11,10 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity"
+<Pane fx:id="vehiclePane" maxHeight="-Infinity" maxWidth="-Infinity"
 	minHeight="-Infinity" minWidth="-Infinity" prefHeight="220.0"
 	prefWidth="520.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1"
-	fx:controller="com.bitplan.obdii.javafx.WelcomeWizard$VehicleController">
+	fx:controller="com.bitplan.obdii.javafx.presenter.VehiclePresenter">
 	<children>
 		<AnchorPane prefHeight="220.0" prefWidth="520.0">
 			<children>

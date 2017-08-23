@@ -23,6 +23,7 @@ package com.bitplan.obdii;
 import java.io.File;
 import java.util.Map;
 
+import com.bitplan.error.ErrorHandler;
 import com.bitplan.json.JsonAble;
 import com.bitplan.json.JsonManager;
 import com.bitplan.json.JsonManagerImpl;
@@ -39,12 +40,12 @@ public class Preferences implements JsonAble {
   }
 
   LangChoice language = LangChoice.notSet;
-  Boolean debug=false;
-  Boolean autoStart=false;
+  Boolean debug = false;
+  Boolean autoStart = false;
   int screenPercent = 100;
-  String logDirectory="can4eveLogs";
-  String screenShotDirectory="can4eveScreenShots";
-  String logPrefix="can4eve"; // e.g. my Ion
+  String logDirectory = "can4eveLogs";
+  String screenShotDirectory = "can4eveScreenShots";
+  String logPrefix = "can4eve"; // e.g. my Ion
 
   public LangChoice getLanguage() {
     return language;
@@ -108,7 +109,7 @@ public class Preferences implements JsonAble {
     if (langChoiceStr != null)
       this.setLanguage(LangChoice.valueOf(langChoiceStr));
     this.setDebug((Boolean) map.get("debug"));
-    this.autoStart=(Boolean) map.get("autoStart");
+    this.autoStart = (Boolean) map.get("autoStart");
     Object value = map.get("screenPercent");
     if (value != null) {
       if (value instanceof Double)
@@ -118,7 +119,7 @@ public class Preferences implements JsonAble {
     }
     this.logPrefix = (String) map.get("logPrefix");
     this.logDirectory = (String) map.get("logDirectory");
-    this.screenShotDirectory= (String) map.get("screenShotDirectory");
+    this.screenShotDirectory = (String) map.get("screenShotDirectory");
   }
 
   @Override
@@ -134,16 +135,20 @@ public class Preferences implements JsonAble {
    * @return - the instance
    * @throws Exception
    */
-  public static Preferences getInstance() throws Exception {
+  public static Preferences getInstance() {
     if (instance == null) {
       File jsonFile = JsonAble.getJsonFile(Preferences.class.getSimpleName());
       if (jsonFile.canRead()) {
         JsonManager<Preferences> jmPreferences = new JsonManagerImpl<Preferences>(
             Preferences.class);
-        instance = jmPreferences.fromJsonFile(jsonFile);
+        try {
+          instance = jmPreferences.fromJsonFile(jsonFile);
+        } catch (Exception e) {
+          ErrorHandler.handle(e);
+        }
+        if (instance == null)
+          instance = new Preferences();
       }
-      if (instance == null)
-        instance = new Preferences();
     }
     return instance;
   }

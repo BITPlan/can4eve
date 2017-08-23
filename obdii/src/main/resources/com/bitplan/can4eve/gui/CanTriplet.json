@@ -303,26 +303,6 @@
 							"fieldSize": 40
 						}
 					]
-				},
-				{
-				    "id": "cellTemp",
-					"title": "cellTemp",
-					"icon": "temp50",
-					"fields": [{
-						"title": "Cell Temperature",
-						"fieldKind": "Plot"
-					}]
-				},
-				{
-				    "id": "cellVoltage",
-					"title": "cellVoltage",
-					"icon": "FLASH",
-					"fields": [{
-							"title": "Cell Voltage",
-							"fieldKind": "Plot"
-						}
-
-					]
 				}
 			]
 		},
@@ -511,6 +491,38 @@
 							"format": "%5d",
 							"type": "Integer",
 							"fieldSize": 5
+						}
+					]
+				},
+				{
+					"title": "owner",
+					"id": "ownerForm",
+					"icon": "USER",
+					"headerText": "owner Details",
+					"fields": [{
+							"title": "nickName",
+							"format": "%s",
+							"labelSize": 10,
+							"fieldSize": 40
+						},
+						{
+							"title": "email",
+							"format": "%s",
+							"labelSize": 60,
+							"fieldSize": 40
+						},
+						{
+							"title": "country",
+							"format": "%s",
+							"labelSize": 10,
+							"fieldSize": 40,
+							"type": "Choice",
+							"choices": "AT,CA,CH,DE,FR,NL,NO,SP,UK,US"
+						},
+						{
+							"title": "zipcode",
+							"format": "%s",
+							"fieldSize": 15
 						}
 					]
 				}
