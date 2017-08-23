@@ -43,8 +43,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.bitplan.can4eve.CANInfo;
-import com.bitplan.can4eve.Owner;
 import com.bitplan.can4eve.CANValue.DoubleValue;
+import com.bitplan.can4eve.Owner;
 import com.bitplan.can4eve.Vehicle;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.gui.javafx.CANProperty;
@@ -63,6 +63,7 @@ import com.bitplan.javafx.GenericDialog;
 import com.bitplan.javafx.JFXML;
 import com.bitplan.javafx.SampleApp;
 import com.bitplan.javafx.WaitableApp;
+import com.bitplan.javafx.XYTabPane;
 import com.bitplan.json.JsonManager;
 import com.bitplan.json.JsonManagerImpl;
 import com.bitplan.obdii.Preferences.LangChoice;
@@ -79,8 +80,9 @@ import com.bitplan.obdii.javafx.JavaFXDisplay;
 import com.bitplan.obdii.javafx.LCDPane;
 import com.bitplan.obdii.javafx.SimulatorPane;
 import com.bitplan.obdii.javafx.WelcomeWizard;
-import com.bitplan.obdii.javafx.presenter.VehiclePresenter;
 import com.bitplan.obdii.javafx.presenter.OwnerPresenter;
+import com.bitplan.obdii.javafx.presenter.VehiclePresenter;
+
 import eu.hansolo.LcdGauge.ResetableGauge;
 import eu.hansolo.OverviewDemo;
 import eu.hansolo.medusa.FGauge;
@@ -103,6 +105,8 @@ import javafx.beans.binding.LongBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -118,7 +122,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import javafx.util.Pair;
 
 /**
  * test the descriptive application gui
@@ -624,6 +627,7 @@ public class TestAppGUI extends TestOBDII {
     SampleApp sampleApp = new SampleApp("menus", vbox);
     sampleApp.show();
     sampleApp.waitOpen();
+    display.setStage(sampleApp.getStage());
     Platform.runLater(() -> {
       MenuBar menuBar = display.createMenuBar(sampleApp.getScene(),
           display.getApp());
@@ -631,10 +635,23 @@ public class TestAppGUI extends TestOBDII {
       display.showMenuBar(sampleApp.getScene(), menuBar, true);
       display.setUpStatusBar();
     });
+    XYTabPane xyTabPane = display.getXyTabPane();
     Platform.runLater(() -> {
+      display.setupXyTabPane();
       display.setupDashBoard();
     });
-    Thread.sleep(SHOW_TIME);
+    //xyTabPane.prefHeightProperty().bind(display.getStage().heightProperty());
+    display.getStage().heightProperty().addListener(new ChangeListener<Number>() {
+
+      @Override
+      public void changed(ObservableValue<? extends Number> observable,
+          Number oldValue, Number newValue) {
+        System.out.println("oldh: " + oldValue.intValue() + " newh: "
+            + newValue.intValue() + " xyh:" + xyTabPane.getPrefHeight()
+            + " vth:" + xyTabPane.getvTabPane().getPrefHeight());
+      }
+    });
+    Thread.sleep(SHOW_TIME*10);
     sampleApp.close();
   }
 

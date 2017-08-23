@@ -286,7 +286,7 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
     showMenuBar(scene, getMenuBar(), true);
     stage.setScene(scene);
     setUpStatusBar();
-    getRoot().getChildren().add(xyTabPane);
+    this.setupXyTabPane();
     setupDashBoard();
     setup(app);
     setupSettings();
@@ -795,6 +795,15 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
         config.save(ConfigMode.Preferences);
       }
     }
+  }
+
+  /**
+   * setup the xyTabPane
+   */
+  public void setupXyTabPane() {
+    getRoot().getChildren().add(xyTabPane);
+    xyTabPane.getvTabPane().prefHeightProperty().bind(getStage().heightProperty().add(-xyTabPane.getTabSize()));
+    xyTabPane.getvTabPane().prefWidthProperty().bind(getStage().widthProperty().add(-xyTabPane.getTabSize()));    
   }
 
 }
