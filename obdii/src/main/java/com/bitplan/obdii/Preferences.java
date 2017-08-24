@@ -146,9 +146,9 @@ public class Preferences implements JsonAble {
         } catch (Exception e) {
           ErrorHandler.handle(e);
         }
-        if (instance == null)
-          instance = new Preferences();
       }
+      if (instance == null)
+        instance = new Preferences();
     }
     return instance;
   }
