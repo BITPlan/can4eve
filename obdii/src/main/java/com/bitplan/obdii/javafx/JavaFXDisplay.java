@@ -327,7 +327,8 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
     preferencesPanel.setValues(preferences.asMap());
     GenericPanel configPanel=this.getPanels().get("settingsForm");
     Config config=Config.getInstance();
-    configPanel.setValues(config.asMap());
+    if (config!=null)
+      configPanel.setValues(config.asMap());
   }
 
   /**
