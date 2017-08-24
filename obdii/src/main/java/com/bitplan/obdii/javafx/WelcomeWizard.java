@@ -84,7 +84,7 @@ public class WelcomeWizard extends JFXWizard {
 
   ImageSelector<String> connectionSelector = new ImageSelector<String>("obd",
       conSelections, conPictures);
-
+  public static boolean testMode=false;
   private JFXWizardPane carPane;
   private JFXWizardPane connectionPane;
   private JFXWizardPane conSettingsPane;
@@ -97,7 +97,7 @@ public class WelcomeWizard extends JFXWizard {
   Vehicle vehicle = null;
   private String lang;
   private JFXWizardPane ownerPane;
-  
+
   public static class NetworkController implements Initializable {
     @FXML
     TextField hostName;
@@ -203,8 +203,9 @@ public class WelcomeWizard extends JFXWizard {
     this.obdApp = obdApp;
     setTitle(I18n.get(i18nTitle));
     int steps = 7;
-    VehiclePresenter vehiclePresenter=getFxml().loadPresenter("vehicle", Vehicle.class, null);
-   
+    VehiclePresenter vehiclePresenter = getFxml().loadPresenter("vehicle",
+        Vehicle.class, null);
+
     languagePane = new JFXWizardPane(this, 1, steps, I18n.WELCOME_LANGUAGE,
         langSelector) {
 
@@ -220,7 +221,7 @@ public class WelcomeWizard extends JFXWizard {
           lang = "de";
           break;
         }
-        Translator.initialize("can4eve",lang);
+        Translator.initialize("can4eve", lang);
         WelcomeWizard.this.refreshI18n();
       }
     };
@@ -414,14 +415,13 @@ public class WelcomeWizard extends JFXWizard {
       @Override
       public void onEnteringPage(Wizard wizard) {
         super.onEnteringPage(wizard);
-        if (getContentNode()==null)
+        if (getContentNode() == null)
           vehiclePresenter.setExceptionHandler(this);
-          super.setContentNode(vehiclePresenter.getParent());
+        super.setContentNode(vehiclePresenter.getParent());
         if (vehicle == null) {
-          vehicle=vehiclePresenter.updateModel();
+          vehicle = vehiclePresenter.updateModel();
         }
-        Platform
-              .runLater(() -> vehiclePresenter.updateView(vehicle));
+        Platform.runLater(() -> vehiclePresenter.updateView(vehicle));
         if (obdApp != null) {
           nextButton = findButton(ButtonType.NEXT);
           if (nextButton != null) {
@@ -440,7 +440,7 @@ public class WelcomeWizard extends JFXWizard {
                     .readVehicleInfo(config, vehicle);
                 this.updateProgress(progressmax, progressmax);
                 Platform.runLater(() -> vehiclePresenter
-                    .showVehicleInfo(vehicle,vehicleInfo, vehiclePane));
+                    .showVehicleInfo(vehicle, vehicleInfo, vehiclePane));
                 Platform.runLater(() -> {
                   if (nextButton != null) {
                     nextButton.setDisable(false);
@@ -460,9 +460,10 @@ public class WelcomeWizard extends JFXWizard {
           LOGGER.log(Level.WARNING, "obdApp is null");
         }
       } // onEnteringPage
-      
+
     };
-    addPage(vehiclePane,"http://can4eve.bitplan.com/index.php/Help/VehicleTest");
+    addPage(vehiclePane,
+        "http://can4eve.bitplan.com/index.php/Help/VehicleTest");
     ownerPane = new JFXWizardPane(this, 7, steps, I18n.WELCOME_OWNER) {
       private Button finishButton;
       private Owner owner;
@@ -472,9 +473,10 @@ public class WelcomeWizard extends JFXWizard {
       public void onEnteringPage(Wizard wizard) {
         super.onEnteringPage(wizard);
         finishButton = findButton(ButtonType.FINISH);
-        if (owner==null){
-          owner=Owner.getInstance();
-          Form ownerForm = fxml.getApp().getFormById("preferencesGroup", "ownerForm");
+        if (owner == null) {
+          owner = Owner.getInstance();
+          Form ownerForm = fxml.getApp().getFormById("preferencesGroup",
+              "ownerForm");
           ownerPanel = new GenericPanel(fxml.getStage(), ownerForm);
           this.setContent(ownerPanel);
         }
@@ -483,9 +485,9 @@ public class WelcomeWizard extends JFXWizard {
             if (finishButton != null) {
               // TODO - validate Owner info
               // finishButton.setDisable(true);
-              // workaround for controlsfx bug not to activate onExit for FinishButton
-              finishButton.setOnAction(
-              new EventHandler<ActionEvent>() {
+              // workaround for controlsfx bug not to activate onExit for
+              // FinishButton
+              finishButton.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(final ActionEvent actionEvent) {
                   onExitingPage(wizard);
@@ -495,25 +497,27 @@ public class WelcomeWizard extends JFXWizard {
           });
         }
       }
-      
+
       @Override
       public void onExitingPage(Wizard wizard) {
         super.onExitingPage(wizard);
-        try {          
-          vehicle.fromMap(ownerPanel.getValueMap());
-          vehicle.save();
-          owner.save();
-          config.save(ConfigMode.Preferences);
-          Preferences prefs=Preferences.getInstance();
-          prefs.setLanguage(LangChoice.valueOf(lang));
-          prefs.setAutoStart(true);
-          prefs.save();
+        try {
+          if (!testMode) {
+            vehicle.save();
+            owner.fromMap(ownerPanel.getValueMap());
+            owner.save();
+            config.save(ConfigMode.Preferences);
+            Preferences prefs = Preferences.getInstance();
+            prefs.setLanguage(LangChoice.valueOf(lang));
+            prefs.setAutoStart(true);
+            prefs.save();
+          }
         } catch (Throwable th) {
           handleException(th);
         }
       }
     };
-    addPage(ownerPane,"http://can4eve.bitplan.com/index.php/Help/Owner");
+    addPage(ownerPane, "http://can4eve.bitplan.com/index.php/Help/Owner");
     prepare();
   }
 

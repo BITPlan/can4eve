@@ -202,6 +202,7 @@ public class TestAppGUI extends TestOBDII {
           entity.clazz, exceptionHandler);
       assertNotNull(presenter);
     }
+    sampleApp.close();
   }
 
   @Test
@@ -654,7 +655,7 @@ public class TestAppGUI extends TestOBDII {
                   + " vth:" + xyTabPane.getvTabPane().getPrefHeight());
           }
         });
-    Thread.sleep(SHOW_TIME * 10);
+    Thread.sleep(SHOW_TIME);
     sampleApp.close();
   }
 
@@ -764,6 +765,7 @@ public class TestAppGUI extends TestOBDII {
 
   @Test
   public void testWelcomeWizard() throws Exception {
+    WelcomeWizard.testMode=true;
     FXMLSampleApp sampleApp = new FXMLSampleApp("wizards");
     sampleApp.showAndOpen();
 
