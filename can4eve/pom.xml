@@ -19,7 +19,7 @@
 		<dependency>
 			<groupId>com.bitplan.can4eve</groupId>
 			<artifactId>com.bitplan.elm327</artifactId>
-			<version>0.0.1</version>
+			<version>0.0.2</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
 		<!-- Circular FifoBuffer -->

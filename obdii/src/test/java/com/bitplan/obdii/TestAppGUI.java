@@ -162,14 +162,14 @@ public class TestAppGUI extends TestOBDII {
   public void initGUI() {
     WaitableApp.toolkitInit();
     Translator.initialize("can4eve", "en");
-    exceptionHandler=new ExceptionHandler() {
+    exceptionHandler = new ExceptionHandler() {
 
       @Override
       public void handleException(Throwable th) {
         ErrorHandler.handle(th);
-        
+
       }
-      
+
     };
   }
 
@@ -195,10 +195,11 @@ public class TestAppGUI extends TestOBDII {
     Entity[] entities = {
         new Entity("vehicle", Vehicle.class, "preferencesGroup", "vehicleForm"),
         new Entity("owner", Owner.class, "preferencesGroup", "ownerForm"),
-        new Entity("preferences",Preferences.class,"preferencesGroup", "preferencesForm")};
+        new Entity("preferences", Preferences.class, "preferencesGroup",
+            "preferencesForm") };
     for (Entity entity : entities) {
       BasePresenter<?> presenter = sampleApp.fxml.loadPresenter(entity.name,
-          entity.clazz,exceptionHandler);
+          entity.clazz, exceptionHandler);
       assertNotNull(presenter);
     }
   }
@@ -208,7 +209,7 @@ public class TestAppGUI extends TestOBDII {
     FXMLSampleApp sampleApp = new FXMLSampleApp("vehiclePresenter");
     sampleApp.showAndOpen();
     VehiclePresenter vehiclePresenter = sampleApp.fxml.loadPresenter("vehicle",
-        Vehicle.class,exceptionHandler);
+        Vehicle.class, exceptionHandler);
     assertNotNull(vehiclePresenter);
     Platform.runLater(() -> {
       try {
@@ -227,7 +228,7 @@ public class TestAppGUI extends TestOBDII {
     FXMLSampleApp sampleApp = new FXMLSampleApp("ownerPresenter");
     sampleApp.showAndOpen();
     OwnerPresenter ownerPresenter = sampleApp.fxml.loadPresenter("owner",
-        Owner.class,exceptionHandler);
+        Owner.class, exceptionHandler);
     assertNotNull(ownerPresenter);
     Platform.runLater(() -> {
       try {
@@ -640,18 +641,20 @@ public class TestAppGUI extends TestOBDII {
       display.setupXyTabPane();
       display.setupDashBoard();
     });
-    //xyTabPane.prefHeightProperty().bind(display.getStage().heightProperty());
-    display.getStage().heightProperty().addListener(new ChangeListener<Number>() {
+    // xyTabPane.prefHeightProperty().bind(display.getStage().heightProperty());
+    display.getStage().heightProperty()
+        .addListener(new ChangeListener<Number>() {
 
-      @Override
-      public void changed(ObservableValue<? extends Number> observable,
-          Number oldValue, Number newValue) {
-        System.out.println("oldh: " + oldValue.intValue() + " newh: "
-            + newValue.intValue() + " xyh:" + xyTabPane.getPrefHeight()
-            + " vth:" + xyTabPane.getvTabPane().getPrefHeight());
-      }
-    });
-    Thread.sleep(SHOW_TIME*10);
+          @Override
+          public void changed(ObservableValue<? extends Number> observable,
+              Number oldValue, Number newValue) {
+            if (xyTabPane != null)
+              System.out.println("oldh: " + oldValue.intValue() + " newh: "
+                  + newValue.intValue() + " xyh:" + xyTabPane.getPrefHeight()
+                  + " vth:" + xyTabPane.getvTabPane().getPrefHeight());
+          }
+        });
+    Thread.sleep(SHOW_TIME * 10);
     sampleApp.close();
   }
 
