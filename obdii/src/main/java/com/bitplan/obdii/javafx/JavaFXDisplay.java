@@ -450,13 +450,17 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
     odoPane = new OdoPane();
     odoTab = xyTabPane.addTab(tabPane, "odoPane", 0, I18n.get(I18n.ODO_INFO),
         FontAwesome.Glyph.AUTOMOBILE.name(), odoPane);
-    dashBoardPane = new DashBoardPane(obdApp.getVehicle());
+    if (obdApp!=null) {
+      Vehicle vehicle = obdApp.getVehicle();
+      dashBoardPane = new DashBoardPane(vehicle);
+      dashBoardTab = xyTabPane.addTab(tabPane, "dashBoardPane", 0,
+          I18n.get(I18n.DASH_BOARD), FontAwesome.Glyph.TACHOMETER.name(),
+          dashBoardPane);
+    }
     chargePane = new ChargePane();
     chargeTab = xyTabPane.addTab(tabPane, "chargePane", 0, I18n.get(I18n.SOC),
         FontAwesome.Glyph.PLUG.name(), chargePane);
-    dashBoardTab = xyTabPane.addTab(tabPane, "dashBoardPane", 0,
-        I18n.get(I18n.DASH_BOARD), FontAwesome.Glyph.TACHOMETER.name(),
-        dashBoardPane);
+  
     clockTab = xyTabPane.addTab(tabPane, "clockPane", 0, I18n.get(I18n.CLOCKS),
         FontAwesome.Glyph.CLOCK_ALT.name(), clockPane);
     // disable menu items

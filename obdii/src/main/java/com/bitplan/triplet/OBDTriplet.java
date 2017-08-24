@@ -449,8 +449,11 @@ public class OBDTriplet extends OBDHandler {
 
     case "SOC":
       // state of charging in %
-      double soc = ((pr.d[1]) - 10) / 2.0;
-      cvh.setValue("SOC", soc, timeStamp);
+      int socvalue=(pr.d[1]);
+      // socvalue=0 is Not available
+      double soc = (socvalue - 10) / 2.0;
+      if (socvalue!=0)
+        cvh.setValue("SOC", soc, timeStamp);
       break;
 
     case "VIN":
