@@ -31,7 +31,7 @@
 		<dependency>
 			<groupId>com.bitplan.can4eve</groupId>
 			<artifactId>com.bitplan.can4eve.can4eve</artifactId>
-			<version>0.0.1</version>
+			<version>0.0.2</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.danilopianini/gson-extras -->
 		<dependency>
