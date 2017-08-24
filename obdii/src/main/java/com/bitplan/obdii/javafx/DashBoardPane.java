@@ -20,6 +20,9 @@
  */
 package com.bitplan.obdii.javafx;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.bitplan.can4eve.Vehicle;
 import com.bitplan.javafx.ConstrainedGridPane;
 import com.bitplan.obdii.I18n;
@@ -45,7 +48,8 @@ import javafx.scene.paint.Color;
  * @author wf
  *
  */
-public class DashBoardPane extends ConstrainedGridPane  {
+public class DashBoardPane extends ConstrainedGridPane {
+  protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii.javafx");
 
   private FGauge framedRPMGauge;
   private Gauge rpmGauge;
@@ -75,71 +79,81 @@ public class DashBoardPane extends ConstrainedGridPane  {
 
   /**
    * create a DashBoardPane
+   * 
    * @param maxValue
    */
   public DashBoardPane(Vehicle vehicle) {
-    //LcdFont lcdFont=LcdFont.STANDARD;
-    //LcdDesign lcdDesign=LcdDesign.SECTIONS;
-    
-    rpmGauge = GaugeBuilder.create().minValue(0)
-        // FIXME use value from Vehicle definition
-        .maxValue(vehicle.getMaxRPM()).tickLabelDecimals(0).decimals(0).autoScale(true)
-        .animated(true).shadowsEnabled(true).sectionsVisible(true)
-        // FIXME use value form Vehicle definition
-        .sections(new Section(vehicle.getMaxRPM() * 80 / 100, vehicle.getMaxRPM(),
-            Color.rgb(195, 139, 102, 0.5)))
-        .majorTickMarkColor(Color.rgb(241, 161, 71))
-        // .minorTickMarkColor(Color.rgb(0, 175, 248))
-        .majorTickMarkType(TickMarkType.TRAPEZOID)
-        .mediumTickMarkType(TickMarkType.DOT)
-        .minorTickMarkType(TickMarkType.LINE)
-        .tickLabelLocation(TickLabelLocation.INSIDE).title(I18n.get(I18n.REV_COUNT))
-        .unit(I18n.get(I18n.RPM)).lcdDesign(LcdGauge.lcdDesign).lcdVisible(true)
-        .lcdFont(LcdGauge.lcdFont).needleSize(NeedleSize.THICK).build();
-    
-    rpmSpeedGauge = GaugeBuilder.create().minValue(0).maxValue(vehicle.getMaxSpeed())
-        .tickLabelDecimals(0).decimals(1).autoScale(true).animated(true)
-        .shadowsEnabled(true).sectionsVisible(true)
-        .sections(new Section(vehicle.getMaxSpeed()/1.4, vehicle.getMaxSpeed(), Color.rgb(195, 139, 102, 0.5)))
-        .majorTickMarkColor(Color.rgb(241, 161, 71))
-        // .minorTickMarkColor(Color.rgb(0, 175, 248))
-        .majorTickMarkType(TickMarkType.TRAPEZOID)
-        .mediumTickMarkType(TickMarkType.DOT)
-        .minorTickMarkType(TickMarkType.LINE)
-        .tickLabelLocation(TickLabelLocation.INSIDE)
-        .title(I18n.get(I18n.RPM_SPEED)).unit("km/h")
-        .lcdDesign(LcdGauge.lcdDesign).lcdVisible(true)
-        .lcdFont(LcdGauge.lcdFont).needleSize(NeedleSize.THICK).build();
+    // LcdFont lcdFont=LcdFont.STANDARD;
+    // LcdDesign lcdDesign=LcdDesign.SECTIONS;
+    if (vehicle != null) {
+      rpmGauge = GaugeBuilder.create().minValue(0)
+          // FIXME use value from Vehicle definition
+          .maxValue(vehicle.getMaxRPM()).tickLabelDecimals(0).decimals(0)
+          .autoScale(true).animated(true).shadowsEnabled(true)
+          .sectionsVisible(true)
+          // FIXME use value form Vehicle definition
+          .sections(new Section(vehicle.getMaxRPM() * 80 / 100,
+              vehicle.getMaxRPM(), Color.rgb(195, 139, 102, 0.5)))
+          .majorTickMarkColor(Color.rgb(241, 161, 71))
+          // .minorTickMarkColor(Color.rgb(0, 175, 248))
+          .majorTickMarkType(TickMarkType.TRAPEZOID)
+          .mediumTickMarkType(TickMarkType.DOT)
+          .minorTickMarkType(TickMarkType.LINE)
+          .tickLabelLocation(TickLabelLocation.INSIDE)
+          .title(I18n.get(I18n.REV_COUNT)).unit(I18n.get(I18n.RPM))
+          .lcdDesign(LcdGauge.lcdDesign).lcdVisible(true)
+          .lcdFont(LcdGauge.lcdFont).needleSize(NeedleSize.THICK).build();
 
-    rpmMax = new ResetableGauge(I18n.get(I18n.RPM_MAX),I18n.get(I18n.RPM));
-    rpmAvg = new ResetableGauge(I18n.get(I18n.RPM_AVG),I18n.get(I18n.RPM));
-    // FIXME translate km/h? or allow miles/hour?
-    rpmSpeedMax = new ResetableGauge(I18n.get(I18n.RPM_SPEED_MAX),I18n.get(I18n.KMH));   
-    rpmSpeedAvg = new ResetableGauge(I18n.get(I18n.RPM_SPEED_AVG),I18n.get(I18n.KMH));
+      rpmSpeedGauge = GaugeBuilder.create().minValue(0)
+          .maxValue(vehicle.getMaxSpeed()).tickLabelDecimals(0).decimals(1)
+          .autoScale(true).animated(true).shadowsEnabled(true)
+          .sectionsVisible(true)
+          .sections(new Section(vehicle.getMaxSpeed() / 1.4,
+              vehicle.getMaxSpeed(), Color.rgb(195, 139, 102, 0.5)))
+          .majorTickMarkColor(Color.rgb(241, 161, 71))
+          // .minorTickMarkColor(Color.rgb(0, 175, 248))
+          .majorTickMarkType(TickMarkType.TRAPEZOID)
+          .mediumTickMarkType(TickMarkType.DOT)
+          .minorTickMarkType(TickMarkType.LINE)
+          .tickLabelLocation(TickLabelLocation.INSIDE)
+          .title(I18n.get(I18n.RPM_SPEED)).unit("km/h")
+          .lcdDesign(LcdGauge.lcdDesign).lcdVisible(true)
+          .lcdFont(LcdGauge.lcdFont).needleSize(NeedleSize.THICK).build();
 
-    framedRPMGauge = new FGauge(rpmGauge, GaugeDesign.ENZO,
-        GaugeBackground.DARK_GRAY);
-    this.add(framedRPMGauge, 0, 0);
-    
-    GridPane rpmPane=new GridPane();
-    rpmPane.add(rpmMax, 0, 0);
-    rpmPane.add(rpmAvg, 1, 0);
-    rpmPane.setAlignment(Pos.CENTER);
-    this.add(rpmPane, 0, 1);
- 
-    framedRPMSpeedGauge = new FGauge(rpmSpeedGauge, GaugeDesign.ENZO,
-        GaugeBackground.DARK_GRAY);
-    this.add(framedRPMSpeedGauge, 1, 0);
-    
-    GridPane rpmSpeedPane=new GridPane();
-    rpmSpeedPane.add(rpmSpeedMax, 0, 0);
-    rpmSpeedPane.add(rpmSpeedAvg, 1, 0);
-    rpmSpeedPane.setAlignment(Pos.CENTER);
-    this.add(rpmSpeedPane, 1, 1);
-    
-    // 75= 80 - 5% (5% for extra gap)
-    fixRowSizes(6,87,13);
-    fixColumnSizes(4,50,50);
+      rpmMax = new ResetableGauge(I18n.get(I18n.RPM_MAX), I18n.get(I18n.RPM));
+      rpmAvg = new ResetableGauge(I18n.get(I18n.RPM_AVG), I18n.get(I18n.RPM));
+      // FIXME translate km/h? or allow miles/hour?
+      rpmSpeedMax = new ResetableGauge(I18n.get(I18n.RPM_SPEED_MAX),
+          I18n.get(I18n.KMH));
+      rpmSpeedAvg = new ResetableGauge(I18n.get(I18n.RPM_SPEED_AVG),
+          I18n.get(I18n.KMH));
+
+      framedRPMGauge = new FGauge(rpmGauge, GaugeDesign.ENZO,
+          GaugeBackground.DARK_GRAY);
+      this.add(framedRPMGauge, 0, 0);
+
+      GridPane rpmPane = new GridPane();
+      rpmPane.add(rpmMax, 0, 0);
+      rpmPane.add(rpmAvg, 1, 0);
+      rpmPane.setAlignment(Pos.CENTER);
+      this.add(rpmPane, 0, 1);
+
+      framedRPMSpeedGauge = new FGauge(rpmSpeedGauge, GaugeDesign.ENZO,
+          GaugeBackground.DARK_GRAY);
+      this.add(framedRPMSpeedGauge, 1, 0);
+
+      GridPane rpmSpeedPane = new GridPane();
+      rpmSpeedPane.add(rpmSpeedMax, 0, 0);
+      rpmSpeedPane.add(rpmSpeedAvg, 1, 0);
+      rpmSpeedPane.setAlignment(Pos.CENTER);
+      this.add(rpmSpeedPane, 1, 1);
+
+      // 75= 80 - 5% (5% for extra gap)
+      fixRowSizes(6, 87, 13);
+      fixColumnSizes(4, 50, 50);
+    } else {
+      LOGGER.log(Level.WARNING,"Vehicle is null for DashBaordPane");
+    }
   }
 
 }
