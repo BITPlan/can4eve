@@ -452,8 +452,9 @@ public class OBDTriplet extends OBDHandler {
       int socvalue=(pr.d[1]);
       // socvalue=0 is Not available
       double soc = (socvalue - 10) / 2.0;
-      if (socvalue!=0)
+      if (socvalue>=2) {
         cvh.setValue("SOC", soc, timeStamp);
+      }
       break;
 
     case "VIN":
