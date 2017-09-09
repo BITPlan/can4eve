@@ -57,6 +57,7 @@ import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.obdii.elm327.ElmSimulator;
 import com.bitplan.obdii.elm327.LogPlayerImpl;
 import com.bitplan.obdii.elm327.LogReader;
+import com.bitplan.obdii.elm327.LogReader.LogListener;
 import com.bitplan.obdii.javafx.JavaFXDisplay;
 import com.bitplan.triplet.OBDTriplet;
 import com.bitplan.triplet.VINValue;
@@ -414,6 +415,43 @@ public class TestELM327 extends TestOBDII {
       // assertTrue("Timeout too low - simulator broken?",con.getTimeout() >4);
     }
   }
+  
+  public class LogValueDisplaylistener implements LogListener {
+    private int updates;
+    private int slow;
+    private int[] max;
+
+    public LogValueDisplaylistener(int updates, int slow, int[] max) {
+      this.updates=updates;
+      this.slow=slow;
+      this.max=max;
+    }
+
+    @Override
+    public boolean onUpdate(String line, int len, int index, int count) {
+      if (count % updates == 0) {
+        obdTriplet.showValues(display);
+        try {
+          Thread.sleep(slow);
+        } catch (InterruptedException e) {
+          // ignore
+        }
+      }
+      if (count % (updates * 10) == 0) {
+        Platform.runLater(() -> display.selectRandomTab());
+        if (debug)
+          LOGGER.log(Level.INFO,
+              String.format("%6d (%6d): %s", count, len, line));
+      }
+      if (count > max[index]) {
+        if (display != null)
+          display.close();
+        return false;
+      }
+      return true;
+    }
+  }
+  
 
   /**
    * Test PID handling from a CAN log
@@ -448,33 +486,7 @@ public class TestELM327 extends TestOBDII {
       LogReader logReader = new LogReader(logCAN);
       logReader.addReponseHandler(obdTriplet);
       final int updates = 300; // how often shall we update?
-      logReader.addLogListener(logReader.new LogListener() {
-
-        @Override
-        public boolean onUpdate(String line, int len, int index, int count) {
-          if (count % updates == 0) {
-            obdTriplet.showValues(display);
-            try {
-              Thread.sleep(slow);
-            } catch (InterruptedException e) {
-              // ignore
-            }
-          }
-          if (count % (updates * 10) == 0) {
-            Platform.runLater(() -> display.selectRandomTab());
-            if (debug)
-              LOGGER.log(Level.INFO,
-                  String.format("%6d (%6d): %s", count, len, line));
-          }
-          if (count > max[index]) {
-            if (display != null)
-              display.close();
-            return false;
-          }
-          return true;
-        }
-
-      });
+      logReader.addLogListener(new LogValueDisplaylistener(updates,slow,max));
       logReader.read();
     }
 

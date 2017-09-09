@@ -21,6 +21,7 @@
 package com.bitplan.can4eve;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.bitplan.json.JsonAble;
@@ -30,10 +31,61 @@ import com.bitplan.json.JsonAble;
  * @author wf
  *
  */
-public class Trip implements JsonAble {
+public class LogPeriod implements JsonAble {
   Date startDate;
   Date endDate;
+  String VIN; 
+  Double odo; // odoMeter at start
+  private Map<String,Object> values=new HashMap<String,Object>();
   String logFile;
+
+  public Date getStartDate() {
+    return startDate;
+  }
+
+  public void setStartDate(Date startDate) {
+    this.startDate = startDate;
+  }
+
+  public Date getEndDate() {
+    return endDate;
+  }
+
+  public void setEndDate(Date endDate) {
+    this.endDate = endDate;
+  }
+
+  public String getVIN() {
+    return VIN;
+  }
+
+  public void setVIN(String vIN) {
+    VIN = vIN;
+  }
+
+  public Double getOdo() {
+    return odo;
+  }
+
+  public void setOdo(Double odo) {
+    this.odo = odo;
+  }
+
+  public String getLogFile() {
+    return logFile;
+  }
+
+  public void setLogFile(String logFile) {
+    this.logFile = logFile;
+  }
+
+  public Map<String,Object> getValues() {
+    return values;
+  }
+
+  public void setValues(Map<String,Object> values) {
+    this.values = values;
+  }
 
   @Override
   public void reinit() {

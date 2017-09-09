@@ -56,7 +56,7 @@ public class LogReader {
       "yyyy-MM-dd hh:mm:ss.SSS");
   private ZipFile zipFile;
   List<LogListener> logListeners = new ArrayList<LogListener>();
-  List<ResponseHandler> responseHandlers=new ArrayList<ResponseHandler>();
+  List<ResponseHandler> responseHandlers = new ArrayList<ResponseHandler>();
 
   /**
    * Loglistener
@@ -64,7 +64,7 @@ public class LogReader {
    * @author wf
    *
    */
-  public abstract class LogListener {
+  public interface LogListener {
     /**
      * handler for updates
      * 
@@ -74,14 +74,14 @@ public class LogReader {
      * @param count
      * @return true to continue - false to interrupt
      */
-    public abstract boolean onUpdate(String line, int len, int index,
+    public boolean onUpdate(String line, int len, int index,
         int count);
   }
 
   public void addLogListener(LogListener logListener) {
     this.logListeners.add(logListener);
   }
-  
+
   public void addReponseHandler(ResponseHandler responseHandler) {
     this.responseHandlers.add(responseHandler);
   }
@@ -92,8 +92,7 @@ public class LogReader {
    * @param logFile
    * @throws Exception
    */
-  public LogReader(File logFile)
-      throws Exception {
+  public LogReader(File logFile) throws Exception {
     // this.logFile = logFile;
     InputStream inputStream;
     if (logFile.getName().endsWith(".zip")) {
@@ -168,7 +167,7 @@ public class LogReader {
       count++;
       Packet p = lineAsPacket(line);
       if (p != null) {
-        for(ResponseHandler responseHandler:this.responseHandlers) {
+        for (ResponseHandler responseHandler : this.responseHandlers) {
           responseHandler.handleResponse(p);
         }
       }
@@ -182,4 +181,5 @@ public class LogReader {
       zipFile.close();
     index++;
   }
+
 }

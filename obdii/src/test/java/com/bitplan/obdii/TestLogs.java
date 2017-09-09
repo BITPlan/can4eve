@@ -21,6 +21,7 @@
 package com.bitplan.obdii;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -32,10 +33,14 @@ import java.util.Map;
 import org.junit.Test;
 
 import com.bitplan.can4eve.CANValueHandler;
+import com.bitplan.can4eve.LogPeriod;
 import com.bitplan.can4eve.VehicleGroup;
+import com.bitplan.can4eve.VehicleLog;
 import com.bitplan.javafx.WaitableApp;
 import com.bitplan.obdii.elm327.LogReader;
+import com.bitplan.obdii.elm327.LogReader.LogListener;
 import com.bitplan.triplet.OBDTriplet;
+import com.bitplan.triplet.VINValue;
 
 /**
  * test the log files
@@ -51,6 +56,7 @@ public class TestLogs {
     private List<String> names;
     private Map<String, Integer> limitMap = new HashMap<String, Integer>();
     private Map<String, Integer> countMap = new HashMap<String, Integer>();
+    private Map<String, Object> valueMap = new HashMap<String, Object>();
     final String DELIM = ";";
 
     /**
@@ -74,10 +80,8 @@ public class TestLogs {
     public void setLimits(Integer... limits) {
       if (limits.length != names.size())
         throw new IllegalArgumentException("limits.length!=names.size");
-      
-      this.limits=limits;
+      this.limits = limits;
       this.resetCounters();
-     
     }
 
     @Override
@@ -98,6 +102,7 @@ public class TestLogs {
           doPrint = count <= limit;
         }
         if (doPrint) {
+          valueMap.put(name, value);
           printWriter.println(String.format("%s%s%s%s%" + format,
               isoDateFormatter.format(timeStamp), DELIM, name, DELIM, value));
           printWriter.flush();
@@ -110,7 +115,7 @@ public class TestLogs {
     }
 
     public void resetCounters() {
-      int i=0;
+      int i = 0;
       for (String name : names) {
         limitMap.put(name, limits[i++]);
         countMap.put(name, 0);
@@ -156,12 +161,62 @@ public class TestLogs {
 
   }
 
-  public static int limit = 5;
+  public class CANValueSampler implements CANValueHandler, LogListener {
+    private Map<String, Object> valueMap = new HashMap<String, Object>();
+    private List<String> names;
+    boolean done = false;
+    private int limit;
+    private int count = 0;
+    Date start = null;
+
+    /**
+     * create a new value sampler with the given limit for the given names
+     * 
+     * @param limit
+     * @param names
+     */
+    public CANValueSampler(int limit, String... names) {
+      this.limit = limit;
+      this.names = Arrays.asList(names);
+    }
+
+    @Override
+    public <T> void setValue(String name, T value, Date timeStamp) {
+      if (start == null)
+        start = timeStamp;
+      if (this.names.contains(name)) {
+        valueMap.put(name, value);
+        done = valueMap.size() == names.size();
+      }
+      if (count++ >= limit)
+        done = true;
+    }
+
+    @Override
+    public boolean onUpdate(String line, int len, int index, int count) {
+      return !done;
+    }
+
+    public void close() {
+      // TODO Auto-generated method stub
+
+    }
+
+    public void resetCounters() {
+      valueMap = new HashMap<String, Object>();
+      count = 0;
+      done = false;
+      start = null;
+    }
+  }
+
+  public static int limit = 255;
 
   @Test
   public void testLogs() throws Exception {
     WaitableApp.toolkitInit();
     Preferences prefs = Preferences.getInstance();
+    prefs.logDirectory = "/Users/wf/Ion";
     if (prefs != null) {
       String logDirectoryName = prefs.logDirectory;
       if (!logDirectoryName.isEmpty()) {
@@ -171,30 +226,68 @@ public class TestLogs {
           OBDTriplet obdTriplet = new OBDTriplet(VehicleGroup.get("Triplet"));
           obdTriplet.getElm327().setHeader(true);
           obdTriplet.getElm327().setLength(true);
-          CANValueAnalyzer analyzer = new CANValueAnalyzer("/tmp/canlog.csv",
-              "Odometer", "BatteryCapacity");
-          analyzer.setLimits(1,1);
+          // CANValueAnalyzer analyzer = new CANValueAnalyzer("/tmp/canlog.csv",
+          // "Odometer", "BatteryCapacity");
+          // analyzer.setLimits(1,1);
           // KWAnalyzer analyzer = new KWAnalyzer("/tmp/kwlog.csv");
+          CANValueSampler analyzer = new CANValueSampler(800, "MotorTemp",
+              "SOC", "Range", "VIN", "Odometer", "BatteryCapacity");
           obdTriplet.setCanValueHandler(analyzer);
           int count = 0;
           long sum = 0;
+          VehicleLog vehicleLog = new VehicleLog();
           for (File logFile : logFiles) {
             if (logFile.getName().endsWith(".log")) {
               sum += logFile.length() / 1024 / 1024;
               System.out.println(String.format("%3d: %5d m %7d k %s \n",
                   ++count, sum, logFile.length() / 1024, logFile.getName()));
-              if (count >= limit)
-                break;
+
+              LogPeriod period = new LogPeriod();
               LogReader logReader = new LogReader(logFile);
               logReader.addReponseHandler(obdTriplet);
+              logReader.addLogListener(analyzer);
               logReader.read();
+              period.setLogFile(logFile.getName());
+              Integer odo = (Integer) analyzer.valueMap.get("Odometer");
+              if (odo != null)
+                period.setOdo(odo + 0.0);
+              VINValue VIN = (VINValue) analyzer.valueMap.get("VIN");
+              if (VIN != null)
+                period.setVIN(VIN.vin);
+              analyzer.valueMap.remove("VIN");
+              period.setValues(analyzer.valueMap);
+              period.setStartDate(analyzer.start);
+              vehicleLog.getLogPeriods().add(period);
               analyzer.resetCounters();
+              if (count >= limit)
+                break;
             }
           } // for
           analyzer.close();
+          vehicleLog.sort();
+          vehicleLog.save();
         }
       }
     }
+  }
+
+  @Test
+  public void testVehicleLogAsCSV() throws FileNotFoundException {
+    VehicleLog vehicleLog = VehicleLog.getInstance();
+    String csvFileName = "/tmp/vehiclelog.csv";
+    File csvFile = new File(csvFileName);
+    PrintWriter printWriter = new PrintWriter(csvFile);
+    SimpleDateFormat isoDateFormatter = new SimpleDateFormat(
+        "yyyy-MM-dd HH:mm:ss");
+    for (LogPeriod logPeriod : vehicleLog.getLogPeriods()) {
+      if (logPeriod.getValues().containsKey("BatteryCapacity")) {
+        Double bat = (Double) logPeriod.getValues().get("BatteryCapacity");
+        printWriter.write(String.format("%s;%5.0f;%5.1f\n",
+            isoDateFormatter.format(logPeriod.getStartDate()),
+            logPeriod.getOdo(), bat));
+      }
+    }
+    printWriter.close();
   }
 
 }
