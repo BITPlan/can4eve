@@ -74,8 +74,7 @@ public class LogReader {
      * @param count
      * @return true to continue - false to interrupt
      */
-    public boolean onUpdate(String line, int len, int index,
-        int count);
+    public boolean onUpdate(String line, int len, int index, int count);
   }
 
   public void addLogListener(LogListener logListener) {
@@ -123,12 +122,14 @@ public class LogReader {
     int len = line.length();
 
     if (line.startsWith("20")) {
-      tsVal = line.substring(0, 23);
-      Date timeStamp = logDateFormatter.parse(tsVal);
-      canLine = line.substring(24) + "\n";
-      if (canLine.length() > 5) {
-        Packet p = new PacketImpl(canLine, timeStamp);
-        return p;
+      if (line.length() >= 23) {
+        tsVal = line.substring(0, 23);
+        Date timeStamp = logDateFormatter.parse(tsVal);
+        canLine = line.substring(24) + "\n";
+        if (canLine.length() > 5) {
+          Packet p = new PacketImpl(canLine, timeStamp);
+          return p;
+        }
       }
     } else if (len >= 42 && len <= 44) {
       String[] parts = line.split(",");
