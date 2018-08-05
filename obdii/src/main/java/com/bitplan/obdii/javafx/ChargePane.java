@@ -20,7 +20,7 @@
  */
 package com.bitplan.obdii.javafx;
 
-import com.bitplan.obdii.I18n;
+import com.bitplan.obdii.Can4EveI18n;
 
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.Gauge.SkinType;
@@ -54,14 +54,14 @@ public class ChargePane extends CANValuePane {
         .build();
     
     super.addGauge("SOC",socGauge,0,0);
-    super.addGauge("Range",I18n.RR,I18n.KM,1,0).setDecimals(1);
-    super.addGauge("BatteryCapacity", I18n.BATTERY_CAPACITY,I18n.AH, 2,0).setDecimals(1);
-    super.addGauge("ACPower",I18n.AC_POWER,I18n.K_WATT,0,1).setDecimals(1);
-    super.addGauge("ACVolts",I18n.AC_VOLTS,I18n.VOLTS,1,1);
-    super.addGauge("ACAmps",I18n.AC_AMPS,I18n.AMPS,2,1).setDecimals(1);;
-    super.addGauge("DCPower",I18n.DC_POWER,I18n.K_WATT,0,2).setDecimals(1);    
-    super.addGauge("DCVolts",I18n.DC_VOLTS,I18n.VOLTS,1,2);
-    super.addGauge("DCAmps",I18n.DC_AMPS,I18n.AMPS,2,2).setDecimals(1);;    
+    super.addGauge("Range",Can4EveI18n.RR,Can4EveI18n.KM,1,0).setDecimals(1);
+    super.addGauge("BatteryCapacity", Can4EveI18n.BATTERY_CAPACITY,Can4EveI18n.AH, 2,0).setDecimals(1);
+    super.addGauge("ACPower",Can4EveI18n.AC_POWER,Can4EveI18n.K_WATT,0,1).setDecimals(1);
+    super.addGauge("ACVolts",Can4EveI18n.AC_VOLTS,Can4EveI18n.VOLTS,1,1);
+    super.addGauge("ACAmps",Can4EveI18n.AC_AMPS,Can4EveI18n.AMPS,2,1).setDecimals(1);;
+    super.addGauge("DCPower",Can4EveI18n.DC_POWER,Can4EveI18n.K_WATT,0,2).setDecimals(1);    
+    super.addGauge("DCVolts",Can4EveI18n.DC_VOLTS,Can4EveI18n.VOLTS,1,2);
+    super.addGauge("DCAmps",Can4EveI18n.DC_AMPS,Can4EveI18n.AMPS,2,2).setDecimals(1);;    
     this.fixColumnSizes(4, 33,33,33);
     this.fixRowSizes(4, 33,33,33);
   }

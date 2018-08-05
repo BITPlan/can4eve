@@ -26,9 +26,10 @@ import java.util.logging.Logger;
 
 import com.bitplan.can4eve.Vehicle.State;
 import com.bitplan.can4eve.states.StopWatch;
+import com.bitplan.i18n.I18n;
 import com.bitplan.i18n.Translator;
 import com.bitplan.javafx.ConstrainedGridPane;
-import com.bitplan.obdii.I18n;
+import com.bitplan.obdii.Can4EveI18n;
 
 import eu.hansolo.medusa.Clock;
 import eu.hansolo.medusa.Clock.ClockSkinType;
@@ -58,15 +59,15 @@ public class ClockPane extends ConstrainedGridPane {
   public ClockPane() {
     // add a normal running clock
     clock = ClockBuilder.create().skinType(ClockSkinType.LCD)
-        .lcdDesign(LcdDesign.GRAY).title(I18n.get(I18n.WATCH_TIME))
+        .lcdDesign(LcdDesign.GRAY).title(I18n.get(Can4EveI18n.WATCH_TIME))
         .titleVisible(true).secondsVisible(true).alarmsEnabled(false)
         .dateVisible(true).running(true).autoNightMode(true)
         .locale(Translator.getCurrentLocale()).build();
 
     String[] icons = { "car", "plug", "parking", "total" };
-    String[] titles = { I18n.WATCH_MOVING,
-        I18n.WATCH_CHARGING, I18n.WATCH_PARKING,
-        I18n.WATCH_TOTAL};
+    String[] titles = { Can4EveI18n.WATCH_MOVING,
+        Can4EveI18n.WATCH_CHARGING, Can4EveI18n.WATCH_PARKING,
+        Can4EveI18n.WATCH_TOTAL};
     watches = new JFXStopWatch[Watch.values().length];
     this.msecsStart=new long[Watch.values().length];
     for (Watch watch : Watch.values()) {

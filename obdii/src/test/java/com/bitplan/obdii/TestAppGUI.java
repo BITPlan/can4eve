@@ -356,7 +356,7 @@ public class TestAppGUI extends TestOBDII {
     ExceptionHelp ehelp = app.getExceptionHelpByName(exception);
     assertNotNull(ehelp);
     FlowPane fp = new FlowPane();
-    Label lbl = new Label(I18n.get(ehelp.getI18nHint()));
+    Label lbl = new Label(Can4EveI18n.get(ehelp.getI18nHint()));
     Hyperlink link = new Hyperlink(ehelp.getUrl());
 
     fp.getChildren().addAll(lbl, link);
@@ -553,7 +553,7 @@ public class TestAppGUI extends TestOBDII {
     // final Gauge gauge = cvpane.addGauge("TripOdo",
     // I18n.TRIP_ODO_METER,I18n.KM,0, 0);
     // Gauge gauge=LcdGauge.createGauge(I18n.TRIP_ODO_METER, I18n.KM);
-    ResetableGauge gauge = new ResetableGauge(I18n.TRIP_ODO_METER, I18n.KM);
+    ResetableGauge gauge = new ResetableGauge(Can4EveI18n.TRIP_ODO_METER, Can4EveI18n.KM);
     DoubleProperty odo = new SimpleDoubleProperty();
     // Gauge gauge=new Gauge(SkinType.LCD);
     // Gauge gauge=new ResetableGauge(SkinType.LCD);
@@ -685,7 +685,7 @@ public class TestAppGUI extends TestOBDII {
 
   @Test
   public void testStopWatch() {
-    StopWatch stopWatch = new JFXStopWatch(I18n.WATCH_TOTAL);
+    StopWatch stopWatch = new JFXStopWatch(Can4EveI18n.WATCH_TOTAL);
     stopWatch.halt();
     stopWatch.reset();
     // System.out.println(stopWatch.asIsoDateStr());
@@ -773,7 +773,7 @@ public class TestAppGUI extends TestOBDII {
 
     Platform.runLater(() -> {
       try {
-        WelcomeWizard wizard = new WelcomeWizard(I18n.WELCOME, null,
+        WelcomeWizard wizard = new WelcomeWizard(Can4EveI18n.WELCOME, null,
             sampleApp.fxml);
         wizards[0] = wizard;
         wizard.display();
@@ -824,7 +824,7 @@ public class TestAppGUI extends TestOBDII {
       Parent root = FXMLLoader
           .load(getClass().getResource(resourcePath + pageName + ".fxml"));
       WizardPane page = new WizardPane();
-      page.setHeaderText(I18n.get(pageName));
+      page.setHeaderText(Can4EveI18n.get(pageName));
       page.setContent(root);
       pages[i++] = page;
     }

@@ -33,6 +33,7 @@ import com.bitplan.can4eve.gui.javafx.CANProperty;
 import com.bitplan.can4eve.gui.javafx.CANPropertyManager;
 import com.bitplan.error.SoftwareVersion;
 import com.bitplan.gui.App;
+import com.bitplan.i18n.I18n;
 import com.bitplan.obdii.javafx.CANValuePane;
 import com.bitplan.obdii.javafx.JFXCanCellStatePlot;
 import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
@@ -169,14 +170,14 @@ public class JFXTripletDisplay extends JavaFXDisplay {
           "cellTemperature", "cell", "Temperature", cellTemperature, 1.0, 0.5);
 
       Platform.runLater(() -> super.getXyTabPane().addTab(tabPane, "cellTemp",
-          I18n.get(I18n.CELL_TEMP), "temp50", cellStatePlot.getBarChart()));
+          I18n.get(Can4EveI18n.CELL_TEMP), "temp50", cellStatePlot.getBarChart()));
       cellStatePlot.updateOn(cellTemperature.getUpdateCountProperty());
 
       CANProperty<DoubleValue, Double> cellVoltage = cpm.get("CellVoltage");
       final JFXCanCellStatePlot cellVoltagePlot = new JFXCanCellStatePlot(
           "cellVoltage", "cell", "Voltage", cellVoltage, 0.01, 0.1);
       Platform.runLater(() -> super.getXyTabPane().addTab(tabPane,
-          "cellVoltage", I18n.get(I18n.CELL_VOLTAGE),
+          "cellVoltage", I18n.get(Can4EveI18n.CELL_VOLTAGE),
           FontAwesome.Glyph.FLASH.name(), cellVoltagePlot.getBarChart()));
       cellVoltagePlot.updateOn(cellVoltage.getUpdateCountProperty());
 

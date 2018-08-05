@@ -33,7 +33,7 @@ import com.bitplan.gui.Form;
 import com.bitplan.javafx.BasePresenter;
 import com.bitplan.javafx.GenericDialog;
 import com.bitplan.javafx.ImageSelector;
-import com.bitplan.obdii.I18n;
+import com.bitplan.obdii.Can4EveI18n;
 import com.bitplan.triplet.VINValue;
 
 import javafx.fxml.FXML;
@@ -120,7 +120,7 @@ public class VehiclePresenter extends BasePresenter<Vehicle> {
     CANData<VINValue> vinInfo = vehicleInfo.get("VIN");
     VINValue VIN = vinInfo.getValue();
     if (VIN == null) {
-      exceptionHandler.handleException(new Exception(I18n.get(I18n.VEHICLE_VIN_PROBLEM)));
+      exceptionHandler.handleException(new Exception(Can4EveI18n.get(Can4EveI18n.VEHICLE_VIN_PROBLEM)));
     } else {
       vehicle.setVIN(VIN.vin);
       vehicle.setYear(VIN.year);

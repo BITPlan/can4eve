@@ -40,13 +40,14 @@ import com.bitplan.elm327.Config.ConfigMode;
 import com.bitplan.error.ExceptionHandler;
 import com.bitplan.error.SoftwareVersion;
 import com.bitplan.gui.App;
+import com.bitplan.i18n.I18n;
 import com.bitplan.javafx.GenericApp;
 import com.bitplan.javafx.GenericControl;
 import com.bitplan.javafx.GenericDialog;
 import com.bitplan.javafx.GenericPanel;
 import com.bitplan.javafx.WaitableApp;
 import com.bitplan.obdii.CANValueDisplay;
-import com.bitplan.obdii.I18n;
+import com.bitplan.obdii.Can4EveI18n;
 import com.bitplan.obdii.OBDApp;
 import com.bitplan.obdii.Preferences;
 import com.bitplan.obdii.Preferences.LangChoice;
@@ -85,14 +86,13 @@ import javafx.stage.Stage;
  * @author wf
  *
  */
+@SuppressWarnings("restriction")
 public class JavaFXDisplay extends GenericApp implements MonitorControl,
     CANValueDisplay, ExceptionHandler, EventHandler<ActionEvent> {
 
   OBDApp obdApp;
 
-  private MenuBar menuBar;
-
-  private VBox root;
+  // private VBox root;
   String activeView = null;
   protected boolean available;
 
@@ -144,28 +144,6 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
     this.obdApp = obdApp;
   }
 
-  /**
-   * @return the menuBar
-   */
-  public MenuBar getMenuBar() {
-    return menuBar;
-  }
-
-  /**
-   * @param menuBar
-   *          the menuBar to set
-   */
-  public void setMenuBar(MenuBar menuBar) {
-    this.menuBar = menuBar;
-  }
-
-  public VBox getRoot() {
-    return root;
-  }
-
-  public void setRoot(VBox root) {
-    this.root = root;
-  }
 
   @Override
   public void updateField(String title, Object value, int updateCount) {
@@ -215,7 +193,7 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
     }
     pMenuBar.setVisible(show);
     hideMenuButton
-        .setText(show ? I18n.get(I18n.HIDE_MENU) : I18n.get(I18n.SHOW_MENU));
+        .setText(show ? I18n.get(Can4EveI18n.HIDE_MENU) : I18n.get(Can4EveI18n.SHOW_MENU));
   }
 
   /**
@@ -236,7 +214,7 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
       }
     }
 
-    hideMenuButton = new Button(I18n.get(I18n.HIDE_MENU));
+    hideMenuButton = new Button(I18n.get(Can4EveI18n.HIDE_MENU));
     hideMenuButton.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
@@ -272,10 +250,10 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
    * @param xyTabPane
    */
   public void setupDashBoard() {
-    TabPane dashboardPane = xyTabPane.addTabPane(DASH_BOARD_GROUP,I18n.get(I18n.DASH_BOARD_TAB),FontAwesome.Glyph.SQUARE_ALT.name());
+    TabPane dashboardPane = xyTabPane.addTabPane(DASH_BOARD_GROUP,I18n.get(Can4EveI18n.DASH_BOARD_TAB),FontAwesome.Glyph.SQUARE_ALT.name());
     setupSpecial(dashboardPane);
     @SuppressWarnings("unused")
-    TabPane batteryPane=xyTabPane.addTabPane(BATTERY_GROUP,I18n.get(I18n.BATTERY_TAB),"battery-three-quarters");
+    TabPane batteryPane=xyTabPane.addTabPane(BATTERY_GROUP,I18n.get(Can4EveI18n.BATTERY_TAB),"battery-three-quarters");
   }
 
   @Override
@@ -340,7 +318,7 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
     try {
       Preferences preferences = Preferences.getInstance();
       if (preferences.getLanguage() == LangChoice.notSet) {
-        WelcomeWizard wizard = new WelcomeWizard(I18n.WELCOME,
+        WelcomeWizard wizard = new WelcomeWizard(Can4EveI18n.WELCOME,
             this.obdApp,this.getFxml());
         wizard.display();
         if (wizard.isFinished()) {
@@ -421,7 +399,7 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
             lIsoDateFormatter.format(new Date()));
         File screenShotFile = new File(screenShotDirectory, screenShotName);
         WaitableApp.saveAsPng(stage, screenShotFile);
-        showNotification(I18n.get(I18n.SCREEN_SHOT), screenShotFile.getName(),
+        showNotification(I18n.get(Can4EveI18n.SCREEN_SHOT), screenShotFile.getName(),
             2000);
       }
     } catch (Exception e1) {
@@ -438,7 +416,7 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
   public void switchFullScreen(boolean fullScreen) {
     stage.setFullScreen(fullScreen);
     fullScreenButton.setText(
-        fullScreen ? I18n.get(I18n.PART_SCREEN) : I18n.get(I18n.FULL_SCREEN));
+        fullScreen ? I18n.get(Can4EveI18n.PART_SCREEN) : I18n.get(Can4EveI18n.FULL_SCREEN));
 
   }
 
@@ -448,26 +426,26 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
   public void setupSpecial(TabPane tabPane) {
     clockPane = new ClockPane();
     odoPane = new OdoPane();
-    odoTab = xyTabPane.addTab(tabPane, "odoPane", 0, I18n.get(I18n.ODO_INFO),
+    odoTab = xyTabPane.addTab(tabPane, "odoPane", 0, I18n.get(Can4EveI18n.ODO_INFO),
         FontAwesome.Glyph.AUTOMOBILE.name(), odoPane);
     if (obdApp!=null) {
       Vehicle vehicle = obdApp.getVehicle();
       dashBoardPane = new DashBoardPane(vehicle);
       dashBoardTab = xyTabPane.addTab(tabPane, "dashBoardPane", 0,
-          I18n.get(I18n.DASH_BOARD), FontAwesome.Glyph.TACHOMETER.name(),
+          I18n.get(Can4EveI18n.DASH_BOARD), FontAwesome.Glyph.TACHOMETER.name(),
           dashBoardPane);
     }
     chargePane = new ChargePane();
-    chargeTab = xyTabPane.addTab(tabPane, "chargePane", 0, I18n.get(I18n.SOC),
+    chargeTab = xyTabPane.addTab(tabPane, "chargePane", 0, I18n.get(Can4EveI18n.SOC),
         FontAwesome.Glyph.PLUG.name(), chargePane);
   
-    clockTab = xyTabPane.addTab(tabPane, "clockPane", 0, I18n.get(I18n.CLOCKS),
+    clockTab = xyTabPane.addTab(tabPane, "clockPane", 0, I18n.get(Can4EveI18n.CLOCKS),
         FontAwesome.Glyph.CLOCK_ALT.name(), clockPane);
     // disable menu items
-    this.setMenuItemDisable(I18n.OBD_HALT_MENU_ITEM, true);
-    this.setMenuItemDisable(I18n.FILE_CLOSE_MENU_ITEM, true);
+    this.setMenuItemDisable(Can4EveI18n.OBD_HALT_MENU_ITEM, true);
+    this.setMenuItemDisable(Can4EveI18n.FILE_CLOSE_MENU_ITEM, true);
 
-    Button screenShotButton = new Button(I18n.get(I18n.SCREEN_SHOT));
+    Button screenShotButton = new Button(I18n.get(Can4EveI18n.SCREEN_SHOT));
     screenShotButton.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
@@ -475,7 +453,7 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
       }
     });
 
-    fullScreenButton = new Button(I18n.get(I18n.FULL_SCREEN));
+    fullScreenButton = new Button(I18n.get(Can4EveI18n.FULL_SCREEN));
     fullScreenButton.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
@@ -492,7 +470,7 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
     Button powerButton = xyTabPane.getTopLeftButton();
     Node icon = xyTabPane.getIcon(FontAwesome.Glyph.POWER_OFF.name(),
         xyTabPane.getIconSize());
-    powerButton.setTooltip(new Tooltip(I18n.get(I18n.POWER_OFF)));
+    powerButton.setTooltip(new Tooltip(I18n.get(Can4EveI18n.POWER_OFF)));
     powerButton.setGraphic(icon);
     powerButton.setDisable(false);
     powerButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -513,8 +491,8 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
     if (simulatorPane == null) {
       simulatorPane = new SimulatorPane(logPlayer, this);
       getRoot().getChildren().add(1, simulatorPane);
-      setMenuItemDisable(I18n.OBD_START_WITH_LOG_MENU_ITEM, true);
-      setMenuItemDisable(I18n.FILE_CLOSE_MENU_ITEM, false);
+      setMenuItemDisable(Can4EveI18n.OBD_START_WITH_LOG_MENU_ITEM, true);
+      setMenuItemDisable(Can4EveI18n.FILE_CLOSE_MENU_ITEM, false);
     }
     File file = new File(filePath);
     logPlayer.setLogFile(file);
@@ -567,9 +545,9 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
    *          - i18n string code of feature e.g. menuItem
    */
   public void notImplemented(String feature) {
-    GenericDialog.showAlert(stage, I18n.get(I18n.SORRY),
-        I18n.get(I18n.WE_ARE_SORRY),
-        I18n.get(feature) + " " + I18n.get(I18n.NOT_IMPLEMENTED_YET));
+    GenericDialog.showAlert(stage, I18n.get(Can4EveI18n.SORRY),
+        I18n.get(Can4EveI18n.WE_ARE_SORRY),
+        I18n.get(feature) + " " + I18n.get(Can4EveI18n.NOT_IMPLEMENTED_YET));
   }
 
   @Override
@@ -579,73 +557,73 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
       if (source instanceof MenuItem) {
         MenuItem menuItem = (MenuItem) source;
         switch (menuItem.getId()) {
-        case I18n.FILE_SAVE_MENU_ITEM:
-          notImplemented(I18n.FILE_SAVE_MENU_ITEM);
+        case Can4EveI18n.FILE_SAVE_MENU_ITEM:
+          notImplemented(Can4EveI18n.FILE_SAVE_MENU_ITEM);
           break;
-        case I18n.FILE_OPEN_MENU_ITEM:
+        case Can4EveI18n.FILE_OPEN_MENU_ITEM:
           fileOpen();
           break;
-        case I18n.FILE_CLOSE_MENU_ITEM:
+        case Can4EveI18n.FILE_CLOSE_MENU_ITEM:
           fileClose();
           break;
-        case I18n.FILE_QUIT_MENU_ITEM:
+        case Can4EveI18n.FILE_QUIT_MENU_ITEM:
           close();
           break;
-        case I18n.HELP_ABOUT_MENU_ITEM:
+        case Can4EveI18n.HELP_ABOUT_MENU_ITEM:
           TaskLaunch.start(() -> showLink(app.getHome()));
           showAbout();
           break;
-        case I18n.HELP_HELP_MENU_ITEM:
+        case Can4EveI18n.HELP_HELP_MENU_ITEM:
           TaskLaunch.start(() -> showLink(app.getHelp()));
           break;
-        case I18n.HELP_FEEDBACK_MENU_ITEM:
+        case Can4EveI18n.HELP_FEEDBACK_MENU_ITEM:
           GenericDialog.sendReport(softwareVersion,
               softwareVersion.getName() + " feedback", "...");
           break;
-        case I18n.HELP_BUG_REPORT_MENU_ITEM:
+        case Can4EveI18n.HELP_BUG_REPORT_MENU_ITEM:
           TaskLaunch.start(() -> showLink(app.getFeedback()));
           break;
-        case I18n.SETTINGS_SETTINGS_MENU_ITEM:
+        case Can4EveI18n.SETTINGS_SETTINGS_MENU_ITEM:
           showSettings(false);
           break;
-        case I18n.SETTINGS_WELCOME_MENU_ITEM:
-          WelcomeWizard wizard = new WelcomeWizard(I18n.WELCOME,
+        case Can4EveI18n.SETTINGS_WELCOME_MENU_ITEM:
+          WelcomeWizard wizard = new WelcomeWizard(Can4EveI18n.WELCOME,
               this.obdApp,this.getFxml());
           wizard.display();
           if (wizard.isFinished())
             startMonitoring(false);
           break;
-        case I18n.OBD_START_MENU_ITEM:
+        case Can4EveI18n.OBD_START_MENU_ITEM:
           startMonitoring(false);
           break;
-        case I18n.OBD_START_WITH_LOG_MENU_ITEM:
+        case Can4EveI18n.OBD_START_WITH_LOG_MENU_ITEM:
           startMonitoring(true);
           break;
-        case I18n.OBD_HALT_MENU_ITEM:
+        case Can4EveI18n.OBD_HALT_MENU_ITEM:
           stopMonitoring();
           break;
-        case I18n.OBD_TEST_MENU_ITEM:
+        case Can4EveI18n.OBD_TEST_MENU_ITEM:
           showSettings(true);
           break;
-        case I18n.SETTINGS_PREFERENCES_MENU_ITEM:
+        case Can4EveI18n.SETTINGS_PREFERENCES_MENU_ITEM:
           PreferencesPresenter preferencesPresenter=getFxml().loadPresenter("preferences", Preferences.class,this);
           preferencesPresenter.show(Preferences.getInstance());
           break;
-        case I18n.VEHICLE_MENU_ITEM:
+        case Can4EveI18n.VEHICLE_MENU_ITEM:
           VehiclePresenter vehiclePresenter =getFxml().loadPresenter("vehicle",
               Vehicle.class,this);
           vehiclePresenter.show(Vehicle.getInstance());
           break;
-        case I18n.VIEW_DASHBOARD_VIEW_MENU_ITEM:
+        case Can4EveI18n.VIEW_DASHBOARD_VIEW_MENU_ITEM:
           this.setActiveTabPane(DASH_BOARD_GROUP);
           break;
-        case I18n.VIEW_HISTORY_VIEW_MENU_ITEM:
+        case Can4EveI18n.VIEW_HISTORY_VIEW_MENU_ITEM:
           this.setActiveTabPane(HISTORY_GROUP);
           break;
-        case I18n.VIEW_SETTINGS_VIEW_MENU_ITEM:
+        case Can4EveI18n.VIEW_SETTINGS_VIEW_MENU_ITEM:
           this.setActiveTabPane("preferencesGroup");
           break;
-        case I18n.VIEW_MONITOR_VIEW_MENU_ITEM:
+        case Can4EveI18n.VIEW_MONITOR_VIEW_MENU_ITEM:
           this.setActiveTabPane("mainGroup");
           break;
         default:
@@ -664,7 +642,7 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
   private void fileClose() {
     try {
       obdApp.getLogPlayer().close();
-      this.setMenuItemDisable(I18n.FILE_CLOSE_MENU_ITEM, true);
+      this.setMenuItemDisable(Can4EveI18n.FILE_CLOSE_MENU_ITEM, true);
     } catch (Exception e) {
       this.handleException(e);
     }
@@ -698,12 +676,12 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
     if (monitortask == null)
       return;
     // TODO use better symbol e.g. icon
-    setWatchDogState("X", I18n.get(I18n.HALTED));
-    setMenuItemDisable(I18n.OBD_START_MENU_ITEM, false);
-    setMenuItemDisable(I18n.OBD_START_WITH_LOG_MENU_ITEM,
+    setWatchDogState("X", I18n.get(Can4EveI18n.HALTED));
+    setMenuItemDisable(Can4EveI18n.OBD_START_MENU_ITEM, false);
+    setMenuItemDisable(Can4EveI18n.OBD_START_WITH_LOG_MENU_ITEM,
         simulatorPane != null);
-    setMenuItemDisable(I18n.OBD_TEST_MENU_ITEM, false);
-    setMenuItemDisable(I18n.OBD_HALT_MENU_ITEM, true);
+    setMenuItemDisable(Can4EveI18n.OBD_TEST_MENU_ITEM, false);
+    setMenuItemDisable(Can4EveI18n.OBD_HALT_MENU_ITEM, true);
     Task<Void> task = new Task<Void>() {
       @Override
       public Void call() {
@@ -724,11 +702,11 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
    * @param
    */
   public void startMonitoring(boolean withLog) {
-    setWatchDogState("⚙", I18n.get(I18n.MONITORING));
-    setMenuItemDisable(I18n.OBD_START_MENU_ITEM, true);
-    setMenuItemDisable(I18n.OBD_START_WITH_LOG_MENU_ITEM, true);
-    setMenuItemDisable(I18n.OBD_TEST_MENU_ITEM, true);
-    setMenuItemDisable(I18n.OBD_HALT_MENU_ITEM, false);
+    setWatchDogState("⚙", I18n.get(Can4EveI18n.MONITORING));
+    setMenuItemDisable(Can4EveI18n.OBD_START_MENU_ITEM, true);
+    setMenuItemDisable(Can4EveI18n.OBD_START_WITH_LOG_MENU_ITEM, true);
+    setMenuItemDisable(Can4EveI18n.OBD_TEST_MENU_ITEM, true);
+    setMenuItemDisable(Can4EveI18n.OBD_HALT_MENU_ITEM, false);
     monitortask = new Task<Void>() {
       @Override
       public Void call() {
@@ -755,18 +733,6 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
       this.watchDogLabel.setText(symbol);
       this.statusBar.setText(state);
     });
-  }
-
-  /**
-   * internationalization function
-   * 
-   * @param params
-   * @param text
-   * @return translated text
-   */
-  public String i18n(String text, Object... params) {
-    String i18n = I18n.get(text, params);
-    return i18n;
   }
 
   /**

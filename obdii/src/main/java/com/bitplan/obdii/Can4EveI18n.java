@@ -28,7 +28,7 @@ import com.bitplan.i18n.Translator;
  * @author wf
  *
  */
-public class I18n {
+public class Can4EveI18n {
   public static final String ADDRESS_ALREADY_IN_USE = "addressAlreadyInUse"; 
   public static final String HELP = "help"; // Help
   public static final String INVALID_CONFIGURATION = "invalid_configuration";
@@ -170,26 +170,6 @@ public class I18n {
   public static final String VEHICLE_YEAR="vehicleYear"; //year
   public static final String VEHICLE_MANUFACTURER="vehicleManufacturer"; //manufacturer
   public static final String VEHICLE_VIN_PROBLEM="vehicleVinProblem";
-  /**
-   * Translate the given text
-   * 
-   * @param text
-   *          - the text to translate
-   * @return - the text
-   */
-  public static String get(String text) {
-    return Translator.translate(text);
-  }
-
-  /**
-   * translate the given text with the given params
-   * 
-   * @param text
-   * @param params
-   * @return the translated string
-   */
-  public static String get(String text, Object... params) {
-    return Translator.translate(text, params);
-  }
+  
 
 }

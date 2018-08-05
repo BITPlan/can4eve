@@ -24,8 +24,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.bitplan.can4eve.Vehicle;
+import com.bitplan.i18n.I18n;
 import com.bitplan.javafx.ConstrainedGridPane;
-import com.bitplan.obdii.I18n;
+import com.bitplan.obdii.Can4EveI18n;
 
 import eu.hansolo.LcdGauge;
 import eu.hansolo.LcdGauge.ResetableGauge;
@@ -100,7 +101,7 @@ public class DashBoardPane extends ConstrainedGridPane {
           .mediumTickMarkType(TickMarkType.DOT)
           .minorTickMarkType(TickMarkType.LINE)
           .tickLabelLocation(TickLabelLocation.INSIDE)
-          .title(I18n.get(I18n.REV_COUNT)).unit(I18n.get(I18n.RPM))
+          .title(I18n.get(Can4EveI18n.REV_COUNT)).unit(I18n.get(Can4EveI18n.RPM))
           .lcdDesign(LcdGauge.lcdDesign).lcdVisible(true)
           .lcdFont(LcdGauge.lcdFont).needleSize(NeedleSize.THICK).build();
 
@@ -116,17 +117,17 @@ public class DashBoardPane extends ConstrainedGridPane {
           .mediumTickMarkType(TickMarkType.DOT)
           .minorTickMarkType(TickMarkType.LINE)
           .tickLabelLocation(TickLabelLocation.INSIDE)
-          .title(I18n.get(I18n.RPM_SPEED)).unit("km/h")
+          .title(I18n.get(Can4EveI18n.RPM_SPEED)).unit("km/h")
           .lcdDesign(LcdGauge.lcdDesign).lcdVisible(true)
           .lcdFont(LcdGauge.lcdFont).needleSize(NeedleSize.THICK).build();
 
-      rpmMax = new ResetableGauge(I18n.get(I18n.RPM_MAX), I18n.get(I18n.RPM));
-      rpmAvg = new ResetableGauge(I18n.get(I18n.RPM_AVG), I18n.get(I18n.RPM));
+      rpmMax = new ResetableGauge(I18n.get(Can4EveI18n.RPM_MAX), I18n.get(Can4EveI18n.RPM));
+      rpmAvg = new ResetableGauge(I18n.get(Can4EveI18n.RPM_AVG), I18n.get(Can4EveI18n.RPM));
       // FIXME translate km/h? or allow miles/hour?
-      rpmSpeedMax = new ResetableGauge(I18n.get(I18n.RPM_SPEED_MAX),
-          I18n.get(I18n.KMH));
-      rpmSpeedAvg = new ResetableGauge(I18n.get(I18n.RPM_SPEED_AVG),
-          I18n.get(I18n.KMH));
+      rpmSpeedMax = new ResetableGauge(I18n.get(Can4EveI18n.RPM_SPEED_MAX),
+          I18n.get(Can4EveI18n.KMH));
+      rpmSpeedAvg = new ResetableGauge(I18n.get(Can4EveI18n.RPM_SPEED_AVG),
+          I18n.get(Can4EveI18n.KMH));
 
       framedRPMGauge = new FGauge(rpmGauge, GaugeDesign.ENZO,
           GaugeBackground.DARK_GRAY);

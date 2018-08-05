@@ -79,7 +79,7 @@ public class TestI18n {
     String translated;
     int errors = 0;
     try {
-      translated = I18n.get(text);
+      translated = Can4EveI18n.get(text);
     } catch (Throwable th) {
       translated = "";
       if (show || showError) {
@@ -142,7 +142,7 @@ public class TestI18n {
       Translator.initialize("can4eve", locale);
       if (show)
         System.out.println("# locale " + locale);
-      for (Field field : I18n.class.getFields()) {
+      for (Field field : Can4EveI18n.class.getFields()) {
         String text = (String) field.get(null);
         errors += checkText(text);
       }
@@ -195,7 +195,7 @@ public class TestI18n {
   public void testPropertiesAreFields() throws Exception {
     boolean show = true;
     List<String> fieldList = new ArrayList<String>();
-    for (Field field : I18n.class.getFields()) {
+    for (Field field : Can4EveI18n.class.getFields()) {
       fieldList.add(field.getName());
     }
     int errors = 0;

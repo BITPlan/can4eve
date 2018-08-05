@@ -236,7 +236,7 @@ public class OBDMain extends Main implements OBDApp {
       break;
     }
     if (obdTriplet == null) {
-      throw new Exception(I18n.get(I18n.INVALID_CONFIGURATION));
+      throw new Exception(Can4EveI18n.get(Can4EveI18n.INVALID_CONFIGURATION));
     }
     Vehicle vehicle = Vehicle.getInstance();
     if (vehicle != null) {

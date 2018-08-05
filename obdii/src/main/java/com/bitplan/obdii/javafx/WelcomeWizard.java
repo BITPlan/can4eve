@@ -43,7 +43,7 @@ import com.bitplan.javafx.ImageSelector;
 import com.bitplan.javafx.JFXML;
 import com.bitplan.javafx.JFXWizard;
 import com.bitplan.javafx.JFXWizardPane;
-import com.bitplan.obdii.I18n;
+import com.bitplan.obdii.Can4EveI18n;
 import com.bitplan.obdii.OBDApp;
 import com.bitplan.obdii.Preferences;
 import com.bitplan.obdii.Preferences.LangChoice;
@@ -187,7 +187,7 @@ public class WelcomeWizard extends JFXWizard {
       if (imageView != null)
         obdImage.setImage(imageView.getImage());
       textArea.setText(info);
-      hint.setText(I18n.get(I18n.WELCOME_TEST_VEHICLE));
+      hint.setText(Can4EveI18n.get(Can4EveI18n.WELCOME_TEST_VEHICLE));
     }
 
   }
@@ -201,12 +201,12 @@ public class WelcomeWizard extends JFXWizard {
   public WelcomeWizard(String i18nTitle, OBDApp obdApp, JFXML fxml) {
     super(fxml);
     this.obdApp = obdApp;
-    setTitle(I18n.get(i18nTitle));
+    setTitle(Can4EveI18n.get(i18nTitle));
     int steps = 7;
     VehiclePresenter vehiclePresenter = getFxml().loadPresenter("vehicle",
         Vehicle.class, null);
 
-    languagePane = new JFXWizardPane(this, 1, steps, I18n.WELCOME_LANGUAGE,
+    languagePane = new JFXWizardPane(this, 1, steps, Can4EveI18n.WELCOME_LANGUAGE,
         langSelector) {
 
       @Override
@@ -239,7 +239,7 @@ public class WelcomeWizard extends JFXWizard {
     }
     addPage(languagePane, "http://can4eve.bitplan.com/index.php/Help/Language");
 
-    carPane = new JFXWizardPane(this, 2, steps, I18n.WELCOME_VEHICLE_TYPE,
+    carPane = new JFXWizardPane(this, 2, steps, Can4EveI18n.WELCOME_VEHICLE_TYPE,
         vehiclePresenter.getCarSelector()) {
       @Override
       public void onExitingPage(Wizard wizard) {
@@ -250,7 +250,7 @@ public class WelcomeWizard extends JFXWizard {
     };
     addPage(carPane, "http://can4eve.bitplan.com/index.php/Help/VehicleTypes");
 
-    connectionPane = new JFXWizardPane(this, 3, steps, I18n.WELCOME_OBD,
+    connectionPane = new JFXWizardPane(this, 3, steps, Can4EveI18n.WELCOME_OBD,
         connectionSelector) {
       @Override
       public void onExitingPage(Wizard wizard) {
@@ -260,7 +260,7 @@ public class WelcomeWizard extends JFXWizard {
     };
     addPage(connectionPane, "http://can4eve.bitplan.com/index.php/Help/OBDII");
 
-    conSettingsPane = new JFXWizardPane(this, 4, steps, I18n.WELCOME_CON) {
+    conSettingsPane = new JFXWizardPane(this, 4, steps, Can4EveI18n.WELCOME_CON) {
       NetworkController networkController;
 
       @Override
@@ -318,7 +318,7 @@ public class WelcomeWizard extends JFXWizard {
     // wizard.setPages(pageNames);
     addPage(conSettingsPane);
     conTestResultPane = new JFXWizardPane(this, 5, steps,
-        I18n.WELCOME_TEST_RESULT) {
+        Can4EveI18n.WELCOME_TEST_RESULT) {
       ConnectionTestController testController;
       private Button nextButton = null;
 
@@ -326,7 +326,7 @@ public class WelcomeWizard extends JFXWizard {
       public void onEnteringPage(Wizard wizard) {
         super.onEnteringPage(wizard);
         if (WelcomeWizard.this.obdApp != null) {
-          setI18nTitle(I18n.WELCOME_TEST_RESULT);
+          setI18nTitle(Can4EveI18n.WELCOME_TEST_RESULT);
           load("connectiontest");
           testController = (ConnectionTestController) controller;
           nextButton = findButton(ButtonType.NEXT);
@@ -390,7 +390,7 @@ public class WelcomeWizard extends JFXWizard {
                   Platform.runLater(() -> {
                     this.updateProgress(progressmax, progressmax);
                     testController.textArea
-                        .setText(I18n.get(I18n.CONNECTION_UNUSABLE));
+                        .setText(Can4EveI18n.get(Can4EveI18n.CONNECTION_UNUSABLE));
                   });
                 }
               } catch (Throwable th) {
@@ -409,7 +409,7 @@ public class WelcomeWizard extends JFXWizard {
     addPage(conTestResultPane,
         "http://can4eve.bitplan.com/index.php/Help/ConnectionTest");
 
-    vehiclePane = new JFXWizardPane(this, 6, steps, I18n.WELCOME_VEHICLE) {
+    vehiclePane = new JFXWizardPane(this, 6, steps, Can4EveI18n.WELCOME_VEHICLE) {
       private Button nextButton;
 
       @Override
@@ -464,7 +464,7 @@ public class WelcomeWizard extends JFXWizard {
     };
     addPage(vehiclePane,
         "http://can4eve.bitplan.com/index.php/Help/VehicleTest");
-    ownerPane = new JFXWizardPane(this, 7, steps, I18n.WELCOME_OWNER) {
+    ownerPane = new JFXWizardPane(this, 7, steps, Can4EveI18n.WELCOME_OWNER) {
       private Button finishButton;
       private Owner owner;
       private GenericPanel ownerPanel;

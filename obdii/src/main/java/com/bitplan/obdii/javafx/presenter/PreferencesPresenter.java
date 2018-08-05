@@ -29,7 +29,7 @@ import java.util.ResourceBundle;
 import com.bitplan.i18n.Translator;
 import com.bitplan.javafx.BasePresenter;
 import com.bitplan.javafx.GenericDialog;
-import com.bitplan.obdii.I18n;
+import com.bitplan.obdii.Can4EveI18n;
 import com.bitplan.obdii.Preferences;
 import com.bitplan.obdii.Preferences.LangChoice;
 
@@ -74,8 +74,8 @@ public class PreferencesPresenter extends BasePresenter<Preferences>{
       }
       if (!lang.equals(preferences.getLanguage())) {
         Translator.initialize("can4eve", preferences.getLanguage().name());
-        GenericDialog.showAlert(getStage(), I18n.get(I18n.LANGUAGE_CHANGED_TITLE),
-            I18n.get(I18n.LANGUAGE_CHANGED), I18n.get(I18n.NEWLANGUAGE_RESTART));
+        GenericDialog.showAlert(getStage(), Can4EveI18n.get(Can4EveI18n.LANGUAGE_CHANGED_TITLE),
+            Can4EveI18n.get(Can4EveI18n.LANGUAGE_CHANGED), Can4EveI18n.get(Can4EveI18n.NEWLANGUAGE_RESTART));
       }
     }
     

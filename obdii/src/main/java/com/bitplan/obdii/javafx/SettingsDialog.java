@@ -30,7 +30,7 @@ import com.bitplan.gui.Form;
 import com.bitplan.javafx.GenericControl;
 import com.bitplan.javafx.GenericDialog;
 import com.bitplan.obdii.ErrorHandler;
-import com.bitplan.obdii.I18n;
+import com.bitplan.obdii.Can4EveI18n;
 import com.bitplan.obdii.OBDApp;
 import com.bitplan.obdii.elm327.ELM327;
 
@@ -69,11 +69,11 @@ public class SettingsDialog extends GenericDialog {
         SerialImpl serial = SerialImpl.getInstance();
         List<String> serialPorts = serial.getSerialPorts(true);
         if (serialPorts.size()==0) {
-          GenericDialog.showAlert(getStage(),I18n.get(I18n.SERIAL_PORT_SELECT), I18n.get(I18n.SERIAL_PORT_NONE_FOUND), I18n.get(I18n.SERIAL_PORT_PLEASE_CONNECT));
+          GenericDialog.showAlert(getStage(),Can4EveI18n.get(Can4EveI18n.SERIAL_PORT_SELECT), Can4EveI18n.get(Can4EveI18n.SERIAL_PORT_NONE_FOUND), Can4EveI18n.get(Can4EveI18n.SERIAL_PORT_PLEASE_CONNECT));
         } else {
           ChoiceDialog<String> serialChoices=new ChoiceDialog<String>(serialPorts.get(0),serialPorts);
-          serialChoices.setTitle(I18n.get(I18n.SERIAL_PORT_SELECT));
-          serialChoices.setHeaderText(I18n.get(I18n.SERIAL_PORT_PLEASE_SELECT));
+          serialChoices.setTitle(Can4EveI18n.get(Can4EveI18n.SERIAL_PORT_SELECT));
+          serialChoices.setHeaderText(Can4EveI18n.get(Can4EveI18n.SERIAL_PORT_PLEASE_SELECT));
           Optional<String> result = serialChoices.showAndWait();
           if (result.isPresent()) {
             serialDeviceControl.setValue(result.get());
@@ -104,9 +104,9 @@ public class SettingsDialog extends GenericDialog {
     try {
       ELM327 elm = obdApp.testConnection(config);
       String info=elm.getInfo();
-      GenericDialog.showAlert(stage,I18n.get(I18n.SUCCESS),I18n.get(I18n.CONNECTION_OK), info);
+      GenericDialog.showAlert(stage,Can4EveI18n.get(Can4EveI18n.SUCCESS),Can4EveI18n.get(Can4EveI18n.CONNECTION_OK), info);
     } catch (Exception e) {
-      GenericDialog.showError(stage,I18n.get(I18n.ERROR), I18n.get(I18n.CONNECTION_FAILED),e.getClass().getSimpleName()+":"+e.getMessage());
+      GenericDialog.showError(stage,Can4EveI18n.get(Can4EveI18n.ERROR), Can4EveI18n.get(Can4EveI18n.CONNECTION_FAILED),e.getClass().getSimpleName()+":"+e.getMessage());
       ErrorHandler.handle(e);
     }
     });
