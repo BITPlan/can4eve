@@ -56,6 +56,7 @@ import com.bitplan.gui.App;
 import com.bitplan.gui.ExceptionHelp;
 import com.bitplan.gui.Group;
 import com.bitplan.gui.Linker;
+import com.bitplan.i18n.I18n;
 import com.bitplan.i18n.Translator;
 import com.bitplan.javafx.BasePresenter;
 import com.bitplan.javafx.ConstrainedGridPane;
@@ -129,6 +130,7 @@ import javafx.util.Duration;
  * @author wf
  *
  */
+@SuppressWarnings("restriction")
 public class TestAppGUI extends TestOBDII {
   public static final int SHOW_TIME = 4000;
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii");
@@ -356,7 +358,7 @@ public class TestAppGUI extends TestOBDII {
     ExceptionHelp ehelp = app.getExceptionHelpByName(exception);
     assertNotNull(ehelp);
     FlowPane fp = new FlowPane();
-    Label lbl = new Label(Can4EveI18n.get(ehelp.getI18nHint()));
+    Label lbl = new Label(I18n.get(ehelp.getI18nHint()));
     Hyperlink link = new Hyperlink(ehelp.getUrl());
 
     fp.getChildren().addAll(lbl, link);
@@ -824,7 +826,7 @@ public class TestAppGUI extends TestOBDII {
       Parent root = FXMLLoader
           .load(getClass().getResource(resourcePath + pageName + ".fxml"));
       WizardPane page = new WizardPane();
-      page.setHeaderText(Can4EveI18n.get(pageName));
+      page.setHeaderText(I18n.get(pageName));
       page.setContent(root);
       pages[i++] = page;
     }

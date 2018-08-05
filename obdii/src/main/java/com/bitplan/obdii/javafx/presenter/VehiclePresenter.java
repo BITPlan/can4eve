@@ -30,6 +30,7 @@ import com.bitplan.can4eve.CANData;
 import com.bitplan.can4eve.Vehicle;
 import com.bitplan.error.ExceptionHandler;
 import com.bitplan.gui.Form;
+import com.bitplan.i18n.I18n;
 import com.bitplan.javafx.BasePresenter;
 import com.bitplan.javafx.GenericDialog;
 import com.bitplan.javafx.ImageSelector;
@@ -45,6 +46,7 @@ import javafx.scene.image.ImageView;
  * vehicle specific Presenter
  * @author wf
  */
+@SuppressWarnings("restriction")
 public class VehiclePresenter extends BasePresenter<Vehicle> {
   @FXML
   private
@@ -120,7 +122,7 @@ public class VehiclePresenter extends BasePresenter<Vehicle> {
     CANData<VINValue> vinInfo = vehicleInfo.get("VIN");
     VINValue VIN = vinInfo.getValue();
     if (VIN == null) {
-      exceptionHandler.handleException(new Exception(Can4EveI18n.get(Can4EveI18n.VEHICLE_VIN_PROBLEM)));
+      exceptionHandler.handleException(new Exception(I18n.get(Can4EveI18n.VEHICLE_VIN_PROBLEM)));
     } else {
       vehicle.setVIN(VIN.vin);
       vehicle.setYear(VIN.year);

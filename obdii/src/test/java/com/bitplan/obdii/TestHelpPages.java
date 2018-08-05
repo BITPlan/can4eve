@@ -42,6 +42,7 @@ import javafx.stage.Stage;
  * @author wf
  *
  */
+@SuppressWarnings("restriction")
 public class TestHelpPages {
   boolean debug = true;
 

@@ -37,6 +37,7 @@ import com.bitplan.elm327.Config.ConfigMode;
 import com.bitplan.elm327.OBDException;
 import com.bitplan.elm327.SerialImpl;
 import com.bitplan.gui.Form;
+import com.bitplan.i18n.I18n;
 import com.bitplan.i18n.Translator;
 import com.bitplan.javafx.GenericPanel;
 import com.bitplan.javafx.ImageSelector;
@@ -187,7 +188,7 @@ public class WelcomeWizard extends JFXWizard {
       if (imageView != null)
         obdImage.setImage(imageView.getImage());
       textArea.setText(info);
-      hint.setText(Can4EveI18n.get(Can4EveI18n.WELCOME_TEST_VEHICLE));
+      hint.setText(I18n.get(Can4EveI18n.WELCOME_TEST_VEHICLE));
     }
 
   }
@@ -201,7 +202,7 @@ public class WelcomeWizard extends JFXWizard {
   public WelcomeWizard(String i18nTitle, OBDApp obdApp, JFXML fxml) {
     super(fxml);
     this.obdApp = obdApp;
-    setTitle(Can4EveI18n.get(i18nTitle));
+    setTitle(I18n.get(i18nTitle));
     int steps = 7;
     VehiclePresenter vehiclePresenter = getFxml().loadPresenter("vehicle",
         Vehicle.class, null);
@@ -390,7 +391,7 @@ public class WelcomeWizard extends JFXWizard {
                   Platform.runLater(() -> {
                     this.updateProgress(progressmax, progressmax);
                     testController.textArea
-                        .setText(Can4EveI18n.get(Can4EveI18n.CONNECTION_UNUSABLE));
+                        .setText(I18n.get(Can4EveI18n.CONNECTION_UNUSABLE));
                   });
                 }
               } catch (Throwable th) {

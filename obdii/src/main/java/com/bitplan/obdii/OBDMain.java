@@ -39,6 +39,7 @@ import com.bitplan.elm327.LogImpl;
 import com.bitplan.elm327.util.OSCheck;
 import com.bitplan.gui.App;
 import com.bitplan.gui.Display;
+import com.bitplan.i18n.I18n;
 import com.bitplan.i18n.Translator;
 import com.bitplan.javafx.Main;
 import com.bitplan.obdii.Preferences.LangChoice;
@@ -236,7 +237,7 @@ public class OBDMain extends Main implements OBDApp {
       break;
     }
     if (obdTriplet == null) {
-      throw new Exception(Can4EveI18n.get(Can4EveI18n.INVALID_CONFIGURATION));
+      throw new Exception(I18n.get(Can4EveI18n.INVALID_CONFIGURATION));
     }
     Vehicle vehicle = Vehicle.getInstance();
     if (vehicle != null) {

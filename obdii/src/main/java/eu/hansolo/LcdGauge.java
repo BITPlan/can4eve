@@ -23,9 +23,9 @@ package eu.hansolo;
 import java.net.URL;
 import java.util.Locale;
 
+import com.bitplan.i18n.I18n;
 import com.bitplan.i18n.Translator;
 import com.bitplan.javafx.ImageButton;
-import com.bitplan.obdii.Can4EveI18n;
 
 import eu.hansolo.medusa.Clock;
 import eu.hansolo.medusa.Clock.ClockSkinType;
@@ -47,6 +47,7 @@ import javafx.scene.layout.Pane;
  * @author wf
  *
  */
+@SuppressWarnings("restriction")
 public class LcdGauge {
 
   public static LcdFont lcdFont = LcdFont.DIGITAL;
@@ -61,7 +62,7 @@ public class LcdGauge {
    */
   public static Gauge createGauge(String i18nTitle, String i18nUnit,
       boolean resetable) {
-    return createGaugeLocalized(Can4EveI18n.get(i18nTitle), Can4EveI18n.get(i18nUnit),
+    return createGaugeLocalized(I18n.get(i18nTitle), I18n.get(i18nUnit),
         resetable);
   }
 
@@ -204,7 +205,7 @@ public class LcdGauge {
    * @return
    */
   public static Clock createClock(String i18nTitle) {
-    String title = Can4EveI18n.get(i18nTitle);
+    String title = I18n.get(i18nTitle);
     Locale locale = Translator.getCurrentLocale();
     if (locale == null)
       locale = Locale.getDefault();

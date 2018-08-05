@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import com.bitplan.i18n.I18n;
 import com.bitplan.i18n.Translator;
 import com.bitplan.javafx.BasePresenter;
 import com.bitplan.javafx.GenericDialog;
@@ -74,8 +75,8 @@ public class PreferencesPresenter extends BasePresenter<Preferences>{
       }
       if (!lang.equals(preferences.getLanguage())) {
         Translator.initialize("can4eve", preferences.getLanguage().name());
-        GenericDialog.showAlert(getStage(), Can4EveI18n.get(Can4EveI18n.LANGUAGE_CHANGED_TITLE),
-            Can4EveI18n.get(Can4EveI18n.LANGUAGE_CHANGED), Can4EveI18n.get(Can4EveI18n.NEWLANGUAGE_RESTART));
+        GenericDialog.showAlert(getStage(), I18n.get(Can4EveI18n.LANGUAGE_CHANGED_TITLE),
+            I18n.get(Can4EveI18n.LANGUAGE_CHANGED), I18n.get(Can4EveI18n.NEWLANGUAGE_RESTART));
       }
     }
     

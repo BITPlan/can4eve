@@ -29,6 +29,7 @@ import com.bitplan.can4eve.CANValue.CANRawValue;
 import com.bitplan.obdii.Can4EveI18n;
 import com.bitplan.can4eve.Pid;
 import com.bitplan.can4eve.VehicleGroup;
+import com.bitplan.i18n.I18n;
 
 /**
  * 
@@ -90,9 +91,9 @@ public class ELM327 extends com.bitplan.elm327.ELM327Impl  {
    * get the info for the device
    */
   public String getInfo() {
-    String info=Can4EveI18n.get(Can4EveI18n.ELM327_CAN4EVE_INCOMPATIBLE);
+    String info=I18n.get(Can4EveI18n.ELM327_CAN4EVE_INCOMPATIBLE);
     if (useable) {
-      info=Can4EveI18n.get(Can4EveI18n.ELM327_CAN4EVE_COMPATIBLE);
+      info=I18n.get(Can4EveI18n.ELM327_CAN4EVE_COMPATIBLE);
     }
       
     if (id!=null) {
@@ -102,7 +103,7 @@ public class ELM327 extends com.bitplan.elm327.ELM327Impl  {
       info+="\n"+this.getDescription();
     }
     if (STN) {
-      info+="\n\n"+Can4EveI18n.get(Can4EveI18n.ELM327_RECOMMENDED);
+      info+="\n\n"+I18n.get(Can4EveI18n.ELM327_RECOMMENDED);
       info+="\nfirmware: "+this.firmwareId;
       info+="\nhardware: "+this.hardwareId;
     }

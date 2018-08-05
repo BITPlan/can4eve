@@ -53,7 +53,7 @@
 		<!-- can not use this easily in JavaFX https://mvnrepository.com/artifact/org.jfree/jfreechart 
 			<dependency> <groupId>org.jfree</groupId> <artifactId>jfreechart</artifactId> 
 			<version>1.0.19</version> </dependency> -->
-		
+
 		<!-- https://mvnrepository.com/artifact/eu.hansolo/Medusa -->
 		<dependency>
 			<groupId>eu.hansolo</groupId>
@@ -78,6 +78,13 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.5</version>
+		</dependency>
+		<dependency>
+			<groupId>com.bitplan.gui</groupId>
+			<artifactId>com.bitplan.gui</artifactId>
+			<version>0.0.4</version>
+			<type>test-jar</type>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>
