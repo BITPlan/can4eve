@@ -25,7 +25,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import com.bitplan.can4eve.util.TaskLaunch;
+import com.bitplan.javafx.TaskLaunch;
 import com.bitplan.javafx.WaitableApp;
 import com.bitplan.javafx.XYTabPane;
 
