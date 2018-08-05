@@ -20,8 +20,6 @@
  */
 package com.bitplan.obdii;
 
-import com.bitplan.i18n.Translator;
-
 /**
  * Translation settings
  * 
@@ -170,6 +168,4 @@ public class Can4EveI18n {
   public static final String VEHICLE_YEAR="vehicleYear"; //year
   public static final String VEHICLE_MANUFACTURER="vehicleManufacturer"; //manufacturer
   public static final String VEHICLE_VIN_PROBLEM="vehicleVinProblem";
-  
-
 }
