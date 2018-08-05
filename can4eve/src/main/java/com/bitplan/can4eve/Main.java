@@ -48,7 +48,7 @@ public abstract class Main {
     "--version"}, usage = "showVersion\nshow current version if this switch is used")
   protected boolean showVersion = false;
 
-  String VERSION = "0.0.1";
+  String VERSION = "0.0.2";
   String name = this.getClass().getSimpleName();
   String github;
 
