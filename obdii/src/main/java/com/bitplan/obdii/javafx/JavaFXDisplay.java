@@ -121,11 +121,6 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
   private Button hideMenuButton;
   private Rectangle2D sceneBounds;
 
-  // group / tabPane ids
-  public static final String DASH_BOARD_GROUP = "dashBoardGroup";
-  protected static final String HISTORY_GROUP = Can4EveI18n.HISTORY_GROUP;
-  protected static final String BATTERY_GROUP = "batteryGroup";
-
   public static final String RESOURCE_PATH = "/com/bitplan/can4eve/gui/";
 
   /**
@@ -249,10 +244,10 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
    * @param xyTabPane
    */
   public void setupDashBoard() {
-    TabPane dashboardPane = xyTabPane.addTabPane(DASH_BOARD_GROUP,I18n.get(Can4EveI18n.DASH_BOARD_TAB),FontAwesome.Glyph.SQUARE_ALT.name());
+    TabPane dashboardPane = xyTabPane.addTabPane(Can4EveI18n.DASH_BOARD_TAB,I18n.get(Can4EveI18n.DASH_BOARD_TAB),FontAwesome.Glyph.SQUARE_ALT.name());
     setupSpecial(dashboardPane);
     @SuppressWarnings("unused")
-    TabPane batteryPane=xyTabPane.addTabPane(BATTERY_GROUP,I18n.get(Can4EveI18n.BATTERY_TAB),"battery-three-quarters");
+    TabPane batteryPane=xyTabPane.addTabPane(Can4EveI18n.BATTERY_TAB,I18n.get(Can4EveI18n.BATTERY_TAB),"battery-three-quarters");
   }
 
   @Override
@@ -267,7 +262,7 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
     setupDashBoard();
     setup(app);
     setupSettings();
-    this.setActiveTabPane(DASH_BOARD_GROUP);
+    this.setActiveTabPane(Can4EveI18n.DASH_BOARD_TAB);
     stage.setX(sceneBounds.getMinX());
     stage.setY(sceneBounds.getMinY());
     stage.show();
@@ -601,16 +596,16 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
           vehiclePresenter.show(Vehicle.getInstance());
           break;
         case Can4EveI18n.VIEW_DASHBOARD_VIEW_MENU_ITEM:
-          this.setActiveTabPane(DASH_BOARD_GROUP);
+          this.setActiveTabPane(Can4EveI18n.DASH_BOARD_TAB);
           break;
         case Can4EveI18n.VIEW_HISTORY_VIEW_MENU_ITEM:
-          this.setActiveTabPane(HISTORY_GROUP);
+          this.setActiveTabPane(Can4EveI18n.HISTORY_GROUP);
           break;
         case Can4EveI18n.VIEW_SETTINGS_VIEW_MENU_ITEM:
-          this.setActiveTabPane("preferencesGroup");
+          this.setActiveTabPane(Can4EveI18n.PREFERENCES_GROUP);
           break;
         case Can4EveI18n.VIEW_MONITOR_VIEW_MENU_ITEM:
-          this.setActiveTabPane("mainGroup");
+          this.setActiveTabPane(Can4EveI18n.MAIN_GROUP);
           break;
         default:
           LOGGER.log(Level.WARNING, "unhandled menu item " + menuItem.getId()

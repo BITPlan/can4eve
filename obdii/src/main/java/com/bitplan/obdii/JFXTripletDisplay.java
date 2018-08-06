@@ -55,6 +55,7 @@ import javafx.scene.layout.Region;
  * @author wf
  *
  */
+@SuppressWarnings("restriction")
 public class JFXTripletDisplay extends JavaFXDisplay {
 
   /**
@@ -162,7 +163,7 @@ public class JFXTripletDisplay extends JavaFXDisplay {
       }
 
     });
-    TabPane tabPane = super.getXyTabPane().getTabPane(BATTERY_GROUP);
+    TabPane tabPane = super.getXyTabPane().getTabPane(Can4EveI18n.BATTERY_TAB);
     if (tabPane != null) {
       CANProperty<DoubleValue, Double> cellTemperature = cpm
           .get("CellTemperature");
