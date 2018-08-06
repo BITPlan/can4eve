@@ -216,7 +216,9 @@ public class TestAppGUI extends TestOBDII {
     assertNotNull(vehiclePresenter);
     Platform.runLater(() -> {
       try {
-        vehiclePresenter.show(Vehicle.getInstance());
+        Vehicle vehicle = Vehicle.getInstance();
+        vehicle.setNickName("empty Test Vehicle");;
+        vehiclePresenter.show(vehicle);
       } catch (Exception e) {
         ErrorHandler.handle(e);
         fail("there should be no exception");

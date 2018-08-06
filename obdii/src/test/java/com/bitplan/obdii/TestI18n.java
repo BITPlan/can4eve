@@ -20,6 +20,8 @@
  */
 package com.bitplan.obdii;
 
+import org.junit.BeforeClass;
+
 import com.bitplan.gui.App;
 
 /**
@@ -28,6 +30,10 @@ import com.bitplan.gui.App;
  *
  */
 public class TestI18n extends com.bitplan.i18n.TestI18n {
+  @BeforeClass
+  public static void disableFieldCheck() {
+    com.bitplan.i18n.TestI18n.withFieldCheck=false;
+  }
   
   /**
    * configure the app

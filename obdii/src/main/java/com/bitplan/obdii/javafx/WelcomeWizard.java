@@ -428,7 +428,7 @@ public class WelcomeWizard extends JFXWizard {
           if (nextButton != null) {
             Platform.runLater(() -> nextButton.setDisable(true));
           }
-          // vehicleForm= app.getFormById("preferencesGroup", "vehicleForm");
+          // vehicleForm= app.getFormById(Can4EveI18n.PREFERENCES_GROUP,Can4EveI18n.VEHICLE_FORM);
           Task<Void> task = new Task<Void>() {
             @Override
             public Void call() {
@@ -476,8 +476,7 @@ public class WelcomeWizard extends JFXWizard {
         finishButton = findButton(ButtonType.FINISH);
         if (owner == null) {
           owner = Owner.getInstance();
-          Form ownerForm = fxml.getApp().getFormById("preferencesGroup",
-              "ownerForm");
+          Form ownerForm = fxml.getApp().getFormById(Can4EveI18n.PREFERENCES_GROUP,Can4EveI18n.OWNER_FORM);
           ownerPanel = new GenericPanel(fxml.getStage(), ownerForm);
           this.setContent(ownerPanel);
         }

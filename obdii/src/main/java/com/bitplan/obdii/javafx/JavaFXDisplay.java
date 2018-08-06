@@ -73,7 +73,6 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -124,7 +123,7 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
 
   // group / tabPane ids
   public static final String DASH_BOARD_GROUP = "dashBoardGroup";
-  protected static final String HISTORY_GROUP = "historyGroup";
+  protected static final String HISTORY_GROUP = Can4EveI18n.HISTORY_GROUP;
   protected static final String BATTERY_GROUP = "batteryGroup";
 
   public static final String RESOURCE_PATH = "/com/bitplan/can4eve/gui/";
@@ -466,19 +465,6 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
       statusBar.getRightItems().add(hideMenuButton);
       statusBar.getRightItems().add(fullScreenButton);
     }
-   
-    Button powerButton = xyTabPane.getTopLeftButton();
-    Node icon = xyTabPane.getIcon(FontAwesome.Glyph.POWER_OFF.name(),
-        xyTabPane.getIconSize());
-    powerButton.setTooltip(new Tooltip(I18n.get(Can4EveI18n.POWER_OFF)));
-    powerButton.setGraphic(icon);
-    powerButton.setDisable(false);
-    powerButton.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent e) {
-        close();
-      }
-    });
   }
 
   /**
@@ -743,7 +729,7 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
   public void showSettings(boolean test) throws Exception {
     Config config = Config.getInstance(ConfigMode.Preferences);
     SettingsDialog settingsDialog = new SettingsDialog(stage,
-        app.getFormById("preferencesGroup", "settingsForm"), obdApp);
+        app.getFormById(Can4EveI18n.PREFERENCES_GROUP, Can4EveI18n.SETTINGS_FORM), obdApp);
     if (config == null)
       config = new Config();
     if (test)

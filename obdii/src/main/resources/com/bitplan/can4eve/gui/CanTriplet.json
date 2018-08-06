@@ -5,7 +5,7 @@
 	"help": "http://can4eve.bitplan.com/index.php/Help",
 	"groups": [{
 			"id": "mainGroup",
-			"name": "info",
+			"title": "info",
 			"icon": "INFO",
 			"forms": [{
 			        "id": "connection",
@@ -307,8 +307,7 @@
 			]
 		},
 		{
-			"id": "historyGroup",
-			"name": "history",
+			"title": "history",
 			"icon": "LINE_CHART",
 			"forms": [{
 			    "id": "soc_rr",
@@ -323,9 +322,8 @@
 				}]
 			}]
 		},{
-			"id": "preferencesGroup",
 			"icon": "GEAR",
-			"name": "preferences",
+			"title": "preferences",
 			"forms": [{
 					"title": "obdii",
 					"id": "settingsForm",

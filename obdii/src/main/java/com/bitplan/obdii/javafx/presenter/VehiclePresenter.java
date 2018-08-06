@@ -95,7 +95,7 @@ public class VehiclePresenter extends BasePresenter<Vehicle> {
    */
   @Override
   public void postInit() {
-    vehicleForm = super.getApp().getFormById("preferencesGroup", "vehicleForm");
+    vehicleForm = super.getApp().getFormById(Can4EveI18n.PREFERENCES_GROUP, Can4EveI18n.VEHICLE_FORM);
   }
   
   @Override

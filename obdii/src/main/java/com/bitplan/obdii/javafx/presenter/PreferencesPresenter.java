@@ -62,7 +62,7 @@ public class PreferencesPresenter extends BasePresenter<Preferences>{
   @Override
   public void show(Preferences preferences) {
     GenericDialog preferencesDialog = new GenericDialog(getStage(),
-        getApp().getFormById("preferencesGroup", "preferencesForm"));
+        getApp().getFormById(Can4EveI18n.PREFERENCES_GROUP, Can4EveI18n.PREFERENCES_FORM));
     Optional<Map<String, Object>> result = preferencesDialog
         .show(preferences.asMap());
     if (result.isPresent()) {
