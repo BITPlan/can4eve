@@ -49,7 +49,6 @@ import com.bitplan.can4eve.Vehicle;
 import com.bitplan.can4eve.VehicleGroup;
 import com.bitplan.can4eve.gui.javafx.CANProperty;
 import com.bitplan.can4eve.gui.javafx.CANPropertyManager;
-import com.bitplan.can4eve.states.StopWatch;
 import com.bitplan.error.ExceptionHandler;
 import com.bitplan.gui.App;
 import com.bitplan.gui.ExceptionHelp;
@@ -61,6 +60,7 @@ import com.bitplan.javafx.BasePresenter;
 import com.bitplan.javafx.ConstrainedGridPane;
 import com.bitplan.javafx.GenericDialog;
 import com.bitplan.javafx.JFXML;
+import com.bitplan.javafx.JFXStopWatch;
 import com.bitplan.javafx.SampleApp;
 import com.bitplan.javafx.TaskLaunch;
 import com.bitplan.javafx.WaitableApp;
@@ -76,13 +76,13 @@ import com.bitplan.obdii.javafx.ClockPane;
 import com.bitplan.obdii.javafx.ClockPane.Watch;
 import com.bitplan.obdii.javafx.JFXCanCellStatePlot;
 import com.bitplan.obdii.javafx.JFXCanValueHistoryPlot;
-import com.bitplan.obdii.javafx.JFXStopWatch;
 import com.bitplan.obdii.javafx.JavaFXDisplay;
 import com.bitplan.obdii.javafx.LCDPane;
 import com.bitplan.obdii.javafx.SimulatorPane;
 import com.bitplan.obdii.javafx.WelcomeWizard;
 import com.bitplan.obdii.javafx.presenter.OwnerPresenter;
 import com.bitplan.obdii.javafx.presenter.VehiclePresenter;
+import com.bitplan.states.StopWatch;
 
 import eu.hansolo.LcdGauge.ResetableGauge;
 import eu.hansolo.OverviewDemo;
@@ -685,21 +685,6 @@ public class TestAppGUI extends TestOBDII {
     ArrayList<Node> nodes = getAllNodes(root);
     assertEquals(8, nodes.size());
     SampleApp.createAndShow("FXML", (Region) root, SHOW_TIME);
-  }
-
-  @Test
-  public void testStopWatch() {
-    StopWatch stopWatch = new JFXStopWatch(Can4EveI18n.WATCH_TOTAL);
-    stopWatch.halt();
-    stopWatch.reset();
-    // System.out.println(stopWatch.asIsoDateStr());
-    // assertEquals(0l,stopWatch.getTime());
-    long times[] = { 90000 * 1000, 7200000, 0, 2000, 500, 1000, 2000 };
-    for (long time : times) {
-      stopWatch.setTime(time);
-      // System.out.println(stopWatch.asIsoDateStr());
-      assertEquals(time, stopWatch.getTime());
-    }
   }
 
   @Ignore

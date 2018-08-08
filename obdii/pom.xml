@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>com.bitplan.can4eve</groupId>
 		<artifactId>com.bitplan.can4eve</artifactId>
-		<version>0.0.2</version>
+		<version>0.0.3</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>com.bitplan.obdii</artifactId>
@@ -53,13 +53,6 @@
 		<!-- can not use this easily in JavaFX https://mvnrepository.com/artifact/org.jfree/jfreechart 
 			<dependency> <groupId>org.jfree</groupId> <artifactId>jfreechart</artifactId> 
 			<version>1.0.19</version> </dependency> -->
-
-		<!-- https://mvnrepository.com/artifact/eu.hansolo/Medusa -->
-		<dependency>
-			<groupId>eu.hansolo</groupId>
-			<artifactId>Medusa</artifactId>
-			<version>7.9</version>
-		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
 		<!-- Circular FifoBuffer -->
 		<dependency>
@@ -83,7 +76,7 @@
 		<dependency>
 			<groupId>com.bitplan.gui</groupId>
 			<artifactId>com.bitplan.gui</artifactId>
-			<version>0.0.6</version>
+			<version>0.0.9</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>

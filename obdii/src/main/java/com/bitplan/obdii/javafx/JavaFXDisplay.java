@@ -91,7 +91,6 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
 
   OBDApp obdApp;
 
-  // private VBox root;
   String activeView = null;
   protected boolean available;
 
@@ -747,15 +746,6 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
         config.save(ConfigMode.Preferences);
       }
     }
-  }
-
-  /**
-   * setup the xyTabPane
-   */
-  public void setupXyTabPane() {
-    getRoot().getChildren().add(xyTabPane);
-    xyTabPane.getvTabPane().prefHeightProperty().bind(getStage().heightProperty().add(-xyTabPane.getTabSize()));
-    xyTabPane.getvTabPane().prefWidthProperty().bind(getStage().widthProperty().add(-xyTabPane.getTabSize()));    
   }
 
 }

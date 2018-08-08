@@ -42,20 +42,16 @@ import com.bitplan.obdii.Preferences.LangChoice;
 public class PreferencesPresenter extends BasePresenter<Preferences>{
 
   @Override
-  public void updateView(Preferences model) {
-    // TODO Auto-generated method stub
-    
+  public void updateView() {   
   }
 
   @Override
   public Preferences updateModel() {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    // TODO Auto-generated method stub
     
   }
 

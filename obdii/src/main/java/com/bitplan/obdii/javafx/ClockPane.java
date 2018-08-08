@@ -25,11 +25,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.bitplan.can4eve.Vehicle.State;
-import com.bitplan.can4eve.states.StopWatch;
 import com.bitplan.i18n.I18n;
 import com.bitplan.i18n.Translator;
 import com.bitplan.javafx.ConstrainedGridPane;
+import com.bitplan.javafx.JFXStopWatch;
 import com.bitplan.obdii.Can4EveI18n;
+import com.bitplan.states.StopWatch;
 
 import eu.hansolo.medusa.Clock;
 import eu.hansolo.medusa.Clock.ClockSkinType;
