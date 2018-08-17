@@ -108,7 +108,7 @@ public class VehiclePresenter extends BasePresenter<Vehicle> {
    * @param vehicle
    */
   @Override
-  public void updateView(Vehicle vehicle) {
+  public void updateView() {
     model.setText(vehicle.getModel());
     ImageView imageView = getCarSelector().getImageView(vehicle.getModel());
     vehicleImage.setImage(imageView.getImage());

@@ -26,13 +26,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import com.bitplan.appconfig.Preferences;
+import com.bitplan.appconfig.Preferences.LangChoice;
 import com.bitplan.i18n.I18n;
 import com.bitplan.i18n.Translator;
 import com.bitplan.javafx.BasePresenter;
 import com.bitplan.javafx.GenericDialog;
 import com.bitplan.obdii.Can4EveI18n;
-import com.bitplan.obdii.Preferences;
-import com.bitplan.obdii.Preferences.LangChoice;
 
 /**
  * present the preferences
@@ -42,7 +42,7 @@ import com.bitplan.obdii.Preferences.LangChoice;
 public class PreferencesPresenter extends BasePresenter<Preferences>{
 
   @Override
-  public void updateView(Preferences model) {
+  public void updateView() {
     // TODO Auto-generated method stub
     
   }
@@ -55,8 +55,6 @@ public class PreferencesPresenter extends BasePresenter<Preferences>{
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    // TODO Auto-generated method stub
-    
   }
 
   @Override
@@ -74,12 +72,10 @@ public class PreferencesPresenter extends BasePresenter<Preferences>{
         this.getExceptionHandler().handleException(e);
       }
       if (!lang.equals(preferences.getLanguage())) {
-        Translator.initialize("can4eve", preferences.getLanguage().name());
+        Translator.initialize(Translator.APPLICATION_PREFIX, preferences.getLanguage().name());
         GenericDialog.showAlert(getStage(), I18n.get(Can4EveI18n.LANGUAGE_CHANGED_TITLE),
             I18n.get(Can4EveI18n.LANGUAGE_CHANGED), I18n.get(Can4EveI18n.NEWLANGUAGE_RESTART));
       }
     }
-    
   }
-
 }

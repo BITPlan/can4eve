@@ -34,7 +34,7 @@ import com.bitplan.javafx.BasePresenter;
 public class OwnerPresenter extends BasePresenter<Owner>{
 
   @Override
-  public void updateView(Owner model) {
+  public void updateView() {
     // TODO Auto-generated method stub
     
   }

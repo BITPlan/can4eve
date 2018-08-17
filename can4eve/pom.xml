@@ -14,7 +14,7 @@
 		<dependency>
 			<groupId>com.bitplan.gui</groupId>
 			<artifactId>com.bitplan.javafx</artifactId>
-			<version>0.0.9</version>
+			<version>0.0.18</version>
 		</dependency>
 		<dependency>
 			<groupId>com.bitplan.can4eve</groupId>

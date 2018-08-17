@@ -27,6 +27,8 @@ import java.util.logging.Level;
 
 import org.kohsuke.args4j.Option;
 
+import com.bitplan.appconfig.Preferences;
+import com.bitplan.appconfig.Preferences.LangChoice;
 import com.bitplan.can4eve.CANData;
 import com.bitplan.can4eve.Vehicle;
 import com.bitplan.can4eve.VehicleGroup;
@@ -42,7 +44,6 @@ import com.bitplan.i18n.I18n;
 import com.bitplan.i18n.Translator;
 import com.bitplan.javafx.Main;
 import com.bitplan.javafx.TaskLaunch;
-import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.obdii.elm327.ElmSimulator;
 import com.bitplan.obdii.elm327.LogPlayer;
@@ -279,7 +280,7 @@ public class OBDMain extends Main implements OBDApp {
       } else {
         Preferences pref = Preferences.getInstance();
         if (pref != null) {
-          obdTriplet.logResponses(new File(pref.logDirectory), pref.logPrefix);
+          obdTriplet.logResponses(new File(pref.getLogDirectory()), pref.getLogPrefix());
         }
       }
     }

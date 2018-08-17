@@ -31,6 +31,8 @@ import java.util.logging.Level;
 import org.controlsfx.control.StatusBar;
 import org.controlsfx.glyphfont.FontAwesome;
 
+import com.bitplan.appconfig.Preferences;
+import com.bitplan.appconfig.Preferences.LangChoice;
 import com.bitplan.can4eve.CANValue;
 import com.bitplan.can4eve.Owner;
 import com.bitplan.can4eve.Vehicle;
@@ -49,8 +51,6 @@ import com.bitplan.javafx.WaitableApp;
 import com.bitplan.obdii.CANValueDisplay;
 import com.bitplan.obdii.Can4EveI18n;
 import com.bitplan.obdii.OBDApp;
-import com.bitplan.obdii.Preferences;
-import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.elm327.LogPlayer;
 import com.bitplan.obdii.javafx.presenter.PreferencesPresenter;
 import com.bitplan.obdii.javafx.presenter.VehiclePresenter;

@@ -29,6 +29,8 @@ import java.util.logging.Level;
 
 import org.controlsfx.dialog.Wizard;
 
+import com.bitplan.appconfig.Preferences;
+import com.bitplan.appconfig.Preferences.LangChoice;
 import com.bitplan.can4eve.CANData;
 import com.bitplan.can4eve.Owner;
 import com.bitplan.can4eve.Vehicle;
@@ -46,8 +48,6 @@ import com.bitplan.javafx.JFXWizard;
 import com.bitplan.javafx.JFXWizardPane;
 import com.bitplan.obdii.Can4EveI18n;
 import com.bitplan.obdii.OBDApp;
-import com.bitplan.obdii.Preferences;
-import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.obdii.javafx.presenter.VehiclePresenter;
 

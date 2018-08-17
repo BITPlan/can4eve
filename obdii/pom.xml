@@ -83,7 +83,7 @@
 		<dependency>
 			<groupId>com.bitplan.gui</groupId>
 			<artifactId>com.bitplan.gui</artifactId>
-			<version>0.0.6</version>
+			<version>0.0.12</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>

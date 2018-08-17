@@ -32,6 +32,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import com.bitplan.appconfig.Preferences;
 import com.bitplan.can4eve.CANValueHandler;
 import com.bitplan.can4eve.LogPeriod;
 import com.bitplan.can4eve.VehicleGroup;
@@ -216,9 +217,9 @@ public class TestLogs {
   public void testLogs() throws Exception {
     WaitableApp.toolkitInit();
     Preferences prefs = Preferences.getInstance();
-    prefs.logDirectory = "/Users/wf/Ion";
+    prefs.setLogDirectory("/Users/wf/Ion");
     if (prefs != null) {
-      String logDirectoryName = prefs.logDirectory;
+      String logDirectoryName = prefs.getLogDirectory();
       if (!logDirectoryName.isEmpty()) {
         File logDirectory = new File(logDirectoryName);
         if (logDirectory.isDirectory()) {

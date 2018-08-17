@@ -42,6 +42,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.bitplan.appconfig.Preferences;
+import com.bitplan.appconfig.Preferences.LangChoice;
 import com.bitplan.can4eve.CANInfo;
 import com.bitplan.can4eve.CANValue.DoubleValue;
 import com.bitplan.can4eve.Owner;
@@ -67,7 +69,6 @@ import com.bitplan.javafx.WaitableApp;
 import com.bitplan.javafx.XYTabPane;
 import com.bitplan.json.JsonManager;
 import com.bitplan.json.JsonManagerImpl;
-import com.bitplan.obdii.Preferences.LangChoice;
 import com.bitplan.obdii.elm327.LogPlayer;
 import com.bitplan.obdii.elm327.LogPlayerImpl;
 import com.bitplan.obdii.javafx.CANValuePane;
