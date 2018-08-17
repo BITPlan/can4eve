@@ -42,14 +42,12 @@ import com.bitplan.obdii.Can4EveI18n;
 public class PreferencesPresenter extends BasePresenter<Preferences>{
 
   @Override
-  public void updateView() {
-    // TODO Auto-generated method stub
-    
+
+  public void updateView() {   
   }
 
   @Override
   public Preferences updateModel() {
-    // TODO Auto-generated method stub
     return null;
   }
 

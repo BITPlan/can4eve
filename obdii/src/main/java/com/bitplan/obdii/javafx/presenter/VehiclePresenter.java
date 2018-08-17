@@ -117,8 +117,9 @@ public class VehiclePresenter extends BasePresenter<Vehicle> {
   }
 
   @SuppressWarnings("rawtypes")
-  public void showVehicleInfo(Vehicle vehicle, Map<String, CANData> vehicleInfo,
+  public void showVehicleInfo(Vehicle pVehicle, Map<String, CANData> vehicleInfo,
       ExceptionHandler exceptionHandler) {
+    this.vehicle=pVehicle;
     CANData<VINValue> vinInfo = vehicleInfo.get("VIN");
     VINValue VIN = vinInfo.getValue();
     if (VIN == null) {
@@ -126,7 +127,7 @@ public class VehiclePresenter extends BasePresenter<Vehicle> {
     } else {
       vehicle.setVIN(VIN.vin);
       vehicle.setYear(VIN.year);
-      updateView(vehicle);
+      updateView();
       // TODO - manufacturer/factory and cellCount are missing in Vehicle
       vehicleManufacturer.setText(VIN.manufacturer + "/" + VIN.factory);
       cellCount.setText(""+VIN.cellCount);

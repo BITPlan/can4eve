@@ -74,6 +74,7 @@ import javafx.scene.layout.Pane;
  * @author wf
  *
  */
+@SuppressWarnings("restriction")
 public class WelcomeWizard extends JFXWizard {
   String langs[] = { "English", "Deutsch" };
   String langPictures[] = { "en-flag.jpg", "de-flag.jpg" };
@@ -422,7 +423,7 @@ public class WelcomeWizard extends JFXWizard {
         if (vehicle == null) {
           vehicle = vehiclePresenter.updateModel();
         }
-        Platform.runLater(() -> vehiclePresenter.updateView(vehicle));
+        Platform.runLater(() -> { vehiclePresenter.updateView();});
         if (obdApp != null) {
           nextButton = findButton(ButtonType.NEXT);
           if (nextButton != null) {
