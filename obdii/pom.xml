@@ -10,23 +10,6 @@
 	<name>com.bitplan.obdii</name>
 	<description>OBD II access</description>
 	<packaging>jar</packaging>
-	<properties>
-		<!-- http://stackoverflow.com/questions/3017695/how-to-configure-encoding-in-maven -->
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<!-- github server corresponds to entry in ~/.m2/settings.xml -->
-		<github.global.server>github</github.global.server>
-		<!-- Dependency versions -->
-		<junit4.version>4.12</junit4.version>
-		<args4j.version>2.0.29</args4j.version>
-	</properties>
-	<licenses>
-		<license>
-			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
 	<dependencies>
 		<dependency>
 			<groupId>com.bitplan.can4eve</groupId>
@@ -64,7 +47,7 @@
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.5</version>
+			<version>${commons-io.version}</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
 		<dependency>
@@ -82,22 +65,13 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<sourceDirectory>src/main/java</sourceDirectory>
 		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
 			<!-- create fat jar -->
 			<!-- http://stackoverflow.com/a/16222971 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.6</version>
+				<version>${maven-assembly-plugin.version}</version>
 				<configuration>
 					<archive>
 						<manifest>
@@ -177,6 +151,7 @@
 				https://stackoverflow.com/a/16862404/1497139 -->
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
+				<version>${maven-antrun-plugin.version}</version>
 				<configuration>
 					<tasks>
 						<copy

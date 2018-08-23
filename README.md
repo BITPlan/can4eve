@@ -1,9 +1,34 @@
-# can4eve
-CAN OBDII analysis for electric vehicles
+### can4eve
+[OBDII CAN diagnosis support for electric vehicles](http://can4eve.bitplan.com) 
 
-[![Build Status](https://travis-ci.org/BITPlan/can4eve.svg?branch=master)](https://travis-ci.org/BITPlan/can4eve)
+[![Travis (.org)](https://img.shields.io/travis/BITPlan/can4eve.svg)](https://travis-ci.org/BITPlan/can4eve)
+[![Maven Central](https://img.shields.io/maven-central/v/com.bitplan.can4eve/com.bitplan.can4eve.svg)](https://search.maven.org/artifact/com.bitplan.can4eve/com.bitplan.can4eve/0.0.2/jar)
+[![GitHub issues](https://img.shields.io/github/issues/BITPlan/can4eve.svg)](https://github.com/BITPlan/can4eve/issues)
+[![GitHub issues](https://img.shields.io/github/issues-closed/BITPlan/can4eve.svg)](https://github.com/BITPlan/can4eve/issues/?q=is%3Aissue+is%3Aclosed)
+[![GitHub](https://img.shields.io/github/license/BITPlan/can4eve.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+[![BITPlan](http://wiki.bitplan.com/images/wiki/thumb/3/38/BITPlanLogoFontLessTransparent.png/198px-BITPlanLogoFontLessTransparent.png)](http://www.bitplan.com)
 
+### Documentation
+* [Wiki](http://can4eve.bitplan.com)
+### Maven dependency
 
+Maven dependency
+```xml
+<dependency>
+  <groupId>com.bitplan.can4eve</groupId>
+  <artifactId>com.bitplan.can4eve</artifactId>
+  <version>0.0.2</version>
+</dependency>
+```
+
+[Current release at repo1.maven.org](http://repo1.maven.org/maven2/com/bitplan/can4eve/com.bitplan.can4eve/0.0.2/)
+
+### How to build
+```
+git clone https://github.com/BITPlan/can4eve
+cd can4eve
+mvn install
+```
 ## What is can4eve? 
 can4eve 
 * is a software for electric vehicles
@@ -28,18 +53,7 @@ would have to be ported to run in these environments. We have obtained a free gl
 ## Where to find more info
 ### Wiki
 http://can4eve.bitplan.com/
-
-### github repository
-* repository: https://github.com/BITPlan/can4eve
-* issues: https://github.com/BITPlan/can4eve/issues
-
-### License
-https://www.apache.org/licenses/LICENSE-2.0
-
-### Creator 
-[![BITPlan](http://wiki.bitplan.com/images/wiki/thumb/8/87/BITPlanLogo2012.svg/200px-BITPlanLogo2012.svg.png)](http://web.bitplan.com)
-
 ### Version History
 * 2017-06    0.0.1 - non released developer version (alpha test)
 * 2017-08    0.0.2 - beta test with OBDLink SX open
-* 2018-08-09 0.0.3 - improved gui
+* 2018-08-23 0.0.3 - improved gui

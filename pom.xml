@@ -1,6 +1,13 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.bitplan.pom</groupId>
+		<artifactId>com.bitplan.pom</artifactId>
+		<version>0.0.9</version>
+		<relativePath>../com.bitplan.pom/pom.xml</relativePath>
+	</parent>
 	<groupId>com.bitplan.can4eve</groupId>
 	<artifactId>com.bitplan.can4eve</artifactId>
 	<version>0.0.2</version>
@@ -8,22 +15,13 @@
 	<name>com.bitplan.can4eve</name>
 	<description>OBDII CAN diagnosis support for electric vehicles</description>
 	<properties>
-		<!-- http://stackoverflow.com/questions/3017695/how-to-configure-encoding-in-maven -->
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<!-- github server corresponds to entry in ~/.m2/settings.xml -->
-		<github.global.server>github</github.global.server>
-		<!-- Dependency versions -->
-		<junit4.version>4.12</junit4.version>
-		<args4j.version>2.0.29</args4j.version>
+		<!-- to make parent pom work -->
+		<github.project>can4eve</github.project>
+		<!-- for README.md generation -->
+	  <documentation.wiki>http://can4eve.bitplan.com</documentation.wiki>
+		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+		<gson.version>2.8.5</gson.version>
 	</properties>
-	<licenses>
-		<license>
-			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
 	<dependencies>
 		<!-- JUnit testing -->
 		<dependency>
@@ -56,7 +54,7 @@
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
-			<version>2.8.1</version>
+			<version>${gson.version}</version>
 		</dependency>
 	</dependencies>
 	<modules>
@@ -64,21 +62,4 @@
 		<module>can4eve</module>
 		<module>obdii</module>
 	</modules>
-	<build>
-		<plugins>
-			<plugin>
-				<!-- http://code.mycila.com/license-maven-plugin/ -->
-				<groupId>com.mycila.maven-license-plugin</groupId>
-				<artifactId>maven-license-plugin</artifactId>
-				<version>1.9.0</version>
-				<configuration>
-					<header>${project.basedir}/../etc/header.txt</header>
-					<strictCheck>true</strictCheck>
-					<includes>
-						<include>src/**/*.java</include>
-					</includes>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 </project>
