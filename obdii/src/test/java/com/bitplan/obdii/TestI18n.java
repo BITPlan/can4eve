@@ -32,7 +32,7 @@ import com.bitplan.gui.App;
 public class TestI18n extends com.bitplan.i18n.TestI18n {
   @BeforeClass
   public static void disableFieldCheck() {
-    com.bitplan.i18n.TestI18n.withFieldCheck=false;
+    com.bitplan.i18n.TestI18n.withFieldCheck=true;
   }
   
   /**

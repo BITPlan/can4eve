@@ -85,7 +85,6 @@ import javafx.stage.Stage;
  * @author wf
  *
  */
-@SuppressWarnings("restriction")
 public class JavaFXDisplay extends GenericApp implements MonitorControl,
     CANValueDisplay, ExceptionHandler, EventHandler<ActionEvent> {
 

@@ -55,7 +55,6 @@ import javafx.scene.layout.Region;
  * @author wf
  *
  */
-@SuppressWarnings("restriction")
 public class JFXTripletDisplay extends JavaFXDisplay {
 
   /**

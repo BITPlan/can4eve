@@ -10,6 +10,9 @@
 
 ### Documentation
 * [Wiki](http://can4eve.bitplan.com)
+* [can4eve Project pages](https://BITPlan.github.io/can4eve)
+* [Javadoc](https://BITPlan.github.io/can4eve/can4eve/can4eve/apidocs/index.html)
+* [Test-Report ](https://BITPlan.github.io/can4eve/can4eve/can4eve/surefire-report.html)
 ### Maven dependency
 
 Maven dependency

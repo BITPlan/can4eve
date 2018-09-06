@@ -11,6 +11,7 @@
 			        "id": "connection",
 					"title": "connection",
 					"icon": "exchange",
+					"readOnly": "true",
 					"fields": [{
 							"title": "date",
 							"format": "%s",
@@ -68,6 +69,7 @@
 				    "id": "vehicle",
 					"title": "vehicle",
 					"icon": "CAR",
+					"readOnly": "true",
 					"fields": [{
 							"title": "VIN",
 							"format": "%s",
@@ -92,6 +94,7 @@
 				    "id": "parking",
 					"title": "parking",
 					"icon": "parking",
+					"readOnly": "true",
 					"fields": [{
 							"title": "Key",
 							"format": "%s",
@@ -128,6 +131,7 @@
 				    "id": "charging",
 					"title": "charging",
 					"icon": "PLUG",
+					"readOnly": "true",
 					"fields": [{
 							"title": "AC Amps",
 							"format": "%s",
@@ -182,6 +186,7 @@
 				    "id": "trip",
 					"title": "trip",
 					"icon": "ROAD",
+					"readOnly": "true",
 					"fields": [{
 							"title": "total km",
 							"format": "%s",
@@ -242,6 +247,7 @@
 				    "id": "moving",
 					"title": "moving",
 					"icon": "car",
+					"readOnly": "true",
 					"fields": [{
 							"title": "Steering Position",
 							"format": "%s",
@@ -309,10 +315,12 @@
 		{
 			"title": "history",
 			"icon": "LINE_CHART",
+			
 			"forms": [{
 			    "id": "soc_rr",
 				"title": "soc_rr",
 				"icon": "LINE_CHART",
+				"readOnly": "true",
 				"fields": [{
 					"title": "history",
 					"fields": [{
@@ -329,6 +337,7 @@
 					"id": "settingsForm",
 					"icon": "obdii",
 					"headerText": "choose your OBDII connection",
+					"readOnly": "true",
 					"fields": [{
 							"title": "deviceType",
 							"hint": "type of OBDII connector",
@@ -354,7 +363,9 @@
 							"title": "serialDevice",
 							"format": "%s",
 							"labelSize": 10,
-							"fieldSize": 40
+							"fieldSize": 40,
+							"gridX": 0,
+							"gridY": 2
 						},
 						{
 							"title": "baudRate",
@@ -375,14 +386,16 @@
 							"title": "timeout",
 							"hint": "timeout in milli seconds",
 							"format": "%5d",
-							"type": "Integer"
+							"type": "Integer",
+							"gridX": 3,
+							"gridY": 3
 						},
 						{
 							"title": "debug",
 							"hint": "display debugging information for the device",
 							"format": "%s",
 							"type": "Boolean",
-							"gridX": 3,
+							"gridX": 5,
 							"gridY": 3
 						}
 					]
@@ -392,6 +405,7 @@
 					"id": "preferencesForm",
 					"icon": "preferences",
 					"headerText": "choose your Preferences",
+					"readOnly": "true",
 					"fields": [{
 							"title": "language",
 							"hint": "the language of your choice",
@@ -444,6 +458,7 @@
 					"id": "vehicleForm",
 					"icon": "CAR",
 					"headerText": "vehicle Details",
+					"readOnly": "true",
 					"fields": [{
 							"title": "nickName",
 							"format": "%s",
@@ -497,6 +512,7 @@
 					"id": "ownerForm",
 					"icon": "USER",
 					"headerText": "owner Details",
+					"readOnly": "true",
 					"fields": [{
 							"title": "nickName",
 							"format": "%s",
