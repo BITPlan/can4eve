@@ -21,7 +21,7 @@ before_script:
 #before_install: sudo apt-get install xvfb firefox
 # switch off gpg handling
 install: mvn install -DskipTests=true -Dgpg.skip=true
-script: mvn test
+script: mvn dependency:tree test
 # Android 
 # https://docs.travis-ci.com/user/languages/android/
 android:
