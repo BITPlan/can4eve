@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>com.bitplan.can4eve</groupId>
 		<artifactId>com.bitplan.can4eve</artifactId>
-		<version>0.0.2</version>
+		<version>0.0.3</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>com.bitplan.obdii</artifactId>
@@ -14,7 +14,7 @@
 		<dependency>
 			<groupId>com.bitplan.can4eve</groupId>
 			<artifactId>com.bitplan.can4eve.can4eve</artifactId>
-			<version>0.0.2</version>
+			<version>0.0.3</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.danilopianini/gson-extras -->
 		<dependency>
@@ -24,17 +24,17 @@
 		</dependency>
 		<!-- Swing cruft we got rid of ... -->
 		<!-- Layout Manager http://stackoverflow.com/questions/1832432/which-swing-layouts-do-you-recommend -->
-		<!-- https://mvnrepository.com/artifact/com.jgoodies/jgoodies-forms Form 
-			Layout <dependency> <groupId>com.jgoodies</groupId> <artifactId>jgoodies-forms</artifactId> 
+		<!-- https://mvnrepository.com/artifact/com.jgoodies/jgoodies-forms Form
+			Layout <dependency> <groupId>com.jgoodies</groupId> <artifactId>jgoodies-forms</artifactId>
 			<version>1.9.0</version> </dependency> -->
-		<!-- https://mvnrepository.com/artifact/net.java.dev.designgridlayout/designgridlayout 
-			<dependency> <groupId>net.java.dev.designgridlayout</groupId> <artifactId>designgridlayout</artifactId> 
+		<!-- https://mvnrepository.com/artifact/net.java.dev.designgridlayout/designgridlayout
+			<dependency> <groupId>net.java.dev.designgridlayout</groupId> <artifactId>designgridlayout</artifactId>
 			<version>1.11</version> </dependency> -->
-		<!-- https://mvnrepository.com/artifact/com.miglayout/miglayout <dependency> 
-			<groupId>com.miglayout</groupId> <artifactId>miglayout</artifactId> <version>3.7.4</version> 
+		<!-- https://mvnrepository.com/artifact/com.miglayout/miglayout <dependency>
+			<groupId>com.miglayout</groupId> <artifactId>miglayout</artifactId> <version>3.7.4</version>
 			</dependency> -->
-		<!-- can not use this easily in JavaFX https://mvnrepository.com/artifact/org.jfree/jfreechart 
-			<dependency> <groupId>org.jfree</groupId> <artifactId>jfreechart</artifactId> 
+		<!-- can not use this easily in JavaFX https://mvnrepository.com/artifact/org.jfree/jfreechart
+			<dependency> <groupId>org.jfree</groupId> <artifactId>jfreechart</artifactId>
 			<version>1.0.19</version> </dependency> -->
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
 		<!-- Circular FifoBuffer -->
@@ -128,8 +128,8 @@
 								<initialHeapSize>256</initialHeapSize>
 								<maxHeapSize>3000</maxHeapSize>
 							</jre>
-							<!-- <splash> <file>${project.basedir}/src/main/build/Sunflower.bmp</file> 
-								<waitForWindow>true</waitForWindow> <timeout>60</timeout> <timeoutErr>true</timeoutErr> 
+							<!-- <splash> <file>${project.basedir}/src/main/build/Sunflower.bmp</file>
+								<waitForWindow>true</waitForWindow> <timeout>60</timeout> <timeoutErr>true</timeoutErr>
 								</splash> -->
 							<versionInfo>
 								<fileVersion>0.${project.version}</fileVersion>
@@ -147,7 +147,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- http://kosalads.blogspot.de/2013/04/maven-copy-artifact-in-to-separate.html 
+			<!-- http://kosalads.blogspot.de/2013/04/maven-copy-artifact-in-to-separate.html
 				https://stackoverflow.com/a/16862404/1497139 -->
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>

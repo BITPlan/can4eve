@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>com.bitplan.can4eve</groupId>
 		<artifactId>com.bitplan.can4eve</artifactId>
-		<version>0.0.2</version>
+		<version>0.0.3</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>com.bitplan.can4eve.can4eve</artifactId>
@@ -14,12 +14,12 @@
 		<dependency>
 			<groupId>com.bitplan.gui</groupId>
 			<artifactId>com.bitplan.javafx</artifactId>
-			<version>0.0.22</version>
+			<version>0.0.23</version>
 		</dependency>
 		<dependency>
 			<groupId>com.bitplan.can4eve</groupId>
 			<artifactId>com.bitplan.elm327</artifactId>
-			<version>0.0.2</version>
+			<version>0.0.3</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
 		<!-- Circular FifoBuffer -->
@@ -34,8 +34,8 @@
 			<artifactId>gson-extras</artifactId>
 			<version>0.2.1</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/eu.hansolo/SteelSeries we are using 
-			JavaFX Medusa now <dependency> <groupId>eu.hansolo</groupId> <artifactId>SteelSeries</artifactId> 
+		<!-- https://mvnrepository.com/artifact/eu.hansolo/SteelSeries we are using
+			JavaFX Medusa now <dependency> <groupId>eu.hansolo</groupId> <artifactId>SteelSeries</artifactId>
 			<version>3.9.30</version> </dependency> -->
 	</dependencies>
 	<build>
