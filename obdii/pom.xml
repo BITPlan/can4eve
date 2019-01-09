@@ -59,7 +59,7 @@
 		<dependency>
 			<groupId>com.bitplan.gui</groupId>
 			<artifactId>com.bitplan.gui</artifactId>
-			<version>0.0.12</version>
+			<version>0.0.13</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
