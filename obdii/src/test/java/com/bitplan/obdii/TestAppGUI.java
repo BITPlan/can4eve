@@ -232,6 +232,7 @@ public class TestAppGUI extends TestOBDII {
     assertNotNull(owner);
     FXMLSampleApp sampleApp = new FXMLSampleApp("ownerPresenter");
     sampleApp.showAndOpen();
+    sampleApp.sampleApp.getScene().getStylesheets().add("css/dark-theme.css");
     OwnerPresenter ownerPresenter = sampleApp.fxml.loadPresenter("owner",
         Owner.class, exceptionHandler);
     assertNotNull(ownerPresenter);
