@@ -62,7 +62,6 @@ import com.bitplan.javafx.BasePresenter;
 import com.bitplan.javafx.ConstrainedGridPane;
 import com.bitplan.javafx.GenericDialog;
 import com.bitplan.javafx.JFXML;
-import com.bitplan.javafx.JFXStopWatch;
 import com.bitplan.javafx.SampleApp;
 import com.bitplan.javafx.TaskLaunch;
 import com.bitplan.javafx.WaitableApp;
@@ -83,7 +82,6 @@ import com.bitplan.obdii.javafx.SimulatorPane;
 import com.bitplan.obdii.javafx.WelcomeWizard;
 import com.bitplan.obdii.javafx.presenter.OwnerPresenter;
 import com.bitplan.obdii.javafx.presenter.VehiclePresenter;
-import com.bitplan.states.StopWatch;
 
 import eu.hansolo.LcdGauge.ResetableGauge;
 import eu.hansolo.OverviewDemo;
@@ -126,12 +124,11 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 /**
- * test the descriptive application gui
+ * test the descriptive application Graphical User Interface
  * 
  * @author wf
  *
  */
-@SuppressWarnings("restriction")
 public class TestAppGUI extends TestOBDII {
   public static final int SHOW_TIME = 4000;
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.obdii");

@@ -60,7 +60,7 @@ import com.bitplan.triplet.OBDTriplet;
  */
 public class OBDMain extends Main implements OBDApp {
   static final String APP_PATH = "com/bitplan/can4eve/gui/CanTriplet.json";
-  private static final String OBDMAIN_VERSION = "0.0.3";
+
   protected static OBDMain obd;
   protected CANValueDisplay canValueDisplay;
 
@@ -142,11 +142,6 @@ public class OBDMain extends Main implements OBDApp {
   public String getSupportEMail() {
     return "support@bitplan.com";
   }
-  
-  @Override
-  public String getVersion() {
-    return OBDMAIN_VERSION;
-  }
 
   @Override
   public String getSupportEMailPreamble() {
@@ -171,6 +166,7 @@ public class OBDMain extends Main implements OBDApp {
    * construct me
    */
   public OBDMain() {
+    VERSION="0.0.3";
     super.setName("can4eve");
   }
 
