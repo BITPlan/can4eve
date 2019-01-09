@@ -42,7 +42,6 @@ import com.bitplan.obdii.Can4EveI18n;
 public class PreferencesPresenter extends BasePresenter<Preferences>{
 
   @Override
-
   public void updateView() {   
   }
 

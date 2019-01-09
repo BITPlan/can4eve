@@ -46,7 +46,7 @@ import javafx.scene.image.ImageView;
  * vehicle specific Presenter
  * @author wf
  */
-@SuppressWarnings("restriction")
+
 public class VehiclePresenter extends BasePresenter<Vehicle> {
   @FXML
   private

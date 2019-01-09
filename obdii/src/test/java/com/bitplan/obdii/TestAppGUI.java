@@ -228,6 +228,8 @@ public class TestAppGUI extends TestOBDII {
 
   @Test
   public void testOwnerPresenter() throws Exception {
+    Owner owner = Owner.getInstance();
+    assertNotNull(owner);
     FXMLSampleApp sampleApp = new FXMLSampleApp("ownerPresenter");
     sampleApp.showAndOpen();
     OwnerPresenter ownerPresenter = sampleApp.fxml.loadPresenter("owner",
@@ -235,7 +237,7 @@ public class TestAppGUI extends TestOBDII {
     assertNotNull(ownerPresenter);
     Platform.runLater(() -> {
       try {
-        ownerPresenter.show(Owner.getInstance());
+        ownerPresenter.show(owner);
       } catch (Exception e) {
         ErrorHandler.handle(e);
         fail("there should be no exception");

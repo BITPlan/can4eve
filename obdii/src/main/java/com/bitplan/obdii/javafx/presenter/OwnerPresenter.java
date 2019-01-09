@@ -20,11 +20,18 @@
  */
 package com.bitplan.obdii.javafx.presenter;
 
+import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import com.bitplan.can4eve.Owner;
+import com.bitplan.can4eve.Vehicle;
+import com.bitplan.gui.Form;
 import com.bitplan.javafx.BasePresenter;
+import com.bitplan.javafx.GenericDialog;
+import com.bitplan.obdii.Can4EveI18n;
 
 /**
  * present any owner information
@@ -32,7 +39,9 @@ import com.bitplan.javafx.BasePresenter;
  *
  */
 public class OwnerPresenter extends BasePresenter<Owner>{
-
+  private Form ownerForm;
+  private Owner owner;
+  
   @Override
   public void updateView() {   
   }
@@ -41,6 +50,14 @@ public class OwnerPresenter extends BasePresenter<Owner>{
   public Owner updateModel() {
     return null;
   }
+  
+  /**
+   * initialize me
+   */
+  @Override
+  public void postInit() {
+    ownerForm = super.getApp().getFormById(Can4EveI18n.PREFERENCES_GROUP, Can4EveI18n.OWNER_FORM);
+  }
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -48,8 +65,17 @@ public class OwnerPresenter extends BasePresenter<Owner>{
   }
 
   @Override
-  public void show(Owner model) {
-    
+  public void show(Owner owner) {
+    GenericDialog vehicleDialog = new GenericDialog(getStage(), ownerForm);
+    Optional<Map<String, Object>> result = vehicleDialog.show(owner.asMap());
+    if (result.isPresent()) {
+      owner.fromMap(result.get());
+      try {
+        owner.save();
+      } catch (IOException e) {
+        super.getExceptionHandler().handleException(e);
+      }
+    }
   }
 
 }
