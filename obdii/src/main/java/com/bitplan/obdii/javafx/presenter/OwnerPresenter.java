@@ -27,7 +27,6 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 import com.bitplan.can4eve.Owner;
-import com.bitplan.can4eve.Vehicle;
 import com.bitplan.gui.Form;
 import com.bitplan.javafx.BasePresenter;
 import com.bitplan.javafx.GenericDialog;
@@ -57,6 +56,7 @@ public class OwnerPresenter extends BasePresenter<Owner>{
   @Override
   public void postInit() {
     ownerForm = super.getApp().getFormById(Can4EveI18n.PREFERENCES_GROUP, Can4EveI18n.OWNER_FORM);
+    ownerForm.setReadOnly(false);
   }
 
   @Override

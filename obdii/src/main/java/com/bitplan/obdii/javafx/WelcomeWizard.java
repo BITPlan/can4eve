@@ -74,7 +74,7 @@ import javafx.scene.layout.Pane;
  * @author wf
  *
  */
-@SuppressWarnings("restriction")
+
 public class WelcomeWizard extends JFXWizard {
   String langs[] = { "English", "Deutsch" };
   String langPictures[] = { "en-flag.jpg", "de-flag.jpg" };
@@ -478,6 +478,7 @@ public class WelcomeWizard extends JFXWizard {
         if (owner == null) {
           owner = Owner.getInstance();
           Form ownerForm = fxml.getApp().getFormById(Can4EveI18n.PREFERENCES_GROUP,Can4EveI18n.OWNER_FORM);
+          ownerForm.setReadOnly(false);
           ownerPanel = new GenericPanel(fxml.getStage(), ownerForm);
           this.setContent(ownerPanel);
         }

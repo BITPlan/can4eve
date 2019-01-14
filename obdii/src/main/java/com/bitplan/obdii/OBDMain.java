@@ -168,6 +168,7 @@ public class OBDMain extends Main implements OBDApp {
   public OBDMain() {
     VERSION="0.0.3";
     super.setName("can4eve");
+    Translator.APPLICATION_PREFIX=this.getName();
   }
 
   @Override
