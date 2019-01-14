@@ -107,7 +107,6 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
   protected ChargePane chargePane;
   protected OdoPane odoPane;
 
-  private Scene scene;
   Tab chargeTab;
   Tab odoTab;
   Tab clockTab;
@@ -115,6 +114,8 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
   private SimulatorPane simulatorPane;
 
   private Preferences prefs;
+  private Button darkModeButton;
+  private boolean darkMode=false;
   private Button fullScreenButton;
   private Button hideMenuButton;
   private Rectangle2D sceneBounds;
@@ -251,10 +252,10 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
   @Override
   public void start(Stage stage) {
     super.start(stage);
-    scene = createScene();
-    setMenuBar(createMenuBar(scene, app));
-    showMenuBar(scene, getMenuBar(), true);
-    stage.setScene(scene);
+    setScene(createScene());
+    setMenuBar(createMenuBar(getScene(), app));
+    showMenuBar(getScene(), getMenuBar(), true);
+    stage.setScene(getScene());
     setUpStatusBar();
     this.setupXyTabPane();
     setupDashBoard();
@@ -271,7 +272,7 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
         // switch to fullscreen
         Platform.runLater(() -> switchFullScreen(true));
         // hide menu bar
-        Platform.runLater(() -> showMenuBar(scene, getMenuBar(), false));
+        Platform.runLater(() -> showMenuBar(getScene(), getMenuBar(), false));
         this.startMonitoring(prefs.getDebug());
       } else {
         optionalShowWelcomeWizard();
@@ -409,7 +410,24 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
     stage.setFullScreen(fullScreen);
     fullScreenButton.setText(
         fullScreen ? I18n.get(Can4EveI18n.PART_SCREEN) : I18n.get(Can4EveI18n.FULL_SCREEN));
-
+  }
+  
+  /**
+   * switch the dark mode
+   */
+  public void switchDarkMode() {
+    darkMode=!darkMode;
+    // https://stackoverflow.com/questions/49159286/make-a-dark-mode-with-javafx
+    // https://github.com/joffrey-bion/javafx-themes/blob/master/css/modena_dark.css
+    String darkSheet="css/modena_dark.css";
+    ObservableList<String> styleSheets = getScene().getStylesheets();
+    if (darkMode) {
+      styleSheets.add(darkSheet);
+    } else {
+      styleSheets.remove(darkSheet);
+    }
+    darkModeButton.setText(darkMode?I18n.get(Can4EveI18n.LIGHT_MODE) : I18n.get(Can4EveI18n.DARK_MODE));
+   
   }
 
   /**
@@ -452,8 +470,17 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
         switchFullScreen(!stage.isFullScreen());
       }
     });
+    
+    this.darkModeButton=new Button(I18n.get(Can4EveI18n.DARK_MODE));
+    darkModeButton.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent e) {
+        switchDarkMode();
+      }
+    });
 
     if (statusBar != null) {
+      statusBar.getRightItems().add(darkModeButton);
       statusBar.getRightItems().add(screenShotButton);
       statusBar.getRightItems().add(hideMenuButton);
       statusBar.getRightItems().add(fullScreenButton);

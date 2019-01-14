@@ -233,7 +233,9 @@ public class TestAppGUI extends TestOBDII {
     assertNotNull(owner);
     FXMLSampleApp sampleApp = new FXMLSampleApp("ownerPresenter");
     sampleApp.showAndOpen();
-    sampleApp.sampleApp.getScene().getStylesheets().add("css/dark-theme.css");
+    // https://stackoverflow.com/questions/49159286/make-a-dark-mode-with-javafx
+    // https://github.com/joffrey-bion/javafx-themes/blob/master/css/modena_dark.css
+    sampleApp.sampleApp.getScene().getStylesheets().add("css/modena_dark.css");
     OwnerPresenter ownerPresenter = sampleApp.fxml.loadPresenter("owner",
         Owner.class, exceptionHandler);
     assertNotNull(ownerPresenter);

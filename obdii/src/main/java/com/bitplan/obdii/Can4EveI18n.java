@@ -96,6 +96,9 @@ public class Can4EveI18n {
   public static final String DASH_BOARD = "dashBoard";
   public static final String FULL_SCREEN = "fullScreen";
   public static final String PART_SCREEN = "partScreen";
+  public static final String DARK_MODE = "dark";
+  public static final String LIGHT_MODE = "light";
+  
   public static final String HIDE_MENU = "hideMenu";
   public static final String SHOW_MENU = "showMenu";
   public static final String SCREEN_SHOT = "screenShot";
