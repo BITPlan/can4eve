@@ -40,6 +40,7 @@ import com.bitplan.obdii.Can4EveI18n;
 public class OwnerPresenter extends BasePresenter<Owner>{
   private Form ownerForm;
   private Owner owner;
+  public GenericDialog ownerDialog;
   
   @Override
   public void updateView() {   
@@ -66,8 +67,8 @@ public class OwnerPresenter extends BasePresenter<Owner>{
 
   @Override
   public void show(Owner owner) {
-    GenericDialog vehicleDialog = new GenericDialog(getStage(), ownerForm);
-    Optional<Map<String, Object>> result = vehicleDialog.show(owner.asMap());
+    ownerDialog = new GenericDialog(getStage(), ownerForm);
+    Optional<Map<String, Object>> result = ownerDialog.show(owner.asMap());
     if (result.isPresent()) {
       owner.fromMap(result.get());
       try {

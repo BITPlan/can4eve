@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -239,7 +240,8 @@ public class TestAppGUI extends TestOBDII {
     Platform.runLater(() -> {
       try {
         ownerPresenter.show(owner);
-      } catch (Exception e) {
+        // sampleApp.sampleApp.saveAsPng(ownerPresenter.ownerDialog.getStage(),new File("/tmp/darktheme.png"));
+    } catch (Exception e) {
         ErrorHandler.handle(e);
         fail("there should be no exception");
       }
