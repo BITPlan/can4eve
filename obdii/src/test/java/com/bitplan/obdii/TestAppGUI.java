@@ -25,7 +25,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -277,12 +276,18 @@ public class TestAppGUI extends TestOBDII {
     pref.setDebug(true);
     pref.setLanguage(LangChoice.de);
     String json = pref.asJson();
-    // System.out.println(json);
-    assertEquals("{\n" + "  \"language\": \"de\",\n" + "  \"debug\": true,\n"
-        + "  \"autoStart\": false,\n" + "  \"screenPercent\": 100,\n"
-        + "  \"logDirectory\": \"can4eveLogs\",\n"
-        + "  \"screenShotDirectory\": \"can4eveScreenShots\",\n"
-        + "  \"logPrefix\": \"can4eve\"\n" + "}", json);
+    //System.out.println(json);
+    assertEquals("{\n" + 
+        "  \"language\": \"de\",\n" + 
+        "  \"debug\": true,\n" + 
+        "  \"autoStart\": false,\n" + 
+        "  \"screenPercent\": 100,\n" + 
+        "  \"darkBrightness\": 32,\n" + 
+        "  \"lightBrightness\": 255,\n" + 
+        "  \"logDirectory\": \"can4eveLogs\",\n" + 
+        "  \"screenShotDirectory\": \"can4eveScreenShots\",\n" + 
+        "  \"logPrefix\": \"can4eve\"\n" + 
+        "}", json);
     JsonManager<Preferences> jmPreferences = new JsonManagerImpl<Preferences>(
         Preferences.class);
     Preferences pref2 = jmPreferences.fromJson(json);
