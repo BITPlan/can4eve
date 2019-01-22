@@ -83,7 +83,7 @@ public class OBDMain extends Main implements OBDApp {
   @Option(name = "--limit", aliases = {
       "--framelimit" }, usage = "limit\nthe maximum number of frames to read")
   // FIXME make configurable e.g. in Preferences or do not use at all
-  protected long frameLimit = 500 * 4800; // some 1 1/2 hours at 500fps
+  protected long frameLimit = 24 * 3600 * 500; // a day at 500fps
 
   @Option(name = "-l", aliases = {
       "--log" }, usage = "log\nthe logfile to use")
