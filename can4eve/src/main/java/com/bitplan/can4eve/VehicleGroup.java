@@ -158,7 +158,7 @@ public class VehicleGroup implements JsonAble {
   /**
    * get the Gson
    * 
-   * @return
+   * @return gson
    */
   public static Gson getGsonStatic() {
     if (gson == null) {
@@ -177,7 +177,7 @@ public class VehicleGroup implements JsonAble {
   /**
    * get the Gson
    * 
-   * @return
+   * @return the static gson
    */
   public Gson getGson() {
     return getGsonStatic();
@@ -187,8 +187,7 @@ public class VehicleGroup implements JsonAble {
    * get the VehicleGroup from the given Json Stream
    * 
    * @param jsonStream
-   * @param asTree
-   * @return
+   * @return the VehicleGroup
    * @throws Exception
    */
   public static VehicleGroup fromJsonStream(InputStream jsonStream)
@@ -206,7 +205,7 @@ public class VehicleGroup implements JsonAble {
    * get the VehicleGroup for the given name
    * 
    * @param name
-   * @return
+   * @return the VehicleGroup for the given name
    * @throws Exception
    */
   public static VehicleGroup get(String name) throws Exception {

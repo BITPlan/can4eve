@@ -81,7 +81,7 @@ public class DashBoardPane extends ConstrainedGridPane {
   /**
    * create a DashBoardPane
    * 
-   * @param maxValue
+   * @param vehicle
    */
   public DashBoardPane(Vehicle vehicle) {
     // LcdFont lcdFont=LcdFont.STANDARD;

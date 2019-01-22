@@ -421,6 +421,20 @@
 							"type": "Integer"
 						},
 						{
+							"title": "darkBrightness",
+							"label": "dark",
+							"hint": "display brightness 0-255",
+							"format": "%s",
+							"type": "Integer"
+						},
+						{
+							"title": "lightBrightness",
+							"label": "light",
+							"hint": "display brightness 0-255",
+							"format": "%s",
+							"type": "Integer"
+						},
+						{
 							"title": "debug",
 							"hint": "output debugging information for the application",
 							"format": "%s",

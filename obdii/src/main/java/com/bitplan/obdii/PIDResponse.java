@@ -55,13 +55,10 @@ public class PIDResponse {
   boolean valid = true;
 
   /**
-   * create this PIDResponse from the given string part
+   * create this PIDResponse from the given Packet
    * 
    * @param elm327
    * @param response
-   * @param d
-   * @param offset
-   * @param hoffset
    */
   public PIDResponse(ELM327 elm327, Packet response) {
     String line = response.getData();
@@ -193,7 +190,7 @@ public class PIDResponse {
    * get the string from the given index
    * 
    * @param fromIndex
-   * @return
+   * @return the String for the given index
    */
   public String getString(int fromIndex) {
     StringBuffer s = new StringBuffer();

@@ -88,7 +88,7 @@ public abstract class AbstractOBDHandler implements ResponseHandler {
 
   /**
    * get the CAN Raw values
-   * @return
+   * @return the map of CANRawValues
    */
   public Map<String, CANRawValue> getCanRawValues() {
     return canRawValues;
@@ -113,7 +113,7 @@ public abstract class AbstractOBDHandler implements ResponseHandler {
    * create me for the given serial Device
    * @param vehicleGroup
    * @param pDevice
-   * @param baudRate
+   * @param pBaudRate
    */
   public AbstractOBDHandler(VehicleGroup vehicleGroup, String pDevice, int pBaudRate) {
     this(vehicleGroup);
@@ -223,7 +223,6 @@ public abstract class AbstractOBDHandler implements ResponseHandler {
 
   /**
    * check the given PID  
-   * @param display
    * @param pidId
    * @param frameLimit
    * @throws Exception
@@ -243,7 +242,7 @@ public abstract class AbstractOBDHandler implements ResponseHandler {
   
   /**
    * interrupt the PID-Monitoring
-   * @return
+   * @return the ELM327
    * @throws Exception
    */
   public ELM327 endMonitorPid() throws Exception {
@@ -256,10 +255,8 @@ public abstract class AbstractOBDHandler implements ResponseHandler {
   /**
    * monitor the given pid
    * 
-   * @param display
-   * 
    * @param pid
-   * @param timeOut
+   * @param frameLimit
    * @throws Exception
    */
   public void monitorPid(String pid, long frameLimit)
@@ -335,7 +332,6 @@ public abstract class AbstractOBDHandler implements ResponseHandler {
    * 
    * @param pLogWriter
    * @param response
-   * @param timeStamp
    */
   public void logWrite(PrintWriter pLogWriter, Packet response) {
     // if logging is enabled
@@ -379,7 +375,6 @@ public abstract class AbstractOBDHandler implements ResponseHandler {
    * handle Response
    * 
    * @param response
-   * @param timeStamp
    */
   @Override
   public void handleResponse(Packet response) {

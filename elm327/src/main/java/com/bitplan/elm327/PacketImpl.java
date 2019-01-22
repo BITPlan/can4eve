@@ -136,7 +136,7 @@ public class PacketImpl implements Packet {
   /**
    * return me as a string
    * 
-   * @return
+   * @return me as a string
    */
   public String asString() {
     String ts = "";

@@ -181,7 +181,7 @@ public class ConnectionImpl extends Thread implements Connection {
   /**
    * add the given string to the responses
    * 
-   * @param response
+   * @param line
    */
   public void addResponseLine(String line) {
     // ignore prompts

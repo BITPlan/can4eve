@@ -51,6 +51,7 @@ import com.bitplan.javafx.WaitableApp;
 import com.bitplan.obdii.CANValueDisplay;
 import com.bitplan.obdii.Can4EveI18n;
 import com.bitplan.obdii.OBDApp;
+import com.bitplan.obdii.Raspberry;
 import com.bitplan.obdii.elm327.LogPlayer;
 import com.bitplan.obdii.javafx.presenter.PreferencesPresenter;
 import com.bitplan.obdii.javafx.presenter.VehiclePresenter;
@@ -240,7 +241,6 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
 
   /**
    * set up the DashBaord
-   * @param xyTabPane
    */
   public void setupDashBoard() {
     TabPane dashboardPane = xyTabPane.addTabPane(Can4EveI18n.DASH_BOARD_TAB,I18n.get(Can4EveI18n.DASH_BOARD_TAB),FontAwesome.Glyph.SQUARE_ALT.name());
@@ -417,6 +417,7 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
    */
   public void switchDarkMode() {
     darkMode=!darkMode;
+    setBrightness(darkMode);
     // https://stackoverflow.com/questions/49159286/make-a-dark-mode-with-javafx
     // https://github.com/joffrey-bion/javafx-themes/blob/master/css/modena_dark.css
     String darkSheet="css/modena_dark.css";
@@ -426,8 +427,22 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
     } else {
       styleSheets.remove(darkSheet);
     }
-    darkModeButton.setText(darkMode?I18n.get(Can4EveI18n.LIGHT_MODE) : I18n.get(Can4EveI18n.DARK_MODE));
-   
+    darkModeButton.setText(darkMode?I18n.get(Can4EveI18n.LIGHT_MODE) : I18n.get(Can4EveI18n.DARK_MODE));  
+  }
+
+  /**
+   * set the brightness according to the darkMode
+   * @param darkMode
+   */
+  protected void setBrightness(boolean darkMode) {
+    if (Raspberry.isPi()) {
+      prefs=Preferences.getInstance();
+      if (darkMode) {
+        Raspberry.setBrightness(prefs.getDarkBrightness());
+      } else {
+        Raspberry.setBrightness(prefs.getLightBrightness());
+      }
+    }
   }
 
   /**
@@ -472,6 +487,8 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
     });
     
     this.darkModeButton=new Button(I18n.get(Can4EveI18n.DARK_MODE));
+    // initial brightness
+    this.setBrightness(darkMode);
     darkModeButton.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent e) {
@@ -705,7 +722,7 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
   /**
    * start the monitoring
    * 
-   * @param
+   * @param withLog
    */
   public void startMonitoring(boolean withLog) {
     setWatchDogState("⚙", I18n.get(Can4EveI18n.MONITORING));

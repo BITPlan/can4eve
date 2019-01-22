@@ -34,7 +34,7 @@ public interface Watchable extends Restartable {
   
   /**
    * after how many milliseconds are we considered to be dead?
-   * @return
+   * @return the timeout for the watchdog
    */
   public int getWatchDogTimeOutMSecs();
   

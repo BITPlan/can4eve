@@ -263,7 +263,7 @@ public class CANProperty<CT extends CANValue<T>, T> implements CANData<T> {
   /**
    * get the name of this property
    * 
-   * @return
+   * @return the name of this property
    */
   public String getName() {
     String name = canValue.canInfo.getName();

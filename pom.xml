@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>com.bitplan.pom</groupId>
 		<artifactId>com.bitplan.pom</artifactId>
-		<version>0.0.20</version>
+		<version>0.0.21</version>
 		<relativePath>../com.bitplan.pom/pom.xml</relativePath>
 	</parent>
 	<groupId>com.bitplan.can4eve</groupId>
 	<artifactId>com.bitplan.can4eve</artifactId>
-	<version>0.0.3</version>
+	<version>0.0.4</version>
 	<packaging>pom</packaging>
 	<name>com.bitplan.can4eve</name>
 	<description>OBDII CAN diagnosis support for electric vehicles</description>

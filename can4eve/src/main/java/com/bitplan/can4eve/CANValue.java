@@ -164,7 +164,7 @@ public abstract class CANValue<ValueType> implements CANData<ValueType> {
    * @param item
    * @param value
    * @param timeStamp
-   * @return
+   * @return the CANValueItem
    */
   public CANValueItem<ValueType> assign(CANValueItem<ValueType> item, ValueType value,
       Date timeStamp) {
@@ -307,7 +307,7 @@ public abstract class CANValue<ValueType> implements CANData<ValueType> {
   /**
    * convert me to a string
    * 
-   * @return
+   * @return me as a String
    */
   public String asString(ValueType value) {
     String result = "?";
@@ -322,7 +322,7 @@ public abstract class CANValue<ValueType> implements CANData<ValueType> {
   /**
    * convert me to a string
    * 
-   * @return
+   * @return me as a String
    */
   public String asString() {
     if (this.valueItem.available)
@@ -482,7 +482,7 @@ public abstract class CANValue<ValueType> implements CANData<ValueType> {
      * @param value
      * @param timeStamp
      * @param newValue
-     * @param newtimeStamp
+     * @param newTimeStamp
      * @param factor
      *          for millisecs
      * 
@@ -560,7 +560,7 @@ public abstract class CANValue<ValueType> implements CANData<ValueType> {
     /**
      * set the raw Value based on an array of hex string elements
      * 
-     * @param string
+     * @param line
      * @param timeStamp
      */
     public void setRawValue(String line, Date timeStamp) {

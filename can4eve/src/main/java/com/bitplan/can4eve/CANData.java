@@ -69,7 +69,7 @@ public interface CANData<T> extends AsJson {
    * get the CANInfo - the field information about this value
    * e.g. the name of the value and the PID it is derived from
    * 
-   * @return
+   * @return the CANInfo
    */
   public CANInfo getCANInfo();
 

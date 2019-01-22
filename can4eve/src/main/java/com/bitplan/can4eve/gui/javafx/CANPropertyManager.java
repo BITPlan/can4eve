@@ -98,7 +98,7 @@ public class CANPropertyManager implements CANValueHandler {
    * add Value by Name
    * 
    * @param canInfoName
-   * @return
+   * @return the added Value
    */
   @SuppressWarnings({ "rawtypes", "unchecked" })
   public <T> CANProperty addValue(final String canInfoName) {
@@ -281,7 +281,7 @@ public class CANPropertyManager implements CANValueHandler {
    * get the given CANProperty byName
    * 
    * @param CANInfoName
-   * @return
+   * @return the CANProperty
    */
   @SuppressWarnings({ "rawtypes", "unchecked" })
   public <CT extends CANValue<T>, T> CANProperty<CT, T> get(
@@ -293,7 +293,7 @@ public class CANPropertyManager implements CANValueHandler {
   /**
    * get the CANValues
    * 
-   * @return
+   * @return the list of CANValues
    */
   @SuppressWarnings("rawtypes")
   public List<CANValue<?>> getCANValues() {

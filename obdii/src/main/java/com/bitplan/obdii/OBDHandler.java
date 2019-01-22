@@ -118,7 +118,7 @@ public abstract class OBDHandler extends AbstractOBDHandler {
    * get the PID with the given PID id
    * 
    * @param pidId
-   * @return
+   * @return the Pid
    * @throws Exception
    */
   public Pid pidByName(String pidId) throws Exception {
@@ -130,7 +130,7 @@ public abstract class OBDHandler extends AbstractOBDHandler {
    * get the canInfo for the given CanInfo name
    * 
    * @param canInfoName
-   * @return
+   * @return the CANInfo
    */
   protected CANInfo getCanInfo(String canInfoName) {
     CANInfo canInfo = this.getVehicleGroup().getCANInfoByName(canInfoName);
@@ -314,7 +314,7 @@ public abstract class OBDHandler extends AbstractOBDHandler {
    * start the display
    * 
    * @param display
-   * @msecs - the update frequency
+   * @param msecs - the update frequency
    */
   public void startDisplay(final CANValueDisplay display, int msecs) {
     if (displayexecutor != null) {

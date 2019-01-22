@@ -124,7 +124,7 @@ public class Config {
   /**
    * get the Gson
    * 
-   * @return
+   * @return the gson 
    */
   public static Gson getGson() {
     GsonBuilder gsonBuilder = new GsonBuilder();
@@ -136,7 +136,7 @@ public class Config {
   /**
    * return me as a Json file
    * 
-   * @return
+   * @return the json string
    */
   public String asJson() {
     String json = getGson().toJson(this);
@@ -158,7 +158,7 @@ public class Config {
    * get the config file
    * 
    * @param configMode
-   * @return
+   * @return my configuration file
    */
   public static File getConfigFile(ConfigMode configMode) {
     String filename = "obdii";
@@ -189,7 +189,7 @@ public class Config {
   /**
    * get the instance
    * 
-   * @return
+   * @return my singleton instance
    */
   public static Config getInstance() {
     return Config.getInstance(ConfigMode.Preferences);
@@ -199,7 +199,7 @@ public class Config {
    * get the
    * 
    * @param configMode
-   * @return
+   * @return the instance for the given configMode
    * @throws FileNotFoundException
    */
   public static Config getInstance(ConfigMode configMode) {
@@ -224,7 +224,7 @@ public class Config {
   /**
    * get me as a map
    * 
-   * @return
+   * @return my map
    */
   @SuppressWarnings("unchecked")
   public Map<String, Object> asMap() {

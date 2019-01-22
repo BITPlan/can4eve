@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>com.bitplan.can4eve</groupId>
 		<artifactId>com.bitplan.can4eve</artifactId>
-		<version>0.0.3</version>
+		<version>0.0.4</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>com.bitplan.obdii</artifactId>
@@ -14,7 +14,7 @@
 		<dependency>
 			<groupId>com.bitplan.can4eve</groupId>
 			<artifactId>com.bitplan.can4eve.can4eve</artifactId>
-			<version>0.0.3</version>
+			<version>0.0.4</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.danilopianini/gson-extras -->
 		<dependency>
@@ -59,7 +59,7 @@
 		<dependency>
 			<groupId>com.bitplan.gui</groupId>
 			<artifactId>com.bitplan.gui</artifactId>
-			<version>0.0.14</version>
+			<version>0.0.15</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>

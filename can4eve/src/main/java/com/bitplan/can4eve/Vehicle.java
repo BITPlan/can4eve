@@ -137,7 +137,7 @@ public class Vehicle implements JsonAble{
 
   /**
    * get the vehicle Group of this Vehicle
-   * @return
+   * @return the VehicleGroup
    * @throws Exception
    */
   public VehicleGroup getVehicleGroup() throws Exception {

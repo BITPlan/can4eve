@@ -45,7 +45,8 @@ public class LCDPane extends ConstrainedGridPane {
    * create a Pane with the given number of rows and Columns
    * 
    * @param rows
-   * @param colums
+   * @param cols
+   * @param texts
    */
   public LCDPane(int rows, int cols,String... texts) {
     this.rows = rows;

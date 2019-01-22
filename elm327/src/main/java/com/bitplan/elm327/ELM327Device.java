@@ -34,7 +34,7 @@ public interface ELM327Device {
 
   /**
    * get the description of the Device as returned by the AT @1 command
-   * @returns the description e.g SCANTOOL.NET LLC
+   * @return the description e.g SCANTOOL.NET LLC
    */
   public String getDescription();
 
@@ -46,13 +46,13 @@ public interface ELM327Device {
   
   /**
    * get the Hardware Id
-   * @return
+   * @return the hardware id
    */
   public String getHardwareId();
 
   /**
    * get the Firmware Id
-   * @return
+   * @return the firmware id
    */
   public String getFirmwareId();
 
