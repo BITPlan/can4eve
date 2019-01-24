@@ -2,7 +2,7 @@
 [OBDII CAN diagnosis support for electric vehicles](http://can4eve.bitplan.com) 
 
 [![Travis (.org)](https://img.shields.io/travis/BITPlan/can4eve.svg)](https://travis-ci.org/BITPlan/can4eve)
-[![Maven Central](https://img.shields.io/maven-central/v/com.bitplan.can4eve/com.bitplan.can4eve.svg)](https://search.maven.org/artifact/com.bitplan.can4eve/com.bitplan.can4eve/0.0.2/jar)
+[![Maven Central](https://img.shields.io/maven-central/v/com.bitplan.can4eve/com.bitplan.can4eve.svg)](https://search.maven.org/artifact/com.bitplan.can4eve/com.bitplan.can4eve/0.0.5/jar)
 [![GitHub issues](https://img.shields.io/github/issues/BITPlan/can4eve.svg)](https://github.com/BITPlan/can4eve/issues)
 [![GitHub issues](https://img.shields.io/github/issues-closed/BITPlan/can4eve.svg)](https://github.com/BITPlan/can4eve/issues/?q=is%3Aissue+is%3Aclosed)
 [![GitHub](https://img.shields.io/github/license/BITPlan/can4eve.svg)](https://www.apache.org/licenses/LICENSE-2.0)
@@ -20,11 +20,11 @@ Maven dependency
 <dependency>
   <groupId>com.bitplan.can4eve</groupId>
   <artifactId>com.bitplan.can4eve</artifactId>
-  <version>0.0.2</version>
+  <version>0.0.5</version>
 </dependency>
 ```
 
-[Current release at repo1.maven.org](http://repo1.maven.org/maven2/com/bitplan/can4eve/com.bitplan.can4eve/0.0.2/)
+[Current release at repo1.maven.org](http://repo1.maven.org/maven2/com/bitplan/can4eve/com.bitplan.can4eve/0.0.5/)
 
 ### How to build
 ```
@@ -60,4 +60,3 @@ http://can4eve.bitplan.com/
 * 2017-06    0.0.1 - non released developer version (alpha test)
 * 2017-08    0.0.2 - beta test with OBDLink SX open
 * 2018-08-23 0.0.3 - improved gui
-* 2019-01-22 0.0.4 - dark mode/Raspberry PI brightness control 
