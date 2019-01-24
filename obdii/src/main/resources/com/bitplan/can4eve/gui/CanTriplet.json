@@ -69,7 +69,7 @@
 				    "id": "vehicle",
 					"title": "vehicle",
 					"icon": "CAR",
-					"readOnly": "true",
+					"readOnly": "false",
 					"fields": [{
 							"title": "VIN",
 							"format": "%s",
@@ -337,7 +337,7 @@
 					"id": "settingsForm",
 					"icon": "obdii",
 					"headerText": "choose your OBDII connection",
-					"readOnly": "true",
+					"readOnly": "false",
 					"fields": [{
 							"title": "deviceType",
 							"hint": "type of OBDII connector",
@@ -405,7 +405,7 @@
 					"id": "preferencesForm",
 					"icon": "preferences",
 					"headerText": "choose your Preferences",
-					"readOnly": "true",
+					"readOnly": "false",
 					"fields": [{
 							"title": "language",
 							"hint": "the language of your choice",
@@ -472,7 +472,7 @@
 					"id": "vehicleForm",
 					"icon": "CAR",
 					"headerText": "vehicle Details",
-					"readOnly": "true",
+					"readOnly": "false",
 					"fields": [{
 							"title": "nickName",
 							"format": "%s",
@@ -526,7 +526,7 @@
 					"id": "ownerForm",
 					"icon": "USER",
 					"headerText": "owner Details",
-					"readOnly": "true",
+					"readOnly": "false",
 					"fields": [{
 							"title": "nickName",
 							"format": "%s",

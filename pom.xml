@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.bitplan.can4eve</groupId>
 	<artifactId>com.bitplan.can4eve</artifactId>
-	<version>0.0.4</version>
+	<version>0.0.5</version>
 	<packaging>pom</packaging>
 	<name>com.bitplan.can4eve</name>
 	<description>OBDII CAN diagnosis support for electric vehicles</description>

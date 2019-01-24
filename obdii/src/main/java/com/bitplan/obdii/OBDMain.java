@@ -166,7 +166,7 @@ public class OBDMain extends Main implements OBDApp {
    * construct me
    */
   public OBDMain() {
-    VERSION="0.0.4";
+    VERSION="0.0.5";
     super.setName("can4eve");
     Translator.APPLICATION_PREFIX=this.getName();
   }
