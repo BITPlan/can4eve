@@ -1,0 +1,124 @@
+#!/bin/bash
+# WF 2017-02-13
+# prepare Triplet communication for can4eve or other obdii software
+#
+
+#ansi colors
+#http://www.csc.uvic.ca/~sae/seng265/fall04/tips/s265s047-tips/bash-using-colors.html
+blue='\033[0;34m'
+red='\033[0;31m'
+green='\033[0;32m' # '\e[1;32m' is too bright for white bg.
+endColor='\033[0m'
+
+#
+# a colored message 
+#   params:
+#     1: l_color - the color of the message
+#     2: l_msg - the message to display
+#
+color_msg() {
+  local l_color="$1"
+	local l_msg="$2"
+	echo -e "${l_color}$l_msg${endColor}"
+}
+
+#
+# error
+#
+#   show an error message and exit
+#
+#   params:
+#     1: l_msg - the message to display
+error() {
+  local l_msg="$1"
+  # use ansi red for error
+  color_msg $red "Error: $l_msg" 1>&2
+  exit 1
+}
+
+#
+# show usage
+#
+usage() {
+  echo "$0 bluetoothaddress"
+  echo ""
+  echo "       -b|--baud baud: baud rate default: 115200"
+  echo "       -p|--port port: port default: 7000"
+  echo "       -d|--debug    : enable debug"
+  echo "       -h|--help     : show this usage"
+  exit 1
+}
+
+#
+# start reading from the given bluetooth device and redirecting results
+# to TCP/IP
+# parameters
+#   #1: l_addr
+#   #2: l_port
+#   #3: l_baud
+#   #4: l_option  (--debug)
+#
+startserver() {
+  local l_addr="$1"
+  local l_port="$2"
+  local l_baud="$3"
+  local l_option="$4"
+  #color_msg $blue "setting power off for wlan"
+  #sudo iw wlan0 set power_save off
+  #sudo iwconfig wlan0 power off
+  echo "reconnecting rfcomm0"
+  sudo rfcomm release rfcomm0
+  sudo rfcomm bind rfcomm0 $l_addr 
+  echo "initializing Bluetooth"
+  sudo python3 obdii_read.py
+  echo "starting obdii tcp server for $l_addr on port $l_port with baud rate $l_baud"
+  # TCP redirect
+#python tcp_serial_redirect.py --rtscts -P 7000 /dev/rfcomm0 115200
+  sudo python tcp_serial_redirect.py $l_option -P $l_port /dev/rfcomm0 $l_baud 
+  
+}
+# check number of arguments
+if [ $# -lt 1 ]
+then
+  usage
+fi
+
+option=""
+port=7000
+baud=115200
+while test $# -gt 0
+do
+  case $1 in
+    -b|--baud)
+      shift
+      if [ $# -lt 1 ]
+      then
+	color_msg $red "missing baud rate"
+        usage
+      fi
+      baud=$1
+    ;;
+    -d|--debug)
+      option="--debug" 
+    ;;
+    -h|--help)
+      usage
+    ;;
+    *)  
+    btaddress="$1"
+    ;;
+    -p|--port)
+      shift
+      if [ $# -lt 1 ]
+      then
+	color_msg $red "missing port" 
+        usage
+      fi
+      port=$1
+    ;;
+  esac
+  shift
+done
+
+# start the server with the given parameters
+startserver "$btaddress" $port $baud $option
