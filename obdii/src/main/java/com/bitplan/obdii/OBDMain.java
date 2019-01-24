@@ -42,7 +42,9 @@ import com.bitplan.gui.App;
 import com.bitplan.gui.Display;
 import com.bitplan.i18n.I18n;
 import com.bitplan.i18n.Translator;
+import com.bitplan.javafx.GenericApp;
 import com.bitplan.javafx.Main;
+import com.bitplan.javafx.TabSelection;
 import com.bitplan.javafx.TaskLaunch;
 import com.bitplan.obdii.elm327.ELM327;
 import com.bitplan.obdii.elm327.ElmSimulator;
@@ -118,6 +120,10 @@ public class OBDMain extends Main implements OBDApp {
   @Option(name = "-t", aliases = {
       "--timeout" }, usage = "timeout in msecs\nthe timeout for elm327 communication")
   static int timeout = 250;
+  
+  @Option(name = "-tab", aliases = {
+  "--tabid" }, usage = "tabId\nthe id of the tab to start with")
+  String tabId = "latest";
 
   @Option(name = "-c", aliases = {
       "--conn" }, usage = "connection device\nthe connection to use")
@@ -400,8 +406,19 @@ public class OBDMain extends Main implements OBDApp {
         // run GUI
         if (this.canValueDisplay instanceof Display) {
           Display display = (Display) canValueDisplay;
+          TabSelection tabSelection=TabSelection.getInstance();
+          String latestTab=tabSelection.getTabId();
           display.show();
           display.waitOpen();
+          if (canValueDisplay instanceof GenericApp) {
+            GenericApp gapp=(GenericApp) canValueDisplay;
+            if (!"latest".equals(this.tabId)) {
+              gapp.getXyTabPane().selectTab(tabId);
+            } else {
+              if (latestTab!=null)
+                gapp.getXyTabPane().selectTab(latestTab);
+            }
+          }
           display.waitClose();
         } else {
           showHelp();
