@@ -411,6 +411,8 @@ public class OBDMain extends Main implements OBDApp {
           display.show();
           display.waitOpen();
           if (canValueDisplay instanceof GenericApp) {
+            // wait a wee bit to allow tabs to appear
+            Thread.sleep(200);
             GenericApp gapp=(GenericApp) canValueDisplay;
             if (!"latest".equals(this.tabId)) {
               gapp.getXyTabPane().selectTab(tabId);
