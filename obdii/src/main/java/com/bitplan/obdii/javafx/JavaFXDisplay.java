@@ -115,11 +115,14 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
   private SimulatorPane simulatorPane;
 
   private Preferences prefs;
+  private Button restartButton;
   private Button darkModeButton;
-  private boolean darkMode=false;
+  private boolean darkMode = false;
   private Button fullScreenButton;
   private Button hideMenuButton;
   private Rectangle2D sceneBounds;
+
+  private int restartCount=0;
 
   public static final String RESOURCE_PATH = "/com/bitplan/can4eve/gui/";
 
@@ -134,10 +137,9 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
    */
   public JavaFXDisplay(App app, SoftwareVersion softwareVersion,
       OBDApp obdApp) {
-    super(app, softwareVersion,RESOURCE_PATH);
+    super(app, softwareVersion, RESOURCE_PATH);
     this.obdApp = obdApp;
   }
-
 
   @Override
   public void updateField(String title, Object value, int updateCount) {
@@ -186,8 +188,8 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
       rootChilds.add(0, pMenuBar);
     }
     pMenuBar.setVisible(show);
-    hideMenuButton
-        .setText(show ? I18n.get(Can4EveI18n.HIDE_MENU) : I18n.get(Can4EveI18n.SHOW_MENU));
+    hideMenuButton.setText(show ? I18n.get(Can4EveI18n.HIDE_MENU)
+        : I18n.get(Can4EveI18n.SHOW_MENU));
   }
 
   /**
@@ -243,10 +245,13 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
    * set up the DashBaord
    */
   public void setupDashBoard() {
-    TabPane dashboardPane = xyTabPane.addTabPane(Can4EveI18n.DASH_BOARD_TAB,I18n.get(Can4EveI18n.DASH_BOARD_TAB),FontAwesome.Glyph.SQUARE_ALT.name());
+    TabPane dashboardPane = xyTabPane.addTabPane(Can4EveI18n.DASH_BOARD_TAB,
+        I18n.get(Can4EveI18n.DASH_BOARD_TAB),
+        FontAwesome.Glyph.SQUARE_ALT.name());
     setupSpecial(dashboardPane);
     @SuppressWarnings("unused")
-    TabPane batteryPane=xyTabPane.addTabPane(Can4EveI18n.BATTERY_TAB,I18n.get(Can4EveI18n.BATTERY_TAB),"battery-three-quarters");
+    TabPane batteryPane = xyTabPane.addTabPane(Can4EveI18n.BATTERY_TAB,
+        I18n.get(Can4EveI18n.BATTERY_TAB), "battery-three-quarters");
   }
 
   @Override
@@ -288,17 +293,17 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
     // TODO the ones that have FXML should be modified to use their
     // specific Presenters instead
     GenericPanel vehiclePanel = this.getPanels().get("vehicleForm");
-    Vehicle vehicle=Vehicle.getInstance();
+    Vehicle vehicle = Vehicle.getInstance();
     vehiclePanel.setValues(vehicle.asMap());
-    GenericPanel ownerPanel=this.getPanels().get("ownerForm");
-    Owner owner=Owner.getInstance();
+    GenericPanel ownerPanel = this.getPanels().get("ownerForm");
+    Owner owner = Owner.getInstance();
     ownerPanel.setValues(owner.asMap());
-    GenericPanel preferencesPanel=this.getPanels().get("preferencesForm");
-    Preferences preferences=Preferences.getInstance();
+    GenericPanel preferencesPanel = this.getPanels().get("preferencesForm");
+    Preferences preferences = Preferences.getInstance();
     preferencesPanel.setValues(preferences.asMap());
-    GenericPanel configPanel=this.getPanels().get("settingsForm");
-    Config config=Config.getInstance();
-    if (config!=null)
+    GenericPanel configPanel = this.getPanels().get("settingsForm");
+    Config config = Config.getInstance();
+    if (config != null)
       configPanel.setValues(config.asMap());
   }
 
@@ -312,7 +317,7 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
       Preferences preferences = Preferences.getInstance();
       if (preferences.getLanguage() == LangChoice.notSet) {
         WelcomeWizard wizard = new WelcomeWizard(Can4EveI18n.WELCOME,
-            this.obdApp,this.getFxml());
+            this.obdApp, this.getFxml());
         wizard.display();
         if (wizard.isFinished()) {
           this.startMonitoring(false);
@@ -392,8 +397,8 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
             lIsoDateFormatter.format(new Date()));
         File screenShotFile = new File(screenShotDirectory, screenShotName);
         WaitableApp.saveAsPng(stage, screenShotFile);
-        showNotification(I18n.get(Can4EveI18n.SCREEN_SHOT), screenShotFile.getName(),
-            2000);
+        showNotification(I18n.get(Can4EveI18n.SCREEN_SHOT),
+            screenShotFile.getName(), 2000);
       }
     } catch (Exception e1) {
       handleException(e1);
@@ -408,35 +413,37 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
    */
   public void switchFullScreen(boolean fullScreen) {
     stage.setFullScreen(fullScreen);
-    fullScreenButton.setText(
-        fullScreen ? I18n.get(Can4EveI18n.PART_SCREEN) : I18n.get(Can4EveI18n.FULL_SCREEN));
+    fullScreenButton.setText(fullScreen ? I18n.get(Can4EveI18n.PART_SCREEN)
+        : I18n.get(Can4EveI18n.FULL_SCREEN));
   }
-  
+
   /**
    * switch the dark mode
    */
   public void switchDarkMode() {
-    darkMode=!darkMode;
+    darkMode = !darkMode;
     setBrightness(darkMode);
     // https://stackoverflow.com/questions/49159286/make-a-dark-mode-with-javafx
     // https://github.com/joffrey-bion/javafx-themes/blob/master/css/modena_dark.css
-    String darkSheet="css/modena_dark.css";
+    String darkSheet = "css/modena_dark.css";
     ObservableList<String> styleSheets = getScene().getStylesheets();
     if (darkMode) {
       styleSheets.add(darkSheet);
     } else {
       styleSheets.remove(darkSheet);
     }
-    darkModeButton.setText(darkMode?I18n.get(Can4EveI18n.LIGHT_MODE) : I18n.get(Can4EveI18n.DARK_MODE));  
+    darkModeButton.setText(darkMode ? I18n.get(Can4EveI18n.LIGHT_MODE)
+        : I18n.get(Can4EveI18n.DARK_MODE));
   }
 
   /**
    * set the brightness according to the darkMode
+   * 
    * @param darkMode
    */
   protected void setBrightness(boolean darkMode) {
     if (Raspberry.isPi()) {
-      prefs=Preferences.getInstance();
+      prefs = Preferences.getInstance();
       if (darkMode) {
         Raspberry.setBrightness(prefs.getDarkBrightness());
       } else {
@@ -451,9 +458,10 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
   public void setupSpecial(TabPane tabPane) {
     clockPane = new ClockPane();
     odoPane = new OdoPane();
-    odoTab = xyTabPane.addTab(tabPane, "odoPane", 0, I18n.get(Can4EveI18n.ODO_INFO),
-        FontAwesome.Glyph.AUTOMOBILE.name(), odoPane);
-    if (obdApp!=null) {
+    odoTab = xyTabPane.addTab(tabPane, "odoPane", 0,
+        I18n.get(Can4EveI18n.ODO_INFO), FontAwesome.Glyph.AUTOMOBILE.name(),
+        odoPane);
+    if (obdApp != null) {
       Vehicle vehicle = obdApp.getVehicle();
       dashBoardPane = new DashBoardPane(vehicle);
       dashBoardTab = xyTabPane.addTab(tabPane, "dashBoardPane", 0,
@@ -461,11 +469,12 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
           dashBoardPane);
     }
     chargePane = new ChargePane();
-    chargeTab = xyTabPane.addTab(tabPane, "chargePane", 0, I18n.get(Can4EveI18n.SOC),
-        FontAwesome.Glyph.PLUG.name(), chargePane);
-  
-    clockTab = xyTabPane.addTab(tabPane, "clockPane", 0, I18n.get(Can4EveI18n.CLOCKS),
-        FontAwesome.Glyph.CLOCK_ALT.name(), clockPane);
+    chargeTab = xyTabPane.addTab(tabPane, "chargePane", 0,
+        I18n.get(Can4EveI18n.SOC), FontAwesome.Glyph.PLUG.name(), chargePane);
+
+    clockTab = xyTabPane.addTab(tabPane, "clockPane", 0,
+        I18n.get(Can4EveI18n.CLOCKS), FontAwesome.Glyph.CLOCK_ALT.name(),
+        clockPane);
     // disable menu items
     this.setMenuItemDisable(Can4EveI18n.OBD_HALT_MENU_ITEM, true);
     this.setMenuItemDisable(Can4EveI18n.FILE_CLOSE_MENU_ITEM, true);
@@ -485,18 +494,22 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
         switchFullScreen(!stage.isFullScreen());
       }
     });
-    
-    this.darkModeButton=new Button(I18n.get(Can4EveI18n.DARK_MODE));
+
+    this.darkModeButton = new Button(I18n.get(Can4EveI18n.DARK_MODE));
     // initial brightness
     this.setBrightness(darkMode);
-    darkModeButton.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent e) {
-        switchDarkMode();
-      }
+    darkModeButton.setOnAction(e -> {
+      switchDarkMode();
+    });
+
+    this.restartButton = new Button(I18n.get(Can4EveI18n.RESTART));
+    restartButton.setOnAction(e -> {
+      stopMonitoring();
+      startMonitoring(true);
     });
 
     if (statusBar != null) {
+      statusBar.getRightItems().add(restartButton);
       statusBar.getRightItems().add(darkModeButton);
       statusBar.getRightItems().add(screenShotButton);
       statusBar.getRightItems().add(hideMenuButton);
@@ -611,7 +624,7 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
           break;
         case Can4EveI18n.SETTINGS_WELCOME_MENU_ITEM:
           WelcomeWizard wizard = new WelcomeWizard(Can4EveI18n.WELCOME,
-              this.obdApp,this.getFxml());
+              this.obdApp, this.getFxml());
           wizard.display();
           if (wizard.isFinished())
             startMonitoring(false);
@@ -629,12 +642,13 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
           showSettings(true);
           break;
         case Can4EveI18n.SETTINGS_PREFERENCES_MENU_ITEM:
-          PreferencesPresenter preferencesPresenter=getFxml().loadPresenter("preferences", Preferences.class,this);
+          PreferencesPresenter preferencesPresenter = getFxml()
+              .loadPresenter("preferences", Preferences.class, this);
           preferencesPresenter.show(Preferences.getInstance());
           break;
         case Can4EveI18n.VEHICLE_MENU_ITEM:
-          VehiclePresenter vehiclePresenter =getFxml().loadPresenter("vehicle",
-              Vehicle.class,this);
+          VehiclePresenter vehiclePresenter = getFxml().loadPresenter("vehicle",
+              Vehicle.class, this);
           vehiclePresenter.show(Vehicle.getInstance());
           break;
         case Can4EveI18n.VIEW_DASHBOARD_VIEW_MENU_ITEM:
@@ -725,7 +739,11 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
    * @param withLog
    */
   public void startMonitoring(boolean withLog) {
-    setWatchDogState("⚙", I18n.get(Can4EveI18n.MONITORING));
+    String watchDogState="⚙";
+    restartCount++;
+    if (restartCount>1)
+      watchDogState=watchDogState+restartCount;
+    setWatchDogState(watchDogState, I18n.get(Can4EveI18n.MONITORING));
     setMenuItemDisable(Can4EveI18n.OBD_START_MENU_ITEM, true);
     setMenuItemDisable(Can4EveI18n.OBD_START_WITH_LOG_MENU_ITEM, true);
     setMenuItemDisable(Can4EveI18n.OBD_TEST_MENU_ITEM, true);
@@ -765,8 +783,8 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
    */
   public void showSettings(boolean test) throws Exception {
     Config config = Config.getInstance(ConfigMode.Preferences);
-    SettingsDialog settingsDialog = new SettingsDialog(stage,
-        app.getFormById(Can4EveI18n.PREFERENCES_GROUP, Can4EveI18n.SETTINGS_FORM), obdApp);
+    SettingsDialog settingsDialog = new SettingsDialog(stage, app.getFormById(
+        Can4EveI18n.PREFERENCES_GROUP, Can4EveI18n.SETTINGS_FORM), obdApp);
     if (config == null)
       config = new Config();
     if (test)

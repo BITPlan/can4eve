@@ -97,6 +97,7 @@ public class Can4EveI18n {
   public static final String FULL_SCREEN = "fullScreen";
   public static final String PART_SCREEN = "partScreen";
   public static final String DARK_MODE = "darkMode";
+  public static final String RESTART = "restart";
   public static final String LIGHT_MODE = "lightMode";
   
   public static final String HIDE_MENU = "hideMenu";
