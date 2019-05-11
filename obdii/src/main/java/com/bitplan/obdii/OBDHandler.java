@@ -314,11 +314,21 @@ public abstract class OBDHandler extends AbstractOBDHandler {
    * start the display
    * 
    * @param display
-   * @param msecs - the update frequency
+   * @param msecs
+   *          - the update frequency
    */
   public void startDisplay(final CANValueDisplay display, int msecs) {
     if (displayexecutor != null) {
-      throw new IllegalStateException("display already started!");
+      displayexecutor.shutdown();
+      boolean success = false;
+      try {
+        success = displayexecutor.awaitTermination(1000, TimeUnit.MILLISECONDS);
+      } catch (InterruptedException e) {
+        success = false;
+      }
+      if (!success)
+        throw new IllegalStateException(
+            "display already started and couldn't shutdown!");
     }
     // TODO make this more systematic
     if (display instanceof JFXTripletDisplay) {

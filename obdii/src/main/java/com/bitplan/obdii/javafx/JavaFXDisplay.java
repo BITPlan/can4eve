@@ -743,6 +743,7 @@ public class JavaFXDisplay extends GenericApp implements MonitorControl,
     restartCount++;
     if (restartCount>1)
       watchDogState=watchDogState+restartCount;
+    watchDogState+=" ";
     setWatchDogState(watchDogState, I18n.get(Can4EveI18n.MONITORING));
     setMenuItemDisable(Can4EveI18n.OBD_START_MENU_ITEM, true);
     setMenuItemDisable(Can4EveI18n.OBD_START_WITH_LOG_MENU_ITEM, true);
