@@ -39,3 +39,5 @@ hs_err_pid*
 target
 .classpath
 .project
+obdii/release/can4eve.exe
+obdii/release/can4eve.jar
